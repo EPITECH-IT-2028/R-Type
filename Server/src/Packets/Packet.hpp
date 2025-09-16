@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
+#include <stdalign.h>
 
 constexpr uint8_t PACKET_TYPE_MESSAGE = 0x01;
 constexpr uint8_t PACKET_TYPE_MOVE = 0x02;
@@ -8,7 +10,7 @@ constexpr uint8_t PACKET_TYPE_NEW_PLAYER = 0x03;
 constexpr uint8_t PACKET_TYPE_PLAYER_INFO = 0x04;
 constexpr uint8_t PACKET_TYPE_PLAYER_POSITION = 0x05;
 
-#define ALIGNED __attribute__((aligned(4)))
+#define ALIGNED alignas(4)
 
 struct ALIGNED PacketHeader {
     uint8_t type;
