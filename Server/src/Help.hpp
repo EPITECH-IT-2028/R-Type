@@ -1,3 +1,5 @@
 #pragma once
 
-int help();
+namespace Help {
+  int help();
+}

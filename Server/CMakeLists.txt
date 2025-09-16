@@ -32,6 +32,8 @@ add_executable(r_type_server
     src/main.cpp
     src/Server.cpp
     src/Packets/Packet.cpp
+    src/Help.cpp
+    src/Parser.cpp
 )
 
 target_link_libraries(r_type_server 

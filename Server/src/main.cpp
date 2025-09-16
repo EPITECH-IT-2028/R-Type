@@ -12,7 +12,7 @@ int main(int ac, char **av) {
       throw ParamsError("Not enough arguments, check -help for more informations.");
     }
     if (strcmp(av[1], "-help") == 0) {
-      return help();
+      return Help::help();
     }
     int port = Parser::isValidPort(av[1]);
     asio::io_context io_context;
