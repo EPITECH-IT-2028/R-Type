@@ -14,7 +14,7 @@ int main() {
 
     asio::signal_set signals(io_context, SIGINT, SIGTERM);
     signals.async_wait(
-        [&server](const asio::error_code &error, __attribute__((unused)) int) {
+        [&server](const asio::error_code &error, [[maybe_unused]] int) {
           if (!error) {
             std::cout << "\nStopping server..." << std::endl;
             server.stop();
