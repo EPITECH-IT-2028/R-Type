@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include <cstring>
 #include <iostream>
 #include "Packet.hpp"
 
@@ -11,7 +12,8 @@ server::Client::Client(const udp::endpoint &endpoint, int id)
 
 server::Server::Server(asio::io_context &io_context, int port)
     : _io_context(io_context),
-      _socket(io_context, udp::endpoint(udp::v4(), port)),
+      _socket(io_context,
+              udp::endpoint(udp::v4(), static_cast<unsigned short>(port))),
       _port(port),
       _player_count(0),
       _next_player_id(0) {
@@ -45,19 +47,31 @@ void server::Server::startReceive() {
 void server::Server::handleReceive(const asio::error_code &error,
                                    std::size_t bytes_transferred) {
   if (!error) {
-    if (bytes_transferred >= sizeof(PacketHeader)) {
-      int client_idx = findOrCreateClient(_remote_endpoint);
-      if (client_idx != -1) {
-        handleClientData(client_idx, _recv_buffer.data(), bytes_transferred);
-      } else {
-        std::cerr << "[WARNING] Max clients reached. Connection refused from "
-                  << _remote_endpoint << std::endl;
-      }
+    if (error == asio::error::operation_aborted) {
+      return;
     }
-
+    std::cerr << "[WARNING] Receive failed: " << error.message() << std::endl;
     startReceive();
+    return;
+  }
+  if (bytes_transferred < sizeof(PacketHeader)) {
+    std::cerr << "[DEBUG] Received packet too small: " << bytes_transferred
+              << " bytes" << std::endl;
+    startReceive();
+    return;
+  }
+
+  PacketHeader *header;
+  std::memcpy(&header, _recv_buffer.data(), sizeof(PacketHeader));
+
+  int client_idx = findOrCreateClient(_remote_endpoint);
+  if (client_idx == -1) {
+    std::cerr << "[WARNING] Max clients reached. Refused connection."
+              << std::endl;
+    startReceive();
+    return;
   } else {
-    std::cerr << "[ERROR] Receive failed: " << error.message() << std::endl;
+    handleClientData(client_idx, _recv_buffer.data(), bytes_transferred);
   }
 }
 
@@ -66,7 +80,7 @@ void server::Server::handleReceive(const asio::error_code &error,
  * Returns the index of the client in the _clients vector, or -1 if no space
  * is available.
  */
-int server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
+std::size_t server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_endpoint == endpoint) {
       return static_cast<int>(i);
@@ -89,9 +103,9 @@ int server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
 /*
  * Process data received from a client.
  */
-void server::Server::handleClientData(int client_idx, const char *data,
+void server::Server::handleClientData(std::size_t client_idx, const char *data,
                                       std::size_t size) {
-  if (client_idx < 0 || client_idx >= static_cast<int>(_clients.size()) ||
+  if (client_idx < 0 || client_idx >= static_cast<size_t>(_clients.size()) ||
       !_clients[client_idx]) {
     return;
   }
@@ -107,8 +121,9 @@ void server::Server::handleClientData(int client_idx, const char *data,
  * Retrieve a client by index.
  * Returns nullptr if the index is invalid or the client does not exist.
  */
-std::shared_ptr<server::Client> server::Server::getClient(int idx) const {
-  if (idx < 0 || idx >= static_cast<int>(_clients.size())) {
+std::shared_ptr<server::Client> server::Server::getClient(
+    std::size_t idx) const {
+  if (idx < 0 || idx >= static_cast<std::size_t>(_clients.size())) {
     return nullptr;
   }
   return _clients[idx];

@@ -1,14 +1,16 @@
 #pragma once
 
+#include <array>
 #include <asio.hpp>
 #include <memory>
 #include <vector>
 
-#define MAX_CLIENTS 4
+inline constexpr std::size_t MAX_CLIENTS = 4;
+inline constexpr std::size_t BUFFER_SIZE = 2048;
 
 namespace server {
 
-  class Client {
+  struct Client {
     public:
       Client(const asio::ip::udp::endpoint &endpoint, int id);
       ~Client() = default;
@@ -34,10 +36,11 @@ namespace server {
       void handleReceive(const asio::error_code &error,
                          std::size_t bytes_transferred);
 
-      int findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
-      void handleClientData(int client_idx, const char *data, std::size_t size);
+      std::size_t findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
+      void handleClientData(std::size_t client_idx, const char *data,
+                            std::size_t size);
 
-      std::shared_ptr<Client> getClient(int idx) const;
+      std::shared_ptr<Client> getClient(std::size_t idx) const;
 
     private:
       asio::io_context &_io_context;
@@ -45,7 +48,7 @@ namespace server {
       asio::ip::udp::endpoint _remote_endpoint;
 
       std::vector<std::shared_ptr<Client>> _clients;
-      std::array<char, 2048> _recv_buffer;
+      std::array<char, BUFFER_SIZE> _recv_buffer;
 
       int _port;
       int _player_count;
