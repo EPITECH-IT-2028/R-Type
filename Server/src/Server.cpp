@@ -46,7 +46,7 @@ void server::Server::startReceive() {
  */
 void server::Server::handleReceive(const asio::error_code &error,
                                    std::size_t bytes_transferred) {
-  if (!error) {
+  if (error) {
     if (error == asio::error::operation_aborted) {
       return;
     }
