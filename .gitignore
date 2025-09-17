@@ -1,9 +1,13 @@
 # Prerequisites
 *.d
 
+.DS_Store
+
 .build/
 .cache/
 compile_commands.json
+
+r_type_server
 
 # Compiled Object files
 *.slo
