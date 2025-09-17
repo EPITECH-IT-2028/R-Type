@@ -113,15 +113,23 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
     return;
   }
 
-  const PacketHeader *header = reinterpret_cast<const PacketHeader *>(data);
-  auto &client = _clients[client_idx];
+  auto client = _clients[client_idx];
+  PacketHeader header{};
+  std::memcpy(&header, data, sizeof(PacketHeader));
+  if (size < header.size || header.size < sizeof(PacketHeader)) {
+    std::cerr << "[WARNING] Invalid packet size from client "
+              << _clients[client_idx]->_player_id << std::endl;
+    startReceive();
+    return;
+  }
 
-  auto command = _factory.createHandler(static_cast<uint8_t>(header->type));
-  if (command) {
-    if (command->handlePacket(*this, *client, data, size) != 0) {
-      std::cerr << "[ERROR] Failed to handle packet of type "
-                << static_cast<int>(header->type) << std::endl;
-    }
+  auto handler = _factory.createHandler(static_cast<uint8_t>(header.type));
+  if (handler) {
+    handler->handlePacket(*this, *client, data, size);
+  } else {
+    std::cerr << "[WARNING] Unknown packet type "
+              << static_cast<int>(header.type) << " from client "
+              << _clients[client_idx]->_player_id << std::endl;
   }
   startReceive();
 }

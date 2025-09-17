@@ -5,9 +5,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-execute_process(
-  COMMAND ln -sf ${PROJECT_SOURCE_DIR}/.build/compile_commands.json ${PROJECT_SOURCE_DIR}
-)
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_BINARY_DIR}/compile_commands.json
+            ${PROJECT_SOURCE_DIR}/compile_commands.json
+  )
+endif()
 
 if(MSVC)
     add_compile_options(/W4)
@@ -22,7 +26,7 @@ include(FetchContent)
 FetchContent_Declare(
     asio
     GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-    GIT_TAG 231cb29bab30f82712fcd54faaea42424cc6e710
+    GIT_TAG asio-1-36-0
     GIT_SHALLOW TRUE
 )
 

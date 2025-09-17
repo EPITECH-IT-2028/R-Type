@@ -1,22 +1,24 @@
 
+#include <cstdint>
 #include <ctime>
 #include <string>
 #include "Packet.hpp"
 
 struct PacketBuilder {
     static MessagePacket makeMessage(const std::string &msg) {
-      MessagePacket packet;
+      MessagePacket packet{};
       packet.header.type = PacketType::Message;
       packet.header.size = sizeof(packet);
       packet.timestamp = static_cast<uint32_t>(time(nullptr));
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
+      packet.message[sizeof(packet.message) - 1] = '\0';
       return packet;
     }
 
     static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
                                          float speed,
                                          uint32_t max_health = 100) {
-      NewPlayerPacket packet;
+      NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
@@ -28,7 +30,7 @@ struct PacketBuilder {
     }
 
     static PositionPacket makePosition(float x, float y, int seq) {
-      PositionPacket packet;
+      PositionPacket packet{};
       packet.header.type = PacketType::Position;
       packet.header.size = sizeof(packet);
       packet.x = x;
@@ -38,7 +40,7 @@ struct PacketBuilder {
     }
 
     static MovePacket makeMove(uint32_t player_id, int seq, float x, float y) {
-      MovePacket packet;
+      MovePacket packet{};
       packet.header.type = PacketType::Move;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
@@ -49,10 +51,11 @@ struct PacketBuilder {
     }
 
     static PlayerInfoPacket makePlayerInfo(const std::string &name) {
-      PlayerInfoPacket packet;
+      PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
       packet.header.size = sizeof(packet);
       strncpy(packet.name, name.c_str(), sizeof(packet.name) - 1);
+      packet.name[sizeof(packet.name) - 1] = '\0';
       return packet;
     }
 
@@ -60,7 +63,7 @@ struct PacketBuilder {
                                            float x, float y, float speed,
                                            uint32_t health,
                                            uint32_t max_health) {
-      EnemySpawnPacket packet;
+      EnemySpawnPacket packet{};
       packet.header.type = PacketType::EnemySpawn;
       packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
@@ -76,7 +79,7 @@ struct PacketBuilder {
     static EnemyMovePacket makeEnemyMove(uint32_t enemy_id, float x, float y,
                                          float velocity_x, float velocity_y,
                                          int seq) {
-      EnemyMovePacket packet;
+      EnemyMovePacket packet{};
       packet.header.type = PacketType::EnemyMove;
       packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
@@ -90,7 +93,7 @@ struct PacketBuilder {
 
     static EnemyDeathPacket makeEnemyDeath(uint32_t enemy_id, float death_x,
                                            float death_y) {
-      EnemyDeathPacket packet;
+      EnemyDeathPacket packet{};
       packet.header.type = PacketType::EnemyDeath;
       packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
@@ -103,7 +106,7 @@ struct PacketBuilder {
                                              float dir_y,
                                              ProjectileType projectile_type,
                                              uint32_t seq) {
-      PlayerShootPacket packet;
+      PlayerShootPacket packet{};
       packet.header.type = PacketType::PlayerShoot;
       packet.header.size = sizeof(packet);
       packet.x = x;
@@ -117,8 +120,9 @@ struct PacketBuilder {
 
     static ProjectileSpawnPacket makeProjectileSpawn(
         uint32_t projectile_id, ProjectileType type, float x, float y,
-        float vel_x, float vel_y, bool is_enemy, uint32_t damage) {
-      ProjectileSpawnPacket packet;
+        float vel_x, float vel_y, bool is_enemy, uint32_t damage,
+        uint32_t owner_id) {
+      ProjectileSpawnPacket packet{};
       packet.header.type = PacketType::ProjectileSpawn;
       packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
@@ -129,14 +133,15 @@ struct PacketBuilder {
       packet.velocity_y = vel_y;
       packet.is_enemy_projectile = is_enemy;
       packet.damage = damage;
+      packet.owner_id = owner_id;
       return packet;
     }
 
     static ProjectileHitPacket makeProjectileHit(uint32_t projectile_id,
                                                  uint32_t target_id,
                                                  float hit_x, float hit_y,
-                                                 bool target_is_player) {
-      ProjectileHitPacket packet;
+                                                 uint8_t target_is_player) {
+      ProjectileHitPacket packet{};
       packet.header.type = PacketType::ProjectileHit;
       packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
@@ -149,7 +154,7 @@ struct PacketBuilder {
 
     static ProjectileDestroyPacket makeProjectileDestroy(uint32_t projectile_id,
                                                          float x, float y) {
-      ProjectileDestroyPacket packet;
+      ProjectileDestroyPacket packet{};
       packet.header.type = PacketType::ProjectileDestroy;
       packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
@@ -159,7 +164,7 @@ struct PacketBuilder {
     }
 
     static GameStart makeGameStart(bool started) {
-      GameStart packet;
+      GameStart packet{};
       packet.header.type = PacketType::GameStart;
       packet.header.size = sizeof(packet);
       packet.game_start = started;
@@ -167,7 +172,7 @@ struct PacketBuilder {
     }
 
     static GameEnd makeGameEnd(bool ended) {
-      GameEnd packet;
+      GameEnd packet{};
       packet.header.type = PacketType::GameEnd;
       packet.header.size = sizeof(packet);
       packet.game_end = ended;

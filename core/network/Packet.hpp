@@ -47,7 +47,7 @@ struct ALIGNED MessagePacket {
 struct ALIGNED MovePacket {
     PacketHeader header;
     uint32_t player_id;
-    int sequence_number;
+    uint32_t sequence_number;
     float x;
     float y;
 };
@@ -59,7 +59,7 @@ struct ALIGNED NewPlayerPacket {
     float x;
     float y;
     float speed;
-    int max_health;
+    uint32_t max_health;
 };
 
 /* Client to server packets */
@@ -71,7 +71,7 @@ struct ALIGNED PlayerInfoPacket {
 /* Client to server packets */
 struct ALIGNED PositionPacket {
     PacketHeader header;
-    int sequence_number;
+    uint32_t sequence_number;
     float x;
     float y;
 };
@@ -97,7 +97,7 @@ struct ALIGNED EnemyMovePacket {
     float y;
     float velocity_x;
     float velocity_y;
-    int sequence_number;
+    uint32_t sequence_number;
 };
 
 /* Server to client packets */
@@ -125,8 +125,8 @@ struct ALIGNED ProjectileSpawnPacket {
     PacketHeader header;
     uint32_t projectile_id;
     ProjectileType projectile_type;
-    uint32_t player_id;
-    bool is_enemy_projectile;
+    uint32_t owner_id;
+    uint8_t is_enemy_projectile;
     float x;
     float y;
     float velocity_x;
@@ -139,7 +139,7 @@ struct ALIGNED ProjectileHitPacket {
     PacketHeader header;
     uint32_t projectile_id;
     uint32_t target_id;
-    bool target_is_player;
+    uint8_t target_is_player;
     float hit_x;
     float hit_y;
 };
@@ -155,11 +155,11 @@ struct ALIGNED ProjectileDestroyPacket {
 /* Server to client packets */
 struct ALIGNED GameStart {
     PacketHeader header;
-    bool game_start;
+    uint8_t game_start;
 };
 
 /* Server to client packets */
 struct ALIGNED GameEnd {
     PacketHeader header;
-    bool game_end;
+    uint8_t game_end;
 };
