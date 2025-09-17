@@ -30,17 +30,17 @@ namespace server {
 
       void start();
       void stop();
+      std::size_t findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
+      std::shared_ptr<Client> getClient(std::size_t idx) const;
 
     private:
       void startReceive();
       void handleReceive(const asio::error_code &error,
                          std::size_t bytes_transferred);
 
-      std::size_t findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
       void handleClientData(std::size_t client_idx, const char *data,
                             std::size_t size);
 
-      std::shared_ptr<Client> getClient(std::size_t idx) const;
 
     private:
       asio::io_context &_io_context;

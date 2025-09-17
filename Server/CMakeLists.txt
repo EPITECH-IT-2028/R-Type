@@ -5,10 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-execute_process(
-  COMMAND ln -sf ${PROJECT_SOURCE_DIR}/.build/compile_commands.json ${PROJECT_SOURCE_DIR}
-)
-
 if(MSVC)
     add_compile_options(/W4)
 else()
@@ -48,3 +44,35 @@ target_include_directories(r_type_server
 
 target_compile_definitions(r_type_server PRIVATE ASIO_STANDALONE)
 
+option(ENABLE_TESTS "Build the tests" OFF)
+
+if(ENABLE_TESTS)
+    enable_testing()
+
+    include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      GIT_TAG v1.17.0
+    )
+    FetchContent_MakeAvailable(googletest)
+
+    add_executable(unit_tests
+      tests/test_server.cpp
+      src/Server.cpp
+    )
+
+    target_include_directories(unit_tests PRIVATE
+      ${asio_SOURCE_DIR}/asio/include
+      ${CMAKE_SOURCE_DIR}/src
+      ${CMAKE_SOURCE_DIR}/src/Packets/
+    )
+
+    target_link_libraries(unit_tests PRIVATE
+      GTest::gtest_main
+      Threads::Threads
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(unit_tests)
+endif()
