@@ -1,9 +1,13 @@
 #pragma once
 
 #include <array>
+#pragma once
+
+#include <array>
 #include <asio.hpp>
 #include <memory>
 #include <vector>
+#include "PacketFactory.hpp"
 
 inline constexpr std::size_t MAX_CLIENTS = 4;
 inline constexpr std::size_t BUFFER_SIZE = 2048;
@@ -15,13 +19,14 @@ public:
   Client(const asio::ip::udp::endpoint &endpoint, int id);
   ~Client() = default;
 
-  const asio::ip::udp::endpoint _endpoint;
-  bool _connected = false;
-  int _player_id = -1;
-  float _x = 0.0f;
-  float _y = 0.0f;
-  float _speed = 0.0f;
-};
+      const asio::ip::udp::endpoint _endpoint;
+      bool _connected = false;
+      int _player_id = -1;
+      float _x = 10.0f;
+      float _y = 10.0f;
+      float _speed = 10.0f;
+      int _health = 100;
+  };
 
 class Server {
 public:
@@ -31,10 +36,24 @@ public:
   void start();
   void stop();
 
-private:
-  void startReceive();
-  void handleReceive(const asio::error_code &error,
-                     std::size_t bytes_transferred);
+      int getPort() const {
+        return _port;
+      }
+      int getPlayerCount() const {
+        return _player_count;
+      }
+      const std::vector<std::shared_ptr<Client>> &getClients() const {
+        return _clients;
+      }
+
+      asio::ip::udp::socket &getSocket() {
+        return _socket;
+      }
+
+    private:
+      void startReceive();
+      void handleReceive(const asio::error_code &error,
+                         std::size_t bytes_transferred);
 
   int findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
   void handleClientData(std::size_t client_idx, const char *data,
@@ -47,8 +66,9 @@ private:
   asio::ip::udp::socket _socket;
   asio::ip::udp::endpoint _remote_endpoint;
 
-  std::vector<std::shared_ptr<Client>> _clients;
-  std::array<char, BUFFER_SIZE> _recv_buffer;
+      std::vector<std::shared_ptr<Client>> _clients;
+      std::array<char, BUFFER_SIZE> _recv_buffer;
+      packet::PacketHandlerFactory _factory;
 
   int _max_clients;
   int _port;

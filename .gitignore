@@ -1,11 +1,17 @@
 # Prerequisites
 *.d
 
+.DS_Store
+
 .build/
 build/
 .cache/
 .vscode/
 compile_commands.json
+.vscode/
+build/
+
+/r_type_server
 
 # Compiled Object files
 *.slo
@@ -45,3 +51,5 @@ compile_commands.json
 
 # debug information files
 *.dwo
+
+tests/html/*

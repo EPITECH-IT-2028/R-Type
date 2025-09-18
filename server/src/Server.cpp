@@ -2,10 +2,10 @@
 #include <cstring>
 #include <iostream>
 #include "Packet.hpp"
+#include "PacketBuilder.hpp"
+#include "PacketSender.hpp"
 
-using namespace asio::ip;
-
-server::Client::Client(const udp::endpoint &endpoint, int id)
+server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
   _connected = true;
 }
@@ -13,7 +13,8 @@ server::Client::Client(const udp::endpoint &endpoint, int id)
 server::Server::Server(asio::io_context &io_context, std::uint16_t port, std::uint16_t max_clients)
     : _io_context(io_context),
       _socket(io_context,
-              udp::endpoint(udp::v4(), port)),
+              asio::ip::udp::endpoint(asio::ip::udp::v4(),
+                                      static_cast<unsigned short>(port))),
       _port(port),
       _player_count(0),
       _next_player_id(0),
@@ -62,9 +63,6 @@ void server::Server::handleReceive(const asio::error_code &error,
     return;
   }
 
-  PacketHeader *header;
-  std::memcpy(&header, _recv_buffer.data(), sizeof(PacketHeader));
-
   int client_idx = findOrCreateClient(_remote_endpoint);
   if (client_idx == -1) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
@@ -81,9 +79,11 @@ void server::Server::handleReceive(const asio::error_code &error,
  * Returns the index of the client in the _clients vector, or -1 if no space
  * is available.
  */
-int server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
+std::size_t server::Server::findOrCreateClient(
+    const asio::ip::udp::endpoint &endpoint) {
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_endpoint == endpoint) {
+      _clients[i]->_connected = true;
       return static_cast<int>(i);
     }
   }
@@ -92,8 +92,11 @@ int server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
     if (!_clients[i]) {
       _clients[i] = std::make_shared<Client>(endpoint, _next_player_id++);
       _player_count++;
+      _clients[i]->_connected = true;
       std::cout << "[WORLD] New player connected with ID "
                 << _clients[i]->_player_id << std::endl;
+      auto msg = PacketBuilder::makeMessage("Welcome to the server!");
+      packet::PacketSender::sendPacket(_socket, _clients[i]->_endpoint, msg);
       return static_cast<int>(i);
     }
   }
@@ -111,11 +114,25 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
     return;
   }
 
-  const PacketHeader *header = reinterpret_cast<const PacketHeader *>(data);
-  auto &client = _clients[client_idx];
+  auto client = _clients[client_idx];
+  PacketHeader header{};
+  std::memcpy(&header, data, sizeof(PacketHeader));
+  if (size < header.size || header.size < sizeof(PacketHeader)) {
+    std::cerr << "[WARNING] Invalid packet size from client "
+              << _clients[client_idx]->_player_id << std::endl;
+    startReceive();
+    return;
+  }
 
-  std::cout << "[DEBUG] Received packet from player " << client->_player_id
-            << " of type " << static_cast<int>(header->type) << std::endl;
+  auto handler = _factory.createHandler(static_cast<uint8_t>(header.type));
+  if (handler) {
+    handler->handlePacket(*this, *client, data, header.size);
+  } else {
+    std::cerr << "[WARNING] Unknown packet type "
+              << static_cast<int>(header.type) << " from client "
+              << _clients[client_idx]->_player_id << std::endl;
+  }
+  startReceive();
 }
 
 /*
