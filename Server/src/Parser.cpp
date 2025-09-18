@@ -1,14 +1,13 @@
 #include "Parser.hpp"
 #include "Errors/ParamsError.hpp"
 #include "Macros.hpp"
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 
 int Parser::parseServerProperties() {
   std::ifstream ifs(SERVER_PROPERTIES);
   if (!ifs.is_open()) {
-    std::cout << "No server.properties file found, using default values."
+    std::cerr << "No server.properties file found, using default values."
               << std::endl;
     return SUCCESS;
   }
@@ -27,20 +26,23 @@ int Parser::parseServerProperties() {
       } else {
         throw ParamsError("Invalid port in server properties file.");
       }
-    } else if (line.find("MAX_PLAYER") == 0) {
-      std::string max_player = line.substr(line.find('=') + 1);
-      if (!max_player.empty())
+    } else if (line.find("MAX_CLIENTS") == 0) {
+      std::string max_clients = line.substr(line.find('=') + 1);
+      if (!max_clients.empty())
         try {
-          _max_player = std::stoi(max_player);
+          _max_clients = std::stoi(max_clients);
         } catch (const std::invalid_argument &e) {
-          throw ParamsError("Invalid max player in server properties file.");
+          throw ParamsError("Invalid max clients in server properties file.");
         } catch (const std::out_of_range &e) {
-          throw ParamsError("Max player value out of range.");
+          throw ParamsError("Max clients value out of range.");
         }
       else {
-        throw ParamsError("Invalid max player in server properties file.");
+        throw ParamsError("Invalid max clients in server properties file.");
       }
     }
+  }
+  if (_max_clients <= 0 || _port <= 0 || _port > 65535) {
+    throw ParamsError("Invalid server properties.");
   }
   ifs.close();
   return SUCCESS;

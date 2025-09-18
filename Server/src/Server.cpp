@@ -10,14 +10,15 @@ server::Client::Client(const udp::endpoint &endpoint, int id)
   _connected = true;
 }
 
-server::Server::Server(asio::io_context &io_context, int port)
+server::Server::Server(asio::io_context &io_context, int port, int max_clients)
     : _io_context(io_context),
       _socket(io_context,
               udp::endpoint(udp::v4(), static_cast<unsigned short>(port))),
       _port(port),
       _player_count(0),
-      _next_player_id(0) {
-  _clients.resize(MAX_CLIENTS);
+      _next_player_id(0),
+      _max_clients(max_clients) {
+  _clients.resize(max_clients);
 }
 
 void server::Server::start() {

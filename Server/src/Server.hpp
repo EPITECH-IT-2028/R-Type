@@ -25,7 +25,7 @@ public:
 
 class Server {
 public:
-  Server(asio::io_context &io_context, int port);
+  Server(asio::io_context &io_context, int port, int max_clients);
   ~Server() = default;
 
   void start();
@@ -50,6 +50,7 @@ private:
   std::vector<std::shared_ptr<Client>> _clients;
   std::array<char, BUFFER_SIZE> _recv_buffer;
 
+  int _max_clients;
   int _port;
   int _player_count;
   int _next_player_id;

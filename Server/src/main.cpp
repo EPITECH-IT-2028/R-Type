@@ -22,7 +22,7 @@ int main(int ac, char **av) {
 
     asio::io_context io_context;
 
-    server::Server server(io_context, parser.getPort());
+    server::Server server(io_context, parser.getPort(), parser.getMaxClients());
 
     std::cout << "Starting server on port " << parser.getPort() << "..."
               << std::endl;
@@ -37,7 +37,7 @@ int main(int ac, char **av) {
           }
         });
     io_context.run();
-  } catch (ParamsError &e) {
+  } catch (const ParamsError &e) {
     std::cerr << "Error: " << e.what() << std::endl;
     return ERROR;
   } catch (const std::exception &e) {
