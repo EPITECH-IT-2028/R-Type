@@ -1,6 +1,9 @@
 #pragma once
 
 #include <array>
+#pragma once
+
+#include <array>
 #include <asio.hpp>
 #include <memory>
 #include <vector>

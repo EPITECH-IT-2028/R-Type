@@ -32,8 +32,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(asio)
 
-option(SERVER "Build the server executable" ON)
-option(GAME "Build the game executable" ON)
+option(SERVER "Build the server executable" OFF)
+option(GAME "Build the game executable" OFF)
+option(ENABLE_TESTS "Build the tests" OFF)
 
 if(SERVER)
     add_executable(r_type_server
@@ -61,6 +62,40 @@ if(SERVER)
     )
 
     target_compile_definitions(r_type_server PRIVATE ASIO_STANDALONE)
+endif()
+
+if(ENABLE_TESTS)
+    enable_testing()
+
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      GIT_TAG v1.17.0
+      GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(googletest)
+
+    add_executable(unit_tests
+      tests/test_server.cpp
+      src/Server.cpp
+    )
+
+    target_include_directories(unit_tests PRIVATE
+      ${asio_SOURCE_DIR}/asio/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
+    )
+
+    target_link_libraries(unit_tests PRIVATE
+      GTest::gtest_main
+      Threads::Threads
+    )
+
+    target_compile_definitions(unit_tests PRIVATE ASIO_STANDALONE)
+
+    include(GoogleTest)
+    gtest_discover_tests(unit_tests)
 endif()
 
 if(GAME)
