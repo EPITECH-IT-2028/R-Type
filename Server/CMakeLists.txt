@@ -49,7 +49,6 @@ option(ENABLE_TESTS "Build the tests" OFF)
 if(ENABLE_TESTS)
     enable_testing()
 
-    include(FetchContent)
     FetchContent_Declare(
       googletest
       GIT_REPOSITORY https://github.com/google/googletest.git
@@ -64,14 +63,16 @@ if(ENABLE_TESTS)
 
     target_include_directories(unit_tests PRIVATE
       ${asio_SOURCE_DIR}/asio/include
-      ${CMAKE_SOURCE_DIR}/src
-      ${CMAKE_SOURCE_DIR}/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/Packets/
     )
 
     target_link_libraries(unit_tests PRIVATE
       GTest::gtest_main
       Threads::Threads
     )
+
+    target_compile_definitions(unit_tests PRIVATE ASIO_STANDALONE)
 
     include(GoogleTest)
     gtest_discover_tests(unit_tests)

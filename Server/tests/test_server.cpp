@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/Server.hpp"
-#include "Packet.hpp"
+#include "Server.hpp"
 
 using asio::ip::udp;
 
