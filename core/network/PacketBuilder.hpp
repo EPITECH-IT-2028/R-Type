@@ -1,5 +1,5 @@
-
 #include <cstdint>
+#include <cstring>
 #include <ctime>
 #include <string>
 #include "Packet.hpp"
@@ -29,7 +29,7 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PositionPacket makePosition(float x, float y, int seq) {
+    static PositionPacket makePosition(float x, float y, uint32_t seq) {
       PositionPacket packet{};
       packet.header.type = PacketType::Position;
       packet.header.size = sizeof(packet);
@@ -39,7 +39,8 @@ struct PacketBuilder {
       return packet;
     }
 
-    static MovePacket makeMove(uint32_t player_id, int seq, float x, float y) {
+    static MovePacket makeMove(uint32_t player_id, uint32_t seq, float x,
+                               float y) {
       MovePacket packet{};
       packet.header.type = PacketType::Move;
       packet.header.size = sizeof(packet);
@@ -163,16 +164,16 @@ struct PacketBuilder {
       return packet;
     }
 
-    static GameStart makeGameStart(bool started) {
-      GameStart packet{};
+    static GameStartPacket makeGameStart(bool started) {
+      GameStartPacket packet{};
       packet.header.type = PacketType::GameStart;
       packet.header.size = sizeof(packet);
       packet.game_start = started;
       return packet;
     }
 
-    static GameEnd makeGameEnd(bool ended) {
-      GameEnd packet{};
+    static GameEndPacket makeGameEnd(bool ended) {
+      GameEndPacket packet{};
       packet.header.type = PacketType::GameEnd;
       packet.header.size = sizeof(packet);
       packet.game_end = ended;

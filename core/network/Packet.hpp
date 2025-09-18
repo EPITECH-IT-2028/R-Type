@@ -153,13 +153,13 @@ struct ALIGNED ProjectileDestroyPacket {
 };
 
 /* Server to client packets */
-struct ALIGNED GameStart {
+struct ALIGNED GameStartPacket {
     PacketHeader header;
     uint8_t game_start;
 };
 
 /* Server to client packets */
-struct ALIGNED GameEnd {
+struct ALIGNED GameEndPacket {
     PacketHeader header;
     uint8_t game_end;
 };

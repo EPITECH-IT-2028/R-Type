@@ -125,7 +125,7 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
 
   auto handler = _factory.createHandler(static_cast<uint8_t>(header.type));
   if (handler) {
-    handler->handlePacket(*this, *client, data, size);
+    handler->handlePacket(*this, *client, data, header.size);
   } else {
     std::cerr << "[WARNING] Unknown packet type "
               << static_cast<int>(header.type) << " from client "
