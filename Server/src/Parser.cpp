@@ -1,21 +1,47 @@
 #include "Parser.hpp"
 #include "Errors/ParamsError.hpp"
 #include "Macros.hpp"
-#include <exception>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 
-namespace Parser {
-  int isValidPort(const std::string& port) {
-    int validPort = 0;
-
-    if (port.empty())
-      throw ParamsError("Port is empty.");
-    if (std::stoi(port) < MIN_PORT || std::stoi(port) > MAX_PORT)
-      throw ParamsError("Invalid port. Port must be between 0 and 65535.");
-    try {
-      validPort = std::stoi(port);
-      return validPort;
-    } catch (const std::exception &e) {
-      throw ParamsError("Port is too high or too low. The value of port must be between 0 and 65535.");
+int Parser::parseServerProperties() {
+  std::ifstream ifs(SERVER_PROPERTIES);
+  if (!ifs.is_open()) {
+    std::cout << "No server.properties file found, using default values."
+              << std::endl;
+    return SUCCESS;
+  }
+  std::string line;
+  while (std::getline(ifs, line)) {
+    if (line.find("PORT") == 0) {
+      std::string port = line.substr(line.find('=') + 1);
+      if (!port.empty()) {
+        try {
+          _port = std::stoi(port);
+        } catch (const std::invalid_argument &e) {
+          throw ParamsError("Invalid port in server properties file.");
+        } catch (const std::out_of_range &e) {
+          throw ParamsError("Port value out of range.");
+        }
+      } else {
+        throw ParamsError("Invalid port in server properties file.");
+      }
+    } else if (line.find("MAX_PLAYER") == 0) {
+      std::string max_player = line.substr(line.find('=') + 1);
+      if (!max_player.empty())
+        try {
+          _max_player = std::stoi(max_player);
+        } catch (const std::invalid_argument &e) {
+          throw ParamsError("Invalid max player in server properties file.");
+        } catch (const std::out_of_range &e) {
+          throw ParamsError("Max player value out of range.");
+        }
+      else {
+        throw ParamsError("Invalid max player in server properties file.");
+      }
     }
   }
+  ifs.close();
+  return SUCCESS;
 }

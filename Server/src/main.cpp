@@ -1,25 +1,31 @@
-#include <asio.hpp>
-#include <iostream>
-#include "Parser.hpp"
 #include "Errors/ParamsError.hpp"
 #include "Help.hpp"
-#include "Server.hpp"
 #include "Macros.hpp"
+#include "Parser.hpp"
+#include "Server.hpp"
+#include <asio.hpp>
+#include <iostream>
 
 int main(int ac, char **av) {
   try {
-    if (ac != 2 || !av) {
+    if (!av) {
       throw ParamsError("Not enough arguments, check -help for more informations.");
     }
-    if (strcmp(av[1], "-help") == 0) {
+    if (ac == 2 && strcmp(av[1], "-help") == 0) {
       return Help::help();
+    } else if (ac >= 2) {
+      throw ParamsError("Too much arguments, check -help for more informations.");
     }
-    int port = Parser::isValidPort(av[1]);
+    
+    Parser parser;
+    parser.parseServerProperties();
+
     asio::io_context io_context;
 
-    server::Server server(io_context, port);
+    server::Server server(io_context, parser.getPort());
 
-    std::cout << "Starting server on port " << port << "..." << std::endl;
+    std::cout << "Starting server on port " << parser.getPort() << "..."
+              << std::endl;
     server.start();
 
     asio::signal_set signals(io_context, SIGINT, SIGTERM);
