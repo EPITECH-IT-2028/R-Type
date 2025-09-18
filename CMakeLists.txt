@@ -42,6 +42,8 @@ if(SERVER)
         server/src/Server.cpp
         server/src/Packets/PacketFactory.cpp
         server/src/Packets/PacketHandler.cpp
+        server/src/Help.cpp
+        server/src/Parser.cpp
     )
 
     set_target_properties(r_type_server PROPERTIES
@@ -57,6 +59,7 @@ if(SERVER)
         PRIVATE 
         ${asio_SOURCE_DIR}/asio/include
         server/src/
+        server/src/Errors/
         server/src/Packets/
         core/network/
     )
@@ -76,14 +79,15 @@ if(ENABLE_TESTS)
     FetchContent_MakeAvailable(googletest)
 
     add_executable(unit_tests
-      tests/test_server.cpp
-      src/Server.cpp
+      server/tests/test_server.cpp
+      server/src/Server.cpp
     )
 
     target_include_directories(unit_tests PRIVATE
       ${asio_SOURCE_DIR}/asio/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/src
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Errors/
       ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
     )
 

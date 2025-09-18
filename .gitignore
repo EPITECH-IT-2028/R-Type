@@ -4,10 +4,10 @@
 .DS_Store
 
 .build/
+build/
+.vscode/
 .cache/
 compile_commands.json
-.vscode/
-build/
 
 /r_type_server
 
