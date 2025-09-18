@@ -1,9 +1,9 @@
 #include "Server.hpp"
+#include "Packets/IPacket.hpp"
 #include <cstring>
 #include <iostream>
-#include "Packet.hpp"
-#include "PacketBuilder.hpp"
-#include "PacketSender.hpp"
+#include "../../../core/network/PacketBuilder.hpp"
+#include "../../../core/network/PacketSender.hpp"
 
 server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
@@ -15,10 +15,10 @@ server::Server::Server(asio::io_context &io_context, std::uint16_t port, std::ui
       _socket(io_context,
               asio::ip::udp::endpoint(asio::ip::udp::v4(),
                                       static_cast<unsigned short>(port))),
+      _max_clients(max_clients),
       _port(port),
       _player_count(0),
-      _next_player_id(0),
-      _max_clients(max_clients) {
+      _next_player_id(0) {
   _clients.resize(max_clients);
 }
 
@@ -79,7 +79,7 @@ void server::Server::handleReceive(const asio::error_code &error,
  * Returns the index of the client in the _clients vector, or -1 if no space
  * is available.
  */
-std::size_t server::Server::findOrCreateClient(
+int server::Server::findOrCreateClient(
     const asio::ip::udp::endpoint &endpoint) {
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_endpoint == endpoint) {

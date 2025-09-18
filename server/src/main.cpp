@@ -9,14 +9,16 @@
 int main(int ac, char **av) {
   try {
     if (!av) {
-      throw ParamsError("Not enough arguments, check -help for more informations.");
+      throw ParamsError(
+          "Not enough arguments, check -help for more informations.");
     }
     if (ac == 2 && strcmp(av[1], "-help") == 0) {
       return Help::help();
     } else if (ac >= 2) {
-      throw ParamsError("Too much arguments, check -help for more informations.");
+      throw ParamsError(
+          "Too much arguments, check -help for more informations.");
     }
-    
+
     Parser parser;
     parser.parseServerProperties();
 
