@@ -25,7 +25,7 @@ public:
 
 class Server {
 public:
-  Server(asio::io_context &io_context, int port, int max_clients);
+  Server(asio::io_context &io_context, std::uint16_t port, std::uint16_t max_clients);
   ~Server() = default;
 
   void start();
@@ -36,7 +36,7 @@ private:
   void handleReceive(const asio::error_code &error,
                      std::size_t bytes_transferred);
 
-  std::size_t findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
+  int findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
   void handleClientData(std::size_t client_idx, const char *data,
                         std::size_t size);
 

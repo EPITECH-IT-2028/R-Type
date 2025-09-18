@@ -44,6 +44,5 @@ int Parser::parseServerProperties() {
   if (_max_clients <= 0 || _port <= 0 || _port > 65535) {
     throw ParamsError("Invalid server properties.");
   }
-  ifs.close();
   return SUCCESS;
 }

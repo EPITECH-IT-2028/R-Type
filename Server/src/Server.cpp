@@ -10,10 +10,10 @@ server::Client::Client(const udp::endpoint &endpoint, int id)
   _connected = true;
 }
 
-server::Server::Server(asio::io_context &io_context, int port, int max_clients)
+server::Server::Server(asio::io_context &io_context, std::uint16_t port, std::uint16_t max_clients)
     : _io_context(io_context),
       _socket(io_context,
-              udp::endpoint(udp::v4(), static_cast<unsigned short>(port))),
+              udp::endpoint(udp::v4(), port)),
       _port(port),
       _player_count(0),
       _next_player_id(0),
@@ -81,7 +81,7 @@ void server::Server::handleReceive(const asio::error_code &error,
  * Returns the index of the client in the _clients vector, or -1 if no space
  * is available.
  */
-std::size_t server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
+int server::Server::findOrCreateClient(const udp::endpoint &endpoint) {
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_endpoint == endpoint) {
       return static_cast<int>(i);
