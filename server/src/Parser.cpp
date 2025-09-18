@@ -4,12 +4,12 @@
 #include <fstream>
 #include <iostream>
 
-int Parser::parseServerProperties() {
+void Parser::parseServerProperties() {
   std::ifstream ifs(SERVER_PROPERTIES);
   if (!ifs.is_open()) {
-    std::cerr << "No server.properties file found, using default values."
-              << std::endl;
-    return SUCCESS;
+    std::cerr << "No " << SERVER_PROPERTIES
+              << " file found, using default values.";
+    return;
   }
   std::string line;
   while (std::getline(ifs, line)) {
@@ -46,5 +46,5 @@ int Parser::parseServerProperties() {
   if (_max_clients <= 0 || _port <= MIN_PORT || _port > MAX_PORT) {
     throw ParamsError("Invalid server properties.");
   }
-  return SUCCESS;
+  return;
 }

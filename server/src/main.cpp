@@ -5,6 +5,8 @@
 #include "Server.hpp"
 #include <asio.hpp>
 #include <iostream>
+#include <csignal>
+#include <cstring>
 
 int main(int ac, char **av) {
   try {
@@ -12,7 +14,7 @@ int main(int ac, char **av) {
       throw ParamsError(
           "Not enough arguments, check -help for more informations.");
     }
-    if (ac == 2 && strcmp(av[1], "-help") == 0) {
+    if (ac == 2 && std::strcmp(av[1], "-help") == 0) {
       Help::help();
       return SUCCESS;
     } else if (ac >= 2) {

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <array>
-#pragma once
-
 #include "PacketFactory.hpp"
 #include <array>
 #include <asio.hpp>
@@ -65,8 +63,8 @@ private:
   std::array<char, BUFFER_SIZE> _recv_buffer;
   packet::PacketHandlerFactory _factory;
 
-  int _max_clients;
-  int _port;
+  std::uint16_t _max_clients;
+  std::uint16_t _port;
   int _player_count;
   int _next_player_id;
 };

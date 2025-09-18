@@ -85,9 +85,9 @@ if(ENABLE_TESTS)
 
     target_include_directories(unit_tests PRIVATE
       ${asio_SOURCE_DIR}/asio/include
-      ${CMAKE_CURRENT_SOURCE_DIR}/src
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/Packets/
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/Errors/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Errors/
       ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
     )
 

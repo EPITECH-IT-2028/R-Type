@@ -1,15 +1,16 @@
 #pragma once
 
+#include <cstdint>
 class Parser {
 public:
   Parser() = default;
   ~Parser() = default;
 
-  int parseServerProperties();
-  int getPort() const { return _port; }
-  int getMaxClients() const { return _max_clients; }
+  void parseServerProperties();
+  std::uint16_t getPort() const { return _port; }
+  std::uint16_t getMaxClients() const { return _max_clients; }
 
 private:
-  int _port = 4242;
-  int _max_clients = 4;
+  std::uint16_t _port = 4242;
+  std::uint16_t _max_clients = 4;
 };
