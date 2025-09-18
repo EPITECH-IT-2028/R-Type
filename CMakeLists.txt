@@ -78,8 +78,8 @@ if(ENABLE_TESTS)
     FetchContent_MakeAvailable(googletest)
 
     add_executable(unit_tests
-      tests/test_server.cpp
-      src/Server.cpp
+      server/tests/test_server.cpp
+      server/src/Server.cpp
     )
 
     target_include_directories(unit_tests PRIVATE
