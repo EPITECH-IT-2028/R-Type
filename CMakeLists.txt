@@ -59,6 +59,7 @@ if(SERVER)
         PRIVATE 
         ${asio_SOURCE_DIR}/asio/include
         server/src/
+        server/src/Errors/
         server/src/Packets/
         core/network/
     )
@@ -86,6 +87,7 @@ if(ENABLE_TESTS)
       ${asio_SOURCE_DIR}/asio/include
       ${CMAKE_CURRENT_SOURCE_DIR}/src
       ${CMAKE_CURRENT_SOURCE_DIR}/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/Errors/
       ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
     )
 

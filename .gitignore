@@ -5,11 +5,9 @@
 
 .build/
 build/
+.vscode/
 .cache/
-.vscode/
 compile_commands.json
-.vscode/
-build/
 
 /r_type_server
 

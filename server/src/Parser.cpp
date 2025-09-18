@@ -13,8 +13,10 @@ int Parser::parseServerProperties() {
   }
   std::string line;
   while (std::getline(ifs, line)) {
-    if (line.find("PORT") == 0) {
-      std::string port = line.substr(line.find('=') + 1);
+    if (line.find("PORT=") == 0) {
+      if (line.empty() || line.at(0) == '#')
+        continue;
+      std::string port = line.substr(PORT_LENGTH);
       if (!port.empty()) {
         try {
           _port = std::stoi(port);
@@ -26,8 +28,8 @@ int Parser::parseServerProperties() {
       } else {
         throw ParamsError("Invalid port in server properties file.");
       }
-    } else if (line.find("MAX_CLIENTS") == 0) {
-      std::string max_clients = line.substr(line.find('=') + 1);
+    } else if (line.find("MAX_CLIENTS=") == 0) {
+      std::string max_clients = line.substr(MAX_CLIENTS_LENGTH);
       if (!max_clients.empty())
         try {
           _max_clients = std::stoi(max_clients);
@@ -41,7 +43,7 @@ int Parser::parseServerProperties() {
       }
     }
   }
-  if (_max_clients <= 0 || _port <= 0 || _port > 65535) {
+  if (_max_clients <= 0 || _port <= MIN_PORT || _port > MAX_PORT) {
     throw ParamsError("Invalid server properties.");
   }
   return SUCCESS;

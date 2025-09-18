@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 #include "APacket.hpp"
-#include "../../../core/network/Packet.hpp"
+#include "Packet.hpp"
 #include "PacketHandler.hpp"
 
 namespace packet {

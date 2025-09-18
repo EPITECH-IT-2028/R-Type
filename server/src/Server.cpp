@@ -1,9 +1,9 @@
 #include "Server.hpp"
-#include "Packets/IPacket.hpp"
+#include "IPacket.hpp"
 #include <cstring>
 #include <iostream>
-#include "../../../core/network/PacketBuilder.hpp"
-#include "../../../core/network/PacketSender.hpp"
+#include "PacketBuilder.hpp"
+#include "PacketSender.hpp"
 
 server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
