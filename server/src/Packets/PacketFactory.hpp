@@ -24,7 +24,9 @@ namespace packet {
                        {static_cast<uint8_t>(PacketType::PlayerInfo),
                         []() { return std::make_unique<PlayerInfoHandler>(); }},
                        {static_cast<uint8_t>(PacketType::Position),
-                        []() { return std::make_unique<PositionHandler>(); }}};
+                        []() { return std::make_unique<PositionHandler>(); }},
+                       {static_cast<uint8_t>(PacketType::PlayerShoot),
+                        []() { return std::make_unique<PlayerShootHandler>(); }}};
   };
 
 }  // namespace packet
