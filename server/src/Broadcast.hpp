@@ -10,6 +10,17 @@ namespace broadcast {
 
 struct Broadcast {
 public:
+  template <typename Packet, typename Pred>
+  static void
+  broadcastTo(asio::ip::udp::socket &socket,
+              const std::vector<std::shared_ptr<server::Client>> &clients,
+              const Packet &packet, Pred pred) {
+    for (const auto &client : clients) {
+      if (client && client->_connected && pred(*client)) {
+        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
+      }
+    }
+  }
   /*
    * Send existing players to the newly connected client.
    * This allows the new client to be aware of all players already in the
@@ -37,13 +48,10 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const NewPlayerPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected &&
-          client->_player_id != static_cast<int>(packet.player_id)) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
-  };
+    broadcastTo(socket, clients, packet, [&packet](const auto &client) {
+      return client._player_id != static_cast<int>(packet.player_id);
+    });
+  }
   /*
    * Broadcast the player movement to all other connected clients.
    */
@@ -51,11 +59,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const MovePacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the player shoot to all other connected clients.
@@ -64,11 +68,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const PlayerShootPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the enemy spawned to all connected clients.
@@ -77,11 +77,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const EnemySpawnPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the enemy moved to all connected clients.
@@ -90,11 +86,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const EnemyMovePacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the enemy died to all connected clients.
@@ -103,11 +95,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const EnemyDeathPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the projectile spawned to all connected clients.
@@ -116,11 +104,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const ProjectileSpawnPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the projectile hit to all connected clients.
@@ -129,11 +113,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const ProjectileHitPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the projectile destroyed to all connected clients.
@@ -142,11 +122,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const ProjectileDestroyPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the game start to all connected clients.
@@ -155,11 +131,7 @@ public:
       asio::ip::udp::socket &socket,
       const std::vector<std::shared_ptr<server::Client>> &clients,
       const GameStartPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
   /*
    * Broadcast the game end to all connected clients.
@@ -168,11 +140,7 @@ public:
   broadcastGameEnd(asio::ip::udp::socket &socket,
                    const std::vector<std::shared_ptr<server::Client>> &clients,
                    const GameEndPacket &packet) {
-    for (const auto &client : clients) {
-      if (client && client->_connected) {
-        packet::PacketSender::sendPacket(socket, client->_endpoint, packet);
-      }
-    }
+    broadcastTo(socket, clients, packet, [](const auto &) { return true; });
   };
 };
 } // namespace broadcast

@@ -18,14 +18,14 @@ namespace packet {
 
     private:
       inline static const std::unordered_map<
-          uint8_t, std::function<std::unique_ptr<APacket>()>>
-          _handlers = {{static_cast<uint8_t>(PacketType::Message),
+          PacketType, std::function<std::unique_ptr<APacket>()>>
+          _handlers = {{static_cast<PacketType>(PacketType::Message),
                         []() { return std::make_unique<MessageHandler>(); }},
-                       {static_cast<uint8_t>(PacketType::PlayerInfo),
+                       {static_cast<PacketType>(PacketType::PlayerInfo),
                         []() { return std::make_unique<PlayerInfoHandler>(); }},
-                       {static_cast<uint8_t>(PacketType::Position),
+                       {static_cast<PacketType>(PacketType::Position),
                         []() { return std::make_unique<PositionHandler>(); }},
-                       {static_cast<uint8_t>(PacketType::PlayerShoot),
+                       {static_cast<PacketType>(PacketType::PlayerShoot),
                         []() { return std::make_unique<PlayerShootHandler>(); }}};
   };
 
