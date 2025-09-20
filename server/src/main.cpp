@@ -1,25 +1,21 @@
+#include <asio.hpp>
+#include <csignal>
+#include <cstring>
+#include <iostream>
 #include "Errors/ParamsError.hpp"
 #include "Help.hpp"
 #include "Macros.hpp"
 #include "Parser.hpp"
 #include "Server.hpp"
-#include <asio.hpp>
-#include <iostream>
-#include <csignal>
-#include <cstring>
 
 int main(int ac, char **av) {
   try {
-    if (!av) {
-      throw ParamsError(
-          "Not enough arguments, check -help for more informations.");
-    }
-    if (ac == 2 && std::strcmp(av[1], "-help") == 0) {
+    if (ac == 2 && std::strcmp(av[1], "--help") == 0) {
       Help::help();
       return SUCCESS;
     } else if (ac >= 2) {
       throw ParamsError(
-          "Too much arguments, check -help for more informations.");
+          "Too much arguments, check --help for more informations.");
     }
 
     Parser parser;

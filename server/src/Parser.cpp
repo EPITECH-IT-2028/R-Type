@@ -1,8 +1,8 @@
 #include "Parser.hpp"
-#include "Errors/ParamsError.hpp"
-#include "Macros.hpp"
 #include <fstream>
 #include <iostream>
+#include "Errors/ParamsError.hpp"
+#include "Macros.hpp"
 
 void Parser::parseServerProperties() {
   std::ifstream ifs(SERVER_PROPERTIES);
