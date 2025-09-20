@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -14,17 +13,19 @@ namespace packet {
       PacketHandlerFactory() = default;
       ~PacketHandlerFactory() = default;
 
-      std::unique_ptr<APacket> createHandler(uint8_t packetType);
+      std::unique_ptr<APacket> createHandler(PacketType packetType);
 
     private:
       inline static const std::unordered_map<
-          uint8_t, std::function<std::unique_ptr<APacket>()>>
-          _handlers = {{static_cast<uint8_t>(PacketType::Message),
+          PacketType, std::function<std::unique_ptr<APacket>()>>
+          _handlers = {{PacketType::Message,
                         []() { return std::make_unique<MessageHandler>(); }},
-                       {static_cast<uint8_t>(PacketType::PlayerInfo),
+                       {PacketType::PlayerInfo,
                         []() { return std::make_unique<PlayerInfoHandler>(); }},
-                       {static_cast<uint8_t>(PacketType::Position),
-                        []() { return std::make_unique<PositionHandler>(); }}};
+                       {PacketType::Position,
+                        []() { return std::make_unique<PositionHandler>(); }},
+                       {PacketType::PlayerShoot,
+                        []() { return std::make_unique<PlayerShootHandler>(); }}};
   };
 
 }  // namespace packet

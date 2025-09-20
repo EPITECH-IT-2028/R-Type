@@ -13,4 +13,4 @@ constexpr int PORT_LENGTH = 5;
 constexpr int MAX_CLIENTS_LENGTH = 12;
 
 /* Macros for file paths */
-constexpr const char* SERVER_PROPERTIES = "server/server.properties";
+constexpr const char *SERVER_PROPERTIES = "server/server.properties";

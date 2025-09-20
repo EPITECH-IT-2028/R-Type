@@ -124,7 +124,7 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
     return;
   }
 
-  auto handler = _factory.createHandler(static_cast<uint8_t>(header.type));
+  auto handler = _factory.createHandler(header.type);
   if (handler) {
     handler->handlePacket(*this, *client, data, header.size);
   } else {
