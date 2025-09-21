@@ -21,4 +21,9 @@ namespace packet {
                        const char *data, std::size_t size) override;
   };
 
+  class PlayerShootHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
 }  // namespace packet

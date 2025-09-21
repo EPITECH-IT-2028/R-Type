@@ -6,8 +6,10 @@
 
 int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
                                          server::Client &client,
-                                         const char *data, std::size_t size) {
-  if (size < sizeof(MessagePacket)) {
+                                         const char *data, std::size_t size)
+{
+  if (size < sizeof(MessagePacket))
+  {
     return -1;
   }
 
@@ -20,8 +22,10 @@ int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             server::Client &client,
                                             const char *data,
-                                            std::size_t size) {
-  if (size < sizeof(PlayerInfoPacket)) {
+                                            std::size_t size)
+{
+  if (size < sizeof(PlayerInfoPacket))
+  {
     return -1;
   }
 
@@ -50,8 +54,10 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
 int packet::PositionHandler::handlePacket(server::Server &server,
                                           server::Client &client,
-                                          const char *data, std::size_t size) {
-  if (size < sizeof(PositionPacket)) {
+                                          const char *data, std::size_t size)
+{
+  if (size < sizeof(PositionPacket))
+  {
     return -1;
   }
   const PositionPacket *packet = reinterpret_cast<const PositionPacket *>(data);
@@ -65,5 +71,32 @@ int packet::PositionHandler::handlePacket(server::Server &server,
 
   broadcast::Broadcast::broadcastPlayerMove(server.getSocket(),
                                             server.getClients(), movePacket);
+  return 0;
+}
+
+int packet::PlayerShootHandler::handlePacket(server::Server &server,
+                                             server::Client &client,
+                                             const char *data,
+                                             std::size_t size)
+{
+  if (size < sizeof(PlayerShootPacket))
+  {
+    return -1;
+  }
+  const PlayerShootPacket *packet = reinterpret_cast<const PlayerShootPacket *>(data);
+
+  client._x = packet->x;
+  client._y = packet->y;
+
+  // TODO : Handle shooting logic (spawn projectile, etc...)
+
+  // TODO : Need to validate position (anti-cheat etc...)
+  auto playerShotPacket = PacketBuilder::makePlayerShoot(packet->x, packet->y, packet->direction_x,
+                                                         packet->direction_y,
+                                                         packet->projectile_type,
+                                                         packet->sequence_number);
+
+  broadcast::Broadcast::broadcastPlayerShoot(server.getSocket(),
+                                             server.getClients(), playerShotPacket);
   return 0;
 }
