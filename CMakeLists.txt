@@ -1,81 +1,36 @@
-cmake_minimum_required(VERSION 3.16)
-project(RType)
+cmake_minimum_required(VERSION 3.27.4)
+project(r_type)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-if(CMAKE_EXPORT_COMPILE_COMMANDS)
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${CMAKE_BINARY_DIR}/compile_commands.json
-            ${PROJECT_SOURCE_DIR}/compile_commands.json
-  )
-endif()
-
-if(MSVC)
-    add_compile_options(/W4)
-else()
-    add_compile_options(-Wall -Wextra)
-endif()
-
-find_package(Threads REQUIRED)
-
-include(FetchContent)
-
-FetchContent_Declare(
-    asio
-    GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-    GIT_TAG asio-1-36-0
-    GIT_SHALLOW TRUE
+execute_process(
+  COMMAND ln -sf ${PROJECT_SOURCE_DIR}/.build/compile_commands.json ${PROJECT_SOURCE_DIR}
 )
 
-FetchContent_MakeAvailable(asio)
+option(BUILD_CLIENT "Build the client" OFF)
+option(BUILD_SERVER "Build the server" OFF)
+option(BUILD_TESTS "Build the tests" OFF)
 
-option(SERVER "Build the server executable" OFF)
-option(GAME "Build the game executable" OFF)
-option(ENABLE_TESTS "Build the tests" OFF)
-
-if(SERVER)
-    add_executable(r_type_server
-        server/src/main.cpp
-        server/src/Server.cpp
-        server/src/packets/PacketFactory.cpp
-        server/src/packets/PacketHandler.cpp
-        server/src/Help.cpp
-        server/src/Parser.cpp
-        server/src/game/Game.cpp
-        server/src/player/Player.cpp
-        game_engine/ecs/EntityManager.cpp
-    )
-
-    set_target_properties(r_type_server PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
-    )
-
-    target_link_libraries(r_type_server 
-        PRIVATE 
-        Threads::Threads
-    )
-
-    target_include_directories(r_type_server 
-        PRIVATE 
-        ${asio_SOURCE_DIR}/asio/include
-        server/src/
-        server/src/errors/
-        server/src/packets/
-        server/src/game/
-        server/src/player/
-        core/network/
-        game_engine/ecs/components/
-        game_engine/ecs/systems/
-        game_engine/ecs/
-    )
-
-    target_compile_definitions(r_type_server PRIVATE ASIO_STANDALONE)
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  message(WARNING "CMAKE_TOOLCHAIN_FILE is not set. Please set it via -DCMAKE_TOOLCHAIN_FILE=...")
 endif()
 
-if(ENABLE_TESTS)
+if(NOT BUILD_CLIENT AND NOT BUILD_SERVER)
+  message(FATAL_ERROR "At least one of BUILD_CLIENT or BUILD_SERVER must be ON.")
+endif()
+
+if(BUILD_CLIENT)
+  add_subdirectory(client)
+endif()
+
+if(BUILD_SERVER)
+  add_subdirectory(Server)
+endif()
+
+if(BUILD_TESTS)
     enable_testing()
 
     FetchContent_Declare(
@@ -108,7 +63,4 @@ if(ENABLE_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(unit_tests)
-endif()
-
-if(GAME)
 endif()

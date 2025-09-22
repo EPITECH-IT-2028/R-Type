@@ -152,7 +152,8 @@ const std::string &game::Player::getName() const {
   if (hasComponent<ecs::PlayerComponent>()) {
     return getComponent<ecs::PlayerComponent>().name;
   }
-  return NULL;
+  static const std::string empty = "";
+  return empty;
 }
 
 void game::Player::setName(const std::string &name) {
