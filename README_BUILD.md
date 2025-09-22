@@ -71,7 +71,7 @@ This will remove:
 #### Building the Client
 
 ```bash
-conan install . --output-folder=.build --build=missing
+conan install . --output-folder=.build --build=missing -s build_type=Release
 cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=OFF -DCMAKE_BUILD_TYPE=Release
 cmake --build .build --config Release
 ```
@@ -79,7 +79,7 @@ cmake --build .build --config Release
 #### Building the Server
 
 ```bash
-conan install . --output-folder=.build --build=missing
+conan install . --output-folder=.build --build=missing -s build_type=Release
 cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=OFF -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build .build --config Release
 ```
@@ -87,7 +87,7 @@ cmake --build .build --config Release
 #### Building Both
 
 ```bash
-conan install . --output-folder=.build --build=missing
+conan install . --output-folder=.build --build=missing -s build_type=Release
 cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build .build --config Release
 ```
@@ -115,8 +115,8 @@ For debug builds, use:
 Or manually:
 
 ```bash
-conan install . --output-folder=.build --build=missing
-cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=Release
+conan install . --output-folder=.build --build=missing -s build_type=Debug
+cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=Debug
 cmake --build .build --config Debug
 ```
 
