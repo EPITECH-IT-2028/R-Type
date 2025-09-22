@@ -126,7 +126,7 @@ fi
 
 # Install conan dependencies
 echo "Installing conan dependencies..."
-conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default
+conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
 
 case $TARGET in
     "client")
