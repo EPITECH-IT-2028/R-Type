@@ -45,6 +45,8 @@ if(SERVER)
         server/src/Help.cpp
         server/src/Parser.cpp
         server/src/game/Game.cpp
+        server/src/player/Player.cpp
+        game_engine/ecs/EntityManager.cpp
     )
 
     set_target_properties(r_type_server PROPERTIES
@@ -63,7 +65,11 @@ if(SERVER)
         server/src/Errors/
         server/src/Packets/
         server/src/game/
+        server/src/player/
         core/network/
+        game_engine/ecs/components/
+        game_engine/ecs/systems/
+        game_engine/ecs/
     )
 
     target_compile_definitions(r_type_server PRIVATE ASIO_STANDALONE)
