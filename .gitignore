@@ -11,6 +11,7 @@ compile_commands.json
 CMakeUserPresets.json
 
 /r_type_server
+/r_type_client
 
 # Compiled Object files
 *.slo
