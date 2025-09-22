@@ -24,11 +24,12 @@ namespace ecs {
         }
         _entityToIndexMap[entityId] = _index;
         _indexToEntityMap[_index] = entityId;
+        _componentArray[_index] = component;
         _index++;
       }
 
       void removeData(Entity entityId) {
-        if (_entityToIndexMap.find(entityId) != _entityToIndexMap.end()) {
+        if (_entityToIndexMap.find(entityId) == _entityToIndexMap.end()) {
           throw std::runtime_error(
               "Cannot remove component: Entity does not have this component.");
         }
@@ -40,7 +41,7 @@ namespace ecs {
         _entityToIndexMap[lastEntity] = removedIndex;
         _indexToEntityMap[removedIndex] = lastEntity;
 
-        _entityToIndexMap.erase(lastEntity);
+        _entityToIndexMap.erase(entityId);
         _indexToEntityMap.erase(lastIndex); 
         --_index;
       }

@@ -19,9 +19,9 @@ namespace ecs {
         }
 
         void destroyEntity(Entity entityId) {
-          _entityManager->destroyEntity(entityId);
           _componentManager->entityDestroyed(entityId);
           _systemManager->entityDestroyed(entityId);
+          _entityManager->destroyEntity(entityId);
         }
 
         std::vector<Entity> getAllEntities() {

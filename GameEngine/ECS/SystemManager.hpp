@@ -12,6 +12,9 @@ namespace ecs {
         template <typename T>
         std::shared_ptr<T> registerSystem() {
           std::type_index ti(typeid(T));
+          if (_systems.find(ti) != _systems.end()) {
+            throw std::runtime_error("Cannot register system: System already registered.");
+          }
 
           auto system = std::make_shared<T>();
           _systems.insert({ti, system});

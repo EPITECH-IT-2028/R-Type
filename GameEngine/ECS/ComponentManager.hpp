@@ -19,6 +19,9 @@ namespace ecs {
         if (_componentTypes.find(ti) != _componentTypes.end()) {
           throw std::runtime_error("Cannot register component: Component type already registered.");
         }
+        if (_nextComponentType >= MAX_COMPONENTS) {
+          throw std::runtime_error("Cannot register component: Maximum number of components reached.");
+        }
         _componentTypes[ti] = _nextComponentType++;
         _componentArrays[_nextComponentType] = std::make_shared<Component<T>>();
       }
