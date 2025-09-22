@@ -40,8 +40,8 @@ if(SERVER)
     add_executable(r_type_server
         server/src/main.cpp
         server/src/Server.cpp
-        server/src/Packets/PacketFactory.cpp
-        server/src/Packets/PacketHandler.cpp
+        server/src/packets/PacketFactory.cpp
+        server/src/packets/PacketHandler.cpp
         server/src/Help.cpp
         server/src/Parser.cpp
         server/src/game/Game.cpp
@@ -62,8 +62,8 @@ if(SERVER)
         PRIVATE 
         ${asio_SOURCE_DIR}/asio/include
         server/src/
-        server/src/Errors/
-        server/src/Packets/
+        server/src/errors/
+        server/src/packets/
         server/src/game/
         server/src/player/
         core/network/
@@ -94,8 +94,8 @@ if(ENABLE_TESTS)
     target_include_directories(unit_tests PRIVATE
       ${asio_SOURCE_DIR}/asio/include
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src
-      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Packets/
-      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Errors/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/errors/
       ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
     )
 
