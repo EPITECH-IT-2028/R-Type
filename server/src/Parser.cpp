@@ -1,8 +1,16 @@
 #include "Parser.hpp"
 #include <fstream>
 #include <iostream>
-#include "Errors/ParamsError.hpp"
+#include "ParamsError.hpp"
 #include "Macros.hpp"
+
+std::string Parser::trimString(const std::string &str) const {
+  size_t first = str.find_first_not_of(" \t");
+  if (first == std::string::npos)
+    return "";
+  size_t last = str.find_last_not_of(" \t\r");
+  return str.substr(first, last - first + 1);
+}
 
 void Parser::parseServerProperties() {
   std::ifstream ifs(SERVER_PROPERTIES);
@@ -13,34 +21,22 @@ void Parser::parseServerProperties() {
   }
   std::string line;
   while (std::getline(ifs, line)) {
-    if (line.find("PORT=") == 0) {
-      if (line.empty() || line.at(0) == '#')
-        continue;
-      std::string port = line.substr(PORT_LENGTH);
-      if (!port.empty()) {
-        try {
-          _port = std::stoi(port);
-        } catch (const std::invalid_argument &e) {
-          throw ParamsError("Invalid port in server properties file.");
-        } catch (const std::out_of_range &e) {
-          throw ParamsError("Port value out of range.");
-        }
-      } else {
-        throw ParamsError("Invalid port in server properties file.");
-      }
-    } else if (line.find("MAX_CLIENTS=") == 0) {
-      std::string max_clients = line.substr(MAX_CLIENTS_LENGTH);
-      if (!max_clients.empty())
-        try {
-          _max_clients = std::stoi(max_clients);
-        } catch (const std::invalid_argument &e) {
-          throw ParamsError("Invalid max clients in server properties file.");
-        } catch (const std::out_of_range &e) {
-          throw ParamsError("Max clients value out of range.");
-        }
-      else {
-        throw ParamsError("Invalid max clients in server properties file.");
-      }
+    auto first = line.find_first_not_of(" \t");
+    if (first == std::string::npos || line[first] == '#')
+      continue;
+    auto pos = line.find('=', first);
+    if (pos == std::string::npos)
+      continue;
+    std::string key = line.substr(first, pos - first);
+    std::string value = line.substr(pos + 1);
+    key = trimString(key);
+    value = trimString(value);
+    std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+    auto it = _propertyParsers.find(key);
+    if (it != _propertyParsers.end()) {
+      it->second(value);
+    } else {
+      std::cerr << "Unknown property: " << key << std::endl;
     }
   }
   if (_max_clients <= 0 || _port <= MIN_PORT || _port > MAX_PORT) {

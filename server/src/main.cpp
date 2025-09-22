@@ -2,7 +2,7 @@
 #include <csignal>
 #include <cstring>
 #include <iostream>
-#include "Errors/ParamsError.hpp"
+#include "ParamsError.hpp"
 #include "Help.hpp"
 #include "Macros.hpp"
 #include "Parser.hpp"
