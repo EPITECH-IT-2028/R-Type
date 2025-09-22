@@ -7,7 +7,6 @@ This project uses CMake with Conan for dependency management. You can build eith
 - CMake 3.27.4 or higher
 - Conan 2.x
 - C++20 compatible compiler
-- Git (for ASIO dependency)
 
 ## Quick Start
 
