@@ -2,14 +2,18 @@
 
 #include <cstdint>
 #include <functional>
+#include <string>
 #include <unordered_map>
 #include "ParamsError.hpp"
+
 class Parser {
   public:
     Parser() = default;
     ~Parser() = default;
 
     void parseServerProperties();
+    std::string trimString(const std::string &str) const;
+
     std::uint16_t getPort() const {
       return _port;
     }
