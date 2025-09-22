@@ -215,9 +215,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📮 Contact
 
-- **Discord**: [Join our server](https://discord.gg/rtype)
-- **Email**: team@rtype-project.com
-- **Issues**: [GitHub Issues](https://github.com/yourusername/r-type/issues)
+- TO DO **Discord**: [Join our server](https://discord.gg/rtype)
+- TO DO **Email**: team@rtype-project.com
+- TO DO **Issues**: [GitHub Issues](https://github.com/yourusername/r-type/issues)
 
 ## 🔗 Links
 
@@ -232,6 +232,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   <b>R-Type - A Game Engine That Roars!</b><br>
   Made with ❤️ and C++
 </div>
+
+---
 
 ## Tests
 To run tests:
