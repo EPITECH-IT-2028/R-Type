@@ -44,6 +44,7 @@ if(SERVER)
         server/src/Packets/PacketHandler.cpp
         server/src/Help.cpp
         server/src/Parser.cpp
+        server/src/game/Game.cpp
     )
 
     set_target_properties(r_type_server PROPERTIES
@@ -61,6 +62,7 @@ if(SERVER)
         server/src/
         server/src/Errors/
         server/src/Packets/
+        server/src/game/
         core/network/
     )
 
