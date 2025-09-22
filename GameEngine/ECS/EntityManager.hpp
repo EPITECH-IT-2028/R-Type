@@ -25,6 +25,7 @@ namespace ecs {
 
       void setSignature(Entity entityId, Signature signature);
       Signature getSignature(Entity entityId) const;
+      std::vector<Entity> getAllEntities() const;
 
     private:
       std::queue<Entity> _entities;

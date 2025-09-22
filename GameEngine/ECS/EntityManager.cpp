@@ -33,3 +33,13 @@ Signature ecs::EntityManager::getSignature(Entity entityId) const {
     throw std::runtime_error("Entity ID out of range.");
   return _signatures[entityId];
 }
+
+std::vector<Entity> ecs::EntityManager::getAllEntities() const {
+  std::vector<Entity> entities;
+  for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+    if (_signatures[entity].any()) {
+      entities.push_back(entity);
+    }
+  }
+  return entities;
+}
