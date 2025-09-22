@@ -1,7 +1,6 @@
 #pragma once
 
 #include <asio.hpp>
-#include <iostream>
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
