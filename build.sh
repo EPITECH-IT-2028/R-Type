@@ -2,6 +2,7 @@
 
 # Usage: ./build.sh [debug|release] (defaults to both)
 #        ./build.sh [client|server|both] [debug|release]
+#        ./build.sh clean
 
 set -e
 
@@ -10,6 +11,43 @@ if [ $# -eq 0 ]; then
     BUILD_TYPE="Release"
 elif [ $# -eq 1 ]; then
     case $1 in
+        "clean"|"Clean"|"CLEAN")
+            echo "Cleaning all build files and folders..."
+            if [ -d ".build" ]; then
+                echo "Removing .build directory..."
+                rm -rf .build
+            fi
+            if [ -d "build" ]; then
+                echo "Removing build directory..."
+                rm -rf build
+            fi
+            if [ -f "CMakeCache.txt" ]; then
+                echo "Removing CMakeCache.txt..."
+                rm -f CMakeCache.txt
+            fi
+            if [ -d "CMakeFiles" ]; then
+                echo "Removing CMakeFiles directory..."
+                rm -rf CMakeFiles
+            fi
+            if [ -f "CMakeUserPresets.json" ]; then
+                echo "Removing CMakeUserPresets.json..."
+                rm -rf CMakeUserPresets.json
+            fi
+            if [ -L "compile_commands.json" ]; then
+                echo "Removing compile_commands.json..."
+                rm -f compile_commands.json
+            fi
+            if [ -f "r_type_client" ]; then
+                echo "Removing r_type_client executable..."
+                rm -f r_type_client
+            fi
+            if [ -f "r_type_server" ]; then
+                echo "Removing r_type_server executable..."
+                rm -f r_type_server
+            fi
+            echo "Clean completed successfully!"
+            exit 0
+            ;;
         "debug"|"Debug"|"DEBUG")
             TARGET="both"
             BUILD_TYPE="Debug"
@@ -23,7 +61,7 @@ elif [ $# -eq 1 ]; then
             BUILD_TYPE="Release"
             ;;
         *)
-            echo "Invalid argument. Use: client, server, both, debug, or release"
+            echo "Invalid argument. Use: client, server, both, debug, release, or clean"
             exit 1
             ;;
     esac

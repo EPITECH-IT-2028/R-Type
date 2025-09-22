@@ -34,6 +34,16 @@ Builds both client and server in Release mode.
 ./build.sh both     # Builds both client and server in Release mode
 ```
 
+### Single argument - Clean
+```bash
+./build.sh clean    # Removes all build files and directories
+```
+This will remove:
+- `.build/` directory
+- `build/` directory (if it exists)
+- `CMakeCache.txt` file (if it exists)
+- `CMakeFiles/` directory (if it exists)
+
 ### Two arguments - Any order
 ```bash
 # Target first, build type second
