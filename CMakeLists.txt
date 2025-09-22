@@ -28,6 +28,7 @@ endif()
 
 if(BUILD_SERVER)
   add_subdirectory(Server)
+endif()
 
 if(BUILD_TESTS)
     enable_testing()
