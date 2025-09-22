@@ -151,4 +151,4 @@ case $TARGET in
 esac
 
 echo "Build completed successfully!"
-echo "Executables are in .build/bin/"
+echo "Executables are located at the root directory"
