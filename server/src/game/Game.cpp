@@ -1,6 +1,7 @@
 #include "Game.hpp"
+#include <chrono>
+#include <mutex>
 #include "HealthComponent.hpp"
-#include "NetworkComponent.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
@@ -15,7 +16,6 @@ void game::Game::initECS() {
   _ecsManager->registerComponent<ecs::PositionComponent>();
   _ecsManager->registerComponent<ecs::HealthComponent>();
   _ecsManager->registerComponent<ecs::SpeedComponent>();
-  _ecsManager->registerComponent<ecs::NetworkComponent>();
   _ecsManager->registerComponent<ecs::PlayerComponent>();
   _ecsManager->registerComponent<ecs::VelocityComponent>();
 }
@@ -47,15 +47,14 @@ void game::Game::gameLoop() {
 
 std::shared_ptr<game::Player> game::Game::createPlayer(
     int player_id, const std::string &name) {
+  std::scoped_lock lock(_playerMutex);
   auto entity = _ecsManager->createEntity();
 
   _ecsManager->addComponent<ecs::PositionComponent>(entity, {10.0f, 10.0f});
-  _ecsManager->addComponent<ecs::HealthComponent>(entity, {100});
+  _ecsManager->addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager->addComponent<ecs::SpeedComponent>(entity, {10.0f});
-  _ecsManager->addComponent<ecs::NetworkComponent>(entity,
-                                                   {player_id, true, 0});
   _ecsManager->addComponent<ecs::PlayerComponent>(entity,
-                                                  {name, 100, true, 0, true});
+                                                  {name, true, 0, true});
   _ecsManager->addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager.get());
@@ -65,6 +64,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
 }
 
 void game::Game::destroyPlayer(int player_id) {
+  std::scoped_lock lock(_playerMutex);
   auto it = _players.find(player_id);
   if (it != _players.end()) {
     uint32_t entity_id = it->second->getEntityId();
@@ -74,14 +74,15 @@ void game::Game::destroyPlayer(int player_id) {
 }
 
 std::shared_ptr<game::Player> game::Game::getPlayer(int player_id) {
+  std::scoped_lock lock(_playerMutex);
   auto it = _players.find(player_id);
   return (it != _players.end()) ? it->second : nullptr;
 }
 
-const std::vector<std::shared_ptr<game::Player>> &game::Game::getAllPlayers()
-    const {
-  static std::vector<std::shared_ptr<Player>> playerList;
-  playerList.clear();
+std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
+  std::scoped_lock lock(_playerMutex);
+  std::vector<std::shared_ptr<Player>> playerList;
+  playerList.reserve(_players.size());
   for (const auto &pair : _players) {
     playerList.push_back(pair.second);
   }

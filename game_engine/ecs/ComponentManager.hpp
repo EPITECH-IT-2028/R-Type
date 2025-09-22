@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include <stdexcept>
 #include <typeindex>
 #include <unordered_map>
 #include "Component.hpp"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include "ECSManager.hpp"
 
 namespace game {
@@ -51,13 +52,19 @@ namespace game {
       ecs::ECSManager *_ecsManager;
 
       template <typename T>
-      T &getComponent();
+      T &getComponent() {
+        return _ecsManager->getComponent<T>(_entity_id);
+      }
 
       template <typename T>
-      const T &getComponent() const;
+      bool hasComponent() const {
+        return _ecsManager->hasComponent<T>(_entity_id);
+      }
 
       template <typename T>
-      bool hasComponent() const;
+      const T &getComponent() const {
+        return _ecsManager->getComponent<T>(_entity_id);
+      }
   };
 
 }  // namespace game

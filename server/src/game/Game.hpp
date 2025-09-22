@@ -2,8 +2,10 @@
 
 #include <atomic>
 #include <memory>
+#include <mutex>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 #include "ECSManager.hpp"
 #include "Player.hpp"
 
@@ -23,7 +25,7 @@ namespace game {
 
       std::shared_ptr<Player> getPlayer(int player_id);
 
-      const std::vector<std::shared_ptr<Player>> &getAllPlayers() const;
+      std::vector<std::shared_ptr<Player>> getAllPlayers() const;
 
     private:
       void gameLoop();
@@ -33,6 +35,7 @@ namespace game {
 
       std::unique_ptr<ecs::ECSManager> _ecsManager;
       std::unordered_map<int, std::shared_ptr<Player>> _players;
+      mutable std::mutex _playerMutex;
   };
 
 }  // namespace game

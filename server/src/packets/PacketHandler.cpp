@@ -1,6 +1,7 @@
 #include "PacketHandler.hpp"
 #include <iostream>
 #include "Broadcast.hpp"
+#include "Macros.hpp"
 #include "Packet.hpp"
 #include "Server.hpp"
 
@@ -8,13 +9,13 @@ int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
   if (size < sizeof(MessagePacket)) {
-    return -1;
+    return ERROR;
   }
 
   const MessagePacket *packet = reinterpret_cast<const MessagePacket *>(data);
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet->message << std::endl;
-  return 0;
+  return SUCCESS;
 }
 
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
@@ -22,12 +23,16 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             const char *data,
                                             std::size_t size) {
   if (size < sizeof(PlayerInfoPacket)) {
-    return -1;
+    return ERROR;
   }
 
   const PlayerInfoPacket *packet =
       reinterpret_cast<const PlayerInfoPacket *>(data);
-  std::string name(packet->name);
+  // Ensure null-termination of the name
+  char nameBuf[sizeof(packet->name) + 1];
+  std::memcpy(nameBuf, packet->name, sizeof(packet->name));
+  nameBuf[sizeof(packet->name)] = '\0';
+  std::string name(nameBuf);
 
   auto player = server.getGame().createPlayer(client._player_id, name);
   client._entity_id = player->getEntityId();
@@ -52,22 +57,23 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   broadcast::Broadcast::broadcastAncientPlayer(
       server.getSocket(), server.getClients(), newPlayerPacket);
 
-  return 0;
+  return SUCCESS;
 }
 
 int packet::PositionHandler::handlePacket(server::Server &server,
                                           server::Client &client,
                                           const char *data, std::size_t size) {
   if (size < sizeof(PositionPacket)) {
-    return -1;
+    return ERROR;
   }
   const PositionPacket *packet = reinterpret_cast<const PositionPacket *>(data);
 
   auto player = server.getGame().getPlayer(client._player_id);
-  if (player) {
-    player->setPosition(packet->x, packet->y);
-    player->setSequenceNumber(packet->sequence_number);
+  if (!player) {
+    return ERROR;
   }
+  player->setPosition(packet->x, packet->y);
+  player->setSequenceNumber(packet->sequence_number);
 
   std::pair<float, float> pos = player->getPosition();
   int number = player->getSequenceNumber();
@@ -78,7 +84,7 @@ int packet::PositionHandler::handlePacket(server::Server &server,
 
   broadcast::Broadcast::broadcastPlayerMove(server.getSocket(),
                                             server.getClients(), movePacket);
-  return 0;
+  return SUCCESS;
 }
 
 // TODO : Implement shooting logic (ecs)
@@ -108,5 +114,5 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   //
   // broadcast::Broadcast::broadcastPlayerShoot(
   //     server.getSocket(), server.getClients(), playerShotPacket);
-  return 0;
+  return SUCCESS;
 }

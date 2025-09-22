@@ -2,6 +2,6 @@
 
 namespace ecs {
   struct SpeedComponent {
-      float speed;
+      float speed = 0.0f;
   };
 }  // namespace ecs

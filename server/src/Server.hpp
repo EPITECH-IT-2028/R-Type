@@ -22,7 +22,7 @@ namespace server {
 
       bool _connected = false;
       int _player_id = -1;
-      uint32_t _entity_id = 0;
+      uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
   };
 
   class Server {
@@ -34,7 +34,7 @@ namespace server {
       void start();
       void stop();
 
-      int getPort() const {
+      std::uint16_t getPort() const {
         return _port;
       }
 

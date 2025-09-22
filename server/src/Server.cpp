@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include "IPacket.hpp"
+#include "Macros.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
 
@@ -66,7 +67,7 @@ void server::Server::handleReceive(const asio::error_code &error,
   }
 
   int client_idx = findOrCreateClient(_remote_endpoint);
-  if (client_idx == -1) {
+  if (client_idx == ERROR) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
     startReceive();
@@ -103,7 +104,7 @@ int server::Server::findOrCreateClient(
     }
   }
 
-  return -1;
+  return ERROR;
 }
 
 /*

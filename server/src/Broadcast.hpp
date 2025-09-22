@@ -38,9 +38,9 @@ namespace broadcast {
       static void broadcastExistingPlayers(
           asio::ip::udp::socket &socket, game::Game &game, int newPlayerID,
           const asio::ip::udp::endpoint &newPlayerEndpoint) {
-        const auto &allPlayers = game.getAllPlayers();
+        auto players = game.getAllPlayers();
 
-        for (const auto &player : allPlayers) {
+        for (const auto &player : players) {
           if (player && player->isConnected() &&
               player->getPlayerId() != newPlayerID) {
             std::pair<float, float> pos = player->getPosition();

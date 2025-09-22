@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include <algorithm>
 #include "HealthComponent.hpp"
+#include "Macros.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
@@ -9,21 +10,6 @@
 game::Player::Player(int player_id, uint32_t entity_id,
                      ecs::ECSManager *ecsManager)
     : _player_id(player_id), _entity_id(entity_id), _ecsManager(ecsManager) {
-}
-
-template <typename T>
-T &game::Player::getComponent() {
-  return _ecsManager->getComponent<T>(_entity_id);
-}
-
-template <typename T>
-bool game::Player::hasComponent() const {
-  return _ecsManager->hasComponent<T>(_entity_id);
-}
-
-template <typename T>
-const T &game::Player::getComponent() const {
-  return _ecsManager->getComponent<T>(_entity_id);
 }
 
 std::pair<float, float> game::Player::getPosition() const {
@@ -51,29 +37,28 @@ void game::Player::move(float deltaX, float deltaY) {
 }
 
 int game::Player::getHealth() const {
-  if (hasComponent<ecs::PlayerComponent>()) {
-    const auto &player = getComponent<ecs::PlayerComponent>();
-    return player.is_alive ? player.max_health : 0;
+  if (hasComponent<ecs::HealthComponent>()) {
+    return getComponent<ecs::HealthComponent>().health;
   }
-  return 0;
+  return SUCCESS;
 }
 
 int game::Player::getMaxHealth() const {
-  if (hasComponent<ecs::PlayerComponent>()) {
-    const auto &player = getComponent<ecs::PlayerComponent>();
-    return player.max_health;
+  if (hasComponent<ecs::HealthComponent>()) {
+    return getComponent<ecs::HealthComponent>().max_health;
   }
-  return 0;
+  return SUCCESS;
 }
 
 void game::Player::setHealth(int health) {
   if (hasComponent<ecs::HealthComponent>()) {
     auto &healthComp = getComponent<ecs::HealthComponent>();
-    healthComp.health = std::clamp(health, 0, getMaxHealth());
+    const int clampedHealth = std::clamp(health, 0, getMaxHealth());
+    healthComp.health = clampedHealth;
 
     if (hasComponent<ecs::PlayerComponent>()) {
       auto &playerComp = getComponent<ecs::PlayerComponent>();
-      playerComp.is_alive = (health > 0);
+      playerComp.is_alive = clampedHealth > 0;
     }
   }
 }
@@ -126,7 +111,7 @@ uint32_t game::Player::getSequenceNumber() const {
   if (hasComponent<ecs::PlayerComponent>()) {
     return getComponent<ecs::PlayerComponent>().sequence_number;
   }
-  return 0;
+  return SUCCESS;
 }
 
 void game::Player::setSequenceNumber(uint32_t seq) {
