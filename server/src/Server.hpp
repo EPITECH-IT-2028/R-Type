@@ -4,6 +4,8 @@
 #include <asio.hpp>
 #include <memory>
 #include <vector>
+#include "Game.hpp"
+#include "PacketFactory.hpp"
 
 inline constexpr std::size_t MAX_CLIENTS = 4;
 inline constexpr std::size_t BUFFER_SIZE = 2048;
@@ -18,25 +20,41 @@ namespace server {
       const asio::ip::udp::endpoint _endpoint;
       bool _connected = false;
       int _player_id = -1;
-      float _x = 0.0f;
-      float _y = 0.0f;
-      float _speed = 0.0f;
+      float _x = 10.0f;
+      float _y = 10.0f;
+      float _speed = 10.0f;
+      int _health = 100;
   };
 
   class Server {
     public:
-      Server(asio::io_context &io_context, int port = 4242);
+      Server(asio::io_context &io_context, std::uint16_t port,
+             std::uint16_t max_clients);
       ~Server() = default;
 
       void start();
       void stop();
+
+      int getPort() const {
+        return _port;
+      }
+      int getPlayerCount() const {
+        return _player_count;
+      }
+      const std::vector<std::shared_ptr<Client>> &getClients() const {
+        return _clients;
+      }
+
+      asio::ip::udp::socket &getSocket() {
+        return _socket;
+      }
 
     private:
       void startReceive();
       void handleReceive(const asio::error_code &error,
                          std::size_t bytes_transferred);
 
-      std::size_t findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
+      int findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
       void handleClientData(std::size_t client_idx, const char *data,
                             std::size_t size);
 
@@ -49,8 +67,12 @@ namespace server {
 
       std::vector<std::shared_ptr<Client>> _clients;
       std::array<char, BUFFER_SIZE> _recv_buffer;
+      packet::PacketHandlerFactory _factory;
 
-      int _port;
+      game::Game _game;
+
+      std::uint16_t _max_clients;
+      std::uint16_t _port;
       int _player_count;
       int _next_player_id;
   };

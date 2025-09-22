@@ -12,6 +12,7 @@ execute_process(
 
 option(BUILD_CLIENT "Build the client" OFF)
 option(BUILD_SERVER "Build the server" OFF)
+option(BUILD_TESTS "Build the tests" OFF)
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   message(WARNING "CMAKE_TOOLCHAIN_FILE is not set. Please set it via -DCMAKE_TOOLCHAIN_FILE=...")
@@ -27,4 +28,38 @@ endif()
 
 if(BUILD_SERVER)
   add_subdirectory(Server)
+
+if(BUILD_TESTS)
+    enable_testing()
+
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      GIT_TAG v1.17.0
+      GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(googletest)
+
+    add_executable(unit_tests
+      server/tests/test_server.cpp
+      server/src/Server.cpp
+    )
+
+    target_include_directories(unit_tests PRIVATE
+      ${asio_SOURCE_DIR}/asio/include
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Packets/
+      ${CMAKE_CURRENT_SOURCE_DIR}/server/src/Errors/
+      ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
+    )
+
+    target_link_libraries(unit_tests PRIVATE
+      GTest::gtest_main
+      Threads::Threads
+    )
+
+    target_compile_definitions(unit_tests PRIVATE ASIO_STANDALONE)
+
+    include(GoogleTest)
+    gtest_discover_tests(unit_tests)
 endif()
