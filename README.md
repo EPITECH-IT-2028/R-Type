@@ -203,10 +203,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Team
 
-- **Lead Developer**: [Name]
-- **Network Engineer**: [Name]
-- **Game Designer**: [Name]
-- **Graphics Developer**: [Name]
+- **Lead Developer**: Nolann DUBOS
+- **Network Engineer**: Arthur Guerinault
+- **Game Designer**: Etienne LABARBE, Quentin LAPIERRE, Robin CHASSAGNE
 
 ## 🙏 Acknowledgments
 
@@ -222,9 +221,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [Project Website](https://rtype-project.com)
-- [Documentation](https://docs.rtype-project.com)
-- [Wiki](https://github.com/yourusername/r-type/wiki)
+- TO DO [Project Website](https://rtype-project.com)
+- TO DO [Documentation](https://docs.rtype-project.com)
+- TO DO [Wiki](https://github.com/yourusername/r-type/wiki)
 - [Original R-Type Info](https://en.wikipedia.org/wiki/R-Type)
 
 ---
@@ -233,7 +232,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   <b>R-Type - A Game Engine That Roars!</b><br>
   Made with ❤️ and C++
 </div>
-```
 
 ## Tests
 To run tests:
