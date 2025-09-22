@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include <fstream>
 #include <iostream>
-#include "Errors/ParamsError.hpp"
+#include "ParamsError.hpp"
 #include "Macros.hpp"
 
 std::string Parser::trimString(const std::string &str) const {
