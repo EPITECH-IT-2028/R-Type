@@ -12,40 +12,40 @@ if [ $# -eq 0 ]; then
 elif [ $# -eq 1 ]; then
     case $1 in
         "clean"|"Clean"|"CLEAN")
-            echo "Cleaning all build files and folders..."
+            echo -e "\033[1;33m[ OK ] Cleaning all build files and folders...\033[0m"
             if [ -d ".build" ]; then
-                echo "Removing .build directory..."
+                echo -e "\033[1;31m[ OK ] Removing .build directory...\033[0m"
                 rm -rf .build
             fi
             if [ -d "build" ]; then
-                echo "Removing build directory..."
+                echo -e "\033[1;31m[ OK ] Removing build directory...\033[0m"
                 rm -rf build
             fi
             if [ -f "CMakeCache.txt" ]; then
-                echo "Removing CMakeCache.txt..."
+                echo -e "\033[1;31m[ OK ] Removing CMakeCache.txt...\033[0m"
                 rm -f CMakeCache.txt
             fi
             if [ -d "CMakeFiles" ]; then
-                echo "Removing CMakeFiles directory..."
+                echo -e "\033[1;31m[ OK ] Removing CMakeFiles directory...\033[0m"
                 rm -rf CMakeFiles
             fi
             if [ -f "CMakeUserPresets.json" ]; then
-                echo "Removing CMakeUserPresets.json..."
+                echo -e "\033[1;31m[ OK ] Removing CMakeUserPresets.json...\033[0m"
                 rm -rf CMakeUserPresets.json
             fi
             if [ -L "compile_commands.json" ]; then
-                echo "Removing compile_commands.json..."
+                echo -e "\033[1;31m[ OK ] Removing compile_commands.json...\033[0m"
                 rm -f compile_commands.json
             fi
             if [ -f "r_type_client" ]; then
-                echo "Removing r_type_client executable..."
+                echo -e "\033[1;31m[ OK ] Removing r_type_client executable...\033[0m"
                 rm -f r_type_client
             fi
             if [ -f "r_type_server" ]; then
-                echo "Removing r_type_server executable..."
+                echo -e "\033[1;31m[ OK ] Removing r_type_server executable...\033[0m"
                 rm -f r_type_server
             fi
-            echo "Clean completed successfully!"
+            echo -e "\033[1;32m[ OK ] Clean completed successfully!\033[0m"
             exit 0
             ;;
         "debug"|"Debug"|"DEBUG")
