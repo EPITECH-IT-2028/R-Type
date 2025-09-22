@@ -1,7 +1,7 @@
 #include "Server.hpp"
-#include "IPacket.hpp"
 #include <cstring>
 #include <iostream>
+#include "IPacket.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
 
@@ -10,7 +10,8 @@ server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
   _connected = true;
 }
 
-server::Server::Server(asio::io_context &io_context, std::uint16_t port, std::uint16_t max_clients)
+server::Server::Server(asio::io_context &io_context, std::uint16_t port,
+                       std::uint16_t max_clients)
     : _io_context(io_context),
       _socket(io_context,
               asio::ip::udp::endpoint(asio::ip::udp::v4(),
@@ -24,6 +25,7 @@ server::Server::Server(asio::io_context &io_context, std::uint16_t port, std::ui
 
 void server::Server::start() {
   std::cout << "[CONSOLE] Server started on port " << _port << std::endl;
+  _game.start();
   startReceive();
 }
 

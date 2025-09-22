@@ -4,6 +4,7 @@
 #include <asio.hpp>
 #include <memory>
 #include <vector>
+#include "Game.hpp"
 #include "PacketFactory.hpp"
 
 inline constexpr std::size_t MAX_CLIENTS = 4;
@@ -67,6 +68,8 @@ namespace server {
       std::vector<std::shared_ptr<Client>> _clients;
       std::array<char, BUFFER_SIZE> _recv_buffer;
       packet::PacketHandlerFactory _factory;
+
+      game::Game _game;
 
       std::uint16_t _max_clients;
       std::uint16_t _port;
