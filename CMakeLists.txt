@@ -6,9 +6,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-execute_process(
-  COMMAND ln -sf ${PROJECT_SOURCE_DIR}/.build/compile_commands.json ${PROJECT_SOURCE_DIR}
-)
+
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+  if(UNIX)
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${PROJECT_SOURCE_DIR}/.build/compile_commands.json
+      ${PROJECT_SOURCE_DIR}/compile_commands.json
+    )
+  else()
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${PROJECT_SOURCE_DIR}/.build/compile_commands.json
+    ${PROJECT_SOURCE_DIR}/compile_commands.json
+  )
+   endif()
+ endif()
 
 option(BUILD_CLIENT "Build the client" OFF)
 option(BUILD_SERVER "Build the server" OFF)
