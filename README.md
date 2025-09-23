@@ -59,21 +59,6 @@ conan install . --output-folder=build --build=missing
 ./r-type_client
 ```
 
-## 🎮 How to Play
-
-### Controls
-- **Arrow Keys**: Move your spaceship
-- **Space**: Fire missiles
-- **Shift**: Charge weapon
-- **Ctrl**: Deploy/Recall Force module
-- **ESC**: Pause menu
-
-### Gameplay
-- Fight waves of Bydo enemies
-- Collect power-ups to upgrade your weapons
-- Coordinate with other players in multiplayer mode
-- Survive boss battles at the end of each level
-
 ## 🏗️ Architecture
 
 ### Project Structure
@@ -114,17 +99,6 @@ R-Type/
 - **Raylib** (5.5): Graphics, Audio, Window management
 - **Asio** (1.36+): Networking
 - **GTest** (1.14+): Testing framework
-
-## 🚦 CI/CD
-
-- **GitHub Actions**: Automated builds and tests
-- **Code Coverage**: Codecov integration
-- **Static Analysis**: clang-tidy, cppcheck
-- **Deployment**: Docker containers for server
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
 
