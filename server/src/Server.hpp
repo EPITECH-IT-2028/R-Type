@@ -23,6 +23,8 @@ namespace server {
       bool _connected = false;
       int _player_id = -1;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
+      uint16_t screen_width = 800;
+      uint16_t screen_height = 600;
   };
 
   class Server {

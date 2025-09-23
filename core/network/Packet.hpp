@@ -66,6 +66,8 @@ struct ALIGNED NewPlayerPacket {
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
     char name[32];
+    uint16_t screen_width;
+    uint16_t screen_height;
 };
 
 /* Client to server packets */
