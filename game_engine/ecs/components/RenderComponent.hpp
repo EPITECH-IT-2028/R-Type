@@ -4,6 +4,6 @@
 
 namespace ecs {
   struct RenderComponent {
-      std::string sprite = "default_sprite.png";
+      std::string sprite{};
   };
 }  // namespace ecs
