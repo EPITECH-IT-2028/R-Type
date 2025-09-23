@@ -36,22 +36,28 @@ namespace broadcast {
        * game.
        */
       static void broadcastExistingPlayers(
-          asio::ip::udp::socket &socket,
-          const std::vector<std::shared_ptr<server::Client>> &clients,
-          const server::Client &newClient) {
-        for (const auto &client : clients) {
-          if (client && client->_connected &&
-              client->_player_id != newClient._player_id) {
+          asio::ip::udp::socket &socket, game::Game &game, int newPlayerID,
+          const asio::ip::udp::endpoint &newPlayerEndpoint) {
+        auto players = game.getAllPlayers();
+
+        for (const auto &player : players) {
+          if (player && player->isConnected() &&
+              player->getPlayerId() != newPlayerID) {
+            std::pair<float, float> pos = player->getPosition();
+            float speed = player->getSpeed();
+            int health = player->getHealth();
+
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
-                client->_player_id, client->_x, client->_y, client->_speed,
-                client->_health);
-            packet::PacketSender::sendPacket(socket, newClient._endpoint,
+                player->getPlayerId(), pos.first, pos.second, speed, health);
+            packet::PacketSender::sendPacket(socket, newPlayerEndpoint,
                                              existPlayerPacket);
           }
         }
       }
+
       /*
-       * Broadcast the newly connected player to all other connected clients.
+       * Broadcast the newly connected player to all other connected
+       * clients.
        */
       static void broadcastAncientPlayer(
           asio::ip::udp::socket &socket,

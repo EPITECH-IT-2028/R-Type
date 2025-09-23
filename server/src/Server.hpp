@@ -2,6 +2,7 @@
 
 #include <array>
 #include <asio.hpp>
+#include <cstdint>
 #include <memory>
 #include <vector>
 #include "Game.hpp"
@@ -18,12 +19,10 @@ namespace server {
       ~Client() = default;
 
       const asio::ip::udp::endpoint _endpoint;
+
       bool _connected = false;
       int _player_id = -1;
-      float _x = 10.0f;
-      float _y = 10.0f;
-      float _speed = 10.0f;
-      int _health = 100;
+      uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
   };
 
   class Server {
@@ -35,18 +34,24 @@ namespace server {
       void start();
       void stop();
 
-      int getPort() const {
+      std::uint16_t getPort() const {
         return _port;
       }
+
       int getPlayerCount() const {
         return _player_count;
       }
+
       const std::vector<std::shared_ptr<Client>> &getClients() const {
         return _clients;
       }
 
       asio::ip::udp::socket &getSocket() {
         return _socket;
+      }
+
+      game::Game &getGame() {
+        return _game;
       }
 
     private:
