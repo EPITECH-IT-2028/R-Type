@@ -8,7 +8,7 @@ namespace ecs {
   struct PlayerComponent {
       std::string name;
       bool is_alive = true;
-      uint32_t sequence_number = 0;
+      std::uint32_t sequence_number = 0;
       bool connected = false;
   };
 
