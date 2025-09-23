@@ -5,7 +5,7 @@
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 
-void CreatePlayerEntity(ecs::ECSManager &ecsManager) {
+uint32_t CreatePlayerEntity(ecs::ECSManager &ecsManager) {
     Entity player = ecsManager.createEntity();
 
     // Add components to the player entity
@@ -16,4 +16,8 @@ void CreatePlayerEntity(ecs::ECSManager &ecsManager) {
     ecsManager.addComponent(player, ecs::VelocityComponent{0.0f, 0.0f});
 
     // Add systems to the player entity
+
+    return player;
 }
+
+// Player(1, CreatePlayerEntity(*ecsManager), ecsManager)
