@@ -29,29 +29,35 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/r-type.git
-cd r-type
+git clone https://github.com/yourusername/R-Type.git
+cd R-Type
 ```
 
 2. **Install dependencies using Conan**
 ```bash
+brew install conan  # macOS
+sudo apt install conan  # Ubuntu
+sudo dnf install conan  # Fedora
+pip install conan  # Windows (via pip)
+
+conan profile new default --detect # Create a default profile
+
 conan install . --output-folder=build --build=missing
 ```
 
 3. **Build the project**
 ```bash
-cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake
-cmake --build build --config Release
+./build.sh server/client # For Linux/MacOS
 ```
 
 4. **Run the server**
 ```bash
-./build/bin/r-type_server --port 8080
+./r-type_server
 ```
 
 5. **Run the client**
 ```bash
-./build/bin/r-type_client --host localhost --port 8080
+./r-type_client
 ```
 
 ## 🎮 How to Play
@@ -73,25 +79,29 @@ cmake --build build --config Release
 
 ### Project Structure
 ```
-r-type/
-├── engine/                # Game engine core
-│   ├── ecs/               # Entity-Component-System
-│   ├── network/           # Networking layer
-│   ├── rendering/         # Rendering subsystem
-│   ├── physics/           # Physics engine
-│   └── audio/             # Audio system
+R-Type/
+├── core/                  # Core engine modules
+│   └── network/           # Networking utilities (Packet, PacketBuilder, PacketSender)
 ├── server/                # Server implementation
-│   ├── game_logic/        # Game rules and logic
-│   ├── session/           # Client session management
-│   └── protocol/          # Network protocol handlers
-├── client/                # Client implementation
-│   ├── graphics/          # Raylib rendering
-│   ├── input/             # Input handling
-│   └── ui/                # User interface
-├── common/                # Shared code
-├── assets/                # Game assets
-├── docs/                  # Documentation
-└── tests/                 # Unit and integration tests
+│   ├── server.properties  # Server configuration
+│   ├── src/               # Server source code
+│   │   ├── Broadcast.hpp
+│   │   ├── Help.cpp/hpp
+│   │   ├── Macros.hpp
+│   │   ├── main.cpp
+│   │   ├── Parser.cpp/hpp
+│   │   ├── Server.cpp/hpp
+│   │   ├── errors/        # Error handling (ParamsError.hpp)
+│   │   └── packets/       # Packet interfaces and handlers
+│   │       ├── APacket.hpp
+│   │       ├── IPacket.hpp
+│   │       ├── PacketFactory.cpp/hpp
+│   │       └── PacketHandler.cpp/hpp
+│   └── tests/             # Server unit tests
+│       ├── test_server.cpp
+│       └── html/          # Test coverage reports
+|
+└── build.sh # Builder for server and client
 ```
 
 ### Design Patterns
@@ -122,9 +132,9 @@ For detailed protocol documentation, see [docs/protocol/README.md](docs/protocol
 
 ### Building from Source
 
-**Linux:**
+**Linux/MacOs:**
 ```bash
-./scripts/build_linux.sh
+./build.sh server/client
 ```
 
 **Windows (Visual Studio):**
@@ -146,14 +156,10 @@ clang-format -i src/**/*.cpp include/**/*.hpp
 ## 🔧 Configuration
 
 ### Server Configuration
-Create a `server.config` file:
-```json
-{
-  "port": 8080,
-  "max_players": 4,
-  "tick_rate": 60,
-  "game_mode": "cooperative"
-}
+Create a `server.properties` file:
+```text
+PORT=4242
+MAX_PLAYERS=4
 ```
 
 ### Client Configuration
@@ -241,7 +247,7 @@ To run tests:
 ```sh
 cmake -B .build -DENABLE_TESTS=ON -DCMAKE_CXX_FLAGS="--coverage"
 cmake --build .build
-.build/unit_tests
+./unit_tests
 ```
 
 ```sh
