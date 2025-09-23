@@ -28,8 +28,8 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/R-Type.git
-cd R-Type
+git clone git@github.com:EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git
+cd G-CPP-500-BDX-5-1-rtype-4
 ```
 
 2. **Install dependencies using Conan**
@@ -38,10 +38,6 @@ brew install conan  # macOS
 sudo apt install conan  # Ubuntu
 sudo dnf install conan  # Fedora
 pip install conan  # Windows (via pip)
-
-conan profile new default --detect # Create a default profile
-
-conan install . --output-folder=build --build=missing
 ```
 
 3. **Build the project**
