@@ -66,8 +66,6 @@ struct ALIGNED NewPlayerPacket {
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
     char name[32];
-    uint16_t screen_width;
-    uint16_t screen_height;
 };
 
 /* Client to server packets */
@@ -86,7 +84,8 @@ struct ALIGNED EnemySpawnPacket {
     EnemyType enemy_type;
     float x;
     float y;
-    float speed;
+    float velocity_x;
+    float velocity_y;
     uint32_t health;
     uint32_t max_health;
 };

@@ -1,9 +1,9 @@
 #include "Server.hpp"
 #include <cstring>
 #include <iostream>
+#include "Broadcast.hpp"
 #include "IPacket.hpp"
 #include "Macros.hpp"
-#include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
 
 server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
@@ -27,7 +27,17 @@ server::Server::Server(asio::io_context &io_context, std::uint16_t port,
 void server::Server::start() {
   std::cout << "[CONSOLE] Server started on port " << _port << std::endl;
   _game.start();
+
   startReceive();
+}
+
+void server::Server::processGameEvents() {
+  queue::GameEvent event;
+  std::cout << "[DEBUG] Processing game events..." << std::endl;
+
+  while (_game.getEventQueue().popRequest(event)) {
+    handleGameEvent(event);
+  }
 }
 
 void server::Server::stop() {

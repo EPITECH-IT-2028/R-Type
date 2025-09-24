@@ -33,8 +33,6 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   std::memcpy(nameBuf, packet->name, sizeof(packet->name));
   nameBuf[sizeof(packet->name)] = '\0';
   std::string name(nameBuf);
-  client.screen_width = packet->screen_width;
-  client.screen_height = packet->screen_height;
 
   auto player = server.getGame().createPlayer(client._player_id, name);
   client._entity_id = player->getEntityId();

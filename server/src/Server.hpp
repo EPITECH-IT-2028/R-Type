@@ -8,7 +8,6 @@
 #include "Game.hpp"
 #include "PacketFactory.hpp"
 
-inline constexpr std::size_t MAX_CLIENTS = 4;
 inline constexpr std::size_t BUFFER_SIZE = 2048;
 
 namespace server {
@@ -23,8 +22,6 @@ namespace server {
       bool _connected = false;
       int _player_id = -1;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
-      uint16_t screen_width = 800;
-      uint16_t screen_height = 600;
   };
 
   class Server {
@@ -61,6 +58,10 @@ namespace server {
       void handleReceive(const asio::error_code &error,
                          std::size_t bytes_transferred);
 
+      void scheduleEventProcessing();
+      void processGameEvents();
+      void handleGameEvent(const queue::GameEvent &event);
+
       int findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
       void handleClientData(std::size_t client_idx, const char *data,
                             std::size_t size);
@@ -75,6 +76,9 @@ namespace server {
       std::vector<std::shared_ptr<Client>> _clients;
       std::array<char, BUFFER_SIZE> _recv_buffer;
       packet::PacketHandlerFactory _factory;
+
+      uint16_t screen_width = 800;
+      uint16_t screen_height = 600;
 
       game::Game _game;
 
