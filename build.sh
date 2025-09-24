@@ -126,7 +126,10 @@ fi
 
 # Install conan dependencies
 echo "Installing conan dependencies..."
-conan profile detect --force >/dev/null 2>&1 || true
+if ! conan profile show default > /dev/null 2>&1; then
+    echo "[INFO] Conan default profile not found. Detecting..."
+    conan profile detect --force > /dev/null 2>&1
+fi
 conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
 
 case $TARGET in
