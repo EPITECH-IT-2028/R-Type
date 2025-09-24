@@ -15,13 +15,17 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
       ${PROJECT_SOURCE_DIR}/compile_commands.json
     )
   else()
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${PROJECT_SOURCE_DIR}/.build/compile_commands.json
-    ${PROJECT_SOURCE_DIR}/compile_commands.json
-  )
-   endif()
- endif()
+    if(EXISTS "${PROJECT_SOURCE_DIR}/.build/compile_commands.json")
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_SOURCE_DIR}/.build/compile_commands.json
+        ${PROJECT_SOURCE_DIR}/compile_commands.json
+      )
+    else()
+      message(WARNING "compile_commands.json not found in .build directory.")
+    endif()
+  endif()
+endif()
 
 option(BUILD_CLIENT "Build the client" OFF)
 option(BUILD_SERVER "Build the server" OFF)
