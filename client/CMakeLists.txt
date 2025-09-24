@@ -9,3 +9,8 @@ add_executable(${PROJECT_NAME}
 add_compile_options(-W -Wall -Wextra)
 
 target_link_libraries(${PROJECT_NAME} raylib)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ../game_engine/ecs/
+    ../game_engine/ecs/components/
+    ../game_engine/ecs/systems/
+)
