@@ -104,15 +104,16 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   }
 
   std::uint16_t projectileId = server.getNextProjectileId();
+  std::pair<float, float> pos = player->getPosition();
   auto projectile = server.getGame().createProjectile(
-      projectileId, client._player_id, packet->projectile_type, packet->x,
-      packet->y);
+      projectileId, client._player_id, packet->projectile_type, pos.first,
+      pos.second);
 
   server.setProjectileCount(server.getProjectileCount() + 1);
   server.setNextProjectileId(server.getNextProjectileId() + 1);
 
   auto playerShotPacket = PacketBuilder::makePlayerShoot(
-      packet->x, packet->y, packet->projectile_type, packet->sequence_number);
+      pos.first, pos.second, packet->projectile_type, packet->sequence_number);
 
   broadcast::Broadcast::broadcastPlayerShoot(
       server.getSocket(), server.getClients(), playerShotPacket);

@@ -13,12 +13,12 @@ namespace game {
                  ecs::ECSManager *ecsManager);
       ~Projectile() = default;
 
-      int getProjectileId() const {
+      std::uint16_t getProjectileId() const {
         return _projectile_id;
       }
 
-      uint32_t getEntityId() const {
-        return _entity_id;
+      uint32_t getOwnerId() const {
+        return _owner_id;
       }
 
       std::pair<float, float> getPosition() const;
@@ -36,30 +36,34 @@ namespace game {
       uint32_t getSequenceNumber() const;
       void setSequenceNumber(uint32_t seq);
 
-      const ProjectileType &getType() const;
+      ProjectileType getType() const;
       void setType(const ProjectileType &type);
 
       void update(float deltaTime);
 
-    private:
-      std::uint16_t _projectile_id;
-      std::uint32_t _entity_id;
-      ecs::ECSManager *_ecsManager;
+      ecs::ECSManager *getECSManager() const {
+        return _ecsManager;
+      }
 
       template <typename T>
       T &getComponent() {
-        return _ecsManager->getComponent<T>(_entity_id);
+        return _ecsManager->getComponent<T>(_projectile_id);
       }
 
       template <typename T>
       bool hasComponent() const {
-        return _ecsManager->hasComponent<T>(_entity_id);
+        return _ecsManager->hasComponent<T>(_projectile_id);
       }
 
       template <typename T>
       const T &getComponent() const {
-        return _ecsManager->getComponent<T>(_entity_id);
+        return _ecsManager->getComponent<T>(_projectile_id);
       }
+
+    private:
+      std::uint32_t _projectile_id;
+      std::uint32_t _owner_id;
+      ecs::ECSManager *_ecsManager;
   };
 
 }  // namespace game

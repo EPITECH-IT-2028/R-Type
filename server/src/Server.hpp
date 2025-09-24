@@ -42,19 +42,19 @@ namespace server {
         return _player_count;
       }
 
-      std::uint16_t getProjectileCount() const {
+      std::uint32_t getProjectileCount() const {
         return _projectile_count;
       }
 
-      void setProjectileCount(std::uint16_t projectile_count) {
+      void setProjectileCount(std::uint32_t projectile_count) {
         _projectile_count = projectile_count;
       }
 
-      std::uint16_t getNextProjectileId() const {
+      std::uint32_t getNextProjectileId() const {
         return _next_projectile_id;
       }
 
-      void setNextProjectileId(std::uint16_t next_projectile_id) {
+      void setNextProjectileId(std::uint32_t next_projectile_id) {
         _next_projectile_id = next_projectile_id;
       }
 
@@ -95,8 +95,8 @@ namespace server {
       std::uint16_t _max_clients;
       std::uint16_t _port;
       int _player_count;
-      std::uint16_t _projectile_count;
       int _next_player_id;
-      std::uint16_t _next_projectile_id;
+      std::uint32_t _projectile_count;
+      std::uint32_t _next_projectile_id;
   };
 }  // namespace server

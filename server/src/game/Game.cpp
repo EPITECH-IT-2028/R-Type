@@ -1,6 +1,8 @@
 #include "Game.hpp"
 #include <chrono>
+#include <cstdint>
 #include <mutex>
+#include <thread>
 #include "HealthComponent.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
@@ -92,8 +94,8 @@ std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
 }
 
 std::shared_ptr<game::Projectile> game::Game::createProjectile(
-    int projectile_id, uint32_t player_id, const ProjectileType &type, float x, float y) {
-  std::scoped_lock lock(_playerMutex);
+    std::uint16_t projectile_id, uint32_t owner_id, const ProjectileType &type, float x, float y) {
+  std::scoped_lock lock(_projectileMutex);
   auto entity = _ecsManager->createEntity();
 
   _ecsManager->addComponent<ecs::PositionComponent>(entity, {x, y});
@@ -108,25 +110,25 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   return projectile;
 }
 
-void game::Game::destroyProjectile(int projectile_id) {
-  std::scoped_lock lock(_playerMutex);
+void game::Game::destroyProjectile(std::uint16_t projectile_id) {
+  std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   if (it != _projectiles.end()) {
-    uint32_t entity_id = it->second->getEntityId();
+    uint32_t entity_id = it->second->getProjectileId();
     _ecsManager->destroyEntity(entity_id);
     _projectiles.erase(it);
   }
 }
 
-std::shared_ptr<game::Projectile> game::Game::getProjectile(int projectile_id) {
-  std::scoped_lock lock(_playerMutex);
+std::shared_ptr<game::Projectile> game::Game::getProjectile(std::uint16_t projectile_id) {
+  std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   return (it != _projectiles.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Projectile>> game::Game::getAllProjectiles()
     const {
-  std::scoped_lock lock(_playerMutex);
+  std::scoped_lock lock(_projectileMutex);
   std::vector<std::shared_ptr<Projectile>> projectileList;
   projectileList.reserve(_projectiles.size());
   for (const auto &pair : _projectiles) {

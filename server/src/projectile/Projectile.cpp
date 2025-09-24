@@ -1,16 +1,15 @@
 #include "Projectile.hpp"
 #include <cstdint>
-#include "Macros.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 
 game::Projectile::Projectile(std::uint16_t projectile_id,
-                             std::uint32_t entity_id,
+                             std::uint32_t owner_id,
                              ecs::ECSManager *ecsManager)
     : _projectile_id(projectile_id),
-      _entity_id(entity_id),
+      _owner_id(owner_id),
       _ecsManager(ecsManager) {
 }
 
@@ -78,7 +77,7 @@ uint32_t game::Projectile::getSequenceNumber() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
     return getComponent<ecs::ProjectileComponent>().sequence_number;
   }
-  return SUCCESS;
+  return 0;
 }
 
 void game::Projectile::setSequenceNumber(uint32_t seq) {

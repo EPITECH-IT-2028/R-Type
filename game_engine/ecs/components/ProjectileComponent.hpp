@@ -14,7 +14,6 @@ namespace ecs {
       std::uint32_t owner_id = 0;
       bool is_destroy = false;
       std::uint32_t sequence_number = 0;
-      float dt = 0.016f;
   };
 
 }  // namespace ecs

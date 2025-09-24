@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -23,16 +24,16 @@ namespace game {
                                            const std::string &name);
 
       std::shared_ptr<game::Projectile> createProjectile(
-          int projectile_id, uint32_t entity_id, const ProjectileType &type,
+          std::uint16_t projectile_id, uint32_t owner_id, const ProjectileType &type,
           float x, float y);
 
       void destroyPlayer(int player_id);
 
-      void destroyProjectile(int projectile_id);
+      void destroyProjectile(std::uint16_t projectile_id);
 
       std::shared_ptr<Player> getPlayer(int player_id);
 
-      std::shared_ptr<Projectile> getProjectile(int projectile_id);
+      std::shared_ptr<Projectile> getProjectile(std::uint16_t projectile_id);
 
       std::vector<std::shared_ptr<Player>> getAllPlayers() const;
 
@@ -48,6 +49,7 @@ namespace game {
       std::unordered_map<int, std::shared_ptr<Player>> _players;
       std::unordered_map<int, std::shared_ptr<Projectile>> _projectiles;
       mutable std::mutex _playerMutex;
+      mutable std::mutex _projectileMutex;
   };
 
 }  // namespace game
