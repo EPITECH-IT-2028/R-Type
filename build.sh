@@ -33,7 +33,7 @@ elif [ $# -eq 1 ]; then
                 echo -e "\033[1;31m[ OK ] Removing CMakeUserPresets.json...\033[0m"
                 rm -rf CMakeUserPresets.json
             fi
-            if [ -L "compile_commands.json" ]; then
+            if [ -L "compile_commands.json" ] || [ -f "compile_commands.json" ]; then
                 echo -e "\033[1;31m[ OK ] Removing compile_commands.json...\033[0m"
                 rm -f compile_commands.json
             fi
