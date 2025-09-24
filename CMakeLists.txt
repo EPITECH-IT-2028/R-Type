@@ -9,17 +9,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
   if(UNIX)
+    file(REMOVE "${PROJECT_SOURCE_DIR}/compile_commands.json")
+
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E create_symlink
-      ${PROJECT_SOURCE_DIR}/.build/compile_commands.json
-      ${PROJECT_SOURCE_DIR}/compile_commands.json
+      "${PROJECT_SOURCE_DIR}/.build/compile_commands.json"
+      "${PROJECT_SOURCE_DIR}/compile_commands.json"
     )
   else()
     if(EXISTS "${PROJECT_SOURCE_DIR}/.build/compile_commands.json")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${PROJECT_SOURCE_DIR}/.build/compile_commands.json
-        ${PROJECT_SOURCE_DIR}/compile_commands.json
+        "${PROJECT_SOURCE_DIR}/.build/compile_commands.json"
+        "${PROJECT_SOURCE_DIR}/compile_commands.json"
       )
     else()
       message(WARNING "compile_commands.json not found in .build directory.")
