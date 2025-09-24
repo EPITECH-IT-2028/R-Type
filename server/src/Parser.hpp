@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <stdexcept>
 #include "ParamsError.hpp"
 
 class Parser {
@@ -42,7 +43,7 @@ class Parser {
              }},
             {"MAX_CLIENTS",
              [this](const std::string &max_clients) {
-               if (!max_clients.empty())
+               if (!max_clients.empty()) {
                  try {
                    _max_clients = std::stoi(max_clients);
                  } catch (const std::invalid_argument &e) {
@@ -51,7 +52,7 @@ class Parser {
                  } catch (const std::out_of_range &e) {
                    throw ParamsError("Max clients value out of range.");
                  }
-               else {
+               } else {
                  throw ParamsError(
                      "Invalid max clients in server properties file.");
                }
