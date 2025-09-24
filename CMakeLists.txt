@@ -66,8 +66,8 @@ if(BUILD_TESTS)
       server/src/Server.cpp
   )
 
+  find_package(asio REQUIRED)
   target_include_directories(unit_tests PRIVATE
-      ${asio_SOURCE_DIR}/asio/include
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src/packets/
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src/errors/
@@ -77,6 +77,7 @@ if(BUILD_TESTS)
   target_link_libraries(unit_tests PRIVATE
       GTest::gtest_main
       Threads::Threads
+      asio::asio
   )
 
   target_compile_definitions(unit_tests PRIVATE ASIO_STANDALONE)
