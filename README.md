@@ -26,7 +26,7 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 
 ### Installation
 
-1. **Clone the repository**
+1. **Repository's URL**
 ```bash
 https://github.com/EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git
 ```
