@@ -24,9 +24,8 @@ namespace game {
                                            const std::string &name);
 
       std::shared_ptr<game::Projectile> createProjectile(
-          std::uint32_t projectile_id, uint32_t owner_id, const ProjectileType &type,
-          float x, float y);
-
+          std::uint32_t projectile_id, std::uint32_t owner_id,
+          ProjectileType type, float x, float y);
       void destroyPlayer(int player_id);
 
       void destroyProjectile(std::uint32_t projectile_id);
@@ -47,7 +46,9 @@ namespace game {
 
       std::unique_ptr<ecs::ECSManager> _ecsManager;
       std::unordered_map<int, std::shared_ptr<Player>> _players;
-      std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>> _projectiles;
+      std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>>
+          _projectiles;
+      mutable std::mutex _ecsMutex;
       mutable std::mutex _playerMutex;
       mutable std::mutex _projectileMutex;
   };
