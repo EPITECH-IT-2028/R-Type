@@ -104,17 +104,17 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   _ecsManager->addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
 
   auto projectile =
-      std::make_shared<Projectile>(projectile_id, entity, _ecsManager.get());
+      std::make_shared<Projectile>(projectile_id, owner_id, entity, _ecsManager.get());
   _projectiles[projectile_id] = projectile;
 
   return projectile;
 }
 
-void game::Game::destroyProjectile(std::uint16_t projectile_id) {
+void game::Game::destroyProjectile(std::uint32_t projectile_id) {
   std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   if (it != _projectiles.end()) {
-    uint32_t entity_id = it->second->getProjectileId();
+    uint32_t entity_id = it->second->getEntityId();
     _ecsManager->destroyEntity(entity_id);
     _projectiles.erase(it);
   }

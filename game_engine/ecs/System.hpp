@@ -9,7 +9,7 @@ namespace ecs {
     public:
       std::set<Entity> _entities;
       virtual ~System() = default;
-      virtual void update(float deltaTime, EntityManager &entities) = 0;
+      virtual void update(float deltaTime) = 0;
   };
 
 }

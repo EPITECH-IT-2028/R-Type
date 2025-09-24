@@ -12,8 +12,8 @@ namespace ecs {
       void setECSManager(ECSManager *ecsManager) {
         _ecsManager = ecsManager;
       }
-      void update(float dt);
-      void moveBasics(float dt);
+      void update(float dt) override;
+      void moveBasics(const Entity &entity, float dt);
 
     private:
       ECSManager *_ecsManager;
