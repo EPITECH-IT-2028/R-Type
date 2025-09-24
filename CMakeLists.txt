@@ -48,36 +48,36 @@ if(BUILD_SERVER)
 endif()
 
 if(BUILD_TESTS)
-    enable_testing()
+  enable_testing()
 
-    FetchContent_Declare(
+  FetchContent_Declare(
       googletest
       GIT_REPOSITORY https://github.com/google/googletest.git
       GIT_TAG v1.17.0
       GIT_SHALLOW TRUE
-    )
-    FetchContent_MakeAvailable(googletest)
+  )
+  FetchContent_MakeAvailable(googletest)
 
-    add_executable(unit_tests
+  add_executable(unit_tests
       server/tests/test_server.cpp
       server/src/Server.cpp
-    )
+  )
 
-    target_include_directories(unit_tests PRIVATE
+  target_include_directories(unit_tests PRIVATE
       ${asio_SOURCE_DIR}/asio/include
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src/packets/
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src/errors/
       ${CMAKE_CURRENT_SOURCE_DIR}/core/network/
-    )
+  )
 
-    target_link_libraries(unit_tests PRIVATE
+  target_link_libraries(unit_tests PRIVATE
       GTest::gtest_main
       Threads::Threads
-    )
+  )
 
-    target_compile_definitions(unit_tests PRIVATE ASIO_STANDALONE)
+  target_compile_definitions(unit_tests PRIVATE ASIO_STANDALONE)
 
-    include(GoogleTest)
-    gtest_discover_tests(unit_tests)
+  include(GoogleTest)
+  gtest_discover_tests(unit_tests)
 endif()
