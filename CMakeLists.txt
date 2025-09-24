@@ -66,6 +66,7 @@ if(BUILD_TESTS)
       server/src/Server.cpp
   )
 
+  find_package(Threads REQUIRED)
   find_package(asio REQUIRED)
   target_include_directories(unit_tests PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/server/src
