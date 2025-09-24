@@ -103,6 +103,7 @@ Executables will be created at the root of the project:
 
 - `r_type_client` - The game client
 - `r_type_server` - The game server
+- `unit_tests` - Unit tests executable
 
 ## Debug Builds
 
