@@ -27,7 +27,7 @@ if(BUILD_CLIENT)
 endif()
 
 if(BUILD_SERVER)
-  add_subdirectory(Server)
+  add_subdirectory(server)
 endif()
 
 if(BUILD_TESTS)
