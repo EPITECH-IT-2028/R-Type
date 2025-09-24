@@ -1,7 +1,7 @@
 # R-Type - A Game Engine That Roars! 🚀
 
-[![C++](https://img.shields.io/badge/C%2B%2B-23-blue.svg)](https://isocpp.org/)
-[![CMake](https://img.shields.io/badge/CMake-3.30%2B-green.svg)](https://cmake.org/)
+[![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://isocpp.org/)
+[![CMake](https://img.shields.io/badge/CMake-3.27.4%2B-green.svg)](https://cmake.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-lightgrey.svg)](https://github.com/)
 
 ## 📖 Overview
@@ -20,7 +20,7 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 
 ### Prerequisites
 - **C++ Compiler**: GCC 9+ or MSVC 2019+
-- **CMake**: Version 3.20 or higher
+- **CMake**: Version 3.27.4
 - **Package Manager**: Conan 2.0+ (recommended) or vcpkg
 - **Git**: For version control
 
@@ -28,8 +28,7 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 
 1. **Clone the repository**
 ```bash
-git clone git@github.com:EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git
-cd G-CPP-500-BDX-5-1-rtype-4
+https://github.com/EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git
 ```
 
 2. **Install dependencies using Conan**
@@ -60,28 +59,62 @@ pip install conan  # Windows (via pip)
 ### Project Structure
 ```
 R-Type/
-├── core/                  # Core engine modules
-│   └── network/           # Networking utilities (Packet, PacketBuilder, PacketSender)
-├── server/                # Server implementation
-│   ├── server.properties  # Server configuration
-│   ├── src/               # Server source code
-│   │   ├── Broadcast.hpp
-│   │   ├── Help.cpp/hpp
-│   │   ├── Macros.hpp
-│   │   ├── main.cpp
-│   │   ├── Parser.cpp/hpp
-│   │   ├── Server.cpp/hpp
-│   │   ├── errors/        # Error handling (ParamsError.hpp)
-│   │   └── packets/       # Packet interfaces and handlers
-│   │       ├── APacket.hpp
-│   │       ├── IPacket.hpp
-│   │       ├── PacketFactory.cpp/hpp
-│   │       └── PacketHandler.cpp/hpp
-│   └── tests/             # Server unit tests
-│       ├── test_server.cpp
-│       └── html/          # Test coverage reports
-|
-└── build.sh # Builder for server and client
+├── CMakeLists.txt         # Main CMake configuration
+├── CMakeUserPresets.json  # CMake presets for builds
+├── conanfile.txt          # Conan dependencies (Raylib, ASIO)
+├── build.sh               # Build script for server and client
+├── README_BUILD.md        # Detailed build instructions
+├── compile_commands.json  # Compilation database for IDEs
+│
+├── client/                # Client implementation
+│   ├── CMakeLists.txt
+│   └── main.cpp           # Raylib-based client entry point
+│
+├── core/                  # Shared core modules
+│   └── network/           # Network protocol definitions
+│       ├── Packet.hpp     # Packet types and enums
+│       ├── PacketBuilder.hpp
+│       └── PacketSender.hpp
+│
+├── game_engine/           # Custom ECS game engine
+│   └── ecs/               # Entity-Component-System
+│       ├── Component.hpp
+│       ├── ComponentManager.hpp
+│       ├── ECSManager.hpp # Main ECS coordinator
+│       ├── EntityManager.cpp/hpp
+│       ├── System.hpp
+│       ├── SystemManager.hpp
+│       ├── components/    # Game components
+│       │   ├── HealthComponent.hpp
+│       │   ├── PlayerComponent.hpp
+│       │   ├── PositionComponent.hpp
+│       │   ├── SpeedComponent.hpp
+│       │   └── VelocityComponent.hpp
+│       └── systems/       # Game systems (to be implemented)
+│
+└── server/                # Server implementation
+    ├── CMakeLists.txt
+    ├── server.properties  # Server configuration file
+    ├── src/               # Server source code
+    │   ├── main.cpp       # Server entry point with ASIO
+    │   ├── Server.cpp/hpp # Main server class
+    │   ├── Parser.cpp/hpp # Config file parser
+    │   ├── Help.cpp/hpp   # Help system
+    │   ├── Broadcast.hpp  # Network broadcasting utilities
+    │   ├── Macros.hpp     # Common macros
+    │   ├── errors/        # Error handling
+    │   │   └── ParamsError.hpp
+    │   ├── game/          # Game logic
+    │   │   ├── Game.cpp/hpp
+    │   │   └── Player.cpp/hpp
+    │   └── packets/       # Network packet handling
+    │       ├── APacket.hpp
+    │       ├── IPacket.hpp
+    │       ├── PacketFactory.cpp/hpp
+    │       └── PacketHandler.cpp/hpp
+    └── tests/             # Server unit tests
+        ├── test_server.cpp
+        └── html/          # Test coverage reports
 ```
 
 ### Design Patterns
@@ -93,8 +126,8 @@ R-Type/
 ## 📦 Dependencies
 
 - **Raylib** (5.5): Graphics, Audio, Window management
-- **Asio** (1.36+): Networking
-- **GTest** (1.14+): Testing framework
+- **Asio** (1.29.0): Networking
+- **GTest** (1.17.0): Testing framework
 
 ## 👥 Team
 
