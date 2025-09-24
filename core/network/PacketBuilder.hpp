@@ -103,8 +103,7 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PlayerShootPacket makePlayerShoot(float x, float y, float dir_x,
-                                             float dir_y,
+    static PlayerShootPacket makePlayerShoot(float x, float y,
                                              ProjectileType projectile_type,
                                              uint32_t seq) {
       PlayerShootPacket packet{};
@@ -112,8 +111,6 @@ struct PacketBuilder {
       packet.header.size = sizeof(packet);
       packet.x = x;
       packet.y = y;
-      packet.direction_x = dir_x;
-      packet.direction_y = dir_y;
       packet.projectile_type = projectile_type;
       packet.sequence_number = seq;
       return packet;

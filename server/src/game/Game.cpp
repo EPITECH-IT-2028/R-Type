@@ -4,6 +4,7 @@
 #include "HealthComponent.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
+#include "ProjectileComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -17,6 +18,7 @@ void game::Game::initECS() {
   _ecsManager->registerComponent<ecs::HealthComponent>();
   _ecsManager->registerComponent<ecs::SpeedComponent>();
   _ecsManager->registerComponent<ecs::PlayerComponent>();
+  _ecsManager->registerComponent<ecs::ProjectileComponent>();
   _ecsManager->registerComponent<ecs::VelocityComponent>();
 }
 
@@ -87,4 +89,48 @@ std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
     playerList.push_back(pair.second);
   }
   return playerList;
+}
+
+std::shared_ptr<game::Projectile> game::Game::createProjectile(
+    int projectile_id, uint32_t player_id, const ProjectileType &type, float x, float y) {
+  std::scoped_lock lock(_playerMutex);
+  auto entity = _ecsManager->createEntity();
+
+  _ecsManager->addComponent<ecs::PositionComponent>(entity, {x, y});
+  _ecsManager->addComponent<ecs::SpeedComponent>(entity, {10.0f});
+  _ecsManager->addComponent<ecs::ProjectileComponent>(entity, {type});
+  _ecsManager->addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
+
+  auto projectile =
+      std::make_shared<Projectile>(projectile_id, entity, _ecsManager.get());
+  _projectiles[projectile_id] = projectile;
+
+  return projectile;
+}
+
+void game::Game::destroyProjectile(int projectile_id) {
+  std::scoped_lock lock(_playerMutex);
+  auto it = _projectiles.find(projectile_id);
+  if (it != _projectiles.end()) {
+    uint32_t entity_id = it->second->getEntityId();
+    _ecsManager->destroyEntity(entity_id);
+    _projectiles.erase(it);
+  }
+}
+
+std::shared_ptr<game::Projectile> game::Game::getProjectile(int projectile_id) {
+  std::scoped_lock lock(_playerMutex);
+  auto it = _projectiles.find(projectile_id);
+  return (it != _projectiles.end()) ? it->second : nullptr;
+}
+
+std::vector<std::shared_ptr<game::Projectile>> game::Game::getAllProjectiles()
+    const {
+  std::scoped_lock lock(_playerMutex);
+  std::vector<std::shared_ptr<Projectile>> projectileList;
+  projectileList.reserve(_projectiles.size());
+  for (const auto &pair : _projectiles) {
+    projectileList.push_back(pair.second);
+  }
+  return projectileList;
 }

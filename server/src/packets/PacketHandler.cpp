@@ -1,4 +1,5 @@
 #include "PacketHandler.hpp"
+#include <cstdint>
 #include <iostream>
 #include "Broadcast.hpp"
 #include "Macros.hpp"
@@ -87,32 +88,33 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   return SUCCESS;
 }
 
-// TODO : Implement shooting logic (ecs)
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
                                              const char *data,
                                              std::size_t size) {
-  (void)server;
-  (void)client;
-  (void)data;
-  (void)size;
-  // if (size < sizeof(PlayerShootPacket)) {
-  //   return -1;
-  // }
-  // const PlayerShootPacket *packet =
-  //     reinterpret_cast<const PlayerShootPacket *>(data);
-  //
-  // client._x = packet->x;
-  // client._y = packet->y;
-  //
-  // // TODO : Handle shooting logic (spawn projectile, etc...)
-  //
-  // // TODO : Need to validate position (anti-cheat etc...)
-  // auto playerShotPacket = PacketBuilder::makePlayerShoot(
-  //     packet->x, packet->y, packet->direction_x, packet->direction_y,
-  //     packet->projectile_type, packet->sequence_number);
-  //
-  // broadcast::Broadcast::broadcastPlayerShoot(
-  //     server.getSocket(), server.getClients(), playerShotPacket);
+  if (size < sizeof(PlayerShootPacket)) {
+    return ERROR;
+  }
+  const PlayerShootPacket *packet =
+      reinterpret_cast<const PlayerShootPacket *>(data);
+
+  auto player = server.getGame().getPlayer(client._player_id);
+  if (!player) {
+    return ERROR;
+  }
+
+  std::uint16_t projectileId = server.getNextProjectileId();
+  auto projectile = server.getGame().createProjectile(
+      projectileId, client._player_id, packet->projectile_type, packet->x,
+      packet->y);
+
+  server.setProjectileCount(server.getProjectileCount() + 1);
+  server.setNextProjectileId(server.getNextProjectileId() + 1);
+
+  auto playerShotPacket = PacketBuilder::makePlayerShoot(
+      packet->x, packet->y, packet->projectile_type, packet->sequence_number);
+
+  broadcast::Broadcast::broadcastPlayerShoot(
+      server.getSocket(), server.getClients(), playerShotPacket);
   return SUCCESS;
 }

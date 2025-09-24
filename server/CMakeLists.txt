@@ -22,6 +22,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   src/packets/
   src/game/
   src/player/
+  src/projectile/
   ../core/network/
   ../game_engine/ecs/
   ../game_engine/ecs/components/
