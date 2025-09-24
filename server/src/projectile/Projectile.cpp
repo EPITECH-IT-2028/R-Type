@@ -75,14 +75,26 @@ void game::Projectile::setVelocity(float vx, float vy) {
   }
 }
 
-uint32_t game::Projectile::getSequenceNumber() const {
+ProjectileType game::Projectile::getType() const {
+  if (hasComponent<ecs::ProjectileComponent>()) {
+    return getComponent<ecs::ProjectileComponent>().type;
+  }
+  return ProjectileType{};
+}
+void game::Projectile::setType(ProjectileType type) {
+  if (hasComponent<ecs::ProjectileComponent>()) {
+    getComponent<ecs::ProjectileComponent>().type = type;
+  }
+}
+
+std::uint32_t game::Projectile::getSequenceNumber() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
     return getComponent<ecs::ProjectileComponent>().sequence_number;
   }
   return 0;
 }
 
-void game::Projectile::setSequenceNumber(uint32_t seq) {
+void game::Projectile::setSequenceNumber(std::uint32_t seq) {
   if (hasComponent<ecs::ProjectileComponent>()) {
     getComponent<ecs::ProjectileComponent>().sequence_number = seq;
   }

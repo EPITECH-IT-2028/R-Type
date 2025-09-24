@@ -24,7 +24,7 @@ namespace game {
                                            const std::string &name);
 
       std::shared_ptr<game::Projectile> createProjectile(
-          std::uint16_t projectile_id, uint32_t owner_id, const ProjectileType &type,
+          std::uint32_t projectile_id, uint32_t owner_id, const ProjectileType &type,
           float x, float y);
 
       void destroyPlayer(int player_id);
@@ -33,7 +33,7 @@ namespace game {
 
       std::shared_ptr<Player> getPlayer(int player_id);
 
-      std::shared_ptr<Projectile> getProjectile(std::uint16_t projectile_id);
+      std::shared_ptr<Projectile> getProjectile(std::uint32_t projectile_id);
 
       std::vector<std::shared_ptr<Player>> getAllPlayers() const;
 

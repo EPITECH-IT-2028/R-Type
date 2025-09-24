@@ -94,7 +94,7 @@ std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
 }
 
 std::shared_ptr<game::Projectile> game::Game::createProjectile(
-    std::uint16_t projectile_id, uint32_t owner_id, const ProjectileType &type, float x, float y) {
+    std::uint32_t projectile_id, uint32_t owner_id, const ProjectileType &type, float x, float y) {
   std::scoped_lock lock(_projectileMutex);
   auto entity = _ecsManager->createEntity();
 
@@ -120,7 +120,7 @@ void game::Game::destroyProjectile(std::uint32_t projectile_id) {
   }
 }
 
-std::shared_ptr<game::Projectile> game::Game::getProjectile(std::uint16_t projectile_id) {
+std::shared_ptr<game::Projectile> game::Game::getProjectile(std::uint32_t projectile_id) {
   std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   return (it != _projectiles.end()) ? it->second : nullptr;

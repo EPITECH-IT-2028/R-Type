@@ -37,8 +37,8 @@ namespace game {
       std::pair<float, float> getVelocity() const;
       void setVelocity(float vx, float vy);
 
-      uint32_t getSequenceNumber() const;
-      void setSequenceNumber(uint32_t seq);
+      std::uint32_t getSequenceNumber() const;
+      void setSequenceNumber(std::uint32_t seq);
 
       ProjectileType getType() const;
       void setType(ProjectileType type);
