@@ -86,5 +86,6 @@ namespace server {
       std::uint16_t _port;
       int _player_count;
       int _next_player_id;
+      std::shared_ptr<asio::steady_timer> _eventTimer;
   };
 }  // namespace server

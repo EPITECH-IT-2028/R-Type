@@ -5,15 +5,13 @@
 
 void ecs::EnemySystem::update(float deltaTime) {
   for (auto entity : _entities) {
-    if (_ecsManager->hasComponent<EnemyComponent>(entity)) {
-      auto &enemy = _ecsManager->getComponent<EnemyComponent>(entity);
+    auto &enemy = _ecsManager->getComponent<EnemyComponent>(entity);
 
-      switch (enemy.type) {
-        case EnemyType::BASIC:
-          moveBasics(deltaTime);
-          shootAtPlayer(deltaTime);
-          break;
-      }
+    switch (enemy.type) {
+      case EnemyType::BASIC:
+        moveBasics(deltaTime);
+        shootAtPlayer(deltaTime);
+        break;
     }
   }
 }

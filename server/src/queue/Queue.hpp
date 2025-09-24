@@ -12,12 +12,12 @@ namespace queue {
       EventQueue() = default;
       ~EventQueue() = default;
 
-      void addRequest(const queue::GameEvent &event) {
+      void addRequest(const GameEvent &event) {
         std::lock_guard<std::mutex> lock(_mutex);
         _queue.push(event);
       }
 
-      bool popRequest(queue::GameEvent &event) {
+      bool popRequest(GameEvent &event) {
         std::lock_guard<std::mutex> lock(_mutex);
         if (_queue.empty()) {
           return false;
@@ -28,7 +28,7 @@ namespace queue {
       }
 
     private:
-      std::queue<queue::GameEvent> _queue;
+      std::queue<GameEvent> _queue;
       mutable std::mutex _mutex;
   };
 

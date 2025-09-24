@@ -29,20 +29,72 @@ void server::Server::start() {
   _game.start();
 
   startReceive();
+
+  _eventTimer = std::make_shared<asio::steady_timer>(_io_context);
+  scheduleEventProcessing();
+}
+
+void server::Server::stop() {
+  std::cout << "[CONSOLE] Server stopped..." << std::endl;
+  if (_eventTimer) {
+    _eventTimer->cancel();
+  }
+
+  _game.stop();
+  _socket.close();
+}
+
+/*
+ * This function create an event loop that processes game events at regular
+ * intervals.
+ */
+void server::Server::scheduleEventProcessing() {
+  _eventTimer->expires_after(std::chrono::milliseconds(50));
+  _eventTimer->async_wait([this](const asio::error_code &error) {
+    if (!error) {
+      processGameEvents();
+      scheduleEventProcessing();
+    }
+  });
 }
 
 void server::Server::processGameEvents() {
   queue::GameEvent event;
-  std::cout << "[DEBUG] Processing game events..." << std::endl;
 
   while (_game.getEventQueue().popRequest(event)) {
     handleGameEvent(event);
   }
 }
 
-void server::Server::stop() {
-  std::cout << "[CONSOLE] Server stopped..." << std::endl;
-  _socket.close();
+void server::Server::handleGameEvent(const queue::GameEvent &event) {
+  std::visit(
+      [this](const auto &specificEvent) {
+        using T = std::decay_t<decltype(specificEvent)>;
+
+        if constexpr (std::is_same_v<T, queue::EnemySpawnEvent>) {
+          auto enemySpawnPacket = PacketBuilder::makeEnemySpawn(
+              specificEvent.enemy_id, static_cast<EnemyType>(0x01),
+              specificEvent.x, specificEvent.y, specificEvent.vx,
+              specificEvent.vy, specificEvent.health, specificEvent.max_health);
+          broadcast::Broadcast::broadcastEnemySpawn(_socket, _clients,
+                                                    enemySpawnPacket);
+
+        } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
+          auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
+              specificEvent.enemy_id, specificEvent.x, specificEvent.y);
+          broadcast::Broadcast::broadcastEnemyDeath(_socket, _clients,
+                                                    enemyDeathPacket);
+
+        } else if constexpr (std::is_same_v<T, queue::EnemyMoveEvent>) {
+          auto enemyMovePacket = PacketBuilder::makeEnemyMove(
+              specificEvent.enemy_id, specificEvent.x, specificEvent.y,
+              specificEvent.vx, specificEvent.vy,
+              specificEvent.sequence_number);
+          broadcast::Broadcast::broadcastEnemyMove(_socket, _clients,
+                                                   enemyMovePacket);
+        }
+      },
+      event);
 }
 
 /*

@@ -50,6 +50,9 @@ void game::Game::start() {
 
 void game::Game::stop() {
   _running = false;
+  if (_gameThread.joinable()) {
+    _gameThread.join();
+  }
 }
 
 void game::Game::gameLoop() {
