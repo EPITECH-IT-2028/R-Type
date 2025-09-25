@@ -10,7 +10,7 @@ add_compile_options(-W -Wall -Wextra)
 
 target_link_libraries(${PROJECT_NAME} raylib)
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ../game_engine/ecs/
-    ../game_engine/ecs/components/
-    ../game_engine/ecs/systems/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
 )

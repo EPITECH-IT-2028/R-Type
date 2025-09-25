@@ -24,8 +24,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   src/game/
   src/player/
   src/projectile/
-  ../core/network/
-  ../game_engine/ecs/
-  ../game_engine/ecs/components/
-  ../game_engine/ecs/systems/
+  ${CMAKE_SOURCE_DIR}/core/network/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
 )
