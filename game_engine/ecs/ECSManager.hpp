@@ -12,7 +12,10 @@ namespace ecs {
               _componentManager(std::make_unique<ComponentManager>()),
               _systemManager(std::make_unique<SystemManager>()) {}
 
-        ~ECSManager() = default;
+        static ECSManager &getInstance() {
+          static ECSManager instance;
+          return instance;
+        }
 
         Entity createEntity() {
           return _entityManager->createEntity();
