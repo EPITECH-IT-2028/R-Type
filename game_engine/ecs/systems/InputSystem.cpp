@@ -4,6 +4,7 @@
 
 namespace ecs {
   void InputSystem::update(float deltaTime) {
+    (void)deltaTime;
     for (auto const &entity : _entities) {
       auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
 
