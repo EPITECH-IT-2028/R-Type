@@ -95,6 +95,11 @@ namespace ecs {
           return _systemManager->getSystem<T>();
         }
 
+      public:
+        static ECSManager &getInstance() {
+          static ECSManager instance;
+          return instance;
+        }
       private:
         std::unique_ptr<EntityManager> _entityManager;
         std::unique_ptr<ComponentManager> _componentManager;
