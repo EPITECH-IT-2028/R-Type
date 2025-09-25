@@ -8,21 +8,12 @@ namespace ecs {
     for (auto const &entity : _entities) {
       auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
 
-      if (IsKeyDown(KEY_UP)) {
-        velocity.vy = -1;
-      } else if (IsKeyDown(KEY_DOWN)) {
-        velocity.vy = 1;
-      } else {
-        velocity.vy = 0;
-      }
-
-      if (IsKeyDown(KEY_LEFT)) {
-        velocity.vx = -1;
-      } else if (IsKeyDown(KEY_RIGHT)) {
-        velocity.vx = 1;
-      } else {
-        velocity.vx = 0;
-      }
+      const int velocityY =
+          (IsKeyDown(KEY_DOWN) ? 1 : 0) - (IsKeyDown(KEY_UP) ? 1 : 0);
+      const int velocityX =
+          (IsKeyDown(KEY_RIGHT) ? 1 : 0) - (IsKeyDown(KEY_LEFT) ? 1 : 0);
+      velocity.vy = velocityY;
+      velocity.vx = velocityX;
     }
   }
 }  // namespace ecs
