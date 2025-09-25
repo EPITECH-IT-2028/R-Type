@@ -7,10 +7,11 @@
 namespace ecs {
     class ECSManager {
       public:
-        ECSManager()
-            : _entityManager(std::make_unique<EntityManager>()),
-              _componentManager(std::make_unique<ComponentManager>()),
-              _systemManager(std::make_unique<SystemManager>()) {}
+        ECSManager(const ECSManager&) = delete;
+        ECSManager& operator=(const ECSManager&) = delete;
+        ECSManager(ECSManager&&) = delete;
+        ECSManager& operator=(ECSManager&&) = delete;
+        ~ECSManager() = default;
 
         static ECSManager &getInstance() {
           static ECSManager instance;
@@ -91,6 +92,7 @@ namespace ecs {
         }
 
       private:
+        ECSManager() = default;
         std::unique_ptr<EntityManager> _entityManager;
         std::unique_ptr<ComponentManager> _componentManager;
         std::unique_ptr<SystemManager> _systemManager;
