@@ -115,8 +115,6 @@ struct ALIGNED PlayerShootPacket {
     PacketHeader header;
     float x;
     float y;
-    float direction_x;
-    float direction_y;
     ProjectileType projectile_type;
     uint32_t sequence_number;
 };

@@ -33,7 +33,7 @@ elif [ $# -eq 1 ]; then
                 echo -e "\033[1;31m[ OK ] Removing CMakeUserPresets.json...\033[0m"
                 rm -rf CMakeUserPresets.json
             fi
-            if [ -L "compile_commands.json" ]; then
+            if [ -L "compile_commands.json" ] || [ -f "compile_commands.json" ]; then
                 echo -e "\033[1;31m[ OK ] Removing compile_commands.json...\033[0m"
                 rm -f compile_commands.json
             fi
@@ -126,7 +126,11 @@ fi
 
 # Install conan dependencies
 echo "Installing conan dependencies..."
-conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default
+if ! conan profile show default > /dev/null 2>&1; then
+    echo "[INFO] Conan default profile not found. Detecting..."
+    conan profile detect --force > /dev/null 2>&1
+fi
+conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
 
 case $TARGET in
     "client")

@@ -41,6 +41,22 @@ namespace server {
         return _player_count;
       }
 
+      std::uint32_t getProjectileCount() const {
+        return _projectile_count;
+      }
+
+      void setProjectileCount(std::uint32_t projectile_count) {
+        _projectile_count = projectile_count;
+      }
+
+      std::uint32_t getNextProjectileId() const {
+        return _next_projectile_id;
+      }
+
+      void setNextProjectileId(std::uint32_t next_projectile_id) {
+        _next_projectile_id = next_projectile_id;
+      }
+
       const std::vector<std::shared_ptr<Client>> &getClients() const {
         return _clients;
       }
@@ -87,5 +103,7 @@ namespace server {
       int _player_count;
       int _next_player_id;
       std::shared_ptr<asio::steady_timer> _eventTimer;
+      std::uint32_t _projectile_count;
+      std::uint32_t _next_projectile_id;
   };
 }  // namespace server

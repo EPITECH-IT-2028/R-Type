@@ -1,12 +1,15 @@
 #include "Game.hpp"
 #include <chrono>
+#include <cstdint>
 #include <iostream>
 #include <mutex>
+#include <thread>
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "HealthComponent.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
+#include "ProjectileComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -20,6 +23,7 @@ void game::Game::initECS() {
   _ecsManager->registerComponent<ecs::HealthComponent>();
   _ecsManager->registerComponent<ecs::SpeedComponent>();
   _ecsManager->registerComponent<ecs::PlayerComponent>();
+  _ecsManager->registerComponent<ecs::ProjectileComponent>();
   _ecsManager->registerComponent<ecs::VelocityComponent>();
   _ecsManager->registerComponent<ecs::EnemyComponent>();
 
@@ -184,4 +188,57 @@ std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
     enemyList.push_back(pair.second);
   }
   return enemyList;
+}
+
+std::shared_ptr<game::Projectile> game::Game::createProjectile(
+    std::uint32_t projectile_id, std::uint32_t owner_id, ProjectileType type,
+    float x, float y) {
+  std::shared_ptr<Projectile> projectile;
+  uint32_t entity;
+  {
+    std::scoped_lock ecsLock(_ecsMutex);
+    entity = _ecsManager->createEntity();
+    _ecsManager->addComponent<ecs::PositionComponent>(entity, {x, y});
+    _ecsManager->addComponent<ecs::SpeedComponent>(entity, {10.0f});
+    _ecsManager->addComponent<ecs::ProjectileComponent>(entity, {type});
+    _ecsManager->addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
+    projectile = std::make_shared<Projectile>(projectile_id, owner_id, entity,
+                                              _ecsManager.get());
+  }
+  {
+    std::scoped_lock lk(_projectileMutex);
+    _projectiles[projectile_id] = projectile;
+  }
+  return projectile;
+}
+
+void game::Game::destroyProjectile(std::uint32_t projectile_id) {
+  std::scoped_lock lock(_projectileMutex);
+  auto it = _projectiles.find(projectile_id);
+  if (it != _projectiles.end()) {
+    uint32_t entity_id = it->second->getEntityId();
+    {
+      std::scoped_lock ecsLock(_ecsMutex);
+      _ecsManager->destroyEntity(entity_id);
+    }
+    _projectiles.erase(it);
+  }
+}
+
+std::shared_ptr<game::Projectile> game::Game::getProjectile(
+    std::uint32_t projectile_id) {
+  std::scoped_lock lock(_projectileMutex);
+  auto it = _projectiles.find(projectile_id);
+  return (it != _projectiles.end()) ? it->second : nullptr;
+}
+
+std::vector<std::shared_ptr<game::Projectile>> game::Game::getAllProjectiles()
+    const {
+  std::scoped_lock lock(_projectileMutex);
+  std::vector<std::shared_ptr<Projectile>> projectileList;
+  projectileList.reserve(_projectiles.size());
+  for (const auto &pair : _projectiles) {
+    projectileList.push_back(pair.second);
+  }
+  return projectileList;
 }
