@@ -44,7 +44,7 @@ namespace game {
       std::atomic<bool> _running;
       std::thread _gameThread;
 
-      std::unique_ptr<ecs::ECSManager> _ecsManager;
+      ecs::ECSManager& _ecsManager;
       std::unordered_map<int, std::shared_ptr<Player>> _players;
       std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>>
           _projectiles;
