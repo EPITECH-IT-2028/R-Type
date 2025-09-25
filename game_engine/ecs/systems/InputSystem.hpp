@@ -6,9 +6,12 @@
 namespace ecs {
   class InputSystem : public System {
     public:
+      explicit InputSystem(ECSManager &ecsManager = ECSManager::getInstance())
+          : _ecsManager(ecsManager) {}
+
       void update(float deltaTime) override;
 
     private:
-      ECSManager &_ecsManager = ECSManager::getInstance();
+      ECSManager &_ecsManager;
   };
 }  // namespace ecs
