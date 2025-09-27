@@ -1,18 +1,22 @@
-#include "raylib.h"
+#include "RenderManager.hpp"
 
 int main() {
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  InitWindow(800, 600, "Raylib Window");
-  if (!IsWindowState(FLAG_VSYNC_HINT))
-    SetTargetFPS(60);
+  renderManager::renderer renderer(800, 200, "Render Manager Example");
 
-  while (!WindowShouldClose()) {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawText("Hello, Raylib!", 340, 280, 20, DARKGRAY);
-    EndDrawing();
+  const float aspectRatio = 800.0f / 200.0f;
+
+  while (!renderer.shouldClose()) {
+    if (IsWindowResized()) {
+      int newWidth = GetScreenWidth();
+      int newHeight = (int)(newWidth / aspectRatio);
+      SetWindowSize(newWidth, newHeight);
+    }
+    renderer.beginDrawing();
+    renderer.clearBackground(RAYWHITE);
+    renderer.drawBackground();
+    renderer.updateBackground();
+    renderer.endDrawing();
   }
 
-  CloseWindow();
   return 0;
 }
