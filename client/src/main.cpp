@@ -1,4 +1,8 @@
-#include "raylib.h"
+#include "ECSManager.hpp"
+#include "PositionComponent.hpp"
+#include "RenderComponent.hpp"
+#include "RenderSystem.hpp"
+#include "raylib.h"  
 
 int main() {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
