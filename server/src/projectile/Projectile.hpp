@@ -1,34 +1,35 @@
 #pragma once
 
-#include <string>
+#include <cstdint>
 #include <utility>
 #include "ECSManager.hpp"
+#include "Packet.hpp"
 
 namespace game {
 
-  class Player {
+  class Projectile {
     public:
-      Player(int player_id, uint32_t entity_id, ecs::ECSManager &ecsManager);
-      ~Player() = default;
+      Projectile(std::uint32_t projectile_id, std::uint32_t owner_id,
+                 std::uint32_t entity_id, ecs::ECSManager &ecsManager);
+      ~Projectile() = default;
 
-      int getPlayerId() const {
-        return _player_id;
+      std::uint32_t getProjectileId() const {
+        return _projectile_id;
       }
 
-      uint32_t getEntityId() const {
+      std::uint32_t getEntityId() const {
         return _entity_id;
+      }
+
+      std::uint32_t getOwnerId() const {
+        return _owner_id;
       }
 
       std::pair<float, float> getPosition() const;
       void setPosition(float x, float y);
       void move(float deltaX, float deltaY);
 
-      int getHealth() const;
-      int getMaxHealth() const;
-      void setHealth(int health);
-      void takeDamage(int damage);
-      void heal(int amount);
-      bool isAlive() const;
+      bool isDestroyed() const;
 
       float getSpeed() const;
       void setSpeed(float speed);
@@ -36,20 +37,13 @@ namespace game {
       std::pair<float, float> getVelocity() const;
       void setVelocity(float vx, float vy);
 
-      uint32_t getSequenceNumber() const;
-      void setSequenceNumber(uint32_t seq);
-      bool isConnected() const;
-      void setConnected(bool connected);
+      std::uint32_t getSequenceNumber() const;
+      void setSequenceNumber(std::uint32_t seq);
 
-      const std::string &getName() const;
-      void setName(const std::string &name);
+      ProjectileType getType() const;
+      void setType(ProjectileType type);
 
       void update(float deltaTime);
-
-    private:
-      int _player_id;
-      uint32_t _entity_id;
-      ecs::ECSManager &_ecsManager;
 
       template <typename T>
       T &getComponent() {
@@ -65,6 +59,12 @@ namespace game {
       const T &getComponent() const {
         return _ecsManager.getComponent<T>(_entity_id);
       }
+
+    private:
+      std::uint32_t _projectile_id;
+      std::uint32_t _owner_id;
+      std::uint32_t _entity_id;
+      ecs::ECSManager &_ecsManager;
   };
 
 }  // namespace game

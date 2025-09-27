@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -8,6 +9,7 @@
 #include <vector>
 #include "ECSManager.hpp"
 #include "Player.hpp"
+#include "Projectile.hpp"
 
 namespace game {
 
@@ -21,11 +23,20 @@ namespace game {
       std::shared_ptr<Player> createPlayer(int player_id,
                                            const std::string &name);
 
+      std::shared_ptr<game::Projectile> createProjectile(
+          std::uint32_t projectile_id, std::uint32_t owner_id,
+          ProjectileType type, float x, float y);
       void destroyPlayer(int player_id);
+
+      void destroyProjectile(std::uint32_t projectile_id);
 
       std::shared_ptr<Player> getPlayer(int player_id);
 
+      std::shared_ptr<Projectile> getProjectile(std::uint32_t projectile_id);
+
       std::vector<std::shared_ptr<Player>> getAllPlayers() const;
+
+      std::vector<std::shared_ptr<Projectile>> getAllProjectiles() const;
 
     private:
       void gameLoop();
@@ -33,9 +44,13 @@ namespace game {
       std::atomic<bool> _running;
       std::thread _gameThread;
 
-      std::unique_ptr<ecs::ECSManager> _ecsManager;
+      ecs::ECSManager& _ecsManager;
       std::unordered_map<int, std::shared_ptr<Player>> _players;
+      std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>>
+          _projectiles;
+      mutable std::mutex _ecsMutex;
       mutable std::mutex _playerMutex;
+      mutable std::mutex _projectileMutex;
   };
 
 }  // namespace game

@@ -11,8 +11,16 @@ namespace ecs {
             : _entityManager(std::make_unique<EntityManager>()),
               _componentManager(std::make_unique<ComponentManager>()),
               _systemManager(std::make_unique<SystemManager>()) {}
-
+        ECSManager(const ECSManager&) = delete;
+        ECSManager& operator=(const ECSManager&) = delete;
+        ECSManager(ECSManager&&) = delete;
+        ECSManager& operator=(ECSManager&&) = delete;
         ~ECSManager() = default;
+
+        static ECSManager &getInstance() {
+          static ECSManager instance;
+          return instance;
+        }
 
         Entity createEntity() {
           return _entityManager->createEntity();
