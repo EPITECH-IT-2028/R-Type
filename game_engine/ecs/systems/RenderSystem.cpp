@@ -16,29 +16,22 @@ void ecs::RenderSystem::render() {
 
     auto &renderComp = _ecsManager->getComponent<ecs::RenderComponent>(entity);
     
-    std::string sprite = renderComp.sprite;
-    std::cout << "Sprite path: " << sprite << std::endl;
-    if (sprite.empty()) {
+    if (renderComp._texturePath.empty()) {
       continue;
     }
 
-    float width = renderComp.width;
-    float height = renderComp.height;
-    float offsetX = renderComp.offsetX;
-    float offsetY = renderComp.offsetY;
+    float width = renderComp._width;
+    float height = renderComp._height;
+    float offsetX = renderComp._offsetX;
+    float offsetY = renderComp._offsetY;
 
     float posX = _ecsManager->getComponent<ecs::PositionComponent>(entity).x;
     float posY = _ecsManager->getComponent<ecs::PositionComponent>(entity).y;
 
-    Texture2D texture = LoadTexture(sprite.c_str());
-    if (texture.id == 0) {
-        std::cerr << "Failed to load texture: " << sprite << std::endl;
-        continue;
-    }
     Rectangle sourceRec = {0.0f, 0.0f, width, height};
-    Rectangle destRec = {posX + offsetX, posY + offsetY, width > 0 ? width : static_cast<float>(texture.width), height > 0 ? height : static_cast<float>(texture.height)};
+    Rectangle destRec = {posX + offsetX, posY + offsetY, width, height};
     Vector2 origin = {0.0f, 0.0f};
 
-    DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
+    DrawTexturePro(renderComp._texture, sourceRec, destRec, origin, 0.0f, WHITE);
   }
 }
