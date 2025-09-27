@@ -7,9 +7,9 @@ namespace ecs {
 
   class RenderComponent {
    public:
-    RenderComponent(const std::string &spritePath = "", float w = 0, float h = 0, float offX = 0, float offY = 0)
-    : _sprite(spritePath), _width(w), _height(h), _offsetX(offX), _offsetY(offY) {
-        _texture = LoadTexture(spritePath.c_str());
+    RenderComponent(const std::string &texturePath = "", float w = 0, float h = 0, float offX = 0, float offY = 0)
+    : _texturePath(texturePath), _width(w), _height(h), _offsetX(offX), _offsetY(offY) {
+        _texture = LoadTexture(texturePath.c_str());
     }
 
     ~RenderComponent() {
