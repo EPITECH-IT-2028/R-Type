@@ -3,14 +3,14 @@
 #include "raylib.h"
 
 namespace renderManager {
-  class background {
+  class Background {
     public:
-      background() = default;
-      background(const background &) = delete;
-      background &operator=(const background &) = delete;
-      background(background &&) = default;
-      background &operator=(background &&) = default;
-      ~background();
+      Background() = default;
+      Background(const Background &) = delete;
+      Background &operator=(const Background &) = delete;
+      Background(Background &&) = default;
+      Background &operator=(Background &&) = default;
+      ~Background();
 
       void init();
       void draw() const;
@@ -22,14 +22,14 @@ namespace renderManager {
       float _scrollingOffset = 0.0f;
   };
 
-  class renderer {
+  class Renderer {
     public:
-      renderer(int width, int height, const char *title);
-      renderer(const renderer &) = delete;
-      renderer &operator=(const renderer &) = delete;
-      renderer(renderer &&) noexcept = default;
-      renderer &operator=(renderer &&) noexcept = default;
-      ~renderer();
+      Renderer(int width, int height, const char *title);
+      Renderer(const Renderer &) = delete;
+      Renderer &operator=(const Renderer &) = delete;
+      Renderer(Renderer &&) noexcept = default;
+      Renderer &operator=(Renderer &&) noexcept = default;
+      ~Renderer();
 
       bool shouldClose() const;
       void beginDrawing() const;
@@ -42,6 +42,6 @@ namespace renderManager {
       void updateBackground(float deltaTime);
 
     private:
-      background _bg;
+      Background _bg;
   };
 }  // namespace renderManager

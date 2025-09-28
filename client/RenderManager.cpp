@@ -4,7 +4,7 @@
 #include <ostream>
 
 namespace renderManager {
-  void background::init() {
+  void Background::init() {
     Image image = LoadImage("client/resources/background.png");
     if (image.data == nullptr) {
       std::cerr << "Failed to load background image" << std::endl;
@@ -17,12 +17,12 @@ namespace renderManager {
                       (float)_texture.height};
   }
 
-  background::~background() {
+  Background::~Background() {
     if (_texture.id != 0)
       UnloadTexture(_texture);
   }
 
-  void background::draw() const {
+  void Background::draw() const {
     if (_texture.id == 0) {
       DrawText("Failed to load background texture", 10, 10, 20, RED);
       return;
@@ -38,7 +38,7 @@ namespace renderManager {
     DrawTexturePro(_texture, _backgroundRec, dest, {0, 0}, 0, WHITE);
   }
 
-  void background::offsetBackground(float offset) {
+  void Background::offsetBackground(float offset) {
     _scrollingOffset += offset;
     if (_scrollingOffset >= (float)_texture.width)
       _scrollingOffset -= (float)_texture.width;
@@ -49,7 +49,7 @@ namespace renderManager {
 }  // namespace renderManager
 
 namespace renderManager {
-  renderer::renderer(int width, int height, const char *title) {
+  Renderer::Renderer(int width, int height, const char *title) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     InitWindow(width, height, title);
     SetWindowMinSize(800, 200);
@@ -59,36 +59,36 @@ namespace renderManager {
       SetTargetFPS(60);
   }
 
-  renderer::~renderer() {
+  Renderer::~Renderer() {
     CloseWindow();
   }
 
-  bool renderer::shouldClose() const {
+  bool Renderer::shouldClose() const {
     return WindowShouldClose();
   }
 
-  void renderer::beginDrawing() const {
+  void Renderer::beginDrawing() const {
     BeginDrawing();
   }
 
-  void renderer::clearBackground(Color color) const {
+  void Renderer::clearBackground(Color color) const {
     ClearBackground(color);
   }
 
-  void renderer::drawText(const char *text, int posX, int posY, int fontSize,
+  void Renderer::drawText(const char *text, int posX, int posY, int fontSize,
                           Color color) const {
     DrawText(text, posX, posY, fontSize, color);
   }
 
-  void renderer::endDrawing() const {
+  void Renderer::endDrawing() const {
     EndDrawing();
   }
 
-  void renderer::drawBackground() const {
+  void Renderer::drawBackground() const {
     _bg.draw();
   }
 
-  void renderer::updateBackground(float deltaTime) {
+  void Renderer::updateBackground(float deltaTime) {
     _bg.offsetBackground(25.f * deltaTime);
   }
 }  // namespace renderManager
