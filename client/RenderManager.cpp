@@ -3,9 +3,6 @@
 #include <iostream>
 #include <ostream>
 
-#define BG_WIDTH 1226.0f
-#define BG_HEIGHT 207.0f
-
 namespace renderManager {
   void background::init() {
     Image image = LoadImage("client/resources/background.png");
@@ -16,7 +13,8 @@ namespace renderManager {
       _texture = LoadTextureFromImage(image);
       UnloadImage(image);
     }
-    _backgroundRec = {0.0f, 0.0f, BG_WIDTH, BG_HEIGHT};
+    _backgroundRec = {0.0f, 0.0f, (float)_texture.width,
+                      (float)_texture.height};
   }
 
   background::~background() {
@@ -42,8 +40,10 @@ namespace renderManager {
 
   void background::offsetBackground(float offset) {
     _scrollingOffset += offset;
-    if (_scrollingOffset <= -BG_WIDTH)
-      _scrollingOffset = 0.0f;
+    if (_scrollingOffset >= (float)_texture.width)
+      _scrollingOffset -= (float)_texture.width;
+    else if (_scrollingOffset <= -(float)_texture.width)
+      _scrollingOffset += (float)_texture.width;
     _backgroundRec.x = _scrollingOffset;
   }
 }  // namespace renderManager
