@@ -48,6 +48,11 @@ void ecs::EnemySystem::moveBasics(float deltaTime, const Entity &entity) {
 }
 
 void ecs::EnemySystem::shootAtPlayer(float deltaTime, const Entity &entity) {
+  if (!_ecsManager->hasComponent<EnemyComponent>(entity) ||
+      !_ecsManager->hasComponent<PositionComponent>(entity) ||
+      !_ecsManager->hasComponent<ShootComponent>(entity)) {
+    return;
+  }
   auto &enemy = _ecsManager->getComponent<EnemyComponent>(entity);
   auto &position = _ecsManager->getComponent<PositionComponent>(entity);
   auto &shooting = _ecsManager->getComponent<ShootComponent>(entity);
