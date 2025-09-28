@@ -1,13 +1,11 @@
 #pragma once
 
+#include "Packet.hpp"
 namespace ecs {
 
-  enum class EnemyType {
-    BASIC
-  };
-
   struct EnemyComponent {
-      EnemyType type = EnemyType::BASIC;
+      int enemy_id = -1;
+      EnemyType type = EnemyType::BASIC_FIGHTER;
       bool is_alive = true;
   };
 }  // namespace ecs

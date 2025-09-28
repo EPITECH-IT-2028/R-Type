@@ -94,6 +94,14 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemyMove(_socket, _clients,
                                                    enemyMovePacket);
+        } else if constexpr (std::is_same_v<T, queue::ProjectileSpawnEvent>) {
+          auto projectileSpawnPacket = PacketBuilder::makeProjectileSpawn(
+              specificEvent.projectile_id, specificEvent.type, specificEvent.x,
+              specificEvent.y, specificEvent.vx, specificEvent.vy,
+              specificEvent.is_enemy_projectile, specificEvent.damage,
+              specificEvent.owner_id);
+          broadcast::Broadcast::broadcastProjectileSpawn(_socket, _clients,
+                                                         projectileSpawnPacket);
         }
       },
       event);

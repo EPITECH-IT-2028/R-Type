@@ -9,10 +9,10 @@
 #include <vector>
 #include "ECSManager.hpp"
 #include "Enemy.hpp"
-#include "EnemyComponent.hpp"
 #include "EnemySystem.hpp"
 #include "Player.hpp"
 #include "Projectile.hpp"
+#include "ProjectileSystem.hpp"
 #include "Queue.hpp"
 
 namespace game {
@@ -30,7 +30,7 @@ namespace game {
 
       std::shared_ptr<game::Projectile> createProjectile(
           std::uint32_t projectile_id, std::uint32_t owner_id,
-          ProjectileType type, float x, float y);
+          ProjectileType type, float x, float y, float vx, float vy);
       void destroyPlayer(int player_id);
 
       void destroyProjectile(std::uint32_t projectile_id);
@@ -42,8 +42,7 @@ namespace game {
       std::vector<std::shared_ptr<Player>> getAllPlayers() const;
 
       /* Enemy Management */
-      std::shared_ptr<Enemy> createEnemy(int enemy_id,
-                                         const ecs::EnemyType type);
+      std::shared_ptr<Enemy> createEnemy(int enemy_id, const EnemyType type);
       void destroyEnemy(int enemy_id);
       std::shared_ptr<Enemy> getEnemy(int enemy_id);
       std::vector<std::shared_ptr<Enemy>> getAllEnemies() const;
@@ -73,11 +72,12 @@ namespace game {
       std::unique_ptr<ecs::ECSManager> _ecsManager;
 
       std::shared_ptr<ecs::EnemySystem> _enemySystem;
+      std::shared_ptr<ecs::ProjectileSystem> _projectileSystem;
 
       std::unordered_map<int, std::shared_ptr<Enemy>> _enemies;
 
       float _enemySpawnTimer = 0.0f;
-      float _enemySpawnInterval = 3.0f;
+      float _enemySpawnInterval = 5.0f;
       int _nextEnemyId = 0;
 
       std::unordered_map<int, std::shared_ptr<Player>> _players;

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <variant>
-#include "EnemyComponent.hpp"
+#include "Packet.hpp"
 
 namespace queue {
 
   struct EnemySpawnEvent {
       int enemy_id;
-      ecs::EnemyType type;
+      EnemyType type;
       float x;
       float y;
       float vx;
@@ -31,7 +31,19 @@ namespace queue {
       int sequence_number;
   };
 
-  using GameEvent =
-      std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent>;
+  struct ProjectileSpawnEvent {
+      std::uint32_t projectile_id;
+      std::uint32_t owner_id;
+      float x;
+      float y;
+      float vx;
+      float vy;
+      bool is_enemy_projectile;
+      std::uint32_t damage;
+      ProjectileType type;
+  };
+
+  using GameEvent = std::variant<EnemySpawnEvent, EnemyDestroyEvent,
+                                 EnemyMoveEvent, ProjectileSpawnEvent>;
 
 }  // namespace queue

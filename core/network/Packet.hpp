@@ -25,7 +25,8 @@ enum class EnemyType : uint8_t {
 };
 
 enum class ProjectileType : uint8_t {
-  PLAYER_BASIC = 0x01
+  PLAYER_BASIC = 0x01,
+  ENEMY_BASIC = 0x02
 };
 
 #define ALIGNED alignas(4)

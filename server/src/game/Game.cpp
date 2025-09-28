@@ -1,15 +1,18 @@
 #include "Game.hpp"
 #include <chrono>
 #include <cstdint>
-#include <iostream>
 #include <mutex>
 #include <thread>
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
+#include "Events.hpp"
 #include "HealthComponent.hpp"
+#include "Packet.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
+#include "ProjectileSystem.hpp"
+#include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -26,15 +29,31 @@ void game::Game::initECS() {
   _ecsManager->registerComponent<ecs::ProjectileComponent>();
   _ecsManager->registerComponent<ecs::VelocityComponent>();
   _ecsManager->registerComponent<ecs::EnemyComponent>();
+  _ecsManager->registerComponent<ecs::ShootComponent>();
 
   _enemySystem = _ecsManager->registerSystem<ecs::EnemySystem>();
   _enemySystem->setECSManager(_ecsManager.get());
+  _enemySystem->setGame(this);
+  _enemySystem->setEventQueue(&_eventQueue);
+
+  _projectileSystem = _ecsManager->registerSystem<ecs::ProjectileSystem>();
+  _projectileSystem->setECSManager(_ecsManager.get());
 
   Signature enemySignature;
   enemySignature.set(_ecsManager->getComponentType<ecs::EnemyComponent>());
   enemySignature.set(_ecsManager->getComponentType<ecs::PositionComponent>());
   enemySignature.set(_ecsManager->getComponentType<ecs::VelocityComponent>());
+  enemySignature.set(_ecsManager->getComponentType<ecs::ShootComponent>());
   _ecsManager->setSystemSignature<ecs::EnemySystem>(enemySignature);
+
+  Signature projectileSignature;
+  projectileSignature.set(
+      _ecsManager->getComponentType<ecs::ProjectileComponent>());
+  projectileSignature.set(
+      _ecsManager->getComponentType<ecs::PositionComponent>());
+  projectileSignature.set(
+      _ecsManager->getComponentType<ecs::VelocityComponent>());
+  _ecsManager->setSystemSignature<ecs::ProjectileSystem>(projectileSignature);
 }
 
 game::Game::~Game() {
@@ -68,6 +87,7 @@ void game::Game::gameLoop() {
     lastTime = now;
 
     _enemySystem->update(deltaTime.count());
+    _projectileSystem->update(deltaTime.count());
 
     spawnEnemy(deltaTime.count());
 
@@ -86,6 +106,8 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager->addComponent<ecs::PlayerComponent>(entity,
                                                   {name, true, 0, true});
   _ecsManager->addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
+  _ecsManager->addComponent<ecs::ShootComponent>(entity,
+                                                 {0.0f, 3.0f, true, 0.0f});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager.get());
   _players[player_id] = player;
@@ -125,19 +147,16 @@ void game::Game::spawnEnemy(float deltaTime) {
   if (_enemySpawnTimer >= _enemySpawnInterval) {
     _enemySpawnTimer = 0.0f;
 
-    auto enemy = createEnemy(_nextEnemyId++, ecs::EnemyType::BASIC);
+    auto enemy = createEnemy(_nextEnemyId++, EnemyType::BASIC_FIGHTER);
 
     if (enemy) {
-      std::cout << "[DEBUG] Enemy spawned with ID " << enemy->getEnemyId()
-                << std::endl;
-
       auto pos = enemy->getPosition();
       auto vel = enemy->getVelocity();
       auto health = enemy->getHealth();
       auto max_health = enemy->getMaxHealth();
       queue::EnemySpawnEvent event;
       event.enemy_id = enemy->getEnemyId();
-      event.type = ecs::EnemyType::BASIC;
+      event.type = EnemyType::BASIC_FIGHTER;
       event.x = pos.first;
       event.y = pos.second;
       event.vx = vel.first;
@@ -149,15 +168,18 @@ void game::Game::spawnEnemy(float deltaTime) {
   }
 }
 
-std::shared_ptr<game::Enemy> game::Game::createEnemy(
-    int enemy_id, const ecs::EnemyType type) {
+std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
+                                                     const EnemyType type) {
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager->createEntity();
 
-  _ecsManager->addComponent<ecs::EnemyComponent>(entity, {type});
+  _ecsManager->addComponent<ecs::EnemyComponent>(entity,
+                                                 {enemy_id, type, true});
   _ecsManager->addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
   _ecsManager->addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager->addComponent<ecs::VelocityComponent>(entity, {-3.0f, 0.0f});
+  _ecsManager->addComponent<ecs::ShootComponent>(entity,
+                                                 {0.0f, 3.0f, true, 0.0f});
 
   auto enemy = std::make_shared<Enemy>(enemy_id, entity, _ecsManager.get());
   _enemies[enemy_id] = enemy;
@@ -192,7 +214,7 @@ std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
 
 std::shared_ptr<game::Projectile> game::Game::createProjectile(
     std::uint32_t projectile_id, std::uint32_t owner_id, ProjectileType type,
-    float x, float y) {
+    float x, float y, float vx, float vy) {
   std::shared_ptr<Projectile> projectile;
   uint32_t entity;
   {
@@ -209,6 +231,16 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
     std::scoped_lock lk(_projectileMutex);
     _projectiles[projectile_id] = projectile;
   }
+
+  queue::ProjectileSpawnEvent event;
+  event.projectile_id = projectile_id;
+  event.owner_id = owner_id;
+  event.type = type;
+  event.x = x;
+  event.y = y;
+  event.damage = projectile->getDamage();
+  event.is_enemy_projectile = true;
+  _eventQueue.addRequest(event);
   return projectile;
 }
 
