@@ -6,6 +6,10 @@ namespace renderManager {
   class background {
     public:
       background() = default;
+      background(const background &) = delete;
+      background &operator=(const background &) = delete;
+      background(background &&) = default;
+      background &operator=(background &&) = default;
       ~background();
 
       void init();
