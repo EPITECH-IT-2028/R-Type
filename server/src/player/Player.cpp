@@ -8,7 +8,7 @@
 #include "VelocityComponent.hpp"
 
 game::Player::Player(int player_id, uint32_t entity_id,
-                     ecs::ECSManager *ecsManager)
+                     ecs::ECSManager &ecsManager)
     : _player_id(player_id), _entity_id(entity_id), _ecsManager(ecsManager) {
 }
 

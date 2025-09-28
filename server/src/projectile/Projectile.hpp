@@ -10,7 +10,7 @@ namespace game {
   class Projectile {
     public:
       Projectile(std::uint32_t projectile_id, std::uint32_t owner_id,
-                 std::uint32_t entity_id, ecs::ECSManager *ecsManager);
+                 std::uint32_t entity_id, ecs::ECSManager &ecsManager);
       ~Projectile() = default;
 
       std::uint32_t getProjectileId() const {
@@ -48,30 +48,26 @@ namespace game {
 
       void update(float deltaTime);
 
-      ecs::ECSManager *getECSManager() const {
-        return _ecsManager;
+      template <typename T>
+      T &getComponent() {
+        return _ecsManager.getComponent<T>(_entity_id);
+      }
+
+      template <typename T>
+      bool hasComponent() const {
+        return _ecsManager.hasComponent<T>(_entity_id);
+      }
+
+      template <typename T>
+      const T &getComponent() const {
+        return _ecsManager.getComponent<T>(_entity_id);
       }
 
     private:
       std::uint32_t _projectile_id;
       std::uint32_t _owner_id;
       std::uint32_t _entity_id;
-      ecs::ECSManager *_ecsManager;
-
-      template <typename T>
-      T &getComponent() {
-        return _ecsManager->getComponent<T>(_entity_id);
-      }
-
-      template <typename T>
-      bool hasComponent() const {
-        return _ecsManager->hasComponent<T>(_entity_id);
-      }
-
-      template <typename T>
-      const T &getComponent() const {
-        return _ecsManager->getComponent<T>(_entity_id);
-      }
+      ecs::ECSManager &_ecsManager;
   };
 
 }  // namespace game

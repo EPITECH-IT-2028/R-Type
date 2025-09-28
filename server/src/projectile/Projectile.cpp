@@ -7,7 +7,7 @@
 
 game::Projectile::Projectile(std::uint32_t projectile_id,
                              std::uint32_t owner_id, std::uint32_t entity_id,
-                             ecs::ECSManager *ecsManager)
+                             ecs::ECSManager &ecsManager)
     : _projectile_id(projectile_id),
       _owner_id(owner_id),
       _entity_id(entity_id),

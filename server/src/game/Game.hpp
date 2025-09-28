@@ -48,7 +48,7 @@ namespace game {
       std::vector<std::shared_ptr<Enemy>> getAllEnemies() const;
 
       ecs::ECSManager &getECSManager() {
-        return *_ecsManager;
+        return _ecsManager;
       }
 
       std::shared_ptr<ecs::EnemySystem> getEnemySystem() {
@@ -69,8 +69,6 @@ namespace game {
 
       void spawnEnemy(float deltaTime);
 
-      std::unique_ptr<ecs::ECSManager> _ecsManager;
-
       std::shared_ptr<ecs::EnemySystem> _enemySystem;
       std::shared_ptr<ecs::ProjectileSystem> _projectileSystem;
 
@@ -80,6 +78,7 @@ namespace game {
       float _enemySpawnInterval = 5.0f;
       int _nextEnemyId = 0;
 
+      ecs::ECSManager &_ecsManager;
       std::unordered_map<int, std::shared_ptr<Player>> _players;
       std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>>
           _projectiles;

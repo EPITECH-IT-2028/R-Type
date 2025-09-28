@@ -6,7 +6,7 @@ namespace game {
 
   class Enemy {
     public:
-      Enemy(int enemy_id, uint32_t entity_id, ecs::ECSManager *ecsManager)
+      Enemy(int enemy_id, uint32_t entity_id, ecs::ECSManager &ecsManager)
           : _enemy_id(enemy_id),
             _entity_id(entity_id),
             _ecsManager(ecsManager) {
@@ -36,23 +36,23 @@ namespace game {
 
       template <typename T>
       T &getComponent() {
-        return _ecsManager->getComponent<T>(_entity_id);
+        return _ecsManager.getComponent<T>(_entity_id);
       }
 
       template <typename T>
       bool hasComponent() const {
-        return _ecsManager->hasComponent<T>(_entity_id);
+        return _ecsManager.hasComponent<T>(_entity_id);
       }
 
       template <typename T>
       const T &getComponent() const {
-        return _ecsManager->getComponent<T>(_entity_id);
+        return _ecsManager.getComponent<T>(_entity_id);
       }
 
     private:
       int _enemy_id;
       uint32_t _entity_id;
-      ecs::ECSManager *_ecsManager;
+      ecs::ECSManager &_ecsManager;
   };
 
 }  // namespace game
