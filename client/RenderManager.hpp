@@ -31,7 +31,7 @@ namespace renderManager {
       void endDrawing() const;
 
       void drawBackground() const;
-      void updateBackground();
+      void updateBackground(float deltaTime);
 
     private:
       background _bg;

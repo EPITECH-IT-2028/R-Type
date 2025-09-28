@@ -14,7 +14,8 @@ int main() {
     renderer.beginDrawing();
     renderer.clearBackground(RAYWHITE);
     renderer.drawBackground();
-    renderer.updateBackground();
+    float deltaTime = GetFrameTime();
+    renderer.updateBackground(deltaTime);
     renderer.endDrawing();
   }
 

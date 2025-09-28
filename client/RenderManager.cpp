@@ -88,7 +88,7 @@ namespace renderManager {
     _bg.draw();
   }
 
-  void renderer::updateBackground() {
-    _bg.offsetBackground(0.1f);
+  void renderer::updateBackground(float deltaTime) {
+    _bg.offsetBackground(25.f * deltaTime);
   }
 }  // namespace renderManager
