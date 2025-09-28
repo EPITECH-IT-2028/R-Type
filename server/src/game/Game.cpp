@@ -237,6 +237,8 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   event.y = y;
   event.damage = projectile->getDamage();
   event.is_enemy_projectile = true;
+  event.vx = vx;
+  event.vy = vy;
   _eventQueue.addRequest(event);
   return projectile;
 }

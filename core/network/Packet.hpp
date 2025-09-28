@@ -131,6 +131,7 @@ struct ALIGNED ProjectileSpawnPacket {
     float y;
     float velocity_x;
     float velocity_y;
+    float speed;
     uint32_t damage;
 };
 

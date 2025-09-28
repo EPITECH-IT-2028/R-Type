@@ -38,6 +38,7 @@ namespace queue {
       float y;
       float vx;
       float vy;
+      float speed;
       bool is_enemy_projectile;
       std::uint32_t damage;
       ProjectileType type;
