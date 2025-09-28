@@ -17,8 +17,8 @@ namespace renderManager {
       void offsetBackground(float offset);
 
     private:
-      Texture2D _texture;
-      Rectangle _backgroundRec;
+      Texture2D _texture{};
+      Rectangle _backgroundRec{};
       float _scrollingOffset = 0.0f;
   };
 
