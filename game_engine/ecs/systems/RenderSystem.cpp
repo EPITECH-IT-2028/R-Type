@@ -10,9 +10,6 @@ void ecs::RenderSystem::update(__attribute__((unused)) float deltaTime) {
 
 void ecs::RenderSystem::render() {
   for (Entity entity : _entities) {
-    if (!_ecsManager->hasComponent<ecs::RenderComponent>(entity)) {
-      continue;
-    }
 
     auto &renderComp = _ecsManager->getComponent<ecs::RenderComponent>(entity);
     
