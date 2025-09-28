@@ -1,5 +1,6 @@
 #include "EnemySystem.hpp"
-#include <iostream>
+#include <cmath>
+#include <limits>
 #include "EnemyComponent.hpp"
 #include "Game.hpp"
 #include "PositionComponent.hpp"
@@ -21,7 +22,8 @@ void ecs::EnemySystem::update(float deltaTime) {
 
 void ecs::EnemySystem::moveBasics(float deltaTime, const Entity &entity) {
   if (_ecsManager->hasComponent<EnemyComponent>(entity) &&
-      _ecsManager->hasComponent<PositionComponent>(entity)) {
+      _ecsManager->hasComponent<PositionComponent>(entity) &&
+      _ecsManager->hasComponent<VelocityComponent>(entity)) {
     auto &enemy = _ecsManager->getComponent<EnemyComponent>(entity);
     auto &position = _ecsManager->getComponent<PositionComponent>(entity);
     auto &velocity = _ecsManager->getComponent<VelocityComponent>(entity);

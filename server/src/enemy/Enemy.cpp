@@ -1,4 +1,5 @@
 #include "Enemy.hpp"
+#include <algorithm>
 #include "EnemyComponent.hpp"
 #include "HealthComponent.hpp"
 #include "Macros.hpp"
