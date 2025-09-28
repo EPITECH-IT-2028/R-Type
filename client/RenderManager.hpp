@@ -25,6 +25,10 @@ namespace renderManager {
   class renderer {
     public:
       renderer(int width, int height, const char *title);
+      renderer(const renderer &) = delete;
+      renderer &operator=(const renderer &) = delete;
+      renderer(renderer &&) noexcept = default;
+      renderer &operator=(renderer &&) noexcept = default;
       ~renderer();
 
       bool shouldClose() const;
