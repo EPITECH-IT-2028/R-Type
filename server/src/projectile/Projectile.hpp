@@ -43,6 +43,9 @@ namespace game {
       ProjectileType getType() const;
       void setType(ProjectileType type);
 
+      std::uint32_t getDamage() const;
+      void setDamage(std::uint32_t damage);
+
       void update(float deltaTime);
 
       template <typename T>
