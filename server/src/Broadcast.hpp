@@ -167,5 +167,12 @@ namespace broadcast {
           const GameEndPacket &packet) {
         broadcastToAll(socket, clients, packet);
       };
+
+      static void broadcastPlayerDisconnect(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const PlayerDisconnectPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
   };
 }  // namespace broadcast
