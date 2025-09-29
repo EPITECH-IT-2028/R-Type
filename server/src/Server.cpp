@@ -21,8 +21,7 @@ server::Server::Server(asio::io_context &io_context, std::uint16_t port,
       _port(port),
       _player_count(0),
       _projectile_count(0),
-      _next_player_id(0),
-      _next_projectile_id(0) {
+      _next_player_id(0) {
   _clients.resize(max_clients);
 }
 
