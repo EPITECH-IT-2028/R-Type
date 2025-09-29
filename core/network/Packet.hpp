@@ -25,7 +25,8 @@ enum class EnemyType : uint8_t {
 };
 
 enum class ProjectileType : uint8_t {
-  PLAYER_BASIC = 0x01
+  PLAYER_BASIC = 0x01,
+  ENEMY_BASIC = 0x02
 };
 
 #define ALIGNED alignas(4)
@@ -84,7 +85,8 @@ struct ALIGNED EnemySpawnPacket {
     EnemyType enemy_type;
     float x;
     float y;
-    float speed;
+    float velocity_x;
+    float velocity_y;
     uint32_t health;
     uint32_t max_health;
 };
@@ -129,6 +131,7 @@ struct ALIGNED ProjectileSpawnPacket {
     float y;
     float velocity_x;
     float velocity_y;
+    float speed;
     uint32_t damage;
 };
 

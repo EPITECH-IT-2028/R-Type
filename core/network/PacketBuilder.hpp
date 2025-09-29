@@ -61,7 +61,7 @@ struct PacketBuilder {
     }
 
     static EnemySpawnPacket makeEnemySpawn(uint32_t enemy_id, EnemyType type,
-                                           float x, float y, float speed,
+                                           float x, float y, float vx, float vy,
                                            uint32_t health,
                                            uint32_t max_health) {
       EnemySpawnPacket packet{};
@@ -71,7 +71,8 @@ struct PacketBuilder {
       packet.enemy_type = type;
       packet.x = x;
       packet.y = y;
-      packet.speed = speed;
+      packet.velocity_x = vx;
+      packet.velocity_y = vy;
       packet.health = health;
       packet.max_health = max_health;
       return packet;

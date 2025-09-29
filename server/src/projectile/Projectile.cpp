@@ -6,8 +6,7 @@
 #include "VelocityComponent.hpp"
 
 game::Projectile::Projectile(std::uint32_t projectile_id,
-                             std::uint32_t owner_id,
-                             std::uint32_t entity_id,
+                             std::uint32_t owner_id, std::uint32_t entity_id,
                              ecs::ECSManager &ecsManager)
     : _projectile_id(projectile_id),
       _owner_id(owner_id),
@@ -97,6 +96,19 @@ std::uint32_t game::Projectile::getSequenceNumber() const {
 void game::Projectile::setSequenceNumber(std::uint32_t seq) {
   if (hasComponent<ecs::ProjectileComponent>()) {
     getComponent<ecs::ProjectileComponent>().sequence_number = seq;
+  }
+}
+
+std::uint32_t game::Projectile::getDamage() const {
+  if (hasComponent<ecs::ProjectileComponent>()) {
+    return getComponent<ecs::ProjectileComponent>().damage;
+  }
+  return 0;
+}
+
+void game::Projectile::setDamage(std::uint32_t damage) {
+  if (hasComponent<ecs::ProjectileComponent>()) {
+    getComponent<ecs::ProjectileComponent>().damage = damage;
   }
 }
 

@@ -13,6 +13,9 @@ void ecs::ProjectileSystem::update(float dt) {
         case ProjectileType::PLAYER_BASIC:
           moveBasics(entity, dt);
           break;
+        case ProjectileType::ENEMY_BASIC:
+          moveBasics(entity, dt);
+          break;
       }
     }
   }
