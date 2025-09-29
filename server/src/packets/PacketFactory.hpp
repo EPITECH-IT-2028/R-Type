@@ -24,6 +24,10 @@ namespace packet {
                         []() { return std::make_unique<PlayerInfoHandler>(); }},
                        {PacketType::Position,
                         []() { return std::make_unique<PositionHandler>(); }},
+                       {PacketType::Heartbeat,
+                        []() { return std::make_unique<HeartbeatPlayerHandler>(); }},
+                       {PacketType::PlayerDisconnected,
+                        []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
                        {PacketType::PlayerShoot,
                         []() { return std::make_unique<PlayerShootHandler>(); }}};
   };

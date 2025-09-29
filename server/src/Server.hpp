@@ -21,6 +21,7 @@ namespace server {
 
       bool _connected = false;
       int _player_id = -1;
+      std::chrono::steady_clock::time_point _last_heartbeat;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
   };
 
@@ -57,6 +58,10 @@ namespace server {
         _next_projectile_id = next_projectile_id;
       }
 
+      void setPlayerCount(std::uint32_t player_count) {
+        _player_count = player_count;
+      }
+
       const std::vector<std::shared_ptr<Client>> &getClients() const {
         return _clients;
       }
@@ -73,6 +78,9 @@ namespace server {
       void startReceive();
       void handleReceive(const asio::error_code &error,
                          std::size_t bytes_transferred);
+
+      void handleTimeout();
+      void scheduleTimeoutCheck();
 
       void scheduleEventProcessing();
       void processGameEvents();
@@ -103,6 +111,7 @@ namespace server {
       int _player_count;
       int _next_player_id;
       std::shared_ptr<asio::steady_timer> _eventTimer;
+      std::shared_ptr<asio::steady_timer> _timeoutTimer;
       std::uint32_t _projectile_count;
       std::uint32_t _next_projectile_id;
   };

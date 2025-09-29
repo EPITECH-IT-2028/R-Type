@@ -26,4 +26,16 @@ namespace packet {
       int handlePacket(server::Server &server, server::Client &client,
                        const char *data, std::size_t size) override;
   };
+
+  class HeartbeatPlayerHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
+
+  class PlayerDisconnectedHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
 }  // namespace packet

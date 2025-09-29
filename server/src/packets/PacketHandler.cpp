@@ -88,6 +88,18 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   return SUCCESS;
 }
 
+int packet::HeartbeatPlayerHandler::handlePacket(
+    server::Server &server, server::Client &client,
+    const char *data, std::size_t size) {
+  if (size < sizeof(HeartbeatPlayerPacket)) {
+    return ERROR;
+  }
+  std::cout << "[HEARTBEAT] Received heartbeat from player "
+            << client._player_id << std::endl;
+  client._last_heartbeat = std::chrono::steady_clock::now();
+  return SUCCESS;
+}
+
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
                                              const char *data,
@@ -120,5 +132,34 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   //
   // broadcast::Broadcast::broadcastPlayerShoot(
   //     server.getSocket(), server.getClients(), playerShotPacket);
+  return SUCCESS;
+}
+
+int packet::PlayerDisconnectedHandler::handlePacket(
+    server::Server &server, server::Client &client,
+    const char *data, std::size_t size) {
+  if (size < sizeof(PlayerDisconnectPacket)) {
+    return ERROR;
+  }
+
+  std::cout << "[WORLD] Player " << client._player_id << " disconnected."
+            << std::endl;
+  client._connected = false;
+  server.setPlayerCount(server.getPlayerCount() - 1);
+
+  auto player = server.getGame().getPlayer(client._player_id);
+  if (player) {
+    server.getGame().destroyPlayer(client._player_id);
+  }
+
+  auto disconnectMsg = PacketBuilder::makeMessage(
+      "Player " + std::to_string(client._player_id) + " has disconnected.");
+  packet::PacketSender::sendPacket(server.getSocket(), client._endpoint,
+                                   disconnectMsg);
+  auto disconnectPacket =
+      PacketBuilder::makePlayerDisconnect(client._player_id);
+  broadcast::Broadcast::broadcastPlayerDisconnect(server.getSocket(),
+                                                  server.getClients(),
+                                                  disconnectPacket);
   return SUCCESS;
 }

@@ -9,6 +9,7 @@
 server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
   _connected = true;
+  _last_heartbeat = std::chrono::steady_clock::now();
 }
 
 server::Server::Server(asio::io_context &io_context, std::uint16_t port,
@@ -34,6 +35,9 @@ void server::Server::start() {
 
   _eventTimer = std::make_shared<asio::steady_timer>(_io_context);
   scheduleEventProcessing();
+
+  _timeoutTimer = std::make_shared<asio::steady_timer>(_io_context);
+  scheduleTimeoutCheck();
 }
 
 void server::Server::stop() {
@@ -42,8 +46,60 @@ void server::Server::stop() {
     _eventTimer->cancel();
   }
 
+  if (_timeoutTimer) {
+    _timeoutTimer->cancel();
+  }
+
   _game.stop();
   _socket.close();
+}
+
+void server::Server::scheduleTimeoutCheck() {
+  _timeoutTimer->expires_after(std::chrono::seconds(5));
+  _timeoutTimer->async_wait([this](const asio::error_code &error) {
+    if (!error) {
+      handleTimeout();
+      scheduleTimeoutCheck();
+    }
+  });
+}
+
+void server::Server::handleTimeout() {
+  auto now = std::chrono::steady_clock::now();
+
+  if (_clients.empty()) {
+    scheduleTimeoutCheck();
+    return;
+  }
+
+  std::cout << "[WORLD] Checking for inactive players..." << std::endl;
+  for (auto client : _clients) {
+    if (client && client->_connected) {
+      auto duration = std::chrono::duration_cast<std::chrono::seconds>(
+          now - client->_last_heartbeat);
+      if (duration.count() > 10) {
+        std::cout << "[WORLD] Player " << client->_player_id
+                  << " timed out due to inactivity." << std::endl;
+        client->_connected = false;
+        _player_count--;
+
+        auto player = _game.getPlayer(client->_player_id);
+        if (player) {
+          _game.destroyPlayer(client->_player_id);
+        }
+
+        auto disconnectMsg = PacketBuilder::makeMessage(
+            "Player " + std::to_string(client->_player_id) +
+            " has been disconnected due to inactivity.");
+        packet::PacketSender::sendPacket(_socket, client->_endpoint,
+                                         disconnectMsg);
+        auto disconnectPacket =
+            PacketBuilder::makePlayerDisconnect(client->_player_id);
+        broadcast::Broadcast::broadcastPlayerDisconnect(_socket, _clients,
+                                                        disconnectPacket);
+      }
+    }
+  }
 }
 
 /*
