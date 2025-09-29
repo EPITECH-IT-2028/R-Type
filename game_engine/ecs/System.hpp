@@ -1,7 +1,7 @@
 #pragma once
 
-#include "EntityManager.hpp"
 #include <set>
+#include "EntityManager.hpp"
 
 namespace ecs {
 
@@ -12,4 +12,4 @@ namespace ecs {
       virtual void update(float deltaTime) = 0;
   };
 
-}
+}  // namespace ecs
