@@ -163,18 +163,20 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
   }
   std::cout << "[WORLD] Player " << client._player_id << " disconnected."
             << std::endl;
-  client._connected = false;
-  server.setPlayerCount(server.getPlayerCount() - 1);
+
   bool wasConnected = client._connected;
   client._connected = false;
-  auto count = server.getPlayerCount();
-  if (wasConnected && count > 0) {
-    server.setPlayerCount(count - 1);
+
+  if (wasConnected) {
+    server.setPlayerCount(server.getPlayerCount() - 1);
   }
+
   auto player = server.getGame().getPlayer(client._player_id);
   if (player) {
     server.getGame().destroyPlayer(client._player_id);
   }
+
+  server.clearClientSlot(client._player_id);
 
   auto disconnectMsg = PacketBuilder::makeMessage(
       "Player " + std::to_string(client._player_id) + " has disconnected.");

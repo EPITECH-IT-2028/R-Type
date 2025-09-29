@@ -277,3 +277,12 @@ std::shared_ptr<server::Client> server::Server::getClient(
   }
   return _clients[idx];
 }
+
+void server::Server::clearClientSlot(int player_id) {
+  for (auto &client : _clients) {
+    if (client && client->_player_id == player_id) {
+      client.reset();
+      break;
+    }
+  }
+}

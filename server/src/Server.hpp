@@ -50,14 +50,6 @@ namespace server {
         _projectile_count = projectile_count;
       }
 
-      std::uint32_t getNextProjectileId() const {
-        return _next_projectile_id;
-      }
-
-      void setNextProjectileId(std::uint32_t next_projectile_id) {
-        _next_projectile_id = next_projectile_id;
-      }
-
       void setPlayerCount(int player_count) {
         _player_count = player_count;
       }
@@ -73,6 +65,8 @@ namespace server {
       game::Game &getGame() {
         return _game;
       }
+
+      void clearClientSlot(int player_id);
 
     private:
       void startReceive();
