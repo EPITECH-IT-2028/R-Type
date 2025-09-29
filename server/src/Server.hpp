@@ -58,7 +58,7 @@ namespace server {
         _next_projectile_id = next_projectile_id;
       }
 
-      void setPlayerCount(std::uint32_t player_count) {
+      void setPlayerCount(int player_count) {
         _player_count = player_count;
       }
 
