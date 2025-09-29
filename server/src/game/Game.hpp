@@ -62,7 +62,7 @@ namespace game {
       std::vector<std::shared_ptr<Projectile>> getAllProjectiles() const;
 
       std::uint64_t getNextProjectileId() noexcept {
-        return _nextProjectileId.fetch_add(1, std::memory_order_relaxed);
+        return _nextProjectileId++;
       }
 
     private:
