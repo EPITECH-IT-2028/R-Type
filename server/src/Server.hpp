@@ -113,6 +113,5 @@ namespace server {
       std::shared_ptr<asio::steady_timer> _eventTimer;
       std::shared_ptr<asio::steady_timer> _timeoutTimer;
       std::uint32_t _projectile_count;
-      std::uint32_t _next_projectile_id;
   };
 }  // namespace server

@@ -111,6 +111,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   if (size < sizeof(PlayerShootPacket)) {
     return ERROR;
   }
+
   const PlayerShootPacket *packet =
       reinterpret_cast<const PlayerShootPacket *>(data);
 
@@ -119,23 +120,33 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
     return ERROR;
   }
 
-  // TODO : Create the function
-  // std::uint16_t projectileId = server.getNextProjectileId();
-  // std::pair<float, float> pos = player->getPosition();
-  // std::pair<float, float> vel = player->getVelocity();
-  // auto projectile = server.getGame().createProjectile(
-  //     projectileId, client._player_id, packet->projectile_type, pos.first,
-  //     pos.second, vel.first, vel.second);
-  //
-  // server.setProjectileCount(server.getProjectileCount() + 1);
-  // server.setNextProjectileId(server.getNextProjectileId() + 1);
-  //
-  // auto playerShotPacket = PacketBuilder::makePlayerShoot(
-  //     pos.first, pos.second, packet->projectile_type,
-  //     packet->sequence_number);
-  //
-  // broadcast::Broadcast::broadcastPlayerShoot(
-  //     server.getSocket(), server.getClients(), playerShotPacket);
+  std::pair<float, float> pos = player->getPosition();
+  const float speed = 15.0f;
+
+  float vx = speed;
+  float vy = 0.0f;
+
+  std::uint32_t projectileId = server.getGame().getNextProjectileId();
+
+  auto projectileType = packet->projectile_type;
+
+  if (projectileType != ProjectileType::PLAYER_BASIC) {
+    projectileType = ProjectileType::PLAYER_BASIC;
+  }
+
+  auto projectile = server.getGame().createProjectile(
+      projectileId, client._player_id, projectileType, pos.first, pos.second,
+      vx, vy);
+
+  if (!projectile) {
+    return ERROR;
+  }
+
+  auto playerShotPacket = PacketBuilder::makePlayerShoot(
+      pos.first, pos.second, projectileType, packet->sequence_number);
+  broadcast::Broadcast::broadcastPlayerShoot(
+      server.getSocket(), server.getClients(), playerShotPacket);
+
   return SUCCESS;
 }
 
