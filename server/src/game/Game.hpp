@@ -61,8 +61,8 @@ namespace game {
 
       std::vector<std::shared_ptr<Projectile>> getAllProjectiles() const;
 
-      std::uint32_t getNextProjectileId() {
-        return _nextProjectileId++;
+      std::uint64_t getNextProjectileId() noexcept {
+        return _nextProjectileId.fetch_add(1, std::memory_order_relaxed);
       }
 
     private:
@@ -81,7 +81,7 @@ namespace game {
       float _enemySpawnTimer = 0.0f;
       float _enemySpawnInterval = 5.0f;
       int _nextEnemyId = 0;
-      std::uint32_t _nextProjectileId = 0;
+      std::atomic<std::uint64_t> _nextProjectileId{0};
 
       ecs::ECSManager &_ecsManager;
       std::unordered_map<int, std::shared_ptr<Player>> _players;

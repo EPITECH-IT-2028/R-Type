@@ -79,8 +79,8 @@ void ecs::EnemySystem::shootAtPlayer(float deltaTime, const Entity &entity) {
 
         std::uint32_t projectileId = _game->getNextProjectileId();
         auto projectile = _game->createProjectile(
-            projectileId, entity, ProjectileType::ENEMY_BASIC, position.x,
-            position.y, vx, vy);
+            projectileId, enemy.enemy_id, ProjectileType::ENEMY_BASIC,
+            position.x, position.y, vx, vy);
 
         if (projectile) {
           auto &projVelocity =

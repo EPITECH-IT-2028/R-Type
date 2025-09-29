@@ -126,7 +126,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   }
 
   auto playerShotPacket = PacketBuilder::makePlayerShoot(
-      pos.first, pos.second, packet->projectile_type, packet->sequence_number);
+      pos.first, pos.second, projectileType, packet->sequence_number);
   broadcast::Broadcast::broadcastPlayerShoot(
       server.getSocket(), server.getClients(), playerShotPacket);
 
