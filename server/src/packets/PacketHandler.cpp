@@ -89,7 +89,7 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   return SUCCESS;
 }
 
-int packet::HeartbeatPlayerHandler::handlePacket(server::Server &server,
+int packet::HeartbeatPlayerHandler::handlePacket([[maybe_unused]]server::Server &server,
                                                  server::Client &client,
                                                  const char *data,
                                                  std::size_t size) {

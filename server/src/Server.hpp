@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <chrono>
 #include "Game.hpp"
 #include "PacketFactory.hpp"
 
