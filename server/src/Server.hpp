@@ -107,6 +107,7 @@ namespace server {
       int _next_player_id;
       std::shared_ptr<asio::steady_timer> _eventTimer;
       std::shared_ptr<asio::steady_timer> _timeoutTimer;
+      bool _timeoutScheduled = false;
       std::uint32_t _projectile_count;
   };
 }  // namespace server

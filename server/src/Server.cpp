@@ -1,7 +1,7 @@
 #include "Server.hpp"
+#include <chrono>
 #include <cstring>
 #include <iostream>
-#include <chrono>
 #include "Broadcast.hpp"
 #include "IPacket.hpp"
 #include "Macros.hpp"
@@ -55,8 +55,12 @@ void server::Server::stop() {
 }
 
 void server::Server::scheduleTimeoutCheck() {
+  if (_timeoutScheduled)
+    return;
+  _timeoutScheduled = true;
   _timeoutTimer->expires_after(std::chrono::seconds(1));
   _timeoutTimer->async_wait([this](const asio::error_code &error) {
+    _timeoutScheduled = false;
     if (!error) {
       handleTimeout();
       scheduleTimeoutCheck();
