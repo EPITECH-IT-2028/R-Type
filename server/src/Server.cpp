@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include <chrono>
 #include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
@@ -9,6 +10,7 @@
 server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
   _connected = true;
+  _last_heartbeat = std::chrono::steady_clock::now();
 }
 
 server::Server::Server(asio::io_context &io_context, std::uint16_t port,
@@ -33,6 +35,9 @@ void server::Server::start() {
 
   _eventTimer = std::make_shared<asio::steady_timer>(_io_context);
   scheduleEventProcessing();
+
+  _timeoutTimer = std::make_shared<asio::steady_timer>(_io_context);
+  scheduleTimeoutCheck();
 }
 
 void server::Server::stop() {
@@ -41,8 +46,65 @@ void server::Server::stop() {
     _eventTimer->cancel();
   }
 
+  if (_timeoutTimer) {
+    _timeoutTimer->cancel();
+  }
+
   _game.stop();
   _socket.close();
+}
+
+void server::Server::scheduleTimeoutCheck() {
+  if (_timeoutScheduled)
+    return;
+  _timeoutScheduled = true;
+  _timeoutTimer->expires_after(std::chrono::seconds(1));
+  _timeoutTimer->async_wait([this](const asio::error_code &error) {
+    _timeoutScheduled = false;
+    if (!error) {
+      handleTimeout();
+      scheduleTimeoutCheck();
+    }
+  });
+}
+
+void server::Server::handleTimeout() {
+  auto now = std::chrono::steady_clock::now();
+
+  if (_clients.empty()) {
+    return;
+  }
+
+  for (std::size_t i = 0; i < _clients.size(); ++i) {
+    auto &client = _clients[i];
+    if (!client || !client->_connected)
+      continue;
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(
+        now - client->_last_heartbeat);
+    if (duration.count() > 10) {
+      const int pid = client->_player_id;
+      const auto endpoint = client->_endpoint;
+      std::cout << "[WORLD] Player " << pid << " timed out due to inactivity."
+                << std::endl;
+      client->_connected = false;
+      if (_player_count > 0)
+        --_player_count;
+
+      if (auto player = _game.getPlayer(pid)) {
+        _game.destroyPlayer(pid);
+      }
+
+      auto disconnectMsg = PacketBuilder::makeMessage(
+          "Player " + std::to_string(pid) +
+          " has been disconnected due to inactivity.");
+      packet::PacketSender::sendPacket(_socket, endpoint, disconnectMsg);
+
+      auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
+      client.reset();
+      broadcast::Broadcast::broadcastPlayerDisconnect(_socket, _clients,
+                                                      disconnectPacket);
+    }
+  }
 }
 
 /*
@@ -219,4 +281,13 @@ std::shared_ptr<server::Client> server::Server::getClient(
     return nullptr;
   }
   return _clients[idx];
+}
+
+void server::Server::clearClientSlot(int player_id) {
+  for (auto &client : _clients) {
+    if (client && client->_player_id == player_id) {
+      client.reset();
+      break;
+    }
+  }
 }

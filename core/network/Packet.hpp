@@ -17,7 +17,9 @@ enum class PacketType : uint8_t {
   ProjectileHit = 0x0B,
   ProjectileDestroy = 0x0C,
   GameStart = 0x0D,
-  GameEnd = 0x0E
+  GameEnd = 0x0E,
+  PlayerDisconnected = 0x0F,
+  Heartbeat = 0x10
 };
 
 enum class EnemyType : uint8_t {
@@ -61,6 +63,18 @@ struct ALIGNED NewPlayerPacket {
     float y;
     float speed;
     uint32_t max_health;
+};
+
+/* Client to server packets */
+struct ALIGNED PlayerDisconnectPacket {
+    PacketHeader header;
+    uint32_t player_id;
+};
+
+/* Client to server packets */
+struct ALIGNED HeartbeatPlayerPacket {
+    PacketHeader header;
+    uint32_t player_id;
 };
 
 /* Client to server packets */

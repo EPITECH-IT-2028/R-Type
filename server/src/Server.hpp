@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <chrono>
 #include "Game.hpp"
 #include "PacketFactory.hpp"
 
@@ -21,6 +22,7 @@ namespace server {
 
       bool _connected = false;
       int _player_id = -1;
+      std::chrono::steady_clock::time_point _last_heartbeat;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
   };
 
@@ -49,6 +51,10 @@ namespace server {
         _projectile_count = projectile_count;
       }
 
+      void setPlayerCount(int player_count) {
+        _player_count = player_count;
+      }
+
       const std::vector<std::shared_ptr<Client>> &getClients() const {
         return _clients;
       }
@@ -61,10 +67,15 @@ namespace server {
         return _game;
       }
 
+      void clearClientSlot(int player_id);
+
     private:
       void startReceive();
       void handleReceive(const asio::error_code &error,
                          std::size_t bytes_transferred);
+
+      void handleTimeout();
+      void scheduleTimeoutCheck();
 
       void scheduleEventProcessing();
       void processGameEvents();
@@ -95,6 +106,8 @@ namespace server {
       int _player_count;
       int _next_player_id;
       std::shared_ptr<asio::steady_timer> _eventTimer;
+      std::shared_ptr<asio::steady_timer> _timeoutTimer;
+      bool _timeoutScheduled = false;
       std::uint32_t _projectile_count;
   };
 }  // namespace server

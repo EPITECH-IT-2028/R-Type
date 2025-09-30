@@ -1,4 +1,6 @@
 #include "PacketHandler.hpp"
+#include <chrono>
+#include <cstdint>
 #include <iostream>
 #include "Broadcast.hpp"
 #include "Macros.hpp"
@@ -87,6 +89,21 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   return SUCCESS;
 }
 
+int packet::HeartbeatPlayerHandler::handlePacket([[maybe_unused]]server::Server &server,
+                                                 server::Client &client,
+                                                 const char *data,
+                                                 std::size_t size) {
+  if (size < sizeof(HeartbeatPlayerPacket)) {
+    return ERROR;
+  }
+  const auto *hb = reinterpret_cast<const HeartbeatPlayerPacket *>(data);
+  if (hb->player_id != static_cast<uint32_t>(client._player_id)) {
+    return ERROR;
+  }
+  client._last_heartbeat = std::chrono::steady_clock::now();
+  return SUCCESS;
+}
+
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
                                              const char *data,
@@ -130,5 +147,44 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   broadcast::Broadcast::broadcastPlayerShoot(
       server.getSocket(), server.getClients(), playerShotPacket);
 
+  return SUCCESS;
+}
+
+int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
+                                                    server::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
+  if (size < sizeof(PlayerDisconnectPacket)) {
+    return ERROR;
+  }
+  const auto *disc = reinterpret_cast<const PlayerDisconnectPacket *>(data);
+  if (disc->player_id != static_cast<uint32_t>(client._player_id)) {
+    return ERROR;
+  }
+  std::cout << "[WORLD] Player " << client._player_id << " disconnected."
+            << std::endl;
+
+  bool wasConnected = client._connected;
+  client._connected = false;
+
+  if (wasConnected) {
+    server.setPlayerCount(server.getPlayerCount() - 1);
+  }
+
+  auto player = server.getGame().getPlayer(client._player_id);
+  if (player) {
+    server.getGame().destroyPlayer(client._player_id);
+  }
+
+  server.clearClientSlot(client._player_id);
+
+  auto disconnectMsg = PacketBuilder::makeMessage(
+      "Player " + std::to_string(client._player_id) + " has disconnected.");
+  packet::PacketSender::sendPacket(server.getSocket(), client._endpoint,
+                                   disconnectMsg);
+  auto disconnectPacket =
+      PacketBuilder::makePlayerDisconnect(client._player_id);
+  broadcast::Broadcast::broadcastPlayerDisconnect(
+      server.getSocket(), server.getClients(), disconnectPacket);
   return SUCCESS;
 }
