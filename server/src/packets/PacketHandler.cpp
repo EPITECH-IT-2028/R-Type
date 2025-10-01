@@ -74,13 +74,27 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   if (!player) {
     return ERROR;
   }
+  int oldX = static_cast<int>(player->getPosition().first);
+  int oldY = static_cast<int>(player->getPosition().second);
+
+  // Anti-cheat
+  float deltaX = packet->x - oldX;
+  float deltaY = packet->y - oldY;
+  float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+  const float maxDistance = 10.0f;
+  if (distance > maxDistance) {
+    std::cout << "Player " << client._player_id << " moved too fast!"
+              << std::endl;
+    player->setPosition(oldX, oldY);
+    player->setSequenceNumber(packet->sequence_number);
+    return ERROR;
+  }
   player->setPosition(packet->x, packet->y);
   player->setSequenceNumber(packet->sequence_number);
 
   std::pair<float, float> pos = player->getPosition();
   int number = player->getSequenceNumber();
 
-  // TODO : Need to validate position (anti-cheat etc...)
   auto movePacket =
       PacketBuilder::makeMove(client._player_id, number, pos.first, pos.second);
 
@@ -89,10 +103,9 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   return SUCCESS;
 }
 
-int packet::HeartbeatPlayerHandler::handlePacket([[maybe_unused]]server::Server &server,
-                                                 server::Client &client,
-                                                 const char *data,
-                                                 std::size_t size) {
+int packet::HeartbeatPlayerHandler::handlePacket(
+    [[maybe_unused]] server::Server &server, server::Client &client,
+    const char *data, std::size_t size) {
   if (size < sizeof(HeartbeatPlayerPacket)) {
     return ERROR;
   }
