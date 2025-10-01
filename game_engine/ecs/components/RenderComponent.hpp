@@ -3,7 +3,6 @@
 #include <string>
 
 namespace ecs {
-
   struct RenderComponent {
       std::string _texturePath;
       float _width;
