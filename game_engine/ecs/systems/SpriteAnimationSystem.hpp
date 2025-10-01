@@ -14,21 +14,9 @@ namespace ecs {
 
       void update(float deltaTime) override;
           
-      void setSelectedRow(Entity entity, int row) {
-        auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
-        auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
-        
-        animation.setSelectedRow(row);
-        sprite.sourceRect = animation.getCurrentFrameRect();        
-      }
+      void setSelectedRow(Entity entity, int row);
       
-      void initializeAnimation(Entity entity, Texture2D texture) {
-        auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
-        auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
-        
-        animation.initializeFromTexture(texture.width, texture.height);
-        sprite.sourceRect = animation.getCurrentFrameRect();
-      }
+      void initializeAnimation(Entity entity, Texture2D texture);
 
     private:
       ECSManager &_ecsManager;

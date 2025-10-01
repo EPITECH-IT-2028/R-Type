@@ -27,3 +27,19 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
     }
   }
 }
+
+void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
+  auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
+  auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
+  
+  animation.setSelectedRow(row);
+  sprite.sourceRect = animation.getCurrentFrameRect();        
+}
+
+void ecs::SpriteAnimationSystem::initializeAnimation(Entity entity, Texture2D texture) {
+  auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
+  auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
+  
+  animation.initializeFromTexture(texture.width, texture.height);
+  sprite.sourceRect = animation.getCurrentFrameRect();
+}
