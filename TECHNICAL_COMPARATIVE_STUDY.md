@@ -52,7 +52,7 @@ This document presents a comparative analysis of the main technologies and desig
 
 ### ASIO vs Alternatives
 
-**Selected**: ASIO 1.29.0 (Standalone)  
+**Selected**: ASIO 1.36.0 (Standalone)
 **Considered**: Boost.Asio, Raw Sockets, libuv
 
 | Criteria | ASIO | Raw Sockets | libuv |
@@ -205,7 +205,7 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 # Simplified dependency management
 [requires]
 raylib/5.5
-asio/1.29.0
+asio/1.36.0
 ```
 
 ---
