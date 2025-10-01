@@ -14,8 +14,6 @@ namespace ecs {
 
       void update(float deltaTime) override;
 
-      void render();
-
     private:
       ECSManager &_ecsManager;
       std::unordered_map<std::string, Texture2D> _textureCache;

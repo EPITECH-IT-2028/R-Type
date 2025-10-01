@@ -11,10 +11,6 @@ ecs::RenderSystem::~RenderSystem() {
 }
 
 void ecs::RenderSystem::update(float deltaTime) {
-  render();
-}
-
-void ecs::RenderSystem::render() {
   for (Entity entity : _entities) {
     auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
     const std::string &path = renderComp._texturePath;
