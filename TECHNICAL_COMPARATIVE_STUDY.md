@@ -13,13 +13,14 @@ This document presents a comparative analysis of the main technologies and desig
 **Selected**: C++20  
 **Considered**: C++17, Rust, C#, Java
 
-| Criteria | C++20 | Rust | C# | Java |
-|----------|-------|------|----|----|
-| **Performance** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| **Real-time Gaming** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **Library Ecosystem** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Criteria              | C++20      | Rust       | C#         | Java       |
+| --------------------- | ---------- | ---------- | ---------- | ---------- |
+| **Performance**       | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐     | ⭐⭐⭐     |
+| **Real-time Gaming**  | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐       |
+| **Library Ecosystem** | ⭐⭐⭐⭐   | ⭐⭐⭐     | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 
 **Why C++20?**
+
 - Zero-cost abstractions for real-time performance
 - Manual memory management prevents garbage collection pauses
 - Mature ecosystem for game development
@@ -34,13 +35,14 @@ This document presents a comparative analysis of the main technologies and desig
 **Selected**: Raylib 5.5  
 **Considered**: SFML, SDL2, OpenGL
 
-| Criteria | Raylib | SFML | SDL2 |
-|----------|--------|------|------|
-| **Simplicity** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Learning Curve** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Criteria           | Raylib     | SFML       | SDL2     |
+| ------------------ | ---------- | ---------- | -------- |
+| **Simplicity**     | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐   | ⭐⭐⭐   |
+| **Learning Curve** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐   | ⭐⭐⭐   |
 | **2D Performance** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 
 **Raylib Advantages**:
+
 - Simple API with minimal boilerplate
 - Integrated audio, input, and collision systems
 - Lightweight (~2MB) perfect for educational projects
@@ -55,13 +57,14 @@ This document presents a comparative analysis of the main technologies and desig
 **Selected**: ASIO 1.36.0 (Standalone)
 **Considered**: Boost.Asio, Raw Sockets, libuv
 
-| Criteria | ASIO | Raw Sockets | libuv |
-|----------|------|-------------|-------|
-| **Async Performance** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **C++ Integration** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| **Cross-platform** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Criteria              | ASIO       | Raw Sockets | libuv      |
+| --------------------- | ---------- | ----------- | ---------- |
+| **Async Performance** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐      | ⭐⭐⭐⭐⭐ |
+| **C++ Integration**   | ⭐⭐⭐⭐⭐ | ⭐⭐⭐      | ⭐⭐⭐     |
+| **Cross-platform**    | ⭐⭐⭐⭐⭐ | ⭐⭐        | ⭐⭐⭐⭐⭐ |
 
 **ASIO Benefits**:
+
 - Header-only library (no linking dependencies)
 - Excellent async I/O for handling multiple clients
 - Optimized for UDP low-latency gaming
@@ -91,6 +94,7 @@ struct PacketHeader {
 **Alternatives**: Object-Oriented Hierarchy, Component-Based Architecture
 
 **ECS Advantages**:
+
 - Cache-efficient data layout
 - Flexible component composition
 - Easy parallelization of systems
@@ -108,6 +112,7 @@ class Component : public IComponentArray {
 ### Network Data Structures
 
 **Thread-safe Event Queue**:
+
 ```cpp
 class EventQueue {
     std::queue<GameEvent> _queue;
@@ -124,12 +129,13 @@ class EventQueue {
 **Selected**: Properties File  
 **Alternatives**: JSON, XML
 
-| Format | Properties | JSON | XML |
-|--------|-----------|------|-----|
-| **Simplicity** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
+| Format            | Properties | JSON     | XML    |
+| ----------------- | ---------- | -------- | ------ |
+| **Simplicity**    | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐   |
 | **Parsing Speed** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
 
 **Properties file chosen for**:
+
 - Human-readable format
 - Fast parsing
 - Simple key=value structure
@@ -137,6 +143,7 @@ class EventQueue {
 ### Memory Management
 
 **Strategy**: RAII with Smart Pointers
+
 - `std::unique_ptr` for exclusive ownership
 - `std::shared_ptr` for shared resources
 - Automatic resource cleanup
@@ -149,11 +156,13 @@ class EventQueue {
 ### Current Security Measures
 
 **1. Network Security**
+
 - Client endpoint validation
 - Packet size validation
 - Client connection limits (max 4)
 
 **2. Anti-Cheat Implementation**
+
 - Server-side position validation
 - Movement speed checks
 - Server authority model
@@ -163,7 +172,7 @@ class EventQueue {
 void validatePlayerPosition(Player& player, float newX, float newY) {
     float maxDistance = player.getSpeed() * deltaTime;
     float actualDistance = calculateDistance(player.getPosition(), {newX, newY});
-    
+
     if (actualDistance > maxDistance) {
         // Reject suspicious movement
         return;
@@ -174,15 +183,18 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 ### Identified Vulnerabilities
 
 **1. Packet Spoofing**
+
 - **Risk**: UDP packets can be forged
 - **Mitigation**: Enhanced client authentication needed
 
 **2. DoS Attacks**
+
 - **Risk**: Server overwhelm with packets
 - **Current**: Basic client limits
 - **Recommended**: Rate limiting implementation
 
 **3. Data Integrity**
+
 - **Current**: Basic size checks
 - **Recommended**: CRC32 checksums for packet validation
 
@@ -196,6 +208,7 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 **Alternatives**: Premake, vcpkg, Git Submodules
 
 **Benefits**:
+
 - Cross-platform build system
 - Dependency management with Conan
 - IDE integration
@@ -215,11 +228,13 @@ asio/1.36.0
 ### Benchmarks
 
 **ECS Performance**:
+
 - Entity creation: ~1M entities/second
 - System updates: <0.1ms for 1000 entities
 - Memory usage: ~50 bytes per entity
 
 **Network Performance**:
+
 - Packet processing: 10,000 packets/second
 - Average latency: 2-5ms (LAN)
 - Bandwidth: ~50 KB/s per client
@@ -229,11 +244,13 @@ asio/1.36.0
 ## 🔮 Future Improvements
 
 ### Short-term
+
 - Enhanced packet validation
 - Rate limiting for DoS protection
 - Client authentication system
 
 ### Long-term
+
 - Database integration for persistence
 - Advanced anti-cheat systems
 - Cross-platform client support
@@ -243,6 +260,7 @@ asio/1.36.0
 ## 📝 Conclusion
 
 The chosen technology stack balances:
+
 - **Performance**: Real-time gaming requirements
 - **Simplicity**: Rapid development and maintenance
 - **Security**: Basic protection with room for enhancement
