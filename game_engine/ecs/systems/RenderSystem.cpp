@@ -10,13 +10,13 @@ ecs::RenderSystem::~RenderSystem() {
   }
 }
 
-void ecs::RenderSystem::update(__attribute__((unused)) float deltaTime) {
+void ecs::RenderSystem::update(float deltaTime) {
   render();
 }
 
 void ecs::RenderSystem::render() {
   for (Entity entity : _entities) {
-    auto &renderComp = _ecsManager->getComponent<ecs::RenderComponent>(entity);
+    auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
     const std::string &path = renderComp._texturePath;
 
     if (path.empty())
@@ -40,8 +40,8 @@ void ecs::RenderSystem::render() {
     float offsetX = renderComp._offsetX;
     float offsetY = renderComp._offsetY;
 
-    float posX = _ecsManager->getComponent<ecs::PositionComponent>(entity).x;
-    float posY = _ecsManager->getComponent<ecs::PositionComponent>(entity).y;
+    float posX = _ecsManager.getComponent<ecs::PositionComponent>(entity).x;
+    float posY = _ecsManager.getComponent<ecs::PositionComponent>(entity).y;
 
     float effectiveWidth =
         width > 0 ? width : static_cast<float>(texture.width);
