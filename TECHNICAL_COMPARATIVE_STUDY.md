@@ -155,13 +155,13 @@ class EventQueue {
 
 ### Current Security Measures
 
-**1. Network Security**
+#### Network Security**
 
 - Client endpoint validation
 - Packet size validation
 - Client connection limits (max 4)
 
-**2. Anti-Cheat Implementation**
+#### Anti-Cheat Implementation**
 
 - Server-side position validation
 - Movement speed checks
