@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <mutex>
 #include <thread>
+#include "ColliderComponent.hpp"
+#include "CollisionSystem.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "Events.hpp"
@@ -30,11 +32,17 @@ void game::Game::initECS() {
   _ecsManager.registerComponent<ecs::VelocityComponent>();
   _ecsManager.registerComponent<ecs::EnemyComponent>();
   _ecsManager.registerComponent<ecs::ShootComponent>();
+  _ecsManager.registerComponent<ecs::ColliderComponent>();
 
   _enemySystem = _ecsManager.registerSystem<ecs::EnemySystem>();
   _enemySystem->setECSManager(&_ecsManager);
   _enemySystem->setGame(this);
   _enemySystem->setEventQueue(&_eventQueue);
+
+  _collisionSystem = _ecsManager.registerSystem<ecs::CollisionSystem>();
+  _collisionSystem->setECSManager(&_ecsManager);
+  _collisionSystem->setGame(this);
+  _collisionSystem->setEventQueue(&_eventQueue);
 
   _projectileSystem = _ecsManager.registerSystem<ecs::ProjectileSystem>();
   _projectileSystem->setECSManager(&_ecsManager);
@@ -43,6 +51,7 @@ void game::Game::initECS() {
   enemySignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::ShootComponent>());
+  enemySignature.set(_ecsManager.getComponentType<ecs::ColliderComponent>());
   _ecsManager.setSystemSignature<ecs::EnemySystem>(enemySignature);
 
   Signature projectileSignature;
@@ -52,7 +61,14 @@ void game::Game::initECS() {
       _ecsManager.getComponentType<ecs::PositionComponent>());
   projectileSignature.set(
       _ecsManager.getComponentType<ecs::VelocityComponent>());
+  projectileSignature.set(
+      _ecsManager.getComponentType<ecs::ColliderComponent>());
   _ecsManager.setSystemSignature<ecs::ProjectileSystem>(projectileSignature);
+
+  Signature collisionSignature;
+  collisionSignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+  collisionSignature.set(_ecsManager.getComponentType<ecs::ColliderComponent>());
+  _ecsManager.setSystemSignature<ecs::CollisionSystem>(collisionSignature);
 }
 
 game::Game::~Game() {
@@ -87,6 +103,7 @@ void game::Game::gameLoop() {
 
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
+    _collisionSystem->update(deltaTime.count());
 
     spawnEnemy(deltaTime.count());
 
@@ -106,6 +123,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
+  _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager);
   _players[player_id] = player;
@@ -177,6 +195,7 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {-3.0f, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
+  _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
 
   auto enemy = std::make_shared<Enemy>(enemy_id, entity, _ecsManager);
   _enemies[enemy_id] = enemy;
@@ -221,6 +240,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
     _ecsManager.addComponent<ecs::SpeedComponent>(entity, {10.0f});
     _ecsManager.addComponent<ecs::ProjectileComponent>(entity, {type});
     _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
     projectile = std::make_shared<Projectile>(projectile_id, owner_id, entity,
                                               _ecsManager);
   }
