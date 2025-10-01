@@ -69,8 +69,8 @@ This document presents a comparative analysis of the main technologies and desig
 
 ### Protocol Choice: UDP vs TCP
 
-**Selected**: UDP  
-**Reason**: Real-time games require low latency (1-5ms) over reliability
+**Selected**: UDP
+**Reason**: Real-time games require low latency LAN (1-5ms) & WLAN (≈20–100+ ms) over reliability
 
 ```cpp
 // Custom reliability layer implementation
