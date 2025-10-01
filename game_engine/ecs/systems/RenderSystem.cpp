@@ -4,7 +4,7 @@
 #include "RenderComponent.hpp"
 #include "raylib.h"
 
-ecs::RenderSystem::~RenderSystem() {
+ecs::RenderSystem::~RenderSystem() noexcept {
   for (auto &pair : _textureCache) {
     UnloadTexture(pair.second);
   }

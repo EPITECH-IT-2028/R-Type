@@ -10,7 +10,12 @@ namespace ecs {
       explicit RenderSystem(ECSManager &ecsManager = ECSManager::getInstance())
           : _ecsManager(ecsManager) {}
 
-      ~RenderSystem();
+      RenderSystem(const RenderSystem&) = delete;
+      RenderSystem& operator=(const RenderSystem&) = delete;
+      RenderSystem(RenderSystem&&) noexcept = default;
+      RenderSystem& operator=(RenderSystem&&) = delete;
+
+      ~RenderSystem() noexcept;
 
       void update(float deltaTime) override;
 
