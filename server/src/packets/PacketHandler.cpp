@@ -1,5 +1,6 @@
 #include "PacketHandler.hpp"
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include "Broadcast.hpp"
@@ -74,8 +75,8 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   if (!player) {
     return ERROR;
   }
-  int oldX = static_cast<int>(player->getPosition().first);
-  int oldY = static_cast<int>(player->getPosition().second);
+  float oldX = player->getPosition().first;
+  float oldY = player->getPosition().second;
 
   // Anti-cheat
   float deltaX = packet->x - oldX;
