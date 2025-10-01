@@ -271,5 +271,5 @@ The chosen technology stack balances:
 ---
 
 **Document Version**: 1.0  
-**Last Updated**: September 2024  
+**Last Updated**: October 1st 2025
 **Team**: R-Type Development Team
