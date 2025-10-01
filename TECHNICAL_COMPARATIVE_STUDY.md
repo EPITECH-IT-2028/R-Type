@@ -159,7 +159,6 @@ class EventQueue {
 
 - Client endpoint validation
 - Packet size validation
-- Client connection limits (max 4)
 
 #### Anti-Cheat Implementation**
 
