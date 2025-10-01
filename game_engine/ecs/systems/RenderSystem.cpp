@@ -43,8 +43,9 @@ void ecs::RenderSystem::update(float deltaTime) {
         width > 0 ? width : static_cast<float>(texture.width);
     float effectiveHeight =
         height > 0 ? height : static_cast<float>(texture.height);
-    Rectangle sourceRec = {offsetX, offsetY, effectiveWidth, effectiveHeight};
-    Rectangle destRec = {posX, posY, effectiveWidth, effectiveHeight};
+    Rectangle sourceRec = {0.0f, 0.0f, effectiveWidth, effectiveHeight};
+    Rectangle destRec = {posX + offsetX, posY + offsetY, effectiveWidth,
+                         effectiveHeight};
     Vector2 origin = {0.0f, 0.0f};
 
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
