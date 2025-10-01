@@ -48,6 +48,5 @@ void ecs::RenderSystem::update(float deltaTime) {
     Vector2 origin = {0.0f, 0.0f};
 
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
-    UnloadTexture(texture);
   }
 }
