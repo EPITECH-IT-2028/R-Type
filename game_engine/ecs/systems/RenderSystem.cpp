@@ -1,8 +1,7 @@
-#include <unordered_map>
 #include "RenderSystem.hpp"
-#include "RenderComponent.hpp"
-#include "PositionComponent.hpp"
 #include <iostream>
+#include "PositionComponent.hpp"
+#include "RenderComponent.hpp"
 #include "raylib.h"
 
 ecs::RenderSystem::~RenderSystem() {
@@ -20,7 +19,7 @@ void ecs::RenderSystem::render() {
     auto &renderComp = _ecsManager->getComponent<ecs::RenderComponent>(entity);
     const std::string &path = renderComp._texturePath;
 
-    if (path.empty()) 
+    if (path.empty())
       continue;
 
     if (_textureCache.find(path) == _textureCache.end()) {

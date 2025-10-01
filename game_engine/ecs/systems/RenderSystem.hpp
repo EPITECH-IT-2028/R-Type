@@ -1,8 +1,8 @@
 #pragma once
 
 #include <unordered_map>
-#include "raylib.h"
 #include "ECSManager.hpp"
+#include "raylib.h"
 
 namespace ecs {
   class RenderSystem : public System {
@@ -19,8 +19,8 @@ namespace ecs {
 
       void render();
 
-      private:
-        ECSManager *_ecsManager = nullptr;
-        std::unordered_map<std::string, Texture2D> _textureCache;
+    private:
+      ECSManager *_ecsManager = nullptr;
+      std::unordered_map<std::string, Texture2D> _textureCache;
   };
 }  // namespace ecs
