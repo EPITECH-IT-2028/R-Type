@@ -6,6 +6,8 @@
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
 
+#define TIMEOUT_MS 100
+
 using asio::ip::udp;
 
 namespace client {
@@ -18,6 +20,7 @@ namespace client {
             _sequence_number(0),
             _running(false),
             _packet_count(0),
+            _timeout(TIMEOUT_MS),
             _packetFactory() {
       }
 
@@ -61,6 +64,7 @@ namespace client {
       uint32_t _sequence_number;
       bool _running;
       uint64_t _packet_count;
+      std::chrono::milliseconds _timeout;
 
       packet::PacketHandlerFactory _packetFactory;
   };

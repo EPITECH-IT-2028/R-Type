@@ -43,7 +43,7 @@ void client::Client::receivePackets() {
             timer.cancel();
           });
 
-      timer.expires_after(std::chrono::milliseconds(100));
+      timer.expires_after(_timeout);
       timer.async_wait([&](const asio::error_code &error) {
         if (!error && !received) {
           _socket.cancel();
