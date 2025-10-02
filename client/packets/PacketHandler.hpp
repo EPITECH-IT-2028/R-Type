@@ -1,8 +1,8 @@
 #pragma once
-#include "APacket.hpp"
+#include "IPacket.hpp"
 
 namespace packet {
-  class MessageHandler : public APacket {
+  class MessageHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
