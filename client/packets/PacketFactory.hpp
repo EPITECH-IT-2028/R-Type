@@ -7,7 +7,6 @@
 #include "PacketHandler.hpp"
 
 namespace packet {
-
   class PacketHandlerFactory {
     public:
       PacketHandlerFactory() = default;
@@ -21,5 +20,4 @@ namespace packet {
           _handlers = {{PacketType::Message,
                         []() { return std::make_unique<MessageHandler>(); }}};
   };
-
 }  // namespace packet
