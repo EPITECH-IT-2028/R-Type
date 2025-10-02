@@ -2,9 +2,9 @@
 
 void client::Client::connect() {
   try {
-    _socket.open(udp::v4());
-    udp::resolver resolver(_io_context);
-    _server_endpoint = *resolver.resolve(udp::v4(), _host, _port).begin();
+    _socket.open(asio::ip::udp::v4());
+    asio::ip::udp::resolver resolver(_io_context);
+    _server_endpoint = *resolver.resolve(asio::ip::udp::v4(), _host, _port).begin();
     _running = true;
     _receiver_thread = std::thread(&Client::receivePackets, this);
     std::cout << "Connected to " << _host << ":" << _port << std::endl;
@@ -30,7 +30,7 @@ void client::Client::receivePackets() {
 
   while (_running) {
     try {
-      udp::endpoint sender_endpoint;
+      asio::ip::udp::endpoint sender_endpoint;
       std::size_t length = 0;
       asio::error_code ec;
 

@@ -9,8 +9,6 @@
 
 #define TIMEOUT_MS 100
 
-using asio::ip::udp;
-
 namespace client {
   class Client {
     public:
@@ -59,8 +57,8 @@ namespace client {
 
     private:
       asio::io_context _io_context;
-      udp::socket _socket;
-      udp::endpoint _server_endpoint;
+      asio::ip::udp::socket _socket;
+      asio::ip::udp::endpoint _server_endpoint;
       std::string _host;
       std::string _port;
       std::array<char, 2048> _recv_buffer;
