@@ -3,6 +3,7 @@
 #include <asio.hpp>
 #include <iostream>
 #include <string>
+#include <thread>
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
 
@@ -24,7 +25,10 @@ namespace client {
             _packetFactory() {
       }
 
-      ~Client() = default;
+      ~Client() {
+        if (_running)
+          disconnect();
+      }
 
       void connect();
 
@@ -57,13 +61,13 @@ namespace client {
       asio::io_context _io_context;
       udp::socket _socket;
       udp::endpoint _server_endpoint;
-      udp::endpoint _remote_endpoint;
       std::string _host;
       std::string _port;
       std::array<char, 2048> _recv_buffer;
       uint32_t _sequence_number;
       bool _running;
       uint64_t _packet_count;
+      std::thread _receiver_thread;
       std::chrono::milliseconds _timeout;
 
       packet::PacketHandlerFactory _packetFactory;
