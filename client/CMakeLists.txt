@@ -12,6 +12,7 @@ add_compile_options(-W -Wall -Wextra)
 
 target_link_libraries(${PROJECT_NAME} raylib asio::asio)
 target_include_directories(${PROJECT_NAME} PRIVATE
+  ${CMAKE_SOURCE_DIR}/client/
   ${CMAKE_SOURCE_DIR}/client/packets/
   ${CMAKE_SOURCE_DIR}/core/network/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
