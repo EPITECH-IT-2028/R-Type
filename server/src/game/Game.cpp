@@ -40,7 +40,6 @@ void game::Game::initECS() {
   _enemySystem->setEventQueue(&_eventQueue);
 
   _collisionSystem = _ecsManager.registerSystem<ecs::CollisionSystem>();
-  _collisionSystem->setECSManager(&_ecsManager);
   _collisionSystem->setGame(this);
   _collisionSystem->setEventQueue(&_eventQueue);
 
@@ -51,6 +50,7 @@ void game::Game::initECS() {
   enemySignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::ShootComponent>());
+  enemySignature.set(_ecsManager.getComponentType<ecs::HealthComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::ColliderComponent>());
   _ecsManager.setSystemSignature<ecs::EnemySystem>(enemySignature);
 
@@ -119,7 +119,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {10.0f, 10.0f});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager.addComponent<ecs::SpeedComponent>(entity, {10.0f});
-  _ecsManager.addComponent<ecs::PlayerComponent>(entity, {name, true, 0, true});
+  _ecsManager.addComponent<ecs::PlayerComponent>(entity, {player_id, name, true, 0, true});
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
