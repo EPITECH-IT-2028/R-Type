@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-#include <iostream>
 #include <asio.hpp>
+#include <iostream>
+#include <string>
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
 
@@ -12,19 +12,26 @@ namespace client {
   class Client {
     public:
       Client(const std::string &host, const std::string &port)
-          : _socket(_io_context), _host(host), _port(port),
-            _sequence_number(0), _running(false), _packet_count(0), _packetFactory() {}
+          : _socket(_io_context),
+            _host(host),
+            _port(port),
+            _sequence_number(0),
+            _running(false),
+            _packet_count(0),
+            _packetFactory() {
+      }
 
       ~Client() = default;
-      
+
       void connect();
 
       void disconnect();
 
-      template<typename PacketType>
+      template <typename PacketType>
       void send(const PacketType &packet) {
         if (!_running) {
-          std::cerr << "Client is not connected. Cannot send packet." << std::endl;
+          std::cerr << "Client is not connected. Cannot send packet."
+                    << std::endl;
           return;
         }
 
@@ -39,7 +46,9 @@ namespace client {
 
       void receivePackets();
 
-      bool isConnected() const { return _running; }
+      bool isConnected() const {
+        return _running;
+      }
 
     private:
       asio::io_context _io_context;
@@ -55,4 +64,4 @@ namespace client {
 
       packet::PacketHandlerFactory _packetFactory;
   };
-}
+}  // namespace client
