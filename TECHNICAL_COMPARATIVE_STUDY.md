@@ -155,12 +155,12 @@ class EventQueue {
 
 ### Current Security Measures
 
-#### Network Security**
+#### Network Security
 
 - Client endpoint validation
 - Packet size validation
 
-#### Anti-Cheat Implementation**
+#### Anti-Cheat Implementation
 
 - Server-side position validation
 - Movement speed checks
@@ -235,7 +235,7 @@ asio/1.36.0
 **Network Performance**:
 
 - Packet processing: 10,000 packets/second
-- Average latency: 2-5ms (LAN)
+- Average latency: 2-5 ms (LAN), ≈20–100+ ms (WLAN)
 - Bandwidth: ~50 KB/s per client
 
 ---
