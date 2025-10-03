@@ -80,13 +80,33 @@ struct ALIGNED HeartbeatPlayerPacket {
     uint32_t player_id;
 };
 
-/* Client to server packets */
+/**
+ * @brief Packet sent from the client to the server to provide the player's display name.
+ *
+ * Contains the common packet header and a fixed-size name buffer. The name is stored
+ * as a null-terminated UTF-8 string in the 32-byte `name` field; maximum 31 bytes of
+ * character data plus a terminating NUL.
+ *
+ * @var char PlayerInfoPacket::name
+ * Player's display name (null-terminated UTF-8). */
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
     char name[32];
 };
 
-/* Client to server packets */
+/**
+ * @brief Packet sent from client to server to report a player hit event.
+ *
+ * Contains the common packet header and the identifying and contextual data for a hit:
+ * the affected player's id, the damage amount, the world coordinates where the hit occurred,
+ * and a sequence number to correlate with client-side action/state.
+ *
+ * @param player_id Identifier of the player that was hit.
+ * @param damage Amount of damage applied to the player.
+ * @param x World X coordinate where the hit occurred.
+ * @param y World Y coordinate where the hit occurred.
+ * @param sequence_number Client-side sequence number used to correlate this event with prior actions.
+ */
 struct ALIGNED PlayerHitPacket {
     PacketHeader header;
     uint32_t player_id;
@@ -96,7 +116,17 @@ struct ALIGNED PlayerHitPacket {
     int sequence_number;
 };
 
-/* Client to server packets */
+/**
+ * @brief Sends the client's current position with an ordering sequence number.
+ *
+ * Packet used by the client to report its position to the server.
+ *
+ * Fields:
+ *  - header: Common packet header identifying the packet type and payload size.
+ *  - sequence_number: Client-side sequence number for ordering position updates.
+ *  - x: X coordinate of the player's position.
+ *  - y: Y coordinate of the player's position.
+ */
 struct ALIGNED PositionPacket {
     PacketHeader header;
     uint32_t sequence_number;
@@ -186,13 +216,45 @@ struct ALIGNED GameStartPacket {
     uint8_t game_start;
 };
 
-/* Server to client packets */
+/**
+ * @brief Signals the end of the game to the client.
+ *
+ * Contains the common packet header and a flag indicating whether the game has ended.
+ *
+ * @var PacketHeader GameEndPacket::header
+ *   Common packet header identifying packet type and payload size.
+ * @var uint8_t GameEndPacket::game_end
+ *   `1` if the game has ended, `0` otherwise.
+ */
 struct ALIGNED GameEndPacket {
     PacketHeader header;
     uint8_t game_end;
 };
 
-/* Server to client packets */
+/**
+ * @brief Notifies the client that an enemy was hit, including hit location, damage, and ordering.
+ *
+ * Contains the packet header and data describing which enemy was hit, where the hit occurred,
+ * how much damage was applied, and a sequence number for ordering or reconciliation.
+ *
+ * @var header
+ * PacketHeader common to all packets (type and payload size).
+ *
+ * @var enemy_id
+ * Identifier of the enemy that was hit.
+ *
+ * @var hit_x
+ * X coordinate of the hit position.
+ *
+ * @var hit_y
+ * Y coordinate of the hit position.
+ *
+ * @var damage
+ * Amount of damage inflicted by the hit.
+ *
+ * @var sequence_number
+ * Sequence number used to order or reconcile hit events.
+ */
 struct ALIGNED EnemyHitPacket {
     PacketHeader header;
     std::uint32_t enemy_id;
@@ -202,7 +264,20 @@ struct ALIGNED EnemyHitPacket {
     int sequence_number;
 };
 
-/* Server to client packets */
+/**
+ * @brief Informs clients that a player has died and where the death occurred.
+ *
+ * @details Carries the player identifier and the world coordinates of the death location.
+ *
+ * @var std::uint32_t PlayerDeathPacket::player_id
+ * ID of the player who died.
+ *
+ * @var float PlayerDeathPacket::x
+ * X coordinate of the death location.
+ *
+ * @var float PlayerDeathPacket::y
+ * Y coordinate of the death location.
+ */
 struct ALIGNED PlayerDeathPacket {
     PacketHeader header;
     std::uint32_t player_id;

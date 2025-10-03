@@ -23,6 +23,21 @@ game::Game::Game()
   initECS();
 }
 
+/**
+ * @brief Initialize the game's entity-component-system (ECS).
+ *
+ * Registers all component types used by the game and creates/configures
+ * the core systems. Sets each system's required component signature and
+ * wires systems to the game, ECS manager, and event queue as appropriate.
+ *
+ * Registered components: Position, Health, Speed, Player, Projectile,
+ * Velocity, Enemy, Shoot, Collider.
+ *
+ * Configured systems and their signatures:
+ * - EnemySystem: requires Enemy, Position, Velocity, Shoot, Health, Collider.
+ * - ProjectileSystem: requires Projectile, Position, Velocity, Collider.
+ * - CollisionSystem: requires Position, Collider.
+ */
 void game::Game::initECS() {
   _ecsManager.registerComponent<ecs::PositionComponent>();
   _ecsManager.registerComponent<ecs::HealthComponent>();
@@ -71,6 +86,11 @@ void game::Game::initECS() {
   _ecsManager.setSystemSignature<ecs::CollisionSystem>(collisionSignature);
 }
 
+/**
+ * @brief Stops the game loop and cleans up the game thread.
+ *
+ * Ensures the running flag is cleared so the main loop stops, then joins the internal game thread if it is joinable to guarantee the thread has finished before destruction.
+ */
 game::Game::~Game() {
   stop();
   if (_gameThread.joinable()) {
@@ -93,6 +113,13 @@ void game::Game::stop() {
   }
 }
 
+/**
+ * @brief Executes the game's main loop, updating core systems and spawning enemies until stopped.
+ *
+ * Runs while the Game's running flag remains set. Each iteration computes the elapsed
+ * frame time (in seconds) and passes it to the enemy, projectile, and collision systems,
+ * invokes enemy spawn logic, and sleeps briefly to cap the frame rate.
+ */
 void game::Game::gameLoop() {
   auto lastTime = std::chrono::high_resolution_clock::now();
 
@@ -111,6 +138,17 @@ void game::Game::gameLoop() {
   }
 }
 
+/**
+ * @brief Create and register a new player entity with its initial components.
+ *
+ * Initializes an ECS entity for the player, attaches Position, Health, Speed,
+ * Player, Velocity, Shoot, and Collider components, stores the resulting
+ * Player object in the game's player map, and returns it.
+ *
+ * @param player_id Unique identifier for the player.
+ * @param name Display name for the player.
+ * @return std::shared_ptr<game::Player> Shared pointer to the created Player instance stored in the game.
+ */
 std::shared_ptr<game::Player> game::Game::createPlayer(
     int player_id, const std::string &name) {
   std::scoped_lock lock(_playerMutex);
@@ -184,6 +222,17 @@ void game::Game::spawnEnemy(float deltaTime) {
   }
 }
 
+/**
+ * @brief Create a new enemy entity, attach its gameplay components, and register it with the game.
+ *
+ * This constructs an ECS entity for the enemy, attaches position, health, velocity, shooting,
+ * collider and enemy identity components, stores the resulting Enemy instance in the game's
+ * enemy registry, and returns a shared pointer to that Enemy.
+ *
+ * @param enemy_id Unique identifier assigned to the new enemy.
+ * @param type EnemyType enum value describing the enemy's behavior/type.
+ * @return std::shared_ptr<Enemy> Shared pointer to the created Enemy; the Enemy is also stored in the game's internal enemy map.
+ */
 std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
   std::scoped_lock lock(_enemyMutex);
@@ -228,6 +277,18 @@ std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
   return enemyList;
 }
 
+/**
+ * @brief Create and register a new projectile entity, store it in the game's projectile registry, and emit a spawn event.
+ *
+ * @param projectile_id Unique identifier for the projectile.
+ * @param owner_id Identifier of the entity that owns or fired the projectile.
+ * @param type Projectile type.
+ * @param x Initial X position of the projectile.
+ * @param y Initial Y position of the projectile.
+ * @param vx Initial X velocity of the projectile.
+ * @param vy Initial Y velocity of the projectile.
+ * @return std::shared_ptr<game::Projectile> Shared pointer to the created Projectile.
+ */
 std::shared_ptr<game::Projectile> game::Game::createProjectile(
     std::uint32_t projectile_id, std::uint32_t owner_id, ProjectileType type,
     float x, float y, float vx, float vy) {

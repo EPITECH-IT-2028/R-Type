@@ -10,6 +10,11 @@
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 
+/**
+ * @brief Processes collisions among managed entities by checking all unique pairs for AABB overlap and invoking collision handling when overlaps are detected.
+ *
+ * @param dt Elapsed time since the previous update in seconds (currently unused).
+ */
 void ecs::CollisionSystem::update(float dt) {
   std::vector<Entity> entities(_entities.begin(), _entities.end());
 
@@ -22,6 +27,31 @@ void ecs::CollisionSystem::update(float dt) {
   }
 }
 
+/**
+ * @brief Resolve a collision between two entities and apply game effects.
+ *
+ * @details Determines the roles of the two entities (projectile, player, enemy)
+ * and processes one of the supported collision cases:
+ * - Projectile vs Enemy: applies projectile damage to the enemy, enqueues an
+ *   EnemyHitEvent or EnemyDestroyEvent as appropriate, enqueues a
+ *   ProjectileDestroyEvent, and destroys the projectile (and the enemy if
+ *   destroyed).
+ * - Projectile vs Player: applies projectile damage to the player, enqueues a
+ *   PlayerHitEvent or PlayerDestroyEvent as appropriate, enqueues a
+ *   ProjectileDestroyEvent, and destroys the projectile (and the player if
+ *   destroyed).
+ * - Player vs Enemy: applies a fixed collision damage to both entities, enqueues
+ *   PlayerHit/PlayerDestroy and EnemyHit/EnemyDestroy events as appropriate,
+ *   and destroys entities whose health reaches zero.
+ *
+ * If an event queue is available, the corresponding events are enqueued before
+ * entities are destroyed. The function ignores projectile collisions that do
+ * not match the expected projectile type for the target (e.g., enemy projectiles
+ * hitting enemies or player projectiles hitting players).
+ *
+ * @param entity1 The first colliding entity.
+ * @param entity2 The second colliding entity.
+ */
 void ecs::CollisionSystem::handleCollision(const Entity &entity1,
                                            const Entity &entity2) {
   bool entity1IsProjectile =
@@ -202,6 +232,18 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
   }
 }
 
+/**
+ * @brief Determines whether the axis-aligned bounding boxes of two entities overlap.
+ *
+ * Checks that both entities have a ColliderComponent and PositionComponent; if either entity
+ * is missing these components the function returns `false`. Otherwise computes each entity's
+ * AABB using position + collider center ± halfSize and reports whether the boxes intersect
+ * on both the x and y axes.
+ *
+ * @param a First entity to test for overlap (must have PositionComponent and ColliderComponent).
+ * @param b Second entity to test for overlap (must have PositionComponent and ColliderComponent).
+ * @return true if the entities' AABBs intersect on both axes, false otherwise.
+ */
 bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
                                            const Entity &b) const {
   if (!_ecsManager.hasComponent<ColliderComponent>(a) ||

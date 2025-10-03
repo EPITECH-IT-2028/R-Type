@@ -130,6 +130,15 @@ void server::Server::processGameEvents() {
   }
 }
 
+/**
+ * @brief Convert a game event into the corresponding network packet and broadcast it to all connected clients.
+ *
+ * Processes the provided game event variant, builds the appropriate network packet for that event type
+ * (enemy spawn/destroy/hit/move, projectile spawn/destroy, player hit/destroy), and broadcasts the packet
+ * to all connected clients.
+ *
+ * @param event Variant containing a specific game event to handle.
+ */
 void server::Server::handleGameEvent(const queue::GameEvent &event) {
   std::visit(
       [this](const auto &specificEvent) {
