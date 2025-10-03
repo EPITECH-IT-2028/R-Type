@@ -4,6 +4,9 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 500
+#define WINDOW_MAX_WIDTH WINDOW_WIDTH * 2
+#define WINDOW_MAX_HEIGHT WINDOW_HEIGHT * 2
+#define SCROLL_SPEED 25.0f
 
 namespace renderManager {
   class Background {

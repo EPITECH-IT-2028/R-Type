@@ -58,8 +58,8 @@ namespace renderManager {
   Renderer::Renderer(int width, int height, const char *title) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     InitWindow(width, height, title);
-    SetWindowMinSize(800, 200);
-    SetWindowMaxSize(1600, 400);
+    SetWindowMinSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    SetWindowMaxSize(WINDOW_MAX_WIDTH, WINDOW_MAX_HEIGHT);
     _bg.init();
     if (!IsWindowState(FLAG_VSYNC_HINT))
       SetTargetFPS(60);
@@ -95,6 +95,6 @@ namespace renderManager {
   }
 
   void Renderer::updateBackground(float deltaTime) {
-    _bg.offsetBackground(25.f * deltaTime);
+    _bg.offsetBackground(SCROLL_SPEED * deltaTime);
   }
 }  // namespace renderManager
