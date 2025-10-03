@@ -150,7 +150,7 @@ void game::Game::gameLoop() {
  * @return std::shared_ptr<game::Player> Shared pointer to the created Player instance stored in the game.
  */
 std::shared_ptr<game::Player> game::Game::createPlayer(
-    int player_id, const std::string &name) {
+    std::uint32_t player_id, const std::string &name) {
   std::scoped_lock lock(_playerMutex);
   auto entity = _ecsManager.createEntity();
 
@@ -299,7 +299,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
     entity = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(entity, {x, y});
     _ecsManager.addComponent<ecs::SpeedComponent>(entity, {10.0f});
-    _ecsManager.addComponent<ecs::ProjectileComponent>(entity, {type});
+    _ecsManager.addComponent<ecs::ProjectileComponent>(entity, {projectile_id, type, owner_id, false, 0, 30});
     _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
     _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
     projectile = std::make_shared<Projectile>(projectile_id, owner_id, entity,

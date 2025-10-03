@@ -26,7 +26,7 @@ namespace game {
       void stop();
 
       /*  Player Management */
-      std::shared_ptr<Player> createPlayer(int player_id,
+      std::shared_ptr<Player> createPlayer(std::uint32_t player_id,
                                            const std::string &name);
 
       std::shared_ptr<game::Projectile> createProjectile(
