@@ -60,6 +60,20 @@ struct PacketBuilder {
       return packet;
     }
 
+    static PlayerHitPacket makePlayerHit(std::uint32_t player_id,
+                                         std::uint32_t damage, float x, float y,
+                                         int sequence_number) {
+      PlayerHitPacket packet{};
+      packet.header.type = PacketType::PlayerHit;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      packet.damage = damage;
+      packet.x = x;
+      packet.y = y;
+      packet.sequence_number = sequence_number;
+      return packet;
+    }
+
     static EnemySpawnPacket makeEnemySpawn(uint32_t enemy_id, EnemyType type,
                                            float x, float y, float vx, float vy,
                                            uint32_t health,
@@ -101,6 +115,20 @@ struct PacketBuilder {
       packet.enemy_id = enemy_id;
       packet.death_x = death_x;
       packet.death_y = death_y;
+      return packet;
+    }
+
+    static EnemyHitPacket makeEnemyHit(uint32_t enemy_id, float hit_x,
+                                       float hit_y, float damage,
+                                       int sequence_number) {
+      EnemyHitPacket packet{};
+      packet.header.type = PacketType::EnemyHit;
+      packet.header.size = sizeof(packet);
+      packet.enemy_id = enemy_id;
+      packet.hit_x = hit_x;
+      packet.hit_y = hit_y;
+      packet.damage = damage;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -178,6 +206,17 @@ struct PacketBuilder {
       return packet;
     }
 
+    static PlayerDeathPacket makePlayerDeath(uint32_t player_id, float x,
+                                             float y) {
+      PlayerDeathPacket packet{};
+      packet.header.type = PacketType::PlayerDeath;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      packet.x = x;
+      packet.y = y;
+      return packet;
+    }
+
     static PlayerDisconnectPacket makePlayerDisconnect(uint32_t player_id) {
       PlayerDisconnectPacket packet{};
       packet.header.type = PacketType::PlayerDisconnected;
@@ -193,5 +232,4 @@ struct PacketBuilder {
       packet.player_id = player_id;
       return packet;
     }
-
 };

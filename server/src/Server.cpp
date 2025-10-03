@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
+#include "Events.hpp"
 #include "IPacket.hpp"
 #include "Macros.hpp"
 #include "PacketSender.hpp"
@@ -141,13 +142,17 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.vy, specificEvent.health, specificEvent.max_health);
           broadcast::Broadcast::broadcastEnemySpawn(_socket, _clients,
                                                     enemySpawnPacket);
-
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
           auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastEnemyDeath(_socket, _clients,
                                                     enemyDeathPacket);
-
+        } else if constexpr (std::is_same_v<T, queue::EnemyHitEvent>) {
+          auto enemyHitPacket = PacketBuilder::makeEnemyHit(
+              specificEvent.enemy_id, specificEvent.x, specificEvent.y,
+              specificEvent.damage, specificEvent.sequence_number);
+          broadcast::Broadcast::broadcastEnemyHit(_socket, _clients,
+                                                  enemyHitPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyMoveEvent>) {
           auto enemyMovePacket = PacketBuilder::makeEnemyMove(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
@@ -163,6 +168,22 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.owner_id);
           broadcast::Broadcast::broadcastProjectileSpawn(_socket, _clients,
                                                          projectileSpawnPacket);
+        } else if constexpr (std::is_same_v<T, queue::PlayerHitEvent>) {
+          auto playerHitPacket = PacketBuilder::makePlayerHit(
+              specificEvent.player_id, specificEvent.x, specificEvent.y,
+              specificEvent.damage, specificEvent.sequence_number);
+          broadcast::Broadcast::broadcastPlayerHit(_socket, _clients,
+                                                   playerHitPacket);
+        } else if constexpr (std::is_same_v<T, queue::ProjectileDestroyEvent>) {
+          auto projectileDestroyPacket = PacketBuilder::makeProjectileDestroy(
+              specificEvent.projectile_id, specificEvent.x, specificEvent.y);
+          broadcast::Broadcast::broadcastProjectileDestroy(
+              _socket, _clients, projectileDestroyPacket);
+        } else if constexpr (std::is_same_v<T, queue::PlayerDestroyEvent>) {
+          auto playerDestroyPacket = PacketBuilder::makePlayerDeath(
+              specificEvent.player_id, specificEvent.x, specificEvent.y);
+          broadcast::Broadcast::broadcastPlayerDeath(_socket, _clients,
+                                                     playerDestroyPacket);
         }
       },
       event);

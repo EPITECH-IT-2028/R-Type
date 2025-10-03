@@ -19,7 +19,10 @@ enum class PacketType : uint8_t {
   GameStart = 0x0D,
   GameEnd = 0x0E,
   PlayerDisconnected = 0x0F,
-  Heartbeat = 0x10
+  Heartbeat = 0x10,
+  EnemyHit = 0x11,
+  PlayerHit = 0x12,
+  PlayerDeath = 0x13
 };
 
 enum class EnemyType : uint8_t {
@@ -81,6 +84,16 @@ struct ALIGNED HeartbeatPlayerPacket {
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
     char name[32];
+};
+
+/* Client to server packets */
+struct ALIGNED PlayerHitPacket {
+    PacketHeader header;
+    uint32_t player_id;
+    uint32_t damage;
+    float x;
+    float y;
+    int sequence_number;
 };
 
 /* Client to server packets */
@@ -177,4 +190,22 @@ struct ALIGNED GameStartPacket {
 struct ALIGNED GameEndPacket {
     PacketHeader header;
     uint8_t game_end;
+};
+
+/* Server to client packets */
+struct ALIGNED EnemyHitPacket {
+    PacketHeader header;
+    std::uint32_t enemy_id;
+    float hit_x;
+    float hit_y;
+    float damage;
+    int sequence_number;
+};
+
+/* Server to client packets */
+struct ALIGNED PlayerDeathPacket {
+    PacketHeader header;
+    std::uint32_t player_id;
+    float x;
+    float y;
 };

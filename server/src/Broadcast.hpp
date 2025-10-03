@@ -119,6 +119,16 @@ namespace broadcast {
       };
 
       /*
+       * Broadcast the enemy hit to all connected clients.
+       */
+      static void broadcastEnemyHit(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const EnemyHitPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
+
+      /*
        * Broadcast the projectile spawned to all connected clients.
        */
       static void broadcastProjectileSpawn(
@@ -168,6 +178,29 @@ namespace broadcast {
         broadcastToAll(socket, clients, packet);
       };
 
+      /*
+       * Broadcast the player death to all connected clients.
+       */
+      static void broadcastPlayerDeath(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const PlayerDeathPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
+
+      /*
+       * Broadcast the player got hit to all connected clients.
+       */
+      static void broadcastPlayerHit(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const PlayerHitPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
+
+      /*
+       * Broadcast the player disconnect to all connected clients.
+       */
       static void broadcastPlayerDisconnect(
           asio::ip::udp::socket &socket,
           const std::vector<std::shared_ptr<server::Client>> &clients,
