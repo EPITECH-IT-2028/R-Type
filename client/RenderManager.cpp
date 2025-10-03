@@ -13,8 +13,8 @@ namespace renderManager {
       _texture = LoadTextureFromImage(image);
       UnloadImage(image);
     }
-    _backgroundRec = {0.0f, 0.0f, (float)_texture.width,
-                      (float)_texture.height};
+    _backgroundRec = {0.0f, 0.0f, static_cast<float>(_texture.width),
+                      static_cast<float>(_texture.height)};
   }
 
   Background::~Background() {
@@ -34,9 +34,9 @@ namespace renderManager {
 
     float destHeight = screenHeight;
     float destWidth = destHeight * sourceAspectRatio;
-    float offset = fmod(_scrollingOffset, (float)_texture.width);
+    float offset = fmod(_scrollingOffset, static_cast<float>(_texture.width));
     if (offset < 0)
-      offset += (float)_texture.width;
+      offset += static_cast<float>(_texture.width);
     Rectangle source = _backgroundRec;
     Rectangle dest1 = {-offset * (destHeight / _texture.height), 0, destWidth,
                        destHeight};
@@ -47,9 +47,10 @@ namespace renderManager {
 
   void Background::offsetBackground(float offset) {
     _scrollingOffset += offset;
-    _scrollingOffset = fmod(_scrollingOffset, (float)_texture.width);
+    _scrollingOffset =
+        fmod(_scrollingOffset, static_cast<float>(_texture.width));
     if (_scrollingOffset < 0)
-      _scrollingOffset += (float)_texture.width;
+      _scrollingOffset += static_cast<float>(_texture.width);
   }
 }  // namespace renderManager
 
