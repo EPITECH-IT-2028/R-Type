@@ -10,7 +10,7 @@ int main() {
   while (!renderer.shouldClose()) {
     if (IsWindowResized()) {
       int newWidth = GetScreenWidth();
-      int newHeight = (int)(newWidth / aspectRatio);
+      int newHeight = newWidth / aspectRatio;
       SetWindowSize(newWidth, newHeight);
     }
     renderer.beginDrawing();
