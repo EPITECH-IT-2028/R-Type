@@ -1,9 +1,11 @@
 #include "RenderManager.hpp"
 
 int main() {
-  renderManager::Renderer renderer(800, 500, "Render Manager Example");
+  renderManager::Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT,
+                                   "Render Manager Example");
 
-  const float aspectRatio = 800.0f / 500.0f;
+  const float aspectRatio =
+      static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
 
   while (!renderer.shouldClose()) {
     if (IsWindowResized()) {
