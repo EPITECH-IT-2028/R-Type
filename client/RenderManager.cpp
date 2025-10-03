@@ -34,17 +34,22 @@ namespace renderManager {
 
     float destHeight = screenHeight;
     float destWidth = destHeight * sourceAspectRatio;
-    Rectangle dest = {0, 0, destWidth, destHeight};
-    DrawTexturePro(_texture, _backgroundRec, dest, {0, 0}, 0, WHITE);
+    float offset = fmod(_scrollingOffset, (float)_texture.width);
+    if (offset < 0)
+      offset += (float)_texture.width;
+    Rectangle source = _backgroundRec;
+    Rectangle dest1 = {-offset * (destHeight / _texture.height), 0, destWidth,
+                       destHeight};
+    DrawTexturePro(_texture, source, dest1, {0, 0}, 0, WHITE);
+    Rectangle dest2 = {dest1.x + destWidth, 0, destWidth, destHeight};
+    DrawTexturePro(_texture, source, dest2, {0, 0}, 0, WHITE);
   }
 
   void Background::offsetBackground(float offset) {
     _scrollingOffset += offset;
-    if (_scrollingOffset >= (float)_texture.width)
-      _scrollingOffset -= (float)_texture.width;
-    else if (_scrollingOffset <= -(float)_texture.width)
+    _scrollingOffset = fmod(_scrollingOffset, (float)_texture.width);
+    if (_scrollingOffset < 0)
       _scrollingOffset += (float)_texture.width;
-    _backgroundRec.x = _scrollingOffset;
   }
 }  // namespace renderManager
 
