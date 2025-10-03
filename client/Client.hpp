@@ -3,7 +3,6 @@
 #include <asio.hpp>
 #include <iostream>
 #include <string>
-#include <thread>
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
 
@@ -23,10 +22,7 @@ namespace client {
             _packetFactory() {
       }
 
-      ~Client() {
-        if (_running)
-          disconnect();
-      }
+      ~Client() = default;
 
       void connect();
 
@@ -65,7 +61,6 @@ namespace client {
       uint32_t _sequence_number;
       bool _running;
       uint64_t _packet_count;
-      std::thread _receiver_thread;
       std::chrono::milliseconds _timeout;
 
       packet::PacketHandlerFactory _packetFactory;
