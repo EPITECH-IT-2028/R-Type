@@ -10,6 +10,7 @@ namespace ecs {
    * projectiles.
    */
   struct ProjectileComponent {
+      std::uint32_t projectile_id = 0;
       ProjectileType type = ProjectileType::PLAYER_BASIC;
       std::uint32_t owner_id = 0;
       bool is_destroy = false;

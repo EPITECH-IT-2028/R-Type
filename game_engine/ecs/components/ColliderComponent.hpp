@@ -1,12 +1,12 @@
 #pragma once
 
-struct Vec2 {
-    float x;
-    float y;
-};
-
 namespace ecs {
 
+  /** @brief A simple 2D vector structure. */
+  struct Vec2 {
+      float x;
+      float y;
+  };
   /** @brief Component that defines a collider for an entity.
    * It can be an axis-aligned bounding box (AABB).
    */

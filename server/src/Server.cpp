@@ -131,11 +131,13 @@ void server::Server::processGameEvents() {
 }
 
 /**
- * @brief Convert a game event into the corresponding network packet and broadcast it to all connected clients.
+ * @brief Convert a game event into the corresponding network packet and
+ * broadcast it to all connected clients.
  *
- * Processes the provided game event variant, builds the appropriate network packet for that event type
- * (enemy spawn/destroy/hit/move, projectile spawn/destroy, player hit/destroy), and broadcasts the packet
- * to all connected clients.
+ * Processes the provided game event variant, builds the appropriate network
+ * packet for that event type (enemy spawn/destroy/hit/move, projectile
+ * spawn/destroy, player hit/destroy), and broadcasts the packet to all
+ * connected clients.
  *
  * @param event Variant containing a specific game event to handle.
  */
@@ -179,8 +181,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
                                                          projectileSpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::PlayerHitEvent>) {
           auto playerHitPacket = PacketBuilder::makePlayerHit(
-              specificEvent.player_id, specificEvent.x, specificEvent.y,
-              specificEvent.damage, specificEvent.sequence_number);
+              specificEvent.player_id, specificEvent.damage, specificEvent.x,
+              specificEvent.y, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastPlayerHit(_socket, _clients,
                                                    playerHitPacket);
         } else if constexpr (std::is_same_v<T, queue::ProjectileDestroyEvent>) {
