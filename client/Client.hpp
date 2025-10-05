@@ -9,8 +9,9 @@ namespace client {
       ~Client();
 
     private:
-      ecs::ECSManager &_ecsManager;
       void initECS();
+
+      ecs::ECSManager &_ecsManager;
       bool _running;
   };
 }  // namespace client

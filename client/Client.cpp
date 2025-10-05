@@ -10,7 +10,7 @@
 
 namespace client {
   Client::Client()
-      : _running(true), _ecsManager(ecs::ECSManager::getInstance()) {
+      : _ecsManager(ecs::ECSManager::getInstance()), _running(true) {
     initECS();
   }
 
