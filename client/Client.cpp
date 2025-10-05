@@ -57,10 +57,6 @@ namespace client {
           (float)backgroundImage.width / (float)backgroundImage.height;
       scaledWidth = screenHeight * aspectRatio;
       UnloadImage(backgroundImage);
-    } else {
-      TraceLog(LOG_WARNING,
-               "Failed to load background image for aspect ratio scaling, "
-               "using default");
     }
 
     auto background1 = _ecsManager.createEntity();
