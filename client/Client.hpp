@@ -30,7 +30,7 @@ namespace client {
 
       template <typename PacketType>
       void send(const PacketType &packet) {
-        if (!_running) {
+        if (!_running.load(std::memory_order_relaxed)) {
           std::cerr << "Client is not connected. Cannot send packet."
                     << std::endl;
           return;
@@ -48,7 +48,7 @@ namespace client {
       void receivePackets();
 
       bool isConnected() const {
-        return _running;
+        return _running.load(std::memory_order_relaxed);
       }
 
     private:

@@ -5,7 +5,7 @@ void client::Client::connect() {
     _socket.open(asio::ip::udp::v4());
     asio::ip::udp::resolver resolver(_io_context);
     _server_endpoint = *resolver.resolve(asio::ip::udp::v4(), _host, _port).begin();
-    _running = true;
+    _running.store(true, std::memory_order_relaxed);
     std::cout << "Connected to " << _host << ":" << _port << std::endl;
   } catch (std::exception &e) {
     std::cerr << "Connection error: " << e.what() << std::endl;
@@ -13,7 +13,7 @@ void client::Client::connect() {
 }
 
 void client::Client::disconnect() {
-  _running = false;
+  _running.store(false, std::memory_order_relaxed);
   _socket.close();
   std::cout << "Disconnected from server." << std::endl;
 }

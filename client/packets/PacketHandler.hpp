@@ -1,9 +1,9 @@
 #pragma once
 #include "IPacket.hpp"
 
-#define ERROR -1
-
 namespace packet {
+  constexpr int ERROR = -1;
+
   class MessageHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,

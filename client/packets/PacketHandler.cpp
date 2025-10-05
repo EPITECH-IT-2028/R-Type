@@ -5,7 +5,7 @@
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
   if (size < sizeof(MessagePacket))
-    return ERROR;
+    return packet::ERROR;
 
   const MessagePacket *packet = reinterpret_cast<const MessagePacket *>(data);
   std::cout << "[MESSAGE] Server : " << packet->message << std::endl;
