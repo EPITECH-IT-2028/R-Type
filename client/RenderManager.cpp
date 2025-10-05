@@ -40,14 +40,12 @@ namespace renderManager {
   }
 
   void Renderer::resizeWindow() {
-    int prevWidth = WINDOW_WIDTH;
-    int prevHeight = WINDOW_HEIGHT;
     int newWidth = 0;
     int newHeight = 0;
     const int width = GetScreenWidth();
     const int height = GetScreenHeight();
-    const int deltaWidth = abs(width - prevWidth);
-    const int deltaHeight = abs(height - prevHeight);
+    const int deltaWidth = abs(width - WINDOW_WIDTH);
+    const int deltaHeight = abs(height - WINDOW_HEIGHT);
     const float aspectRatio =
         static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
 
@@ -59,8 +57,6 @@ namespace renderManager {
       newWidth = static_cast<int>(newHeight * aspectRatio);
     }
     SetWindowSize(newWidth, newHeight);
-    prevWidth = newWidth;
-    prevHeight = newHeight;
   }
 
   void Renderer::coloredLog(int msgType, const char *text, va_list args) {
