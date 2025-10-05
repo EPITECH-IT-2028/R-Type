@@ -1,12 +1,12 @@
 #pragma once
-#include "APacket.hpp"
+#include "IPacket.hpp"
+
+#define ERROR -1
 
 namespace packet {
-
-  class MessageHandler : public APacket {
+  class MessageHandler : public IPacket {
     public:
-      int handlePacket(client::Client &client,
-                       const char *data, std::size_t size) override;
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
   };
-
 }  // namespace packet

@@ -3,13 +3,11 @@
 #include "Packet.hpp"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
-                                                   const char *data,
-                                                   std::size_t size) {
-  if (size < sizeof(MessagePacket)) {
-    return 84;
-}
+                                         const char *data, std::size_t size) {
+  if (size < sizeof(MessagePacket))
+    return ERROR;
 
   const MessagePacket *packet = reinterpret_cast<const MessagePacket *>(data);
-  std::cout << "[MESSAGE] From server: " << packet->message << std::endl;
+  std::cout << "[MESSAGE] Server : " << packet->message << std::endl;
   return 0;
 }

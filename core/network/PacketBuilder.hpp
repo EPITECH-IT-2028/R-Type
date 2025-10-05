@@ -177,4 +177,21 @@ struct PacketBuilder {
       packet.game_end = ended;
       return packet;
     }
+
+    static PlayerDisconnectPacket makePlayerDisconnect(uint32_t player_id) {
+      PlayerDisconnectPacket packet{};
+      packet.header.type = PacketType::PlayerDisconnected;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      return packet;
+    }
+
+    static HeartbeatPlayerPacket makeHeartbeatPlayer(uint32_t player_id) {
+      HeartbeatPlayerPacket packet{};
+      packet.header.type = PacketType::Heartbeat;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      return packet;
+    }
+
 };
