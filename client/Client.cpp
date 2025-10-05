@@ -1,0 +1,71 @@
+#include "Client.hpp"
+#include "BackgroundTagComponent.hpp"
+#include "PositionComponent.hpp"
+#include "RenderComponent.hpp"
+#include "RenderManager.hpp"
+#include "VelocityComponent.hpp"
+#include "systems/BackgroundSystem.hpp"
+#include "systems/MovementSystem.hpp"
+#include "systems/RenderSystem.hpp"
+
+namespace client {
+  Client::Client()
+      : _running(true), _ecsManager(ecs::ECSManager::getInstance()) {
+    initECS();
+  }
+
+  Client::~Client() {
+    _running = false;
+  }
+
+  void Client::initECS() {
+    _ecsManager.registerComponent<ecs::PositionComponent>();
+    _ecsManager.registerComponent<ecs::VelocityComponent>();
+    _ecsManager.registerComponent<ecs::RenderComponent>();
+    _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
+
+    _ecsManager.registerSystem<ecs::BackgroundSystem>();
+    _ecsManager.registerSystem<ecs::MovementSystem>();
+    _ecsManager.registerSystem<ecs::RenderSystem>();
+
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::BackgroundTagComponent>());
+      _ecsManager.setSystemSignature<ecs::BackgroundSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      _ecsManager.setSystemSignature<ecs::MovementSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
+      _ecsManager.setSystemSignature<ecs::RenderSystem>(signature);
+    }
+
+    Image backgroundImage = LoadImage(BG_PATH);
+    float screenHeight = GetScreenHeight();
+    float aspectRatio = (float)backgroundImage.width / (float)backgroundImage.height;
+    float scaledWidth = screenHeight * aspectRatio;
+    UnloadImage(backgroundImage);
+
+    auto background1 = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::PositionComponent>(background1, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(background1, {-SCROLL_SPEED, 0.0f});
+    _ecsManager.addComponent<ecs::RenderComponent>(
+        background1, {BG_PATH});
+    _ecsManager.addComponent<ecs::BackgroundTagComponent>(background1, {});
+
+    auto background2 = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::PositionComponent>(background2, {scaledWidth, 0.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(background2, {-SCROLL_SPEED, 0.0f});
+    _ecsManager.addComponent<ecs::RenderComponent>(
+        background2, {BG_PATH});
+    _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
+  }
+}  // namespace client

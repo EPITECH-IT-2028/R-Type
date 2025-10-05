@@ -1,8 +1,12 @@
+#include "Client.hpp"
+#include "ECSManager.hpp"
 #include "RenderManager.hpp"
 
 int main() {
   renderManager::Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT,
-                                   "Render Manager Example");
+                                   "R-Type Client");
+  client::Client client;
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
 
   const float aspectRatio =
       static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
@@ -13,11 +17,14 @@ int main() {
       int newHeight = newWidth / aspectRatio;
       SetWindowSize(newWidth, newHeight);
     }
+
     renderer.beginDrawing();
     renderer.clearBackground(RAYWHITE);
-    renderer.drawBackground();
+
     float deltaTime = GetFrameTime();
-    renderer.updateBackground(deltaTime);
+
+    ecsManager.update(deltaTime);
+
     renderer.endDrawing();
   }
 
