@@ -6,12 +6,11 @@ namespace client {
   class Client {
     public:
       Client();
-      ~Client();
+      ~Client() = default;
 
     private:
       void initECS();
 
       ecs::ECSManager &_ecsManager;
-      bool _running;
   };
 }  // namespace client

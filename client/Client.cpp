@@ -9,13 +9,8 @@
 #include "systems/RenderSystem.hpp"
 
 namespace client {
-  Client::Client()
-      : _ecsManager(ecs::ECSManager::getInstance()), _running(true) {
+  Client::Client() : _ecsManager(ecs::ECSManager::getInstance()) {
     initECS();
-  }
-
-  Client::~Client() {
-    _running = false;
   }
 
   void Client::initECS() {
