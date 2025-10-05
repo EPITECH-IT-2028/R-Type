@@ -8,15 +8,9 @@ int main() {
   client::Client client;
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
 
-  const float aspectRatio =
-      static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
-
   while (!renderer.shouldClose()) {
-    if (IsWindowResized()) {
-      int newWidth = GetScreenWidth();
-      int newHeight = newWidth / aspectRatio;
-      SetWindowSize(newWidth, newHeight);
-    }
+    if (IsWindowResized())
+      renderer.resizeWindow();
 
     renderer.beginDrawing();
     renderer.clearBackground(RAYWHITE);

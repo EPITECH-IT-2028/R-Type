@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "ECSManager.hpp"
 
 namespace client {

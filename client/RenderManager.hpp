@@ -25,5 +25,6 @@ namespace renderManager {
       void drawText(const char *text, int posX, int posY, int fontSize,
                     Color color) const;
       void endDrawing() const;
+      void resizeWindow();
   };
 }  // namespace renderManager

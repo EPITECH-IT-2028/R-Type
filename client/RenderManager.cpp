@@ -1,5 +1,6 @@
 #include "RenderManager.hpp"
 #include <raylib.h>
+#include <cstdlib>
 
 namespace renderManager {
   Renderer::Renderer(int width, int height, const char *title) {
@@ -35,4 +36,29 @@ namespace renderManager {
   void Renderer::endDrawing() const {
     EndDrawing();
   }
+
+  void Renderer::resizeWindow() {
+    int prevWidth = WINDOW_WIDTH;
+    int prevHeight = WINDOW_HEIGHT;
+    int newWidth = 0;
+    int newHeight = 0;
+    const int width = GetScreenWidth();
+    const int height = GetScreenHeight();
+    const int deltaWidth = abs(width - prevWidth);
+    const int deltaHeight = abs(height - prevHeight);
+    const float aspectRatio =
+        static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+
+    if (deltaWidth > deltaHeight) {
+      newWidth = width;
+      newHeight = static_cast<int>(newWidth / aspectRatio);
+    } else {
+      newHeight = height;
+      newWidth = static_cast<int>(newHeight * aspectRatio);
+    }
+    SetWindowSize(newWidth, newHeight);
+    prevWidth = newWidth;
+    prevHeight = newHeight;
+  }
+
 }  // namespace renderManager
