@@ -16,11 +16,11 @@ namespace client {
             _host(host),
             _port(port),
             _sequence_number(0),
-            _running(false),
             _packet_count(0),
             _timeout(TIMEOUT_MS),
             _packetFactory() {
-      }
+              _running.store(false, std::memory_order_relaxed);
+            }
 
       ~Client() = default;
 
@@ -59,7 +59,7 @@ namespace client {
       std::string _port;
       std::array<char, 2048> _recv_buffer;
       uint32_t _sequence_number;
-      bool _running;
+      std::atomic<bool> _running;
       uint64_t _packet_count;
       std::chrono::milliseconds _timeout;
 

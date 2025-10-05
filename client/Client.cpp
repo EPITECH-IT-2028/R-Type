@@ -19,13 +19,13 @@ void client::Client::disconnect() {
 }
 
 void client::Client::receivePackets() {
-  if (!_running) {
+  if (!_running.load(std::memory_order_relaxed)) {
     std::cerr << "Client is not connected. Cannot receive packets."
               << std::endl;
     return;
   }
 
-  while (_running) {
+  while (_running.load(std::memory_order_relaxed)) {
     try {
       asio::ip::udp::endpoint sender_endpoint;
       std::size_t length = 0;
