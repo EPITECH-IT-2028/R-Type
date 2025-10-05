@@ -1,5 +1,4 @@
 #include "RenderSystem.hpp"
-#include <iostream>
 #include "BackgroundTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
@@ -22,11 +21,8 @@ void ecs::RenderSystem::update(float deltaTime) {
     if (_textureCache.find(path) == _textureCache.end()) {
       Texture2D newTexture = LoadTexture(path.c_str());
 
-      if (newTexture.id == 0) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
-        continue;
-      }
-
+      if (newTexture.id == 0)
+        return;
       _textureCache[path] = newTexture;
     }
 

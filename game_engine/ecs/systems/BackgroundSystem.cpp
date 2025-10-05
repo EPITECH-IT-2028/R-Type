@@ -18,11 +18,9 @@ void ecs::BackgroundSystem::update(float deltaTime) {
   const std::string &path = BG_PATH;
   if (_textureCache.find(path) == _textureCache.end()) {
     Texture2D newTexture = LoadTexture(path.c_str());
-    if (newTexture.id == 0) {
-      std::cerr << "BackgroundSystem: Failed to load texture: " << path
-                << std::endl;
+
+    if (newTexture.id == 0)
       return;
-    }
     _textureCache[path] = newTexture;
   }
   Texture2D &texture = _textureCache[path];
