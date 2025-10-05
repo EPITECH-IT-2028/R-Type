@@ -50,9 +50,18 @@ namespace client {
 
     Image backgroundImage = LoadImage(BG_PATH);
     float screenHeight = GetScreenHeight();
-    float aspectRatio = (float)backgroundImage.width / (float)backgroundImage.height;
-    float scaledWidth = screenHeight * aspectRatio;
-    UnloadImage(backgroundImage);
+    float aspectRatio = 1.0f;
+    float scaledWidth = screenHeight;
+    if (backgroundImage.data != nullptr && backgroundImage.height > 0) {
+      aspectRatio =
+          (float)backgroundImage.width / (float)backgroundImage.height;
+      scaledWidth = screenHeight * aspectRatio;
+      UnloadImage(backgroundImage);
+    } else {
+      TraceLog(LOG_WARNING,
+               "Failed to load background image for aspect ratio scaling, "
+               "using default");
+    }
 
     auto background1 = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(background1, {0.0f, 0.0f});
