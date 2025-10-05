@@ -56,14 +56,14 @@ namespace client {
 
     auto background1 = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(background1, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::VelocityComponent>(background1, {-SCROLL_SPEED, 0.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(background1, {-renderManager::SCROLL_SPEED, 0.0f});
     _ecsManager.addComponent<ecs::RenderComponent>(
         background1, {BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background1, {});
 
     auto background2 = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(background2, {scaledWidth, 0.0f});
-    _ecsManager.addComponent<ecs::VelocityComponent>(background2, {-SCROLL_SPEED, 0.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(background2, {-renderManager::SCROLL_SPEED, 0.0f});
     _ecsManager.addComponent<ecs::RenderComponent>(
         background2, {BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});

@@ -2,12 +2,15 @@
 
 #include "raylib.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 500
-#define WINDOW_MAX_WIDTH WINDOW_WIDTH * 2
-#define WINDOW_MAX_HEIGHT WINDOW_HEIGHT * 2
-#define SCROLL_SPEED 50.0f
 #define BG_PATH "client/resources/background.png"
+
+namespace renderManager {
+  constexpr int WINDOW_WIDTH = 800;
+  constexpr int WINDOW_HEIGHT = 500;
+  constexpr int WINDOW_MAX_WIDTH = WINDOW_WIDTH * 2;
+  constexpr int WINDOW_MAX_HEIGHT = WINDOW_HEIGHT * 2;
+  constexpr float SCROLL_SPEED = 50.0f;
+}  // namespace renderManager
 
 namespace renderManager {
   class Renderer {
