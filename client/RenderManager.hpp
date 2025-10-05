@@ -29,5 +29,8 @@ namespace renderManager {
                     Color color) const;
       void endDrawing() const;
       void resizeWindow();
+
+    private:
+      static void coloredLog(int msgType, const char *text, va_list args);
   };
 }  // namespace renderManager
