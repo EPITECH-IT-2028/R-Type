@@ -25,8 +25,12 @@ void ecs::BackgroundSystem::update(float deltaTime) {
   }
   Texture2D &texture = _textureCache[path];
   float screenHeight = GetScreenHeight();
-  if (screenHeight <= 0 || texture.height <= 0)
+  if (texture.height <= 0) {
+    TraceLog(LOG_WARNING,
+             "BackgroundSystem::update: Texture height is zero for path %s",
+             path.c_str());
     return;
+  }
   float aspectRatio =
       static_cast<float>(texture.width) / static_cast<float>(texture.height);
   float scaledWidth = screenHeight * aspectRatio;

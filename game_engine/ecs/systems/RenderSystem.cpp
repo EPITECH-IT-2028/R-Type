@@ -34,6 +34,12 @@ void ecs::RenderSystem::update(float deltaTime) {
     Rectangle destRec;
 
     if (_ecsManager.hasComponent<BackgroundTagComponent>(entity)) {
+      if (texture.height <= 0) {
+        TraceLog(LOG_WARNING,
+                 "RenderSystem::update: Texture height is zero for path %s",
+                 path.c_str());
+        continue;
+      }
       float screenHeight = GetScreenHeight();
       float sourceAspectRatio = static_cast<float>(texture.width) /
                                 static_cast<float>(texture.height);
