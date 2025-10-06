@@ -23,4 +23,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/tags/
 )
