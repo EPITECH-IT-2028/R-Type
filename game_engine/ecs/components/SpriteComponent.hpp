@@ -9,6 +9,5 @@ namespace ecs {
     Vector2 position = {0, 0};
     Vector2 scale = {1.0f, 1.0f};
     float rotation = 0.0f;
-    Color tint = WHITE;
   };
 } // namespace ecs
