@@ -110,7 +110,7 @@ namespace client {
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});
     _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::SpeedComponent>(player, {200.0f});
+    _ecsManager.addComponent<ecs::SpeedComponent>(player, {PLAYER_SPEED});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
     _ecsManager.addComponent<ecs::SpriteComponent>(player, {0.0f, 0.0f, 33.0f, 17.0f});

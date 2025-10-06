@@ -5,6 +5,7 @@
 namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
+  constexpr float PLAYER_SPEED = 200.0f;
 }  // namespace client
 
 namespace client {
