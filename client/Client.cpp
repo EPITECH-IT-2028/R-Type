@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "BoundarySystem.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
@@ -43,6 +44,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
+    _ecsManager.registerSystem<ecs::BoundarySystem>();
   }
 
   void Client::signSystem() {
@@ -71,6 +73,13 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
+  }
   }
 
   void Client::createBackgroundEntities() {
