@@ -13,8 +13,12 @@ ecs::BackgroundSystem::~BackgroundSystem() noexcept {
 void ecs::BackgroundSystem::update(float deltaTime) {
   (void)deltaTime;
 
-  if (_entities.size() != 2)
+  if (_entities.size() != 2) {
+    TraceLog(LOG_WARNING,
+             "BackgroundSystem: Unexpected entity count: got %zu, expected 2",
+             _entities.size());
     return;
+  }
   const std::string &path = renderManager::BG_PATH;
   if (_textureCache.find(path) == _textureCache.end()) {
     Texture2D newTexture = LoadTexture(path.c_str());
