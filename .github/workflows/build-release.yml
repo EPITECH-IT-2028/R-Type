@@ -30,7 +30,7 @@ jobs:
             git
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -43,12 +43,20 @@ jobs:
       - name: Configure Conan profile
         shell: msys2 {0}
         run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CONAN_USER_HOME=$HOME
+
           conan profile detect --force
+          conan profile show default
 
       - name: Build Release
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
           chmod +x build.sh
           ./build.sh
 
