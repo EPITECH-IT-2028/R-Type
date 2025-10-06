@@ -75,30 +75,37 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   if (!player) {
     return ERROR;
   }
+
   float oldX = player->getPosition().first;
   float oldY = player->getPosition().second;
 
-  // Anti-cheat
-  float deltaX = packet->x - oldX;
-  float deltaY = packet->y - oldY;
-  float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
-  const float maxDistance = 10.0f;
-  if (distance > maxDistance) {
-    std::cout << "Player " << client._player_id << " moved too fast!"
-              << std::endl;
-    player->setPosition(oldX, oldY);
-    player->setSequenceNumber(packet->sequence_number);
-    return ERROR;
+  auto now = std::chrono::steady_clock::now();
+  auto timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(
+      now - client._last_position_update);
+
+  if (timeDiff.count() > 5) {
+    float deltaX = packet->x - oldX;
+    float deltaY = packet->y - oldY;
+    float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    float timeSeconds = timeDiff.count() / 1000.0f;
+    float actualSpeed = distance / timeSeconds;
+    float maxSpeed = (player->getSpeed() * FPS) * TOLERANCE;
+
+    if (actualSpeed > maxSpeed) {
+      std::cout << "[ANTICHEAT] Player " << client._player_id
+                << " is moving too fast!" << std::endl;
+      player->setSequenceNumber(packet->sequence_number);
+      return ERROR;
+    }
   }
   player->setPosition(packet->x, packet->y);
   player->setSequenceNumber(packet->sequence_number);
-
+  client._last_position_update = now;
   std::pair<float, float> pos = player->getPosition();
-  int number = player->getSequenceNumber();
 
-  auto movePacket =
-      PacketBuilder::makeMove(client._player_id, number, pos.first, pos.second);
-
+  auto movePacket = PacketBuilder::makeMove(
+      client._player_id, player->getSequenceNumber(), pos.first, pos.second);
   broadcast::Broadcast::broadcastPlayerMove(server.getSocket(),
                                             server.getClients(), movePacket);
   return SUCCESS;

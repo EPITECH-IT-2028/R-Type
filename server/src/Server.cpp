@@ -12,6 +12,7 @@ server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
   _connected = true;
   _last_heartbeat = std::chrono::steady_clock::now();
+  _last_position_update = std::chrono::steady_clock::now();
 }
 
 server::Server::Server(asio::io_context &io_context, std::uint16_t port,
