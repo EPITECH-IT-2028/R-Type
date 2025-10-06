@@ -12,7 +12,7 @@ ecs::RenderSystem::~RenderSystem() noexcept {
 
 void ecs::RenderSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
-    auto &position = _ecsManager.getComponent<ecs::PositionComponent>(entity);
+    auto &positionComp = _ecsManager.getComponent<ecs::PositionComponent>(entity);
     auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
     const std::string &path = renderComp._texturePath;
 
@@ -43,10 +43,10 @@ void ecs::RenderSystem::update(float deltaTime) {
                                 static_cast<float>(texture.height);
       float destHeight = screenHeight;
       float destWidth = destHeight * sourceAspectRatio;
-      destRec = {position.x, position.y, destWidth, destHeight};
+      destRec = {positionComp.x, positionComp.y, destWidth, destHeight};
     } else {
-      destRec.x = position.x + renderComp._offsetX;
-      destRec.y = position.y + renderComp._offsetY;
+      destRec.x = positionComp.x + renderComp._offsetX;
+      destRec.y = positionComp.y + renderComp._offsetY;
       destRec.width = (renderComp._width > 0)
                           ? renderComp._width
                           : static_cast<float>(texture.width);
