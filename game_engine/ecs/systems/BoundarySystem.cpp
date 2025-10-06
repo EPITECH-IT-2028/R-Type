@@ -12,8 +12,6 @@ void ecs::BoundarySystem::update(float deltaTime) {
   const float worldMaxX = renderManager::WINDOW_WIDTH;
   const float worldMinY = 0.0f;
   const float worldMaxY = renderManager::WINDOW_HEIGHT;
-  const float ENTITY_MARGIN_X = 2.0f;
-  const float ENTITY_MARGIN_Y = 2.0f;
 
   for (auto const &entity : _entities) {
     auto &position = _ecsManager.getComponent<ecs::PositionComponent>(entity);
@@ -27,10 +25,8 @@ void ecs::BoundarySystem::update(float deltaTime) {
       scaleY = scale.scaleY;
     }
 
-    float entityWidth =
-        std::abs(sprite.sourceRect.width) * scaleX + ENTITY_MARGIN_X;
-    float entityHeight =
-        std::abs(sprite.sourceRect.height) * scaleY + ENTITY_MARGIN_Y;
+    float entityWidth = std::abs(sprite.sourceRect.width) * scaleX;
+    float entityHeight = std::abs(sprite.sourceRect.height) * scaleY;
 
     if (position.x < worldMinX) {
       position.x = worldMinX;
