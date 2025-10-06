@@ -15,6 +15,7 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
+      void createPlayerEntity();
 
       ecs::ECSManager &_ecsManager;
   };

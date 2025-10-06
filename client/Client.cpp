@@ -19,6 +19,7 @@ namespace client {
     signSystem();
 
     createBackgroundEntities();
+    createPlayerEntity();
   }
 
   void Client::registerComponent() {
@@ -83,5 +84,12 @@ namespace client {
     _ecsManager.addComponent<ecs::RenderComponent>(
         background2, {renderManager::BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
+  }
+
+  void Client::createPlayerEntity() {
+    auto player = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});
+    _ecsManager.addComponent<ecs::RenderComponent>(
+        player, {renderManager::PLAYER_PATH});
   }
 }  // namespace client

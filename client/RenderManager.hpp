@@ -10,6 +10,7 @@ namespace renderManager {
   constexpr int WINDOW_MAX_HEIGHT = WINDOW_HEIGHT * 2;
   constexpr float SCROLL_SPEED = 50.0f;
   constexpr const char *BG_PATH = "client/resources/background.png";
+  constexpr const char *PLAYER_PATH = "client/resources/players.gif";
 }  // namespace renderManager
 
 namespace renderManager {
