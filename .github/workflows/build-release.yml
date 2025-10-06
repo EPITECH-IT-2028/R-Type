@@ -68,18 +68,29 @@ jobs:
           chmod +x build.sh
           ./build.sh
 
+      - name: Create Release Packages
+        shell: msys2 {0}
+        run: |
+          mkdir -p r-type-client-windows/client/resources
+          cp r_type_client.exe r-type-client-windows/
+          cp -r client/resources/* r-type-client-windows/client/resources/
+
+          mkdir -p r-type-server-windows/server
+          cp r_type_server.exe r-type-server-windows/
+          cp server/server.properties r-type-server-windows/server/
+
       - name: Upload Client Artifact
         uses: actions/upload-artifact@v4
         with:
           name: r-type-client-windows
-          path: r_type_client.exe
+          path: r-type-client-windows/
           if-no-files-found: error
 
       - name: Upload Server Artifact
         uses: actions/upload-artifact@v4
         with:
           name: r-type-server-windows
-          path: r_type_server.exe
+          path: r-type-server-windows/
           if-no-files-found: error
 
   create-release:
@@ -119,7 +130,7 @@ jobs:
             **Automatic Release of R-Type**
 
             **Built from commit:** ${{ github.sha }}
-            **Build date:** $(date +'%Y-%m-%d %H:%M:%S UTC')
+            **Build date:** ${{ steps.build_date.outputs.date }}
 
             ## Downloads
             Download both files to play:
