@@ -49,7 +49,7 @@ CollisionSystem(ECSManager &ecsManager = ECSManager::getInstance()) : _ecsManage
 
       void handleCollision(const Entity &entity1, const Entity &entity2);
 
-      void incrementPlayerScore(std::uint32_t owner_id, int value);
+      void incrementPlayerScore(std::uint32_t owner_id, std::uint32_t value);
 
     private:
       ECSManager &_ecsManager;

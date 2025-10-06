@@ -4,10 +4,10 @@
 
 namespace ecs {
   /*
-   * Score component represents the score a player.
+   * Score component represents a player's score.
    */
   struct ScoreComponent {
-      std::uint32_t player_id = -1;
+      std::uint32_t player_id = 0;
       std::uint32_t score = 0;
   };
 
