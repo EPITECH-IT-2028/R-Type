@@ -118,12 +118,6 @@ fi
 
 echo "Building R-Type with target: $TARGET, build type: $BUILD_TYPE"
 
-# Clean and recreate build directory to avoid any cache issues
-if [ -d ".build" ]; then
-    echo "Cleaning existing build directory..."
-    rm -rf .build
-fi
-
 # Install conan dependencies
 echo "Installing conan dependencies..."
 if ! conan profile show default > /dev/null 2>&1; then

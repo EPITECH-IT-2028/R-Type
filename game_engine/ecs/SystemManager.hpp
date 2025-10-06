@@ -57,6 +57,11 @@ namespace ecs {
           }
         }
 
+        void update(float dt) {
+          for (auto const& [name, system] : _systems)
+            system->update(dt);
+        }
+
       private:
         std::unordered_map<std::type_index, std::shared_ptr<System>> _systems;
         std::unordered_map<std::type_index, Signature> _signatures;

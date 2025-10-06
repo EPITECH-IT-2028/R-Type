@@ -2,6 +2,7 @@
 #include "Client.hpp"
 #include "PacketBuilder.hpp"
 #include <thread>
+#include "RenderManager.hpp"
 
 void gameLoop(client::Client &client) {
   while (client.isConnected()) {
@@ -10,28 +11,35 @@ void gameLoop(client::Client &client) {
 }
 
 int main() {
+  renderManager::Renderer renderer(renderManager::WINDOW_WIDTH,
+                                     renderManager::WINDOW_HEIGHT,
+                                     "R-Type Client");
   client::Client client("localhost", "4242");
   client.connect();
   MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
   client.send(welcomeMsg);
-  
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  InitWindow(800, 600, "Raylib Window");
-  if (!IsWindowState(FLAG_VSYNC_HINT))
-    SetTargetFPS(60);
+
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
 
   std::thread networkThread(gameLoop, std::ref(client));
 
-  while (!WindowShouldClose()) {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    DrawText("Hello, Raylib!", 340, 280, 20, DARKGRAY);
-    EndDrawing();
+  while (!renderer.shouldClose()) {
+    if (IsWindowResized())
+      renderer.resizeWindow();
+
+    renderer.beginDrawing();
+    renderer.clearBackground(RAYWHITE);
+
+    float deltaTime = GetFrameTime();
+
+    ecsManager.update(deltaTime);
+
+    renderer.endDrawing();
   }
 
   client.disconnect();
   if (networkThread.joinable())
     networkThread.join();
-  CloseWindow();
+
   return 0;
 }

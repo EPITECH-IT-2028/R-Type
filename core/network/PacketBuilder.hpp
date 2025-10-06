@@ -51,6 +51,12 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Create a PlayerInfo packet containing the player's name.
+     *
+     * @param name Player's name; copied into the packet's name field and truncated if it exceeds the field size. The stored name is guaranteed to be null-terminated.
+     * @return PlayerInfoPacket Packet with header.type set to PacketType::PlayerInfo, header.size populated, and the name field filled from `name`.
+     */
     static PlayerInfoPacket makePlayerInfo(const std::string &name) {
       PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
@@ -60,6 +66,43 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Constructs a PlayerHit packet describing damage dealt to a player.
+     *
+     * @param player_id ID of the player who was hit.
+     * @param damage Amount of damage applied to the player.
+     * @param x X coordinate of the hit location.
+     * @param y Y coordinate of the hit location.
+     * @param sequence_number Sequence number associated with this event.
+     * @return PlayerHitPacket Packet populated with the provided player ID, damage, hit coordinates, and sequence number.
+     */
+    static PlayerHitPacket makePlayerHit(std::uint32_t player_id,
+                                         std::uint32_t damage, float x, float y,
+                                         int sequence_number) {
+      PlayerHitPacket packet{};
+      packet.header.type = PacketType::PlayerHit;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      packet.damage = damage;
+      packet.x = x;
+      packet.y = y;
+      packet.sequence_number = sequence_number;
+      return packet;
+    }
+
+    /**
+     * @brief Constructs an EnemySpawnPacket with the enemy's identity, type, position, velocity, and health.
+     *
+     * @param enemy_id Unique identifier for the enemy.
+     * @param type Enemy type.
+     * @param x Spawn X coordinate.
+     * @param y Spawn Y coordinate.
+     * @param vx Initial velocity in the X direction.
+     * @param vy Initial velocity in the Y direction.
+     * @param health Current health.
+     * @param max_health Maximum health.
+     * @return EnemySpawnPacket Packet with fields initialized and its header indicating an EnemySpawn.
+     */
     static EnemySpawnPacket makeEnemySpawn(uint32_t enemy_id, EnemyType type,
                                            float x, float y, float vx, float vy,
                                            uint32_t health,
@@ -93,6 +136,14 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Constructs an EnemyDeath packet indicating where an enemy died.
+     *
+     * @param enemy_id Unique identifier of the enemy.
+     * @param death_x X coordinate of the enemy's death location.
+     * @param death_y Y coordinate of the enemy's death location.
+     * @return EnemyDeathPacket Packet populated with the enemy id and death coordinates; header fields are set for an EnemyDeath packet.
+     */
     static EnemyDeathPacket makeEnemyDeath(uint32_t enemy_id, float death_x,
                                            float death_y) {
       EnemyDeathPacket packet{};
@@ -104,6 +155,39 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Constructs an EnemyHit packet describing damage dealt to an enemy.
+     *
+     * @param enemy_id Identifier of the enemy that was hit.
+     * @param hit_x World X coordinate where the hit occurred.
+     * @param hit_y World Y coordinate where the hit occurred.
+     * @param damage Amount of damage applied to the enemy.
+     * @param sequence_number Sequence number for ordering the event.
+     * @return EnemyHitPacket Packet populated with header, enemy id, hit position, damage, and sequence number.
+     */
+    static EnemyHitPacket makeEnemyHit(uint32_t enemy_id, float hit_x,
+                                       float hit_y, float damage,
+                                       int sequence_number) {
+      EnemyHitPacket packet{};
+      packet.header.type = PacketType::EnemyHit;
+      packet.header.size = sizeof(packet);
+      packet.enemy_id = enemy_id;
+      packet.hit_x = hit_x;
+      packet.hit_y = hit_y;
+      packet.damage = damage;
+      packet.sequence_number = sequence_number;
+      return packet;
+    }
+
+    /**
+     * @brief Create a PlayerShoot packet containing shot position, projectile type, and sequence number.
+     *
+     * @param x X coordinate of the shot.
+     * @param y Y coordinate of the shot.
+     * @param projectile_type Type of the projectile fired.
+     * @param seq Sequence number used for ordering the shot.
+     * @return PlayerShootPacket Packet with position, projectile type, and sequence number populated.
+     */
     static PlayerShootPacket makePlayerShoot(float x, float y,
                                              ProjectileType projectile_type,
                                              uint32_t seq) {
@@ -170,6 +254,12 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Constructs a GameEnd packet indicating whether the game has ended.
+     *
+     * @param ended `true` if the game has ended, `false` if the game is ongoing.
+     * @return GameEndPacket Packet with header fields populated and `game_end` set to `ended`.
+     */
     static GameEndPacket makeGameEnd(bool ended) {
       GameEndPacket packet{};
       packet.header.type = PacketType::GameEnd;
@@ -178,6 +268,35 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Constructs a PlayerDeath packet describing a player's death location.
+     *
+     * Builds a PlayerDeathPacket with the header type and size set, and fills the
+     * player identifier and world coordinates where the player died.
+     *
+     * @param player_id Identifier of the player who died.
+     * @param x World X coordinate of the death location.
+     * @param y World Y coordinate of the death location.
+     * @return PlayerDeathPacket Populated packet ready for transmission. 
+     */
+    static PlayerDeathPacket makePlayerDeath(uint32_t player_id, float x,
+                                             float y) {
+      PlayerDeathPacket packet{};
+      packet.header.type = PacketType::PlayerDeath;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      packet.x = x;
+      packet.y = y;
+      return packet;
+    }
+
+    /**
+     * @brief Construct a PlayerDisconnect packet for the given player.
+     *
+     * @param player_id ID of the player that disconnected.
+     * @return PlayerDisconnectPacket Packet with header type set to PacketType::PlayerDisconnected,
+     *         header size set to the packet's sizeof, and player_id populated.
+     */
     static PlayerDisconnectPacket makePlayerDisconnect(uint32_t player_id) {
       PlayerDisconnectPacket packet{};
       packet.header.type = PacketType::PlayerDisconnected;
@@ -186,6 +305,12 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Creates a Heartbeat packet for the specified player.
+     *
+     * @param player_id The unique identifier of the player sending the heartbeat.
+     * @return HeartbeatPlayerPacket Packet with its header set to `PacketType::Heartbeat`, `size` initialized, and `player_id` populated.
+     */
     static HeartbeatPlayerPacket makeHeartbeatPlayer(uint32_t player_id) {
       HeartbeatPlayerPacket packet{};
       packet.header.type = PacketType::Heartbeat;
@@ -193,5 +318,4 @@ struct PacketBuilder {
       packet.player_id = player_id;
       return packet;
     }
-
 };

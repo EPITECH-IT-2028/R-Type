@@ -7,6 +7,7 @@
 #include "PacketSender.hpp"
 
 #define TIMEOUT_MS 100
+#include "ECSManager.hpp"
 
 namespace client {
   class Client {
@@ -18,8 +19,10 @@ namespace client {
             _sequence_number(0),
             _packet_count(0),
             _timeout(TIMEOUT_MS),
-            _packetFactory() {
+            _packetFactory(),
+            _ecsManager(ecs::ECSManager::getInstance()) {
               _running.store(false, std::memory_order_relaxed);
+              initECS();
             }
 
       ~Client() = default;
@@ -64,5 +67,9 @@ namespace client {
       std::chrono::milliseconds _timeout;
 
       packet::PacketHandlerFactory _packetFactory;
+
+      void initECS();
+
+      ecs::ECSManager &_ecsManager;
   };
 }  // namespace client
