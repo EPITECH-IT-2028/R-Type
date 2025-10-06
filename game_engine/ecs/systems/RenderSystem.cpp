@@ -21,8 +21,11 @@ void ecs::RenderSystem::update(float deltaTime) {
 
     if (_textureCache.find(path) == _textureCache.end()) {
       Texture2D newTexture = LoadTexture(path.c_str());
-      if (newTexture.id == 0)
+      if (newTexture.id == 0) {
+        TraceLog(LOG_WARNING, "RenderSystem::update: échec du chargement de %s",
+                 path.c_str());
         continue;
+      }
       _textureCache[path] = newTexture;
     }
     Texture2D &texture = _textureCache[path];
