@@ -2,14 +2,13 @@
 
 #include "raylib.h"
 
-#define BG_PATH "client/resources/background.png"
-
 namespace renderManager {
   constexpr int WINDOW_WIDTH = 800;
   constexpr int WINDOW_HEIGHT = 500;
   constexpr int WINDOW_MAX_WIDTH = WINDOW_WIDTH * 2;
   constexpr int WINDOW_MAX_HEIGHT = WINDOW_HEIGHT * 2;
   constexpr float SCROLL_SPEED = 50.0f;
+  constexpr const char *BG_PATH = "client/resources/background.png";
 }  // namespace renderManager
 
 namespace renderManager {
