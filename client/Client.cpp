@@ -14,15 +14,27 @@ namespace client {
   }
 
   void Client::initECS() {
+    registerComponent();
+    registerSystem();
+    signSystem();
+
+    createBackgroundEntities();
+  }
+
+  void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
+  }
 
+  void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
+  }
 
+  void Client::signSystem() {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
@@ -42,14 +54,16 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
       _ecsManager.setSystemSignature<ecs::RenderSystem>(signature);
     }
+  }
 
+  void Client::createBackgroundEntities() {
     Image backgroundImage = LoadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
     float aspectRatio = 1.0f;
     float scaledWidth = screenHeight;
     if (backgroundImage.data != nullptr && backgroundImage.height > 0) {
-      aspectRatio =
-          static_cast<float>(backgroundImage.width) / static_cast<float>(backgroundImage.height);
+      aspectRatio = static_cast<float>(backgroundImage.width) /
+                    static_cast<float>(backgroundImage.height);
       scaledWidth = screenHeight * aspectRatio;
       UnloadImage(backgroundImage);
     }
