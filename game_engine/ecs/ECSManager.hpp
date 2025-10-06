@@ -95,6 +95,10 @@ namespace ecs {
           return _systemManager->getSystem<T>();
         }
 
+        void update(float dt) {
+          _systemManager->update(dt);
+        }
+
       private:
         std::unique_ptr<EntityManager> _entityManager;
         std::unique_ptr<ComponentManager> _componentManager;
