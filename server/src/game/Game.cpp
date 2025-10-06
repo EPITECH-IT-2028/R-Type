@@ -66,6 +66,7 @@ void game::Game::initECS() {
   enemySignature.set(_ecsManager.getComponentType<ecs::ShootComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::HealthComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::ColliderComponent>());
+  enemySignature.set(_ecsManager.getComponentType<ecs::ScoreComponent>());
   _ecsManager.setSystemSignature<ecs::EnemySystem>(enemySignature);
 
   Signature projectileSignature;
@@ -161,7 +162,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
-  _ecsManager.addComponent<ecs::ScoreComponent>(entity, {player_id, 0});
+  _ecsManager.addComponent<ecs::ScoreComponent>(entity, {0});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager);
   _players[player_id] = player;
@@ -238,13 +239,21 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager.createEntity();
 
-  _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type, true});
+  _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {-3.0f, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  switch (type) {
+    case EnemyType::BASIC_FIGHTER:
+      _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
+      break;
+    default:
+      _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
+      break;
+  }
 
   auto enemy = std::make_shared<Enemy>(enemy_id, entity, _ecsManager);
   _enemies[enemy_id] = enemy;

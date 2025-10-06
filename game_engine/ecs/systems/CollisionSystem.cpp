@@ -95,10 +95,11 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
         enemyDestroyEvent.y =
             _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
         enemyDestroyEvent.player_id = projectile.owner_id;
-        enemyDestroyEvent.score = 10;
+        enemyDestroyEvent.score =
+            _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
         _eventQueue->addRequest(enemyDestroyEvent);
         _ecsManager.destroyEntity(enemyEntity);
-        incrementPlayerScore(projectile.owner_id, 10);
+        incrementPlayerScore(projectile.owner_id, enemyDestroyEvent.score);
       } else {
         queue::EnemyHitEvent hitEvent;
         hitEvent.enemy_id =
@@ -226,9 +227,13 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
         enemyDestroyEvent.y =
             _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
         enemyDestroyEvent.player_id = playerComponent.player_id;
-        enemyDestroyEvent.score = 10;
+        enemyDestroyEvent.score =
+            _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
         _eventQueue->addRequest(enemyDestroyEvent);
         _ecsManager.destroyEntity(enemyEntity);
+        incrementPlayerScore(
+            _ecsManager.getComponent<PlayerComponent>(playerEntity).player_id,
+            enemyDestroyEvent.score);
       } else {
         queue::EnemyHitEvent enemyHitEvent;
         enemyHitEvent.enemy_id = enemyComponent.enemy_id;
@@ -289,8 +294,9 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 /**
  * @brief Increments the score of the player with the given owner ID.
  *
- * Searches for an entity that has both a PlayerComponent with matching `player_id`
- * and a ScoreComponent, then adds `score` to that entity's ScoreComponent.
+ * Searches for an entity that has both a PlayerComponent with matching
+ * `player_id` and a ScoreComponent, then adds `score` to that entity's
+ * ScoreComponent.
  *
  * @param owner_id The player ID whose score should be incremented.
  * @param score Amount to add to the player's existing score.
