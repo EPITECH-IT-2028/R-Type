@@ -99,7 +99,7 @@ jobs:
         run: echo "tag=v$(date +'%Y.%m.%d')-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: R-Type Release ${{ steps.tag.outputs.tag }}
