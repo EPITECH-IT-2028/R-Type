@@ -22,7 +22,7 @@ void ecs::RenderSystem::update(float deltaTime) {
       Texture2D newTexture = LoadTexture(path.c_str());
 
       if (newTexture.id == 0)
-        return;
+        continue;
       _textureCache[path] = newTexture;
     }
 

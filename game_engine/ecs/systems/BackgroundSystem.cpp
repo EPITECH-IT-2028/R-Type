@@ -25,7 +25,10 @@ void ecs::BackgroundSystem::update(float deltaTime) {
   }
   Texture2D &texture = _textureCache[path];
   float screenHeight = GetScreenHeight();
-  float aspectRatio = static_cast<float>(texture.width) / static_cast<float>(texture.height);
+  if (screenHeight <= 0 || texture.height <= 0)
+    return;
+  float aspectRatio =
+      static_cast<float>(texture.width) / static_cast<float>(texture.height);
   float scaledWidth = screenHeight * aspectRatio;
 
   std::vector<Entity> entities(_entities.begin(), _entities.end());
