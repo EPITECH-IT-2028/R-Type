@@ -47,8 +47,14 @@ void ecs::RenderSystem::update(float deltaTime) {
       float destWidth = destHeight * sourceAspectRatio;
       destRec = {position.x, position.y, destWidth, destHeight};
     } else {
-      destRec = {position.x, position.y, static_cast<float>(texture.width),
-                 static_cast<float>(texture.height)};
+      destRec.x = position.x + renderComp._offsetX;
+      destRec.y = position.y + renderComp._offsetY;
+      destRec.width = (renderComp._width > 0)
+                          ? renderComp._width
+                          : static_cast<float>(texture.width);
+      destRec.height = (renderComp._height > 0)
+                           ? renderComp._height
+                           : static_cast<float>(texture.height);
     }
 
     Vector2 origin = {0.0f, 0.0f};
