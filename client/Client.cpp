@@ -49,7 +49,7 @@ namespace client {
     float scaledWidth = screenHeight;
     if (backgroundImage.data != nullptr && backgroundImage.height > 0) {
       aspectRatio =
-          (float)backgroundImage.width / (float)backgroundImage.height;
+          static_cast<float>(backgroundImage.width) / static_cast<float>(backgroundImage.height);
       scaledWidth = screenHeight * aspectRatio;
       UnloadImage(backgroundImage);
     }
