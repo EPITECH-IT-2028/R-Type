@@ -14,6 +14,11 @@ namespace client {
     try {
       asio::ip::udp::resolver resolver(_io_context);
       auto endpoints = resolver.resolve(asio::ip::udp::v4(), _host, _port);
+      if (endpoints.empty()) {
+        std::cerr << "Failed to resolve host: " << _host << ":" << _port
+                  << std::endl;
+        return;
+      }
       _server_endpoint = *endpoints.begin();
       _socket.open(_server_endpoint.protocol());
       _running.store(true, std::memory_order_relaxed);
