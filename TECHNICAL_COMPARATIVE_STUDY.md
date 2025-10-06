@@ -11,7 +11,7 @@ This document presents a comparative analysis of the main technologies and desig
 ### C++20 vs Alternatives
 
 **Selected**: C++20  
-**Considered**: C++17, Rust, C#, Java
+**Considered**: C++20, Rust, C#, Java
 
 | Criteria              | C++20      | Rust       | C#         | Java       |
 | --------------------- | ---------- | ---------- | ---------- | ---------- |
@@ -179,24 +179,6 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 }
 ```
 
-### Identified Vulnerabilities
-
-**1. Packet Spoofing**
-
-- **Risk**: UDP packets can be forged
-- **Mitigation**: Enhanced client authentication needed
-
-**2. DoS Attacks**
-
-- **Risk**: Server overwhelm with packets
-- **Current**: Basic client limits
-- **Recommended**: Rate limiting implementation
-
-**3. Data Integrity**
-
-- **Current**: Basic size checks
-- **Recommended**: CRC32 checksums for packet validation
-
 ---
 
 ## 🚀 Build System
@@ -204,7 +186,6 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 ### CMake + Conan
 
 **Selected**: CMake 3.27.4 + Conan 2.x  
-**Alternatives**: Premake, vcpkg, Git Submodules
 
 **Benefits**:
 
@@ -225,12 +206,6 @@ asio/1.36.0
 ## 📊 Performance Considerations
 
 ### Benchmarks
-
-**ECS Performance**:
-
-- Entity creation: ~1M entities/second
-- System updates: <0.1ms for 1000 entities
-- Memory usage: ~50 bytes per entity
 
 **Network Performance**:
 
