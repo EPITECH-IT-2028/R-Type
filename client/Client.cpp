@@ -1,8 +1,11 @@
 #include "Client.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "InputSystem.hpp"
+#include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
+#include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -26,13 +29,16 @@ namespace client {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
+    _ecsManager.registerComponent<ecs::SpeedComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
+    _ecsManager.registerComponent<ecs::PlayerTagComponent>();
   }
 
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
+    _ecsManager.registerSystem<ecs::InputSystem>();
   }
 
   void Client::signSystem() {
@@ -54,6 +60,13 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
       signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
       _ecsManager.setSystemSignature<ecs::RenderSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
+      _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
   }
 
@@ -89,7 +102,10 @@ namespace client {
   void Client::createPlayerEntity() {
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::SpeedComponent>(player, {200.0f});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
+    _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
   }
 }  // namespace client
