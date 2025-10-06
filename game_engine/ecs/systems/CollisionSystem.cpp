@@ -286,6 +286,17 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
   return (axMin <= bxMax && axMax >= bxMin && ayMin <= byMax && ayMax >= byMin);
 }
 
+/**
+ * @brief Increments the score of the player with the given owner ID.
+ *
+ * Searches for an entity that has both a PlayerComponent with matching `player_id`
+ * and a ScoreComponent, then adds `score` to that entity's ScoreComponent.
+ *
+ * @param owner_id The player ID whose score should be incremented.
+ * @param score Amount to add to the player's existing score.
+ *
+ * If no matching player entity is found, a warning is written to std::cerr.
+ */
 void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
                                                 std::uint32_t score) {
   for (auto entity : _ecsManager.getAllEntities()) {

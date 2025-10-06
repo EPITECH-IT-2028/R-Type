@@ -25,19 +25,16 @@ game::Game::Game()
 }
 
 /**
- * @brief Initialize the game's entity-component-system (ECS).
+ * @brief Initialize the game's entity-component-system (ECS) by registering components and configuring core systems.
  *
- * Registers all component types used by the game and creates/configures
- * the core systems. Sets each system's required component signature and
- * wires systems to the game, ECS manager, and event queue as appropriate.
+ * Registers all component types used by the game and creates/configures the core systems, assigning each system the component signature it requires and wiring systems to the game, ECS manager, and event queue.
  *
- * Registered components: Position, Health, Speed, Player, Projectile,
- * Velocity, Enemy, Shoot, Collider.
+ * Registered components: Position, Health, Speed, Player, Projectile, Velocity, Enemy, Shoot, Collider, Score.
  *
- * Configured systems and their signatures:
- * - EnemySystem: requires Enemy, Position, Velocity, Shoot, Health, Collider.
- * - ProjectileSystem: requires Projectile, Position, Velocity, Collider.
- * - CollisionSystem: requires Position, Collider.
+ * Configured systems and their required signatures:
+ * - EnemySystem: Enemy, Position, Velocity, Shoot, Health, Collider
+ * - ProjectileSystem: Projectile, Position, Velocity, Collider
+ * - CollisionSystem: Position, Collider
  */
 void game::Game::initECS() {
   _ecsManager.registerComponent<ecs::PositionComponent>();
@@ -143,13 +140,13 @@ void game::Game::gameLoop() {
 /**
  * @brief Create and register a new player entity with its initial components.
  *
- * Initializes an ECS entity for the player, attaches Position, Health, Speed,
- * Player, Velocity, Shoot, and Collider components, stores the resulting
- * Player object in the game's player map, and returns it.
+ * Creates an ECS entity for the player, attaches initial components (Position, Health,
+ * Speed, Player, Velocity, Shoot, Collider, and Score), stores the resulting Player
+ * in the game's player map, and returns it.
  *
  * @param player_id Unique identifier for the player.
  * @param name Display name for the player.
- * @return std::shared_ptr<game::Player> Shared pointer to the created Player instance stored in the game.
+ * @return std::shared_ptr<game::Player> Shared pointer to the created Player stored in the game's player map.
  */
 std::shared_ptr<game::Player> game::Game::createPlayer(
     std::uint32_t player_id, const std::string &name) {

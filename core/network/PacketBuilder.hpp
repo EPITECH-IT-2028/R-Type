@@ -71,15 +71,14 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs a PlayerHit packet describing damage dealt to a player.
+     * @brief Create a PlayerHitPacket describing a hit applied to a player.
      *
      * @param player_id ID of the player who was hit.
      * @param damage Amount of damage applied to the player.
      * @param x X coordinate of the hit location.
      * @param y Y coordinate of the hit location.
      * @param sequence_number Sequence number associated with this event.
-     * @return PlayerHitPacket Packet populated with the provided player ID,
-     * damage, hit coordinates, and sequence number.
+     * @return PlayerHitPacket Packet populated with the provided player ID, damage, hit coordinates, and sequence number.
      */
     static PlayerHitPacket makePlayerHit(std::uint32_t player_id,
                                          std::uint32_t damage, float x, float y,
@@ -144,15 +143,14 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs an EnemyDeath packet indicating where an enemy died.
+     * @brief Create an EnemyDeath packet describing an enemy's death and awarding score to a player.
      *
      * @param enemy_id Unique identifier of the enemy.
      * @param death_x X coordinate of the enemy's death location.
      * @param death_y Y coordinate of the enemy's death location.
-     * @param player_id ID of the player who killed the enemy.
+     * @param player_id ID of the player credited with the kill.
      * @param score Score awarded to the player for the kill.
-     * @return EnemyDeathPacket Packet populated with the enemy id and death
-     * coordinates; header fields are set for an EnemyDeath packet.
+     * @return EnemyDeathPacket Populated packet containing enemy_id, death coordinates, player_id, and score; packet header is set to `PacketType::EnemyDeath` and `header.size` is set to the packet's size.
      */
     static EnemyDeathPacket makeEnemyDeath(uint32_t enemy_id, float death_x,
                                            float death_y,
@@ -327,12 +325,10 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Creates a Heartbeat packet for the specified player.
+     * @brief Construct a heartbeat packet for the given player.
      *
-     * @param player_id The unique identifier of the player sending the
-     * heartbeat.
-     * @return HeartbeatPlayerPacket Packet with its header set to
-     * `PacketType::Heartbeat`, `size` initialized, and `player_id` populated.
+     * @param player_id Player identifier to embed in the packet.
+     * @return HeartbeatPlayerPacket Packet whose header.type is PacketType::Heartbeat, header.size is set to the packet size, and player_id is set to the provided value.
      */
     static HeartbeatPlayerPacket makeHeartbeatPlayer(uint32_t player_id) {
       HeartbeatPlayerPacket packet{};

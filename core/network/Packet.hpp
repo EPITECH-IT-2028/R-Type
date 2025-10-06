@@ -164,7 +164,19 @@ struct ALIGNED EnemyMovePacket {
     uint32_t sequence_number;
 };
 
-/* Server to client packets */
+/**
+ * @brief Describes an enemy death event sent from server to client.
+ *
+ * Starts with a PacketHeader identifying the packet type and payload size.
+ *
+ * Fields:
+ * - header: PacketHeader present in all packets.
+ * - enemy_id: Server-assigned identifier for the enemy that died.
+ * - death_x: X coordinate of the death location in world space.
+ * - death_y: Y coordinate of the death location in world space.
+ * - player_id: Identifier of the player credited for the kill.
+ * - score: Score awarded for the kill.
+ */
 struct ALIGNED EnemyDeathPacket {
     PacketHeader header;
     uint32_t enemy_id;
