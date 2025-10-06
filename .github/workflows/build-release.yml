@@ -85,63 +85,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download Client Artifact
+      - name: Download executables
         uses: actions/download-artifact@v4
         with:
-          name: r-type-client-windows
+          name: r-type-windows-executables
           path: ./artifacts/
 
-      - name: Download Server Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: r-type-server-windows
-          path: ./artifacts/
+      - name: List downloaded files
+        run: ls -la ./artifacts/
 
       - name: Generate release tag
         id: tag
         run: echo "tag=v$(date +'%Y.%m.%d')-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          release_name: R-Type Release ${{ steps.tag.outputs.tag }}
+          name: R-Type Release ${{ steps.tag.outputs.tag }}
           body: |
-            Release of R-Type
+            **Automatic Release of R-Type**
 
             **Built from commit:** ${{ github.sha }}
-            **Build date:** ${{ steps.tag.outputs.tag }}
+            **Build date:** $(date +'%Y-%m-%d %H:%M:%S UTC')
 
             ## Downloads
-            - `r_type_client.exe`: Game client for Windows
-            - `r_type_server.exe`: Game server for Windows
-
-            ## Installation
-            1. Download both executables
-            2. Run `r_type_server.exe` to start the server
-            3. Run `r_type_client.exe` to play the game
+            Download both files to play:
+            - **Client**: For playing the game
+            - **Server**: Run this first to host a game
+          files: ./artifacts/*
           draft: false
           prerelease: false
-
-      - name: Upload Client Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/r_type_client.exe
-          asset_name: r_type_client.exe
-          asset_content_type: application/octet-stream
-
-      - name: Upload Server Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/r_type_server.exe
-          asset_name: r_type_server.exe
-          asset_content_type: application/octet-stream
+          generate_release_notes: true
