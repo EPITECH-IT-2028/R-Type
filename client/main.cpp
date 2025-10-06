@@ -9,7 +9,7 @@ int main() {
                                    "R-Type Client");
   if (!renderer.InitSucceeded()) {
     std::cerr << "[ERROR] Failed to initialize window. Exiting." << std::endl;
-    return Client::KO;
+    return client::KO;
   }
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   client::Client client;
@@ -29,5 +29,5 @@ int main() {
     renderer.endDrawing();
   }
 
-  return Client::OK;
+  return client::OK;
 }
