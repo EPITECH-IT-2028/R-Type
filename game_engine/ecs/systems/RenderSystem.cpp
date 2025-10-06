@@ -29,19 +29,20 @@ void ecs::RenderSystem::update(float deltaTime) {
     Texture2D &texture = _textureCache[path];
     auto &position = _ecsManager.getComponent<ecs::PositionComponent>(entity);
 
-    Rectangle sourceRec = {0.0f, 0.0f, (float)texture.width,
-                           (float)texture.height};
+    Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(texture.width),
+                           static_cast<float>(texture.height)};
     Rectangle destRec;
 
     if (_ecsManager.hasComponent<BackgroundTagComponent>(entity)) {
       float screenHeight = GetScreenHeight();
-      float sourceAspectRatio = (float)texture.width / (float)texture.height;
+      float sourceAspectRatio = static_cast<float>(texture.width) /
+                                static_cast<float>(texture.height);
       float destHeight = screenHeight;
       float destWidth = destHeight * sourceAspectRatio;
       destRec = {position.x, position.y, destWidth, destHeight};
     } else {
-      destRec = {position.x, position.y, (float)texture.width,
-                 (float)texture.height};
+      destRec = {position.x, position.y, static_cast<float>(texture.width),
+                 static_cast<float>(texture.height)};
     }
 
     Vector2 origin = {0.0f, 0.0f};
