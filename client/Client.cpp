@@ -69,6 +69,7 @@ namespace client {
 
         if (ec == asio::error::operation_aborted) {
           continue;
+        }
         if (ec) {
           std::cerr << "Receive error: " << ec.message() << std::endl;
           continue;
