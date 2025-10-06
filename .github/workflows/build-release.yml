@@ -47,11 +47,9 @@ jobs:
           export PATH="/mingw64/bin:$PATH"
           export CC=gcc
           export CXX=g++
-          export CONAN_USER_HOME=$HOME
-
+          export CMAKE_MAKE_PROGRAM=ninja
           conan profile detect --force
           conan profile show
-          conan config set tools.cmake.cmaketoolchain:generator=Ninja
 
       - name: Build Release
         shell: msys2 {0}
@@ -60,6 +58,7 @@ jobs:
           export CC=gcc
           export CXX=g++
           export CMAKE_MAKE_PROGRAM=ninja
+          export CONAN_CMAKE_GENERATOR=Ninja
           chmod +x build.sh
           ./build.sh
 
