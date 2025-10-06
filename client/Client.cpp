@@ -114,7 +114,7 @@ namespace client {
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
     _ecsManager.addComponent<ecs::SpriteComponent>(player, {0.0f, 0.0f, 33.0f, 17.0f});
-    _ecsManager.addComponent<ecs::ScaleComponent>(player, {0.3f, 0.3f});
+    _ecsManager.addComponent<ecs::ScaleComponent>(player, {2.0f, 2.0f});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
   }
 }  // namespace client

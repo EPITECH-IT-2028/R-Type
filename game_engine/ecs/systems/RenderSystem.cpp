@@ -14,7 +14,8 @@ ecs::RenderSystem::~RenderSystem() noexcept {
 
 void ecs::RenderSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
-    auto &positionComp = _ecsManager.getComponent<ecs::PositionComponent>(entity);
+    auto &positionComp =
+        _ecsManager.getComponent<ecs::PositionComponent>(entity);
     auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
     const std::string &path = renderComp._texturePath;
 
@@ -58,10 +59,10 @@ void ecs::RenderSystem::update(float deltaTime) {
       destRec.y = positionComp.y + renderComp._offsetY;
       destRec.width = (renderComp._width > 0)
                           ? renderComp._width
-                          : static_cast<float>(texture.width);
+                          : static_cast<float>(sourceRec.width);
       destRec.height = (renderComp._height > 0)
                            ? renderComp._height
-                           : static_cast<float>(texture.height);
+                           : static_cast<float>(sourceRec.height);
     }
     if (_ecsManager.hasComponent<ecs::ScaleComponent>(entity)) {
       auto &scaleComp = _ecsManager.getComponent<ecs::ScaleComponent>(entity);
