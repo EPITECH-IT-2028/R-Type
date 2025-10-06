@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef ERROR
+  #undef ERROR
+#endif
+
 /* Macros for function's returns */
 constexpr int SUCCESS = 0;
 constexpr int ERROR = -1;
