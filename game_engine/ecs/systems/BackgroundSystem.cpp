@@ -1,5 +1,4 @@
 #include "BackgroundSystem.hpp"
-#include <iostream>
 #include <vector>
 #include "PositionComponent.hpp"
 #include "RenderManager.hpp"
