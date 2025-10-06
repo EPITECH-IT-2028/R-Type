@@ -9,6 +9,7 @@
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
+#include "ScoreComponent.hpp"
 
 /**
  * @brief Processes collisions among managed entities by checking all unique pairs for AABB overlap and invoking collision handling when overlaps are detected.
@@ -89,8 +90,11 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
             _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
         enemyDestroyEvent.y =
             _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
+        enemyDestroyEvent.player_id = projectile.owner_id;
+        enemyDestroyEvent.score = 10;
         _eventQueue->addRequest(enemyDestroyEvent);
         _ecsManager.destroyEntity(enemyEntity);
+        incrementPlayerScore(projectile.owner_id, 10);
       } else {
         queue::EnemyHitEvent hitEvent;
         hitEvent.enemy_id =
@@ -215,6 +219,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
             _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
         enemyDestroyEvent.y =
             _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
+        enemyDestroyEvent.player_id = playerComponent.player_id;
+        enemyDestroyEvent.score = 10;
         _eventQueue->addRequest(enemyDestroyEvent);
         _ecsManager.destroyEntity(enemyEntity);
       } else {
@@ -269,4 +275,19 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
   float byMax = positionB.y + colliderB.center.y + colliderB.halfSize.y;
 
   return (axMin <= bxMax && axMax >= bxMin && ayMin <= byMax && ayMax >= byMin);
+}
+
+void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
+                                                int score) {
+  for (auto entity : _ecsManager.getAllEntities()) {
+    if (_ecsManager.hasComponent<PlayerComponent>(entity) &&
+        _ecsManager.hasComponent<ecs::ScoreComponent>(entity)) {
+      auto &playerComp = _ecsManager.getComponent<PlayerComponent>(entity);
+      if (playerComp.player_id == owner_id) {
+        auto &scoreComp = _ecsManager.getComponent<ScoreComponent>(entity);
+        scoreComp.score += score;
+        break;
+      }
+    }
+  }
 }

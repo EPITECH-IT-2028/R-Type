@@ -14,6 +14,7 @@
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
+#include "ScoreComponent.hpp"
 #include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -48,6 +49,7 @@ void game::Game::initECS() {
   _ecsManager.registerComponent<ecs::EnemyComponent>();
   _ecsManager.registerComponent<ecs::ShootComponent>();
   _ecsManager.registerComponent<ecs::ColliderComponent>();
+  _ecsManager.registerComponent<ecs::ScoreComponent>();
 
   _enemySystem = _ecsManager.registerSystem<ecs::EnemySystem>();
   _enemySystem->setECSManager(&_ecsManager);
@@ -162,6 +164,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  _ecsManager.addComponent<ecs::ScoreComponent>(entity, {player_id, 0});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager);
   _players[player_id] = player;

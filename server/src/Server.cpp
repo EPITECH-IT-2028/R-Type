@@ -155,7 +155,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
                                                     enemySpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
           auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
-              specificEvent.enemy_id, specificEvent.x, specificEvent.y);
+              specificEvent.enemy_id, specificEvent.x, specificEvent.y,
+              specificEvent.player_id, specificEvent.score);
           broadcast::Broadcast::broadcastEnemyDeath(_socket, _clients,
                                                     enemyDeathPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyHitEvent>) {

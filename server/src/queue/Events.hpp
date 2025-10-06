@@ -20,6 +20,8 @@ namespace queue {
       int enemy_id;
       float x;
       float y;
+      std::uint32_t player_id;
+      std::uint32_t score;
   };
 
   struct EnemyHitEvent {

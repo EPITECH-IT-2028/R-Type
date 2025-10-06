@@ -170,6 +170,8 @@ struct ALIGNED EnemyDeathPacket {
     uint32_t enemy_id;
     float death_x;
     float death_y;
+    std::uint32_t player_id;
+    std::uint32_t score;
 };
 
 /* Projectile Packets */
