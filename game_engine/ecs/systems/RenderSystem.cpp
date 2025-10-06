@@ -1,0 +1,53 @@
+#include "RenderSystem.hpp"
+#include <iostream>
+#include "PositionComponent.hpp"
+#include "RenderComponent.hpp"
+#include "raylib.h"
+
+ecs::RenderSystem::~RenderSystem() noexcept {
+  for (auto &pair : _textureCache) {
+    UnloadTexture(pair.second);
+  }
+}
+
+void ecs::RenderSystem::update(float deltaTime) {
+  for (Entity entity : _entities) {
+    auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
+    const std::string &path = renderComp._texturePath;
+
+    if (path.empty())
+      continue;
+
+    if (_textureCache.find(path) == _textureCache.end()) {
+      Texture2D newTexture = LoadTexture(path.c_str());
+
+      if (newTexture.id == 0) {
+        std::cerr << "Failed to load texture: " << path << std::endl;
+        continue;
+      }
+
+      _textureCache[path] = newTexture;
+    }
+
+    Texture2D &texture = _textureCache[path];
+
+    float width = renderComp._width;
+    float height = renderComp._height;
+    float offsetX = renderComp._offsetX;
+    float offsetY = renderComp._offsetY;
+
+    float posX = _ecsManager.getComponent<ecs::PositionComponent>(entity).x;
+    float posY = _ecsManager.getComponent<ecs::PositionComponent>(entity).y;
+
+    float effectiveWidth =
+        width > 0 ? width : static_cast<float>(texture.width);
+    float effectiveHeight =
+        height > 0 ? height : static_cast<float>(texture.height);
+    Rectangle sourceRec = {0.0f, 0.0f, effectiveWidth, effectiveHeight};
+    Rectangle destRec = {posX + offsetX, posY + offsetY, effectiveWidth,
+                         effectiveHeight};
+    Vector2 origin = {0.0f, 0.0f};
+
+    DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
+  }
+}

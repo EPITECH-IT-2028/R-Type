@@ -108,13 +108,29 @@ namespace broadcast {
         broadcastToAll(socket, clients, packet);
       };
 
-      /*
-       * Broadcast the enemy died to all connected clients.
+      /**
+       * @brief Broadcasts an EnemyDeathPacket to every connected client.
+       *
+       * @param socket UDP socket used to send the packet.
+       * @param clients Collection of client shared pointers; only clients that are connected will receive the packet.
+       * @param packet Enemy death event packet to send to clients.
        */
       static void broadcastEnemyDeath(
           asio::ip::udp::socket &socket,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const EnemyDeathPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
+
+      /**
+       * @brief Notifies all connected clients that an enemy was hit.
+       *
+       * @param packet Packet describing which enemy was hit and associated hit data.
+       */
+      static void broadcastEnemyHit(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const EnemyHitPacket &packet) {
         broadcastToAll(socket, clients, packet);
       };
 
@@ -158,8 +174,12 @@ namespace broadcast {
         broadcastToAll(socket, clients, packet);
       };
 
-      /*
-       * Broadcast the game end to all connected clients.
+      /**
+       * @brief Broadcasts a GameEndPacket to all connected clients.
+       *
+       * @param socket UDP socket used to send the packet.
+       * @param clients Vector of client shared pointers; only non-null, connected clients will receive the packet.
+       * @param packet GameEndPacket to be sent to recipients.
        */
       static void broadcastGameEnd(
           asio::ip::udp::socket &socket,
@@ -168,6 +188,37 @@ namespace broadcast {
         broadcastToAll(socket, clients, packet);
       };
 
+      /**
+       * @brief Broadcast a player-death event to all connected clients.
+       *
+       * @param packet Packet describing the player's death to send to all clients.
+       */
+      static void broadcastPlayerDeath(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const PlayerDeathPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
+
+      /**
+       * @brief Broadcasts a player-hit event to all connected clients.
+       *
+       * @param packet PlayerHitPacket containing the hit event data to send to every connected client.
+       */
+      static void broadcastPlayerHit(
+          asio::ip::udp::socket &socket,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const PlayerHitPacket &packet) {
+        broadcastToAll(socket, clients, packet);
+      };
+
+      /**
+       * @brief Broadcasts a player disconnect event to all connected clients.
+       *
+       * @param socket UDP socket used to send the packet.
+       * @param clients Vector of client shared pointers; only connected clients will be sent the packet.
+       * @param packet Packet describing the player disconnect (including the player id).
+       */
       static void broadcastPlayerDisconnect(
           asio::ip::udp::socket &socket,
           const std::vector<std::shared_ptr<server::Client>> &clients,
