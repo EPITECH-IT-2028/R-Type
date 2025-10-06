@@ -15,7 +15,7 @@ void ecs::BackgroundSystem::update(float deltaTime) {
 
   if (_entities.size() != 2)
     return;
-  const std::string &path = BG_PATH;
+  const std::string &path = renderManager::BG_PATH;
   if (_textureCache.find(path) == _textureCache.end()) {
     Texture2D newTexture = LoadTexture(path.c_str());
 

@@ -43,7 +43,7 @@ namespace client {
       _ecsManager.setSystemSignature<ecs::RenderSystem>(signature);
     }
 
-    Image backgroundImage = LoadImage(BG_PATH);
+    Image backgroundImage = LoadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
     float aspectRatio = 1.0f;
     float scaledWidth = screenHeight;
@@ -56,16 +56,18 @@ namespace client {
 
     auto background1 = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(background1, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::VelocityComponent>(background1, {-renderManager::SCROLL_SPEED, 0.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(
+        background1, {-renderManager::SCROLL_SPEED, 0.0f});
     _ecsManager.addComponent<ecs::RenderComponent>(
-        background1, {BG_PATH});
+        background1, {renderManager::BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background1, {});
 
     auto background2 = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(background2, {scaledWidth, 0.0f});
-    _ecsManager.addComponent<ecs::VelocityComponent>(background2, {-renderManager::SCROLL_SPEED, 0.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(
+        background2, {-renderManager::SCROLL_SPEED, 0.0f});
     _ecsManager.addComponent<ecs::RenderComponent>(
-        background2, {BG_PATH});
+        background2, {renderManager::BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
   }
 }  // namespace client
