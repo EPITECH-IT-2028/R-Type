@@ -4,7 +4,6 @@
 #include "SpriteComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "raylib.h"
-#include <iostream>
 
 namespace ecs {
   class SpriteAnimationSystem : public System {
@@ -21,7 +20,7 @@ namespace ecs {
       void stop(Entity entity);
       void restart(Entity entity);   
    
-      void initializeAnimation(Entity entity, Texture2D texture);
+      void initializeAnimation(Entity entity, const std::shared_ptr<Texture2D>& texture);
       void initializeFromTexture(Entity entity, int textureWidth, int textureHeight);
       Rectangle getCurrentFrameRect(Entity entity) const;
 

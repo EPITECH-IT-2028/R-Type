@@ -1,4 +1,7 @@
 #include "SpriteAnimationSystem.hpp"
+#include <algorithm>
+#include <iostream>
+#include <memory>
 
 void ecs::SpriteAnimationSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
@@ -9,19 +12,23 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
         continue;
     } 
     animation.frameTimer += deltaTime;
-    if (animation.frameTimer >= animation.frameTime) {
+    if (animation.frameTime <= 0.0f) {
       animation.currentFrame++;
-      animation.frameTimer = 0.0f;
-        
-      if (animation.currentFrame > animation.endFrame) {
-        if (animation.loop) {
-          animation.currentFrame = animation.startFrame;
-        } else {
-          animation.currentFrame = animation.endFrame;
-          animation.isPlaying = false;
-        }
+    } else {
+      while (animation.frameTimer >= animation.frameTime) {
+        animation.frameTimer -= animation.frameTime;
+        animation.currentFrame++;
       }
-      sprite.sourceRect = getCurrentFrameRect(entity);
+    }
+    if (animation.currentFrame > animation.endFrame) {
+      if (animation.loop) {
+        animation.currentFrame = animation.startFrame;
+      } else {
+        animation.currentFrame = animation.endFrame;
+        animation.isPlaying = false;
+      }
+    }
+    sprite.sourceRect = getCurrentFrameRect(entity);
     }
   }
 }
@@ -41,6 +48,13 @@ void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
 void ecs::SpriteAnimationSystem::setAnimationRange(Entity entity, int start, int end) {
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   
+
+  int totalFrames = animation.totalColumns * animation.totalRows;
+
+  if (start < 0 || end < start || end >= totalFrames) {
+    return;
+  }
+
   animation.startFrame = start;
   animation.endFrame = end;
   animation.currentFrame = start;
@@ -73,10 +87,27 @@ void ecs::SpriteAnimationSystem::restart(Entity entity) {
 
 Rectangle ecs::SpriteAnimationSystem::getCurrentFrameRect(Entity entity) const {
   const auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
-  
+
+  int totalFrames = animation.totalColumns * animation.totalRows;
+  int start = std::max(0, std::min(animation.startFrame, totalFrames - 1));
+  int end = std::max(start, std::min(animation.endFrame, totalFrames - 1));
+  int safeFrame = std::max(start, std::min(animation.currentFrame, end));
+  int rangeLen = end - start + 1;
+
+  int column = 0;
+  int row = 0;
+  if (rangeLen <= animation.totalColumns) {
+    int relative = safeFrame - start;
+    column = relative % animation.totalColumns;
+    row = animation.selectedRow;
+  } else {
+    column = safeFrame % animation.totalColumns;
+    row = safeFrame / animation.totalColumns;
+  }
+
   return {
-    static_cast<float>(animation.currentFrame * animation.frameWidth),
-    static_cast<float>(animation.selectedRow * animation.frameHeight),
+    static_cast<float>(column * animation.frameWidth),
+    static_cast<float>(row * animation.frameHeight),
     static_cast<float>(animation.frameWidth),
     static_cast<float>(animation.frameHeight)
   };
@@ -85,14 +116,22 @@ Rectangle ecs::SpriteAnimationSystem::getCurrentFrameRect(Entity entity) const {
 void ecs::SpriteAnimationSystem::initializeFromTexture(Entity entity, int textureWidth, int textureHeight) {
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   
+  if (animation.totalColumns <= 0 || animation.totalRows <= 0) {
+    std::cerr << "Error: Invalid animation dimensions for entity " << entity
+              << " (columns=" << animation.totalColumns
+              << ", rows=" << animation.totalRows << ")\n";
+    return;
+  }
+
   animation.frameWidth = textureWidth / animation.totalColumns;
   animation.frameHeight = textureHeight / animation.totalRows;
 }
 
-void ecs::SpriteAnimationSystem::initializeAnimation(Entity entity, Texture2D texture) {
+void ecs::SpriteAnimationSystem::initializeAnimation(Entity entity, const std::shared_ptr<Texture2D>& texture) {
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
-  
-  initializeFromTexture(entity, texture.width, texture.height);
+
+  sprite.texture = texture;
+  initializeFromTexture(entity, texture->width, texture->height);
   sprite.sourceRect = getCurrentFrameRect(entity);
 }
