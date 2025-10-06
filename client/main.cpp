@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Client.hpp"
 #include "ECSManager.hpp"
 #include "RenderManager.hpp"
@@ -6,6 +7,10 @@ int main() {
   renderManager::Renderer renderer(renderManager::WINDOW_WIDTH,
                                    renderManager::WINDOW_HEIGHT,
                                    "R-Type Client");
+  if (!renderer.InitSucceeded()) {
+    std::cerr << "[ERROR] Failed to initialize window. Exiting." << std::endl;
+    return Client::KO;
+  }
   client::Client client;
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
 
@@ -23,5 +28,5 @@ int main() {
     renderer.endDrawing();
   }
 
-  return 0;
+  return Client::OK;
 }

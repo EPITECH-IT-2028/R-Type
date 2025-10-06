@@ -21,6 +21,9 @@ namespace renderManager {
       Renderer &operator=(Renderer &&) noexcept = default;
       ~Renderer();
 
+      bool InitSucceeded() const {
+        return _initSucceeded;
+      }
       bool shouldClose() const;
       void beginDrawing() const;
       void clearBackground(Color color) const;
@@ -30,6 +33,7 @@ namespace renderManager {
       void resizeWindow();
 
     private:
+      bool _initSucceeded = false;
       static void coloredLog(int msgType, const char *text, va_list args);
   };
 }  // namespace renderManager

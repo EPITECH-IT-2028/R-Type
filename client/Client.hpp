@@ -2,6 +2,11 @@
 
 #include "ECSManager.hpp"
 
+namespace Client {
+  constexpr int OK = 0;
+  constexpr int KO = 1;
+}  // namespace Client
+
 namespace client {
   class Client {
     public:

@@ -7,6 +7,7 @@ namespace renderManager {
   Renderer::Renderer(int width, int height, const char *title) {
     SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(width, height, title);
+    _initSucceeded = !WindowShouldClose();
     if (!IsWindowState(FLAG_VSYNC_HINT))
       SetTargetFPS(60);
     SetTraceLogCallback(coloredLog);
