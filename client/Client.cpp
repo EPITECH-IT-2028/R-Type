@@ -5,7 +5,9 @@
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
+#include "ScaleComponent.hpp"
 #include "SpeedComponent.hpp"
+#include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -30,6 +32,8 @@ namespace client {
     _ecsManager.registerComponent<ecs::VelocityComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
     _ecsManager.registerComponent<ecs::SpeedComponent>();
+    _ecsManager.registerComponent<ecs::SpriteComponent>();
+    _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
   }
@@ -105,6 +109,8 @@ namespace client {
     _ecsManager.addComponent<ecs::SpeedComponent>(player, {200.0f});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
+    _ecsManager.addComponent<ecs::SpriteComponent>(player, {0.0f, 0.0f, 33.0f, 17.0f});
+    _ecsManager.addComponent<ecs::ScaleComponent>(player, {0.3f, 0.3f});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
   }
 }  // namespace client

@@ -2,6 +2,8 @@
 #include "BackgroundTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
+#include "ScaleComponent.hpp"
+#include "SpriteComponent.hpp"
 #include "raylib.h"
 
 ecs::RenderSystem::~RenderSystem() noexcept {
@@ -32,6 +34,10 @@ void ecs::RenderSystem::update(float deltaTime) {
 
     Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(texture.width),
                            static_cast<float>(texture.height)};
+    if (_ecsManager.hasComponent<ecs::SpriteComponent>(entity)) {
+      auto &spriteComp = _ecsManager.getComponent<ecs::SpriteComponent>(entity);
+      sourceRec = spriteComp.sourceRect;
+    }
     Rectangle destRec;
 
     if (_ecsManager.hasComponent<BackgroundTagComponent>(entity)) {
@@ -56,6 +62,11 @@ void ecs::RenderSystem::update(float deltaTime) {
       destRec.height = (renderComp._height > 0)
                            ? renderComp._height
                            : static_cast<float>(texture.height);
+    }
+    if (_ecsManager.hasComponent<ecs::ScaleComponent>(entity)) {
+      auto &scaleComp = _ecsManager.getComponent<ecs::ScaleComponent>(entity);
+      destRec.width *= scaleComp.scaleX;
+      destRec.height *= scaleComp.scaleY;
     }
     Vector2 origin = {0.0f, 0.0f};
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
