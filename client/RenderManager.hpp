@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdarg>
 #include "raylib.h"
 
 namespace renderManager {
