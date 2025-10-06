@@ -10,11 +10,12 @@ namespace Client {
 namespace client {
   class Client {
     public:
-      Client();
+      Client() : _ecsManager(ecs::ECSManager::getInstance()) {}
       ~Client() = default;
 
+      void initializeECS();
+
     private:
-      void initECS();
       void registerComponent();
       void registerSystem();
       void signSystem();

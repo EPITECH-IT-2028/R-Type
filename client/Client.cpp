@@ -15,15 +15,10 @@
 #include "systems/RenderSystem.hpp"
 
 namespace client {
-  Client::Client() : _ecsManager(ecs::ECSManager::getInstance()) {
-    initECS();
-  }
-
-  void Client::initECS() {
+  void Client::initializeECS() {
     registerComponent();
     registerSystem();
     signSystem();
-
     createBackgroundEntities();
     createPlayerEntity();
   }
@@ -79,7 +74,7 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
       _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
-  }
+    }
   }
 
   void Client::createBackgroundEntities() {

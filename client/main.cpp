@@ -11,8 +11,9 @@ int main() {
     std::cerr << "[ERROR] Failed to initialize window. Exiting." << std::endl;
     return Client::KO;
   }
-  client::Client client;
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  client::Client client;
+  client.initializeECS();
 
   while (!renderer.shouldClose()) {
     if (IsWindowResized())
