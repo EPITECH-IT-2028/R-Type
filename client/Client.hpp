@@ -5,9 +5,9 @@
 #include <string>
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
+#include "ECSManager.hpp"
 
 #define TIMEOUT_MS 100
-#include "ECSManager.hpp"
 
 namespace client {
   class Client {

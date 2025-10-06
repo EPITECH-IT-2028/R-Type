@@ -12,9 +12,10 @@ namespace client {
 
   void Client::connect() {
     try {
-      _socket.open(asio::ip::udp::v4());
       asio::ip::udp::resolver resolver(_io_context);
-      _server_endpoint = *resolver.resolve(asio::ip::udp::v4(), _host, _port).begin();
+      auto endpoints = resolver.resolve(asio::ip::udp::v4(), _host, _port);
+      _server_endpoint = *endpoints.begin();
+      _socket.open(_server_endpoint.protocol());
       _running.store(true, std::memory_order_relaxed);
       std::cout << "Connected to " << _host << ":" << _port << std::endl;
     } catch (std::exception &e) {
