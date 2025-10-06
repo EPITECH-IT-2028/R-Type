@@ -51,14 +51,14 @@ jobs:
           ./build.sh
 
       - name: Upload Client Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: r-type-client-windows
           path: r_type_client.exe
           if-no-files-found: error
 
       - name: Upload Server Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: r-type-server-windows
           path: r_type_server.exe
@@ -74,13 +74,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download Client Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: r-type-client-windows
           path: ./artifacts/
 
       - name: Download Server Artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: r-type-server-windows
           path: ./artifacts/
