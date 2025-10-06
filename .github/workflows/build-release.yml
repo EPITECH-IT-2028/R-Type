@@ -49,7 +49,7 @@ jobs:
           export CONAN_USER_HOME=$HOME
 
           conan profile detect --force
-          conan profile show default
+          conan profile show
 
       - name: Build Release
         shell: msys2 {0}
