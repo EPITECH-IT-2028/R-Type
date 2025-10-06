@@ -1,0 +1,147 @@
+name: Release R-Type for Windows
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-pip
+            base-devel
+            git
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Conan
+        shell: msys2 {0}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install conan
+
+      - name: Configure Conan profile
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
+          conan profile detect --force
+          conan profile show
+
+      - name: Build Release
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
+          export CONAN_CMAKE_GENERATOR=Ninja
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload Client Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-client-windows
+          path: r_type_client.exe
+          if-no-files-found: error
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-server-windows
+          path: r_type_server.exe
+          if-no-files-found: error
+
+  create-release:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Client Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: r-type-client-windows
+          path: ./artifacts/
+
+      - name: Download Server Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: r-type-server-windows
+          path: ./artifacts/
+
+      - name: Generate release tag
+        id: tag
+        run: echo "tag=v$(date +'%Y.%m.%d')-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: R-Type Release ${{ steps.tag.outputs.tag }}
+          body: |
+            Release of R-Type
+
+            **Built from commit:** ${{ github.sha }}
+            **Build date:** ${{ steps.tag.outputs.tag }}
+
+            ## Downloads
+            - `r_type_client.exe`: Game client for Windows
+            - `r_type_server.exe`: Game server for Windows
+
+            ## Installation
+            1. Download both executables
+            2. Run `r_type_server.exe` to start the server
+            3. Run `r_type_client.exe` to play the game
+          draft: false
+          prerelease: false
+
+      - name: Upload Client Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/r_type_client.exe
+          asset_name: r_type_client.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Server Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/r_type_server.exe
+          asset_name: r_type_server.exe
+          asset_content_type: application/octet-stream
