@@ -23,6 +23,7 @@ jobs:
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-make
             mingw-w64-x86_64-pkgconf
             mingw-w64-x86_64-python
             mingw-w64-x86_64-python-pip
@@ -50,6 +51,7 @@ jobs:
 
           conan profile detect --force
           conan profile show
+          conan config set tools.cmake.cmaketoolchain:generator=Ninja
 
       - name: Build Release
         shell: msys2 {0}
@@ -57,6 +59,7 @@ jobs:
           export PATH="/mingw64/bin:$PATH"
           export CC=gcc
           export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
           chmod +x build.sh
           ./build.sh
 
