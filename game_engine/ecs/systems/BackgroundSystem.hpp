@@ -7,10 +7,6 @@
 #include "raylib.h"
 
 namespace ecs {
-  constexpr float SCROLL_SPEED = 250.0f;
-}  // namespace ecs
-
-namespace ecs {
   class BackgroundSystem : public System {
     public:
       explicit BackgroundSystem(

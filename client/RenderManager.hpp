@@ -6,6 +6,7 @@
 namespace renderManager {
   constexpr int WINDOW_WIDTH = 1200;
   constexpr int WINDOW_HEIGHT = 750;
+  constexpr float SCROLL_SPEED = 250.0f;
   constexpr const char *BG_PATH = "client/resources/background.png";
   constexpr const char *PLAYER_PATH = "client/resources/players.gif";
 }  // namespace renderManager
