@@ -2,10 +2,10 @@
 
 #include <array>
 #include <asio.hpp>
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <vector>
-#include <chrono>
 #include "Game.hpp"
 #include "PacketFactory.hpp"
 
@@ -23,6 +23,7 @@ namespace server {
       bool _connected = false;
       int _player_id = -1;
       std::chrono::steady_clock::time_point _last_heartbeat;
+      std::chrono::steady_clock::time_point _last_position_update;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
   };
 

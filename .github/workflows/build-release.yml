@@ -1,0 +1,142 @@
+name: Release R-Type for Windows
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  actions: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-pip
+            base-devel
+            git
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Conan
+        shell: msys2 {0}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install conan
+
+      - name: Configure Conan profile
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
+          conan profile detect --force
+          conan profile show
+
+      - name: Build Release
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
+          export CONAN_CMAKE_GENERATOR=Ninja
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Create Release Packages
+        shell: msys2 {0}
+        run: |
+          mkdir -p r-type-client-windows/client/resources
+          cp r_type_client.exe r-type-client-windows/
+          cp -r client/resources/* r-type-client-windows/client/resources/
+
+          mkdir -p r-type-server-windows/server
+          cp r_type_server.exe r-type-server-windows/
+          cp server/server.properties r-type-server-windows/server/
+
+      - name: Upload Client Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-client-windows
+          path: r-type-client-windows/
+          if-no-files-found: error
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-server-windows
+          path: r-type-server-windows/
+          if-no-files-found: error
+
+  create-release:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Client executable
+        uses: actions/download-artifact@v4
+        with:
+          name: r-type-client-windows
+          path: ./artifacts/
+
+      - name: Download Server executable
+        uses: actions/download-artifact@v4
+        with:
+          name: r-type-server-windows
+          path: ./artifacts/
+
+      - name: List downloaded files
+        run: ls -la ./artifacts/
+
+      - name: Generate release tag
+        id: tag
+        run: echo "tag=v$(date +'%Y.%m.%d')-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: R-Type Release ${{ steps.tag.outputs.tag }}
+          body: |
+            **Automatic Release of R-Type**
+
+            **Built from commit:** ${{ github.sha }}
+            **Build date:** ${{ steps.build_date.outputs.date }}
+
+            ## Downloads
+            Download both files to play:
+            - **Client**: For playing the game
+            - **Server**: Run this first to host a game
+          files: ./artifacts/*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
