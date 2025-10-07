@@ -66,6 +66,7 @@ namespace client {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
