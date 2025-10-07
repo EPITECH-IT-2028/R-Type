@@ -14,6 +14,7 @@
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
+#include "ScoreComponent.hpp"
 #include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -24,19 +25,16 @@ game::Game::Game()
 }
 
 /**
- * @brief Initialize the game's entity-component-system (ECS).
+ * @brief Initialize the game's entity-component-system (ECS) by registering components and configuring core systems.
  *
- * Registers all component types used by the game and creates/configures
- * the core systems. Sets each system's required component signature and
- * wires systems to the game, ECS manager, and event queue as appropriate.
+ * Registers all component types used by the game and creates/configures the core systems, assigning each system the component signature it requires and wiring systems to the game, ECS manager, and event queue.
  *
- * Registered components: Position, Health, Speed, Player, Projectile,
- * Velocity, Enemy, Shoot, Collider.
+ * Registered components: Position, Health, Speed, Player, Projectile, Velocity, Enemy, Shoot, Collider, Score.
  *
- * Configured systems and their signatures:
- * - EnemySystem: requires Enemy, Position, Velocity, Shoot, Health, Collider.
- * - ProjectileSystem: requires Projectile, Position, Velocity, Collider.
- * - CollisionSystem: requires Position, Collider.
+ * Configured systems and their required signatures:
+ * - EnemySystem: Enemy, Position, Velocity, Shoot, Health, Collider
+ * - ProjectileSystem: Projectile, Position, Velocity, Collider
+ * - CollisionSystem: Position, Collider
  */
 void game::Game::initECS() {
   _ecsManager.registerComponent<ecs::PositionComponent>();
@@ -48,6 +46,7 @@ void game::Game::initECS() {
   _ecsManager.registerComponent<ecs::EnemyComponent>();
   _ecsManager.registerComponent<ecs::ShootComponent>();
   _ecsManager.registerComponent<ecs::ColliderComponent>();
+  _ecsManager.registerComponent<ecs::ScoreComponent>();
 
   _enemySystem = _ecsManager.registerSystem<ecs::EnemySystem>();
   _enemySystem->setECSManager(&_ecsManager);
@@ -67,6 +66,7 @@ void game::Game::initECS() {
   enemySignature.set(_ecsManager.getComponentType<ecs::ShootComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::HealthComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::ColliderComponent>());
+  enemySignature.set(_ecsManager.getComponentType<ecs::ScoreComponent>());
   _ecsManager.setSystemSignature<ecs::EnemySystem>(enemySignature);
 
   Signature projectileSignature;
@@ -147,9 +147,9 @@ void game::Game::gameLoop() {
 /**
  * @brief Create and register a new player entity with its initial components.
  *
- * Initializes an ECS entity for the player, attaches Position, Health, Speed,
- * Player, Velocity, Shoot, and Collider components, stores the resulting
- * Player object in the game's player map, and returns it.
+ * Creates an ECS entity for the player, attaches initial components (Position, Health,
+ * Speed, Player, Velocity, Shoot, Collider, and Score), stores the resulting Player
+ * in the game's player map, and returns it.
  *
  * @param player_id Unique identifier for the player.
  * @param name Display name for the player.
@@ -170,6 +170,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  _ecsManager.addComponent<ecs::ScoreComponent>(entity, {0});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager);
   _players[player_id] = player;
@@ -249,13 +250,21 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager.createEntity();
 
-  _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type, true});
+  _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {-3.0f, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  switch (type) {
+    case EnemyType::BASIC_FIGHTER:
+      _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
+      break;
+    default:
+      _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
+      break;
+  }
 
   auto enemy = std::make_shared<Enemy>(enemy_id, entity, _ecsManager);
   _enemies[enemy_id] = enemy;
