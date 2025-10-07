@@ -152,7 +152,6 @@ Entity createEnemy(float x, float y, EnemyType type) {
   ecsManager.addComponent(enemy, ecs::VelocityComponent{-100.0f, 0.0f});
   ecsManager.addComponent(enemy, ecs::HealthComponent{100});
   ecsManager.addComponent(enemy, ecs::EnemyComponent{type});
-  ecsManager.addComponent(enemy, ecs::RenderComponent{/* sprite data */});
   ecsManager.addComponent(enemy, ecs::ColliderComponent{32.0f, 32.0f});
   ecsManager.addComponent(enemy, ecs::ShootComponent{1.0f}); // Shoot every second
   
