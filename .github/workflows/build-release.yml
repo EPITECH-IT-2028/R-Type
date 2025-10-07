@@ -65,6 +65,7 @@ jobs:
           export CXX=g++
           export CMAKE_MAKE_PROGRAM=ninja
           export CONAN_CMAKE_GENERATOR=Ninja
+          export LDFLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic"
           chmod +x build.sh
           ./build.sh
 
