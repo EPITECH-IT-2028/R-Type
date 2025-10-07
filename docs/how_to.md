@@ -23,12 +23,11 @@ namespace ecs {
 
 **2. Register the component in your initialization code:**
 ```cpp
-// In your game initialization
-auto& ecsManager = ecs::ECSManager::getInstance();
-ecsManager.registerComponent<ecs::NewComponent>();
+// server/src/game/Game.cpp
+_ecsManager.registerComponent<ecs::NewComponent>();
 ```
 
-**3. Use the component:**
+**3. All methods for components related to a entity:**
 ```cpp
 // Add component to entity
 Entity entity = ecsManager.createEntity();
@@ -83,40 +82,54 @@ namespace ecs {
 #include "NewComponent.hpp"
 #include "PositionComponent.hpp" // If you need other components
 
-namespace ecs {
-  void NewSystem::update(float deltaTime) {
-    for (auto const& entity : _entities) {
-      processEntity(entity, deltaTime);
-    }
+void NewSystem::update(float deltaTime) {
+  for (auto const& entity : _entities) {
+    processEntity(entity, deltaTime);
   }
+}
 
-  void NewSystem::processEntity(Entity entity, float deltaTime) {
-    // Get required components
-    auto& newComp = _ecsManager.getComponent<NewComponent>(entity);
-    auto& position = _ecsManager.getComponent<PositionComponent>(entity);
+void NewSystem::processEntity(Entity entity, float deltaTime) {
+  // Get required components
+  auto& newComp = _ecsManager.getComponent<NewComponent>(entity);
+  auto& position = _ecsManager.getComponent<PositionComponent>(entity);
     
-    // Implement your system logic here
-    if (newComp.isActive) {
-      position.x += newComp.value * deltaTime;
-      newComp.count++;
-    }
+  // Implement your system logic here
+  if (newComp.isActive) {
+    position.x += newComp.value * deltaTime;
+    newComp.count++;
   }
-}  // namespace ecs
+}
 ```
 
 **3. Register and configure the system:**
+
+**3.1. Add members to Game.hpp**
+```hpp
+namespace game {
+
+  class Game {
+    public:
+      Game();
+      ~Game();
+    ...
+    private:
+      std::shared_ptr<ecs::NewSystem> _newSystem;
+  }
+}
+```
+
 ```cpp
-// In your game initialization
-auto& ecsManager = ecs::ECSManager::getInstance();
+// server/src/game/Game.cpp
 
 // Register the system
-auto newSystem = ecsManager.registerSystem<NewSystem>();
+_newSystem = _ecsManager.registerSystem<NewSystem>();
+
 
 // Define which components this system requires
-ecs::Signature signature;
-signature.set(ecsManager.getComponentType<NewComponent>());
-signature.set(ecsManager.getComponentType<PositionComponent>());
-ecsManager.setSystemSignature<NewSystem>(signature);
+Signature newSignature;
+newSignature.set(_ecsManager.getComponentType<NewComponent>());
+newSignature.set(_ecsManager.getComponentType<PositionComponent>());
+_ecsManager.setSystemSignature<NewSystem>(newSignature);
 ```
 
 ### 🎯 Creating Game Entities
@@ -124,37 +137,72 @@ ecsManager.setSystemSignature<NewSystem>(signature);
 Entities are combinations of components that represent game objects.
 
 **Example: Creating a Power-up Entity**
+
+To create a new entity that displays on map you have to add some things to the Game.hpp.
+
+```hpp
+namespace game {
+
+  class Game {
+    public:
+      Game();
+      ~Game();
+    ...
+    private:
+      std::shared_ptr<ecs::PowerUpSystem> _powerUpSystem;
+      std::unordered_map<std::uint32_t, std::shared_ptr<PowerUp>> _powerUps;
+      mutable std::mutex _powerUpMutex
+  }
+}
+```
+
 ```cpp
 Entity createPowerUp(float x, float y, PowerUpType type) {
-  auto& ecsManager = ecs::ECSManager::getInstance();
-  
-  Entity powerUp = ecsManager.createEntity();
-  
-  // Add required components
-  ecsManager.addComponent(powerUp, ecs::PositionComponent{x, y});
-  ecsManager.addComponent(powerUp, ecs::VelocityComponent{0.0f, -50.0f}); // Moving upward
-  ecsManager.addComponent(powerUp, ecs::RenderComponent{/* sprite data */});
-  ecsManager.addComponent(powerUp, PowerUpComponent{type, 100}); // Custom component
-  ecsManager.addComponent(powerUp, ecs::ColliderComponent{20.0f, 20.0f});
-  
+  std::shared_ptr<PowerUp> powerUp; 
+  Entity entity;
+  {
+    std::scoped_lock ecsLock(_ecsMutex);
+    entity = _ecsManager.createEntity();
+    // Add required components
+    _ecsManager.addComponent<ecs::PositionComponent>(entity, ecs::PositionComponent{x, y});
+    _ecsManager.addComponent<ecs::VelocityComponent>(entity, ecs::VelocityComponent{0.0f, -50.0f}); // Moving upward
+    _ecsManager.addComponent<ecs::PowerUpComponent>(entity, PowerUpComponent{type, 100}); // Custom component
+    _ecsManager.addComponent<ecs::ColliderComponent>(entity, ecs::ColliderComponent{20.0f, 20.0f});
+    powerUp = std::make_shared<PowerUp>(type, x, y);
+  }
+  {
+    std::scoped_lock lk(_powerUpMutex);
+    _powerUp[powerUp_id] = powerUp;
+  }
   return powerUp;
 }
 ```
 
 **Example: Creating an Enemy Entity**
 ```cpp
-Entity createEnemy(float x, float y, EnemyType type) {
-  auto& ecsManager = ecs::ECSManager::getInstance();
-  
-  Entity enemy = ecsManager.createEntity();
-  
-  ecsManager.addComponent(enemy, ecs::PositionComponent{x, y});
-  ecsManager.addComponent(enemy, ecs::VelocityComponent{-100.0f, 0.0f});
-  ecsManager.addComponent(enemy, ecs::HealthComponent{100});
-  ecsManager.addComponent(enemy, ecs::EnemyComponent{type});
-  ecsManager.addComponent(enemy, ecs::ColliderComponent{32.0f, 32.0f});
-  ecsManager.addComponent(enemy, ecs::ShootComponent{1.0f}); // Shoot every second
-  
+std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
+                                                     const EnemyType type) {
+  std::scoped_lock lock(_enemyMutex);
+  auto entity = _ecsManager.createEntity();
+
+  _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
+  _ecsManager.addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
+  _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
+  _ecsManager.addComponent<ecs::VelocityComponent>(entity, {-3.0f, 0.0f});
+  _ecsManager.addComponent<ecs::ShootComponent>(entity,
+                                                {0.0f, 3.0f, true, 0.0f});
+  _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  switch (type) {
+    case EnemyType::BASIC_FIGHTER:
+      _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
+      break;
+    default:
+      _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
+      break;
+  }
+
+  auto enemy = std::make_shared<Enemy>(enemy_id, entity, _ecsManager);
+  _enemies[enemy_id] = enemy;
   return enemy;
 }
 ```
@@ -183,12 +231,13 @@ struct ALIGNED NewPacketStruct {
 
 **2. Create the packet handler:**
 ```cpp
-// server/src/packets/NewPacketHandler.hpp
+// server/src/packets/PacketHandler.hpp
 #pragma once
 
 #include "APacket.hpp"
 
 namespace packet {
+  ...
   class NewPacketHandler : public APacket {
     public:
       int handlePacket(server::Server& server, server::Client& client,
@@ -198,36 +247,26 @@ namespace packet {
 ```
 
 ```cpp
-// server/src/packets/NewPacketHandler.cpp
+// server/src/packets/PacketHandler.cpp
 #include "NewPacketHandler.hpp"
 #include "Packet.hpp"
 #include "Server.hpp"
 
-namespace packet {
-  int NewPacketHandler::handlePacket(server::Server& server, server::Client& client,
-                                    const char* data, std::size_t size) {
-    if (size < sizeof(NewPacketStruct)) {
-      return -1; // Invalid packet size
-    }
+int packet::NewPacketHandler::handlePacket(server::Server& server, server::Client& client, const char* data, std::size_t size) {
+  if (size < sizeof(NewPacketStruct)) {
+    return -1; // Invalid packet size
+  }
     
-    const auto* packet = reinterpret_cast<const NewPacketStruct*>(data);
+  const auto* packet = reinterpret_cast<const NewPacketStruct*>(data);
     
     // Validate packet data
-    if (packet->header.type != PacketType::NewPacketType) {
-      return -1;
-    }
-    
-    // Process the packet
-    // Access: packet->playerId, packet->someValue, etc.
-    
-    // Example: Update game state
-    server.updatePlayerState(client.getId(), packet->someValue);
-    
-    // Example: Broadcast to other clients if needed
-    server.broadcastToOthers(client.getId(), data, size);
-    
-    return 0; // Success
+  if (packet->header.type != PacketType::NewPacketType) {
+    return -1;
   }
+    
+  ...
+    
+  return 0; // Success
 }
 ```
 
@@ -235,13 +274,11 @@ namespace packet {
 ```cpp
 // Add to server/src/packets/PacketFactory.hpp
 private:
-  inline static const std::unordered_map<
-      PacketType, std::function<std::unique_ptr<APacket>()>>
-      _handlers = {
-        // ... existing handlers ...
-        {PacketType::NewPacketType,
-         []() { return std::make_unique<NewPacketHandler>(); }},
-      };
+inline static const std::unordered_map<
+          PacketType, std::function<std::unique_ptr<APacket>()>>
+          _handlers = {...
+                       {PacketType::NewPacket,
+                        []() { return std::make_unique<NewPacketHandler>(); }}};
 ```
 
 ### 📋 Best Practices
