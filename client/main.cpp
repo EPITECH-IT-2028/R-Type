@@ -3,7 +3,7 @@
 #include "ECSManager.hpp"
 #include "RenderManager.hpp"
 
-int main() {
+int main(void) {
   renderManager::Renderer renderer(renderManager::WINDOW_WIDTH,
                                    renderManager::WINDOW_HEIGHT,
                                    "R-Type Client");

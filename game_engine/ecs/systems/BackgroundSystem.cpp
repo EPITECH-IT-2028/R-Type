@@ -1,5 +1,4 @@
 #include "BackgroundSystem.hpp"
-#include <vector>
 #include "PositionComponent.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
