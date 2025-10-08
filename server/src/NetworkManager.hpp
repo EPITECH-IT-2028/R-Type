@@ -18,7 +18,7 @@ namespace server {
       void scheduleTimeout(std::chrono::seconds interval,
                            const std::function<void()> &callback);
       void stop();
-      
+
       void setStopCallback(const std::function<void()> &callback) {
         _stopCallback = callback;
       }
@@ -28,12 +28,6 @@ namespace server {
       }
 
       void run();
-
-      asio::error_code getLastError() const {
-        return _socket.local_endpoint().address().is_unspecified()
-                   ? asio::error_code(asio::error::not_connected)
-                   : asio::error_code();
-      }
 
       std::array<char, BUFFER_SIZE> getRecvBuffer() {
         return _recv_buffer;

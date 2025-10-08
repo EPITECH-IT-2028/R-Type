@@ -30,9 +30,11 @@ void server::Server::start() {
 
   _networkManager.setStopCallback([this]() {
     static bool stopping = false;
-    if (stopping) return;
+    if (stopping)
+      return;
     stopping = true;
-    std::cout << "[CONSOLE] Network manager stopped, shutting down server..." << std::endl;
+    std::cout << "[CONSOLE] Network manager stopped, shutting down server..."
+              << std::endl;
     _game.stop();
   });
 
@@ -173,27 +175,19 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
  * Begin asynchronous receive operation.
  */
 void server::Server::startReceive() {
-  _networkManager.startReceive(
-      [this](const char *data, std::size_t size) { handleReceive(size); });
+  _networkManager.startReceive([this](const char *data, std::size_t size) {
+    handleReceive(data, size);
+  });
 }
 
 /*
  * Handle completion of a receive operation.
  */
-void server::Server::handleReceive(std::size_t bytes_transferred) {
-  if (_networkManager.getLastError()) {
-    if (_networkManager.getLastError() == asio::error::operation_aborted) {
-      return;
-    }
-    std::cerr << "[WARNING] Receive failed: "
-              << _networkManager.getLastError().message() << std::endl;
-    startReceive();
-    return;
-  }
+void server::Server::handleReceive(const char *data,
+                                   std::size_t bytes_transferred) {
   if (bytes_transferred < sizeof(PacketHeader)) {
     std::cerr << "[DEBUG] Received packet too small: " << bytes_transferred
               << " bytes" << std::endl;
-    startReceive();
     return;
   }
 
@@ -201,11 +195,9 @@ void server::Server::handleReceive(std::size_t bytes_transferred) {
   if (client_idx == ERROR) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
-    startReceive();
     return;
   } else {
-    handleClientData(client_idx, _networkManager.getRecvBuffer().data(),
-                     bytes_transferred);
+    handleClientData(client_idx, data, bytes_transferred);
   }
 }
 
@@ -215,18 +207,38 @@ void server::Server::handleReceive(std::size_t bytes_transferred) {
  * is available.
  */
 int server::Server::findOrCreateClient() {
+  auto current_endpoint = _networkManager.getRemoteEndpoint();
+
+  // First, look for an existing client with the same endpoint
   for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected) {
-      _clients[i]->_connected = true;
+    if (_clients[i] && _clients[i]->_connected &&
+        _clients[i]->_endpoint == current_endpoint) {
+      // Update heartbeat for existing client
+      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
       return static_cast<int>(i);
     }
   }
 
+  // Look for a disconnected slot to reuse with the same endpoint
+  for (size_t i = 0; i < _clients.size(); ++i) {
+    if (_clients[i] && !_clients[i]->_connected &&
+        _clients[i]->_endpoint == current_endpoint) {
+      _clients[i]->_connected = true;
+      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
+      _player_count++;
+      std::cout << "[WORLD] Player reconnected with ID "
+                << _clients[i]->_player_id << std::endl;
+      return static_cast<int>(i);
+    }
+  }
+
+  // Create a new client in an empty slot
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
       _clients[i] = std::make_shared<Client>(_next_player_id++);
-      _player_count++;
+      _clients[i]->_endpoint = current_endpoint;
       _clients[i]->_connected = true;
+      _player_count++;
       std::cout << "[WORLD] New player connected with ID "
                 << _clients[i]->_player_id << std::endl;
       auto msg = PacketBuilder::makeMessage("Welcome to the server!");
@@ -254,7 +266,6 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   if (size < header.size || header.size < sizeof(PacketHeader)) {
     std::cerr << "[WARNING] Invalid packet size from client "
               << _clients[client_idx]->_player_id << std::endl;
-    startReceive();
     return;
   }
 
@@ -266,7 +277,6 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
               << static_cast<int>(header.type) << " from client "
               << _clients[client_idx]->_player_id << std::endl;
   }
-  startReceive();
 }
 
 /*

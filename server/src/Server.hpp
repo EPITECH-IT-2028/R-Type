@@ -16,6 +16,7 @@ namespace server {
       Client(int id);
       ~Client() = default;
 
+      asio::ip::udp::endpoint _endpoint;
       bool _connected = false;
       int _player_id = -1;
       std::chrono::steady_clock::time_point _last_heartbeat;
@@ -67,7 +68,7 @@ namespace server {
 
     private:
       void startReceive();
-      void handleReceive(std::size_t bytes_transferred);
+      void handleReceive(const char *data, std::size_t bytes_transferred);
 
       void handleTimeout();
       void scheduleTimeoutCheck();
