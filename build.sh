@@ -126,7 +126,7 @@ fi
 
 CONAN_EXTRA_ARGS=""
 if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
-    CONAN_EXTRA_ARGS="-c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True"
+    CONAN_EXTRA_ARGS="-c tools.system.package_manager:mode=install"
 fi
 
 conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE" $CONAN_EXTRA_ARGS
