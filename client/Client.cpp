@@ -116,6 +116,7 @@ namespace client {
         std::cerr << "Receive error: " << e.what() << std::endl;
       }
     }
+  }
 
   void Client::initializeECS() {
     registerComponent();
