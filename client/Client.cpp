@@ -24,7 +24,7 @@ namespace client {
         _timeout(TIMEOUT_MS),
         _packetFactory(),
         _ecsManager(ecs::ECSManager::getInstance()) {
-    _running.store(false, std::memory_order_relaxed);
+    _running.store(false, std::memory_order_release);
   }
 
   void Client::connect() {
@@ -38,7 +38,7 @@ namespace client {
       }
       _server_endpoint = *endpoints.begin();
       _socket.open(_server_endpoint.protocol());
-      _running.store(true, std::memory_order_relaxed);
+      _running.store(true, std::memory_order_release);
       std::cout << "Connected to " << _host << ":" << _port << std::endl;
     } catch (std::exception &e) {
       std::cerr << "Connection error: " << e.what() << std::endl;
@@ -46,19 +46,19 @@ namespace client {
   }
 
   void Client::disconnect() {
-    _running.store(false, std::memory_order_relaxed);
+    _running.store(false, std::memory_order_release);
     _socket.close();
     std::cout << "Disconnected from server." << std::endl;
   }
 
   void Client::receivePackets() {
-    if (!_running.load(std::memory_order_relaxed)) {
+    if (!_running.load(std::memory_order_acquire)) {
       std::cerr << "Client is not connected. Cannot receive packets."
                 << std::endl;
       return;
     }
 
-    while (_running.load(std::memory_order_relaxed)) {
+    while (_running.load(std::memory_order_acquire)) {
       try {
         asio::ip::udp::endpoint sender_endpoint;
         std::size_t length = 0;
