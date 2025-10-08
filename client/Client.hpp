@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <asio.hpp>
 #include <atomic>
 #include <chrono>
 #include <iostream>
@@ -9,6 +8,11 @@
 #include "ECSManager.hpp"
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
+
+#if defined(_WIN32)
+  #define PLATFORM_DESKTOP
+#endif
+#include <asio.hpp>
 
 #define TIMEOUT_MS 100
 
