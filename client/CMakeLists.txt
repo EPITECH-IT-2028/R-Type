@@ -17,6 +17,11 @@ add_executable(${PROJECT_NAME}
   ${CLIENT_SOURCES}
   ${ECS_SOURCES}
 )
+
+if(WIN32)
+  target_compile_options(${PROJECT_NAME} PRIVATE -include ${CMAKE_CURRENT_SOURCE_DIR}/WindowsFix.hpp)
+endif()
+
 add_compile_options(-W -Wall -Wextra)
 
 target_link_libraries(${PROJECT_NAME} raylib asio::asio)
