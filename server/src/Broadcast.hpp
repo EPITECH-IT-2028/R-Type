@@ -17,7 +17,8 @@ namespace broadcast {
           const Packet &packet, Pred pred) {
         for (const auto &client : clients) {
           if (client && client->_connected && pred(*client)) {
-            packet::PacketSender::sendPacket(networkManager, packet);
+            packet::PacketSender::sendPacket(networkManager, packet,
+                                             client->_endpoint);
           }
         }
       }
@@ -27,7 +28,8 @@ namespace broadcast {
           server::NetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet) {
-        broadcastTo(networkManager, clients, packet, [](const auto &) { return true; });
+        broadcastTo(networkManager, clients, packet,
+                    [](const auto &) { return true; });
       }
 
       /*
@@ -36,7 +38,8 @@ namespace broadcast {
        * game.
        */
       static void broadcastExistingPlayers(
-          server::NetworkManager &networkManager, game::Game &game, int newPlayerID) {
+          server::NetworkManager &networkManager, game::Game &game,
+          int newPlayerID, const asio::ip::udp::endpoint &newPlayerEndpoint) {
         auto players = game.getAllPlayers();
 
         for (const auto &player : players) {
@@ -48,7 +51,8 @@ namespace broadcast {
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), pos.first, pos.second, speed, health);
-            packet::PacketSender::sendPacket(networkManager, existPlayerPacket);
+            packet::PacketSender::sendPacket(networkManager, existPlayerPacket,
+                                             newPlayerEndpoint);
           }
         }
       }
@@ -61,9 +65,10 @@ namespace broadcast {
           server::NetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const NewPlayerPacket &packet) {
-        broadcastTo(networkManager, clients, packet, [&packet](const auto &client) {
-          return client._player_id != static_cast<int>(packet.player_id);
-        });
+        broadcastTo(
+            networkManager, clients, packet, [&packet](const auto &client) {
+              return client._player_id != static_cast<int>(packet.player_id);
+            });
       }
 
       /*
@@ -110,7 +115,8 @@ namespace broadcast {
        * @brief Broadcasts an EnemyDeathPacket to every connected client.
        *
        * @param socket UDP socket used to send the packet.
-       * @param clients Collection of client shared pointers; only clients that are connected will receive the packet.
+       * @param clients Collection of client shared pointers; only clients that
+       * are connected will receive the packet.
        * @param packet Enemy death event packet to send to clients.
        */
       static void broadcastEnemyDeath(
@@ -123,7 +129,8 @@ namespace broadcast {
       /**
        * @brief Notifies all connected clients that an enemy was hit.
        *
-       * @param packet Packet describing which enemy was hit and associated hit data.
+       * @param packet Packet describing which enemy was hit and associated hit
+       * data.
        */
       static void broadcastEnemyHit(
           server::NetworkManager &networkManager,
@@ -176,7 +183,8 @@ namespace broadcast {
        * @brief Broadcasts a GameEndPacket to all connected clients.
        *
        * @param socket UDP socket used to send the packet.
-       * @param clients Vector of client shared pointers; only non-null, connected clients will receive the packet.
+       * @param clients Vector of client shared pointers; only non-null,
+       * connected clients will receive the packet.
        * @param packet GameEndPacket to be sent to recipients.
        */
       static void broadcastGameEnd(
@@ -189,7 +197,8 @@ namespace broadcast {
       /**
        * @brief Broadcast a player-death event to all connected clients.
        *
-       * @param packet Packet describing the player's death to send to all clients.
+       * @param packet Packet describing the player's death to send to all
+       * clients.
        */
       static void broadcastPlayerDeath(
           server::NetworkManager &networkManager,
@@ -201,7 +210,8 @@ namespace broadcast {
       /**
        * @brief Broadcasts a player-hit event to all connected clients.
        *
-       * @param packet PlayerHitPacket containing the hit event data to send to every connected client.
+       * @param packet PlayerHitPacket containing the hit event data to send to
+       * every connected client.
        */
       static void broadcastPlayerHit(
           server::NetworkManager &networkManager,
@@ -214,8 +224,10 @@ namespace broadcast {
        * @brief Broadcasts a player disconnect event to all connected clients.
        *
        * @param socket UDP socket used to send the packet.
-       * @param clients Vector of client shared pointers; only connected clients will be sent the packet.
-       * @param packet Packet describing the player disconnect (including the player id).
+       * @param clients Vector of client shared pointers; only connected clients
+       * will be sent the packet.
+       * @param packet Packet describing the player disconnect (including the
+       * player id).
        */
       static void broadcastPlayerDisconnect(
           server::NetworkManager &networkManager,

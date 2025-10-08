@@ -20,6 +20,17 @@ void server::NetworkManager::send(const char *data, std::size_t size) {
       });
 }
 
+void server::NetworkManager::send(const char *data, std::size_t size, const asio::ip::udp::endpoint& endpoint) {
+  _socket.async_send_to(
+      asio::buffer(data, size), endpoint,
+      [data](const asio::error_code &error,
+             [[maybe_unused]] std::size_t bytes_sent) {
+        if (error) {
+          std::cerr << "[ERROR] Send failed: " << error.message() << std::endl;
+        }
+      });
+}
+
 void server::NetworkManager::checkSignals() {
   _signals.async_wait(
       [this](const asio::error_code &error, [[maybe_unused]] int) {

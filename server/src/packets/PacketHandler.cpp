@@ -45,12 +45,12 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   // Broadcast existing players to the new client
   broadcast::Broadcast::broadcastExistingPlayers(
-      server.getNetworkManager(), server.getGame(), client._player_id);
+      server.getNetworkManager(), server.getGame(), client._player_id, client._endpoint);
 
   // Send the new player is own information
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, pos.first, pos.second, speed, health);
-  packet::PacketSender::sendPacket(server.getNetworkManager(), ownPlayerPacket);
+  packet::PacketSender::sendPacket(server.getNetworkManager(), ownPlayerPacket, client._endpoint);
 
   // Broadcast new player to all other clients
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
@@ -199,7 +199,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 
   auto disconnectMsg = PacketBuilder::makeMessage(
       "Player " + std::to_string(client._player_id) + " has disconnected.");
-  packet::PacketSender::sendPacket(server.getNetworkManager(), disconnectMsg);
+  packet::PacketSender::sendPacket(server.getNetworkManager(), disconnectMsg, client._endpoint);
   auto disconnectPacket =
       PacketBuilder::makePlayerDisconnect(client._player_id);
   broadcast::Broadcast::broadcastPlayerDisconnect(

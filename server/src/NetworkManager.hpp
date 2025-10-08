@@ -13,6 +13,8 @@ namespace server {
       void startReceive(
           const std::function<void(const char *, std::size_t)> &callback);
       void send(const char *data, std::size_t size);
+      void send(const char *data, std::size_t size,
+                const asio::ip::udp::endpoint &endpoint);
       void scheduleEventProcessing(std::chrono::milliseconds interval,
                                    const std::function<void()> &callback);
       void scheduleTimeout(std::chrono::seconds interval,

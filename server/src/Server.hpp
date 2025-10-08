@@ -13,11 +13,12 @@ namespace server {
 
   struct Client {
     public:
-      Client(int id);
+      Client(asio::ip::udp::endpoint endpoint, int id);
       ~Client() = default;
 
       bool _connected = false;
       int _player_id = -1;
+      asio::ip::udp::endpoint _endpoint;
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
