@@ -1,28 +1,48 @@
 #include "Client.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "BoundarySystem.hpp"
+#include "InputSystem.hpp"
+#include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
+#include "ScaleComponent.hpp"
+#include "SpeedComponent.hpp"
+#include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
 #include "systems/MovementSystem.hpp"
 #include "systems/RenderSystem.hpp"
 
 namespace client {
-  Client::Client() : _ecsManager(ecs::ECSManager::getInstance()) {
-    initECS();
+  void Client::initializeECS() {
+    registerComponent();
+    registerSystem();
+    signSystem();
+    createBackgroundEntities();
+    createPlayerEntity();
   }
 
-  void Client::initECS() {
+  void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
+    _ecsManager.registerComponent<ecs::SpeedComponent>();
+    _ecsManager.registerComponent<ecs::SpriteComponent>();
+    _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
+    _ecsManager.registerComponent<ecs::PlayerTagComponent>();
+  }
 
+  void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
+    _ecsManager.registerSystem<ecs::InputSystem>();
+    _ecsManager.registerSystem<ecs::BoundarySystem>();
+  }
 
+  void Client::signSystem() {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
@@ -42,14 +62,30 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
       _ecsManager.setSystemSignature<ecs::RenderSystem>(signature);
     }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
+    }
+  }
 
+  void Client::createBackgroundEntities() {
     Image backgroundImage = LoadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
     float aspectRatio = 1.0f;
     float scaledWidth = screenHeight;
     if (backgroundImage.data != nullptr && backgroundImage.height > 0) {
-      aspectRatio =
-          static_cast<float>(backgroundImage.width) / static_cast<float>(backgroundImage.height);
+      aspectRatio = static_cast<float>(backgroundImage.width) /
+                    static_cast<float>(backgroundImage.height);
       scaledWidth = screenHeight * aspectRatio;
       UnloadImage(backgroundImage);
     }
@@ -69,5 +105,17 @@ namespace client {
     _ecsManager.addComponent<ecs::RenderComponent>(
         background2, {renderManager::BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
+  }
+
+  void Client::createPlayerEntity() {
+    auto player = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});
+    _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::SpeedComponent>(player, {PLAYER_SPEED});
+    _ecsManager.addComponent<ecs::RenderComponent>(
+        player, {renderManager::PLAYER_PATH});
+    _ecsManager.addComponent<ecs::SpriteComponent>(player, {0.0f, 0.0f, 33.0f, 17.0f});
+    _ecsManager.addComponent<ecs::ScaleComponent>(player, {2.0f, 2.0f});
+    _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
   }
 }  // namespace client

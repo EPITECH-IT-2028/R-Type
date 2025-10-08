@@ -5,10 +5,9 @@
 
 namespace renderManager {
   Renderer::Renderer(int width, int height, const char *title) {
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+    SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(width, height, title);
-    SetWindowMinSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    SetWindowMaxSize(WINDOW_MAX_WIDTH, WINDOW_MAX_HEIGHT);
+    _initSucceeded = IsWindowReady();
     if (!IsWindowState(FLAG_VSYNC_HINT))
       SetTargetFPS(60);
     SetTraceLogCallback(coloredLog);

@@ -58,7 +58,7 @@ namespace ecs {
         }
 
         void update(float dt) {
-          for (auto const& [name, system] : _systems)
+          for (auto const& [type, system] : _systems)
             system->update(dt);
         }
 
