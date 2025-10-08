@@ -9,6 +9,15 @@
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
 
+#if defined(_WIN32)
+    #define PLATFORM_DESKTOP
+    #define NOGDI
+    #define NOMINMAX
+    #define WIN32_LEAN_AND_MEAN
+    #define _WINSOCK_DEPRECATED_NO_WARNINGS
+    #define _CRT_SECURE_NO_WARNINGS
+    #define _WIN32_WINNT 0x0601
+#endif
 #include <asio.hpp>
 
 #define TIMEOUT_MS 100
