@@ -19,8 +19,8 @@ namespace client {
       : _socket(_io_context),
         _host(host),
         _port(port),
-        _sequence_number(0),
-        _packet_count(0),
+        _sequence_number{0},
+        _packet_count{0},
         _timeout(TIMEOUT_MS),
         _packetFactory(),
         _ecsManager(ecs::ECSManager::getInstance()) {

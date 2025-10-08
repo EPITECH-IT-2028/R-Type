@@ -47,8 +47,8 @@ namespace client {
 
         try {
           packet::PacketSender::sendPacket(_socket, _server_endpoint, packet);
-          _packet_count++;
-          _sequence_number++;
+          ++_packet_count;
+          ++_sequence_number;
         } catch (std::exception &e) {
           std::cerr << "Send error: " << e.what() << std::endl;
         }
@@ -61,9 +61,9 @@ namespace client {
       std::string _host;
       std::string _port;
       std::array<char, 2048> _recv_buffer;
-      uint32_t _sequence_number;
+      std::atomic<uint32_t> _sequence_number;
       std::atomic<bool> _running;
-      uint64_t _packet_count;
+      std::atomic<uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
 
       packet::PacketHandlerFactory _packetFactory;
