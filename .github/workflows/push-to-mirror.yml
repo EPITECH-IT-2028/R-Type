@@ -15,7 +15,7 @@ jobs:
     name: Check Repository
     runs-on: ubuntu-latest
     if: >
-      github.repository != 'EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git' &&
+      github.repository != 'EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4' &&
       github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout GH repo
@@ -27,7 +27,7 @@ jobs:
   push_to_mirror:
     needs: [compare-keys]
     if: >
-      github.repository != 'EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git' &&
+      github.repository != 'EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4' &&
       github.event.workflow_run.conclusion == 'success'
     name: Push to Mirror Repository
     runs-on: ubuntu-latest
