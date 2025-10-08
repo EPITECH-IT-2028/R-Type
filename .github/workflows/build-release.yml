@@ -97,12 +97,11 @@ jobs:
             ninja-build \
             pkg-config \
             python3-pip \
+            xorg-dev \
             libasound2-dev \
-            libx11-dev \
-            libxrandr-dev \
-            libxi-dev \
             libgl1-mesa-dev \
-            libglu1-mesa-dev
+            libglu1-mesa-dev \
+            uuid-dev
 
       - name: Setup Python
         uses: actions/setup-python@v5
