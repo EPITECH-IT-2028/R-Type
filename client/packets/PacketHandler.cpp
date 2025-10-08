@@ -15,6 +15,7 @@ int packet::MessageHandler::handlePacket(client::Client &client,
   MessagePacket packet;
   std::memcpy(&packet, data, sizeof(MessagePacket));
 
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", 256, packet.message);
+  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", sizeof(packet.message),
+           packet.message);
   return 0;
 }
