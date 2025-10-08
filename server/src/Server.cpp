@@ -191,7 +191,7 @@ void server::Server::handleReceive(const char *data,
     return;
   }
 
-  int client_idx = findOrCreateClient(_remote_endpoint);
+  int client_idx = findOrCreateClient();
   if (client_idx == KO) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
@@ -209,17 +209,14 @@ void server::Server::handleReceive(const char *data,
 int server::Server::findOrCreateClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
-  // First, look for an existing client with the same endpoint
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_connected &&
         _clients[i]->_endpoint == current_endpoint) {
-      // Update heartbeat for existing client
       _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
       return static_cast<int>(i);
     }
   }
 
-  // Look for a disconnected slot to reuse with the same endpoint
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && !_clients[i]->_connected &&
         _clients[i]->_endpoint == current_endpoint) {
@@ -232,7 +229,6 @@ int server::Server::findOrCreateClient() {
     }
   }
 
-  // Create a new client in an empty slot
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
       _clients[i] = std::make_shared<Client>(_next_player_id++);
