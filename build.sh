@@ -129,7 +129,11 @@ if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
     CONAN_EXTRA_ARGS="-c tools.system.package_manager:mode=install"
 fi
 
-conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE" $CONAN_EXTRA_ARGS
+if [ "$TARGET" == "server" ]; then
+    conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+else
+    conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+fi
 
 case $TARGET in
     "client")

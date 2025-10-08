@@ -19,6 +19,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.txt', '**/conanfile_server.txt') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
+
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
@@ -57,6 +65,8 @@ jobs:
           conan profile show
 
       - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
@@ -87,13 +97,16 @@ jobs:
     container:
       image: ubuntu:22.04
     steps:
-      - name: Install base tools
-        run: |
-          apt-get update
-          apt-get install -y curl git
-
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.txt', '**/conanfile_server.txt') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
 
       - name: Install dependencies
         run: |
@@ -104,11 +117,7 @@ jobs:
             ninja-build \
             pkg-config \
             python3-pip \
-            python3 \
-            xorg-dev \
-            libasound2-dev \
-            libgl1-mesa-dev \
-            libglu1-mesa-dev
+            python3
 
       - name: Install Conan
         run: |
@@ -121,18 +130,13 @@ jobs:
           conan profile show
 
       - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
         run: |
           export CMAKE_MAKE_PROGRAM=ninja
           export CONAN_CMAKE_GENERATOR=Ninja
           chmod +x build.sh
-          ./build.sh
-
-      - name: Upload Client Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: r-type-client-linux
-          path: r_type_client
-          if-no-files-found: error
+          ./build.sh server
 
       - name: Upload Server Artifact
         uses: actions/upload-artifact@v4
@@ -146,6 +150,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.txt', '**/conanfile_server.txt') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
 
       - name: Install system dependencies
         run: |
@@ -168,6 +180,8 @@ jobs:
           conan profile show
 
       - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
         run: |
           export CMAKE_MAKE_PROGRAM=ninja
           export CONAN_CMAKE_GENERATOR=Ninja
@@ -227,8 +241,8 @@ jobs:
           cd ..
 
           cd linux
-          chmod +x r_type_client r_type_server
-          tar -czf ../r-type-linux.tar.gz *
+          chmod +x r_type_server
+          tar -czf ../r-type-linux.tar.gz r_type_server
           cd ..
 
           cd macos
@@ -266,10 +280,10 @@ jobs:
             - Download r-type-windows.zip
             - Extract and run r_type_server.exe first, then r_type_client.exe
 
-            ### Linux
+            ### Linux (Server Only)
             - Download r-type-linux.tar.gz
             - Extract: tar -xzf r-type-linux.tar.gz
-            - Run: ./r_type_server first, then ./r_type_client
+            - Run: ./r_type_server
 
             ### macOS
             - Download r-type-macos.tar.gz
