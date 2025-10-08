@@ -35,7 +35,7 @@ int game::Enemy::getHealth() const {
     const auto &health = getComponent<ecs::HealthComponent>();
     return health.health;
   }
-  return SUCCESS;
+  return OK;
 }
 
 int game::Enemy::getMaxHealth() const {
@@ -43,7 +43,7 @@ int game::Enemy::getMaxHealth() const {
     const auto &health = getComponent<ecs::HealthComponent>();
     return health.max_health;
   }
-  return SUCCESS;
+  return OK;
 }
 
 void game::Enemy::setHealth(int health) {
