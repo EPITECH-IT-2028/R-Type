@@ -65,6 +65,8 @@ jobs:
           conan profile show
 
       - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
@@ -128,12 +130,13 @@ jobs:
           conan profile show
 
       - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
         run: |
           export CMAKE_MAKE_PROGRAM=ninja
           export CONAN_CMAKE_GENERATOR=Ninja
           chmod +x build.sh
           ./build.sh server
-
 
       - name: Upload Server Artifact
         uses: actions/upload-artifact@v4
@@ -177,6 +180,8 @@ jobs:
           conan profile show
 
       - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
         run: |
           export CMAKE_MAKE_PROGRAM=ninja
           export CONAN_CMAKE_GENERATOR=Ninja
