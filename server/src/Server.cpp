@@ -44,6 +44,7 @@ void server::Server::start() {
                                           [this]() { processGameEvents(); });
   _networkManager.scheduleTimeout(std::chrono::seconds(1),
                                   [this]() { handleTimeout(); });
+
   _networkManager.run();
 }
 
@@ -210,16 +211,14 @@ int server::Server::findOrCreateClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
   for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected &&
-        _clients[i]->_endpoint == current_endpoint) {
+    if (_clients[i] && _clients[i]->_connected) {
       _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
       return static_cast<int>(i);
     }
   }
 
   for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && !_clients[i]->_connected &&
-        _clients[i]->_endpoint == current_endpoint) {
+    if (_clients[i] && !_clients[i]->_connected) {
       _clients[i]->_connected = true;
       _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
       _player_count++;
@@ -232,7 +231,6 @@ int server::Server::findOrCreateClient() {
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
       _clients[i] = std::make_shared<Client>(_next_player_id++);
-      _clients[i]->_endpoint = current_endpoint;
       _clients[i]->_connected = true;
       _player_count++;
       std::cout << "[WORLD] New player connected with ID "

@@ -16,7 +16,6 @@ namespace server {
       Client(int id);
       ~Client() = default;
 
-      asio::ip::udp::endpoint _endpoint;
       bool _connected = false;
       int _player_id = -1;
       std::chrono::steady_clock::time_point _last_heartbeat;
