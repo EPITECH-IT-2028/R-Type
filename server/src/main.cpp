@@ -18,8 +18,8 @@ int main(int ac, char **av) {
           "Too much arguments, check --help for more informations.");
     }
 
-    Parser parser;
-    parser.parseServerProperties();
+    Parser parser(SERVER_PROPERTIES);
+    parser.parseProperties();
 
     asio::io_context io_context;
 
