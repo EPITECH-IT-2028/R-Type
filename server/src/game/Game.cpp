@@ -25,11 +25,15 @@ game::Game::Game()
 }
 
 /**
- * @brief Initialize the game's entity-component-system (ECS) by registering components and configuring core systems.
+ * @brief Initialize the game's entity-component-system (ECS) by registering
+ * components and configuring core systems.
  *
- * Registers all component types used by the game and creates/configures the core systems, assigning each system the component signature it requires and wiring systems to the game, ECS manager, and event queue.
+ * Registers all component types used by the game and creates/configures the
+ * core systems, assigning each system the component signature it requires and
+ * wiring systems to the game, ECS manager, and event queue.
  *
- * Registered components: Position, Health, Speed, Player, Projectile, Velocity, Enemy, Shoot, Collider, Score.
+ * Registered components: Position, Health, Speed, Player, Projectile, Velocity,
+ * Enemy, Shoot, Collider, Score.
  *
  * Configured systems and their required signatures:
  * - EnemySystem: Enemy, Position, Velocity, Shoot, Health, Collider
@@ -147,9 +151,9 @@ void game::Game::gameLoop() {
 /**
  * @brief Create and register a new player entity with its initial components.
  *
- * Creates an ECS entity for the player, attaches initial components (Position, Health,
- * Speed, Player, Velocity, Shoot, Collider, and Score), stores the resulting Player
- * in the game's player map, and returns it.
+ * Creates an ECS entity for the player, attaches initial components (Position,
+ * Health, Speed, Player, Velocity, Shoot, Collider, and Score), stores the
+ * resulting Player in the game's player map, and returns it.
  *
  * @param player_id Unique identifier for the player.
  * @param name Display name for the player.
@@ -215,8 +219,8 @@ void game::Game::spawnEnemy(float deltaTime) {
     if (enemy) {
       auto pos = enemy->getPosition();
       auto vel = enemy->getVelocity();
-      auto health = enemy->getHealth();
-      auto max_health = enemy->getMaxHealth();
+      auto health = enemy->getHealth().value_or(0);
+      auto max_health = enemy->getMaxHealth().value_or(0);
       queue::EnemySpawnEvent event;
       event.enemy_id = enemy->getEnemyId();
       event.type = EnemyType::BASIC_FIGHTER;
@@ -339,7 +343,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   event.type = type;
   event.x = x;
   event.y = y;
-  event.damage = projectile->getDamage();
+  event.damage = projectile->getDamage().value_or(0);
   event.is_enemy_projectile = (type == ProjectileType::ENEMY_BASIC);
   event.vx = vx;
   event.vy = vy;
