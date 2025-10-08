@@ -119,6 +119,8 @@ jobs:
         run: |
           conan profile detect --force
           conan profile show
+          conan config set tools.system.package_manager:mode=install
+          conan config set tools.system.package_manager:sudo=True
 
       - name: Build Release
         run: |
