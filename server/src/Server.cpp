@@ -233,7 +233,7 @@ void server::Server::handleReceive(const asio::error_code &error,
   }
 
   int client_idx = findOrCreateClient(_remote_endpoint);
-  if (client_idx == ERROR) {
+  if (client_idx == KO) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
     startReceive();
@@ -270,7 +270,7 @@ int server::Server::findOrCreateClient(
     }
   }
 
-  return ERROR;
+  return KO;
 }
 
 /*

@@ -40,14 +40,14 @@ int game::Player::getHealth() const {
   if (hasComponent<ecs::HealthComponent>()) {
     return getComponent<ecs::HealthComponent>().health;
   }
-  return SUCCESS;
+  return OK;
 }
 
 int game::Player::getMaxHealth() const {
   if (hasComponent<ecs::HealthComponent>()) {
     return getComponent<ecs::HealthComponent>().max_health;
   }
-  return SUCCESS;
+  return OK;
 }
 
 void game::Player::setHealth(int health) {
@@ -111,7 +111,7 @@ uint32_t game::Player::getSequenceNumber() const {
   if (hasComponent<ecs::PlayerComponent>()) {
     return getComponent<ecs::PlayerComponent>().sequence_number;
   }
-  return SUCCESS;
+  return OK;
 }
 
 void game::Player::setSequenceNumber(uint32_t seq) {
