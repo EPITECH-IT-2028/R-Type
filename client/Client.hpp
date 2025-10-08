@@ -13,10 +13,12 @@
     #define PLATFORM_DESKTOP
     #define NOGDI
     #define NOMINMAX
+    #define NOUSER
     #define WIN32_LEAN_AND_MEAN
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
     #define _CRT_SECURE_NO_WARNINGS
     #define _WIN32_WINNT 0x0601
+    #define ASIO_NO_WIN32_LEAN_AND_MEAN
 #endif
 #include <asio.hpp>
 

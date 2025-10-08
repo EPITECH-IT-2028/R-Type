@@ -30,3 +30,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/tags/
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ASIO_STANDALONE ASIO_NO_WIN32_LEAN_AND_MEAN)
