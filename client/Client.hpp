@@ -21,17 +21,7 @@ namespace client {
 namespace client {
   class Client {
     public:
-      Client(const std::string &host, const std::string &port)
-          : _socket(_io_context),
-            _host(host),
-            _port(port),
-            _sequence_number(0),
-            _packet_count(0),
-            _timeout(TIMEOUT_MS),
-            _packetFactory(),
-            _ecsManager(ecs::ECSManager::getInstance()) {
-              _running.store(false, std::memory_order_relaxed);
-            }
+      Client(const std::string &host, const std::string &port);
       ~Client() = default;
 
       bool isConnected() const {
