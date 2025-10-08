@@ -125,14 +125,8 @@ jobs:
           export CMAKE_MAKE_PROGRAM=ninja
           export CONAN_CMAKE_GENERATOR=Ninja
           chmod +x build.sh
-          ./build.sh
+          ./build.sh server
 
-      - name: Upload Client Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: r-type-client-linux
-          path: r_type_client
-          if-no-files-found: error
 
       - name: Upload Server Artifact
         uses: actions/upload-artifact@v4
@@ -227,8 +221,8 @@ jobs:
           cd ..
 
           cd linux
-          chmod +x r_type_client r_type_server
-          tar -czf ../r-type-linux.tar.gz *
+          chmod +x r_type_server
+          tar -czf ../r-type-linux.tar.gz r_type_server
           cd ..
 
           cd macos
@@ -266,10 +260,10 @@ jobs:
             - Download r-type-windows.zip
             - Extract and run r_type_server.exe first, then r_type_client.exe
 
-            ### Linux
+            ### Linux (Server Only)
             - Download r-type-linux.tar.gz
             - Extract: tar -xzf r-type-linux.tar.gz
-            - Run: ./r_type_server first, then ./r_type_client
+            - Run: ./r_type_server
 
             ### macOS
             - Download r-type-macos.tar.gz
