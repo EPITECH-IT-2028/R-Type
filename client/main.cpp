@@ -1,25 +1,30 @@
-#include "raylib.h"
+#include <iostream>
+#include <thread>
 #include "Client.hpp"
 #include "PacketBuilder.hpp"
-#include <thread>
 #include "RenderManager.hpp"
+#include "raylib.h"
 
 void gameLoop(client::Client &client) {
-  while (client.isConnected()) {
+  while (client.isConnected())
     client.receivePackets();
-  }
 }
 
-int main() {
+int main(void) {
   renderManager::Renderer renderer(renderManager::WINDOW_WIDTH,
-                                     renderManager::WINDOW_HEIGHT,
-                                     "R-Type Client");
-  client::Client client("localhost", "4242");
-  client.connect();
-  MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
-  client.send(welcomeMsg);
+                                   renderManager::WINDOW_HEIGHT,
+                                   "R-Type Client");
+  if (!renderer.InitSucceeded()) {
+    std::cerr << "[ERROR] Failed to initialize window. Exiting." << std::endl;
+    return client::KO;
+  }
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  client::Client client("localhost", "4242");
+  MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
+  client.initializeECS();
+  client.connect();
+  client.send(welcomeMsg);
 
   std::thread networkThread(gameLoop, std::ref(client));
 
@@ -41,5 +46,5 @@ int main() {
   if (networkThread.joinable())
     networkThread.join();
 
-  return 0;
+  return client::OK;
 }

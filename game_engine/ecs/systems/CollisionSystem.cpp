@@ -1,4 +1,5 @@
 #include "CollisionSystem.hpp"
+#include <iostream>
 #include "ColliderComponent.hpp"
 #include "ECSManager.hpp"
 #include "EnemyComponent.hpp"
@@ -9,11 +10,15 @@
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
+#include "ScoreComponent.hpp"
 
 /**
- * @brief Processes collisions among managed entities by checking all unique pairs for AABB overlap and invoking collision handling when overlaps are detected.
+ * @brief Processes collisions among managed entities by checking all unique
+ * pairs for AABB overlap and invoking collision handling when overlaps are
+ * detected.
  *
- * @param dt Elapsed time since the previous update in seconds (currently unused).
+ * @param dt Elapsed time since the previous update in seconds (currently
+ * unused).
  */
 void ecs::CollisionSystem::update(float dt) {
   std::vector<Entity> entities(_entities.begin(), _entities.end());
@@ -40,14 +45,14 @@ void ecs::CollisionSystem::update(float dt) {
  *   PlayerHitEvent or PlayerDestroyEvent as appropriate, enqueues a
  *   ProjectileDestroyEvent, and destroys the projectile (and the player if
  *   destroyed).
- * - Player vs Enemy: applies a fixed collision damage to both entities, enqueues
- *   PlayerHit/PlayerDestroy and EnemyHit/EnemyDestroy events as appropriate,
- *   and destroys entities whose health reaches zero.
+ * - Player vs Enemy: applies a fixed collision damage to both entities,
+ * enqueues PlayerHit/PlayerDestroy and EnemyHit/EnemyDestroy events as
+ * appropriate, and destroys entities whose health reaches zero.
  *
  * If an event queue is available, the corresponding events are enqueued before
  * entities are destroyed. The function ignores projectile collisions that do
- * not match the expected projectile type for the target (e.g., enemy projectiles
- * hitting enemies or player projectiles hitting players).
+ * not match the expected projectile type for the target (e.g., enemy
+ * projectiles hitting enemies or player projectiles hitting players).
  *
  * @param entity1 The first colliding entity.
  * @param entity2 The second colliding entity.
@@ -89,8 +94,12 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
             _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
         enemyDestroyEvent.y =
             _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
+        enemyDestroyEvent.player_id = projectile.owner_id;
+        enemyDestroyEvent.score =
+            _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
         _eventQueue->addRequest(enemyDestroyEvent);
         _ecsManager.destroyEntity(enemyEntity);
+        incrementPlayerScore(projectile.owner_id, enemyDestroyEvent.score);
       } else {
         queue::EnemyHitEvent hitEvent;
         hitEvent.enemy_id =
@@ -103,7 +112,9 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       }
 
       queue::ProjectileDestroyEvent projDestroyEvent;
-      projDestroyEvent.projectile_id = _ecsManager.getComponent<ProjectileComponent>(projectileEntity).projectile_id;
+      projDestroyEvent.projectile_id =
+          _ecsManager.getComponent<ProjectileComponent>(projectileEntity)
+              .projectile_id;
       projDestroyEvent.x =
           _ecsManager.getComponent<PositionComponent>(projectileEntity).x;
       projDestroyEvent.y =
@@ -215,8 +226,14 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
             _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
         enemyDestroyEvent.y =
             _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
+        enemyDestroyEvent.player_id = playerComponent.player_id;
+        enemyDestroyEvent.score =
+            _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
         _eventQueue->addRequest(enemyDestroyEvent);
         _ecsManager.destroyEntity(enemyEntity);
+        incrementPlayerScore(
+            _ecsManager.getComponent<PlayerComponent>(playerEntity).player_id,
+            enemyDestroyEvent.score);
       } else {
         queue::EnemyHitEvent enemyHitEvent;
         enemyHitEvent.enemy_id = enemyComponent.enemy_id;
@@ -233,15 +250,18 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
 }
 
 /**
- * @brief Determines whether the axis-aligned bounding boxes of two entities overlap.
+ * @brief Determines whether the axis-aligned bounding boxes of two entities
+ * overlap.
  *
- * Checks that both entities have a ColliderComponent and PositionComponent; if either entity
- * is missing these components the function returns `false`. Otherwise computes each entity's
- * AABB using position + collider center ± halfSize and reports whether the boxes intersect
- * on both the x and y axes.
+ * Checks that both entities have a ColliderComponent and PositionComponent; if
+ * either entity is missing these components the function returns `false`.
+ * Otherwise computes each entity's AABB using position + collider center ±
+ * halfSize and reports whether the boxes intersect on both the x and y axes.
  *
- * @param a First entity to test for overlap (must have PositionComponent and ColliderComponent).
- * @param b Second entity to test for overlap (must have PositionComponent and ColliderComponent).
+ * @param a First entity to test for overlap (must have PositionComponent and
+ * ColliderComponent).
+ * @param b Second entity to test for overlap (must have PositionComponent and
+ * ColliderComponent).
  * @return true if the entities' AABBs intersect on both axes, false otherwise.
  */
 bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
@@ -269,4 +289,33 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
   float byMax = positionB.y + colliderB.center.y + colliderB.halfSize.y;
 
   return (axMin <= bxMax && axMax >= bxMin && ayMin <= byMax && ayMax >= byMin);
+}
+
+/**
+ * @brief Increments the score of the player with the given owner ID.
+ *
+ * Searches for an entity that has both a PlayerComponent with matching
+ * `player_id` and a ScoreComponent, then adds `score` to that entity's
+ * ScoreComponent.
+ *
+ * @param owner_id The player ID whose score should be incremented.
+ * @param score Amount to add to the player's existing score.
+ *
+ * If no matching player entity is found, a warning is written to std::cerr.
+ */
+void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
+                                                std::uint32_t score) {
+  for (auto entity : _ecsManager.getAllEntities()) {
+    if (_ecsManager.hasComponent<PlayerComponent>(entity) &&
+        _ecsManager.hasComponent<ecs::ScoreComponent>(entity)) {
+      auto &playerComp = _ecsManager.getComponent<PlayerComponent>(entity);
+      if (playerComp.player_id == owner_id) {
+        auto &scoreComp = _ecsManager.getComponent<ScoreComponent>(entity);
+        scoreComp.score += score;
+        return;
+      }
+    }
+  }
+  std::cerr << "Warning: Could not find player with ID " << owner_id
+            << " to increment score." << std::endl;
 }

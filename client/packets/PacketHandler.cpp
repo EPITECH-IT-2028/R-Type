@@ -1,13 +1,20 @@
 #include "PacketHandler.hpp"
-#include <iostream>
+#include <cstring>
 #include "Packet.hpp"
+#include "raylib.h"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
-  if (size < sizeof(MessagePacket))
-    return packet::ERROR;
+  if (size < sizeof(MessagePacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(MessagePacket));
+    return packet::KO;
+  }
 
-  const MessagePacket *packet = reinterpret_cast<const MessagePacket *>(data);
-  std::cout << "[MESSAGE] Server : " << packet->message << std::endl;
+  MessagePacket packet;
+  std::memcpy(&packet, data, sizeof(MessagePacket));
+
+  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", 256, packet.message);
   return 0;
 }

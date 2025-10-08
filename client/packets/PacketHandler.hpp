@@ -2,7 +2,7 @@
 #include "IPacket.hpp"
 
 namespace packet {
-  constexpr int ERROR = -1;
+  constexpr int KO = -1;
 
   class MessageHandler : public IPacket {
     public:

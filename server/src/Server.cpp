@@ -12,6 +12,7 @@ server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
     : _endpoint(endpoint), _player_id(id) {
   _connected = true;
   _last_heartbeat = std::chrono::steady_clock::now();
+  _last_position_update = std::chrono::steady_clock::now();
 }
 
 server::Server::Server(asio::io_context &io_context, std::uint16_t port,
@@ -131,15 +132,14 @@ void server::Server::processGameEvents() {
 }
 
 /**
- * @brief Convert a game event into the corresponding network packet and
- * broadcast it to all connected clients.
+ * @brief Translate a game event into its network packet and broadcast it to all connected clients.
  *
- * Processes the provided game event variant, builds the appropriate network
- * packet for that event type (enemy spawn/destroy/hit/move, projectile
- * spawn/destroy, player hit/destroy), and broadcasts the packet to all
- * connected clients.
+ * Handles each concrete variant of `queue::GameEvent` (EnemySpawnEvent, EnemyDestroyEvent,
+ * EnemyHitEvent, EnemyMoveEvent, ProjectileSpawnEvent, ProjectileDestroyEvent, PlayerHitEvent,
+ * PlayerDestroyEvent) by building the corresponding network packet and broadcasting it to every
+ * connected client via the server's UDP socket.
  *
- * @param event Variant containing a specific game event to handle.
+ * @param event Variant containing the specific game event to handle.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event) {
   std::visit(
@@ -155,7 +155,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
                                                     enemySpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
           auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
-              specificEvent.enemy_id, specificEvent.x, specificEvent.y);
+              specificEvent.enemy_id, specificEvent.x, specificEvent.y,
+              specificEvent.player_id, specificEvent.score);
           broadcast::Broadcast::broadcastEnemyDeath(_socket, _clients,
                                                     enemyDeathPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyHitEvent>) {
@@ -232,7 +233,7 @@ void server::Server::handleReceive(const asio::error_code &error,
   }
 
   int client_idx = findOrCreateClient(_remote_endpoint);
-  if (client_idx == ERROR) {
+  if (client_idx == KO) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
     startReceive();
@@ -269,7 +270,7 @@ int server::Server::findOrCreateClient(
     }
   }
 
-  return ERROR;
+  return KO;
 }
 
 /*

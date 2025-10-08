@@ -1,13 +1,22 @@
 #pragma once
 
+#include <array>
 #include <asio.hpp>
+#include <atomic>
+#include <chrono>
 #include <iostream>
 #include <string>
+#include "ECSManager.hpp"
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
-#include "ECSManager.hpp"
 
 #define TIMEOUT_MS 100
+
+namespace client {
+  constexpr int OK = 0;
+  constexpr int KO = 1;
+  constexpr float PLAYER_SPEED = 500.0f;
+}  // namespace client
 
 namespace client {
   class Client {
@@ -22,14 +31,17 @@ namespace client {
             _packetFactory(),
             _ecsManager(ecs::ECSManager::getInstance()) {
               _running.store(false, std::memory_order_relaxed);
-              initECS();
             }
-
       ~Client() = default;
 
-      void connect();
+      bool isConnected() const {
+        return _running.load(std::memory_order_relaxed);
+      }
 
+      void connect();
       void disconnect();
+      void receivePackets();
+      void initializeECS();
 
       template <typename PacketType>
       void send(const PacketType &packet) {
@@ -48,12 +60,6 @@ namespace client {
         }
       }
 
-      void receivePackets();
-
-      bool isConnected() const {
-        return _running.load(std::memory_order_relaxed);
-      }
-
     private:
       asio::io_context _io_context;
       asio::ip::udp::socket _socket;
@@ -68,7 +74,12 @@ namespace client {
 
       packet::PacketHandlerFactory _packetFactory;
 
-      void initECS();
+      void registerComponent();
+      void registerSystem();
+      void signSystem();
+
+      void createBackgroundEntities();
+      void createPlayerEntity();
 
       ecs::ECSManager &_ecsManager;
   };

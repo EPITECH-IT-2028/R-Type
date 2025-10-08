@@ -1,22 +1,16 @@
-cmake_minimum_required(VERSION 3.27.4)
+cmake_minimum_required(VERSION 3.16)
 project(r_type)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+set(CMAKE_C_SCAN_FOR_MODULES OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_EXPORT_COMPILE_COMMANDS)
-  if(UNIX)
-    file(REMOVE "${PROJECT_SOURCE_DIR}/compile_commands.json")
-
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E create_symlink
-      "${PROJECT_SOURCE_DIR}/.build/compile_commands.json"
-      "${PROJECT_SOURCE_DIR}/compile_commands.json"
-    )
-  else()
+  if(WIN32)
     if(EXISTS "${PROJECT_SOURCE_DIR}/.build/compile_commands.json")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -26,7 +20,20 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
     else()
       message(WARNING "compile_commands.json not found in .build directory.")
     endif()
+  else()
+    file(REMOVE "${PROJECT_SOURCE_DIR}/compile_commands.json")
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E create_symlink
+      "${PROJECT_SOURCE_DIR}/.build/compile_commands.json"
+      "${PROJECT_SOURCE_DIR}/compile_commands.json"
+    )
   endif()
+endif()
+
+if(WIN32)
+    set(WINDOWS_LIBS ws2_32 wsock32 mswsock)
+    add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX)
+    link_libraries(${WINDOWS_LIBS})
 endif()
 
 option(BUILD_CLIENT "Build the client" OFF)
