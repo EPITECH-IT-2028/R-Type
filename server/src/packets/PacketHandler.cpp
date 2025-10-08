@@ -45,20 +45,18 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   // Broadcast existing players to the new client
   broadcast::Broadcast::broadcastExistingPlayers(
-      server.getSocket(), server.getGame(), client._player_id,
-      client._endpoint);
+      server.getNetworkManager(), server.getGame(), client._player_id);
 
   // Send the new player is own information
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, pos.first, pos.second, speed, health);
-  packet::PacketSender::sendPacket(server.getSocket(), client._endpoint,
-                                   ownPlayerPacket);
+  packet::PacketSender::sendPacket(server.getNetworkManager(), ownPlayerPacket);
 
   // Broadcast new player to all other clients
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, pos.first, pos.second, speed, health);
   broadcast::Broadcast::broadcastAncientPlayer(
-      server.getSocket(), server.getClients(), newPlayerPacket);
+      server.getNetworkManager(), server.getClients(), newPlayerPacket);
 
   return SUCCESS;
 }
@@ -106,7 +104,7 @@ int packet::PositionHandler::handlePacket(server::Server &server,
 
   auto movePacket = PacketBuilder::makeMove(
       client._player_id, player->getSequenceNumber(), pos.first, pos.second);
-  broadcast::Broadcast::broadcastPlayerMove(server.getSocket(),
+  broadcast::Broadcast::broadcastPlayerMove(server.getNetworkManager(),
                                             server.getClients(), movePacket);
   return SUCCESS;
 }
@@ -166,7 +164,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   auto playerShotPacket = PacketBuilder::makePlayerShoot(
       pos.first, pos.second, projectileType, packet->sequence_number);
   broadcast::Broadcast::broadcastPlayerShoot(
-      server.getSocket(), server.getClients(), playerShotPacket);
+      server.getNetworkManager(), server.getClients(), playerShotPacket);
 
   return SUCCESS;
 }
@@ -201,11 +199,10 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 
   auto disconnectMsg = PacketBuilder::makeMessage(
       "Player " + std::to_string(client._player_id) + " has disconnected.");
-  packet::PacketSender::sendPacket(server.getSocket(), client._endpoint,
-                                   disconnectMsg);
+  packet::PacketSender::sendPacket(server.getNetworkManager(), disconnectMsg);
   auto disconnectPacket =
       PacketBuilder::makePlayerDisconnect(client._player_id);
   broadcast::Broadcast::broadcastPlayerDisconnect(
-      server.getSocket(), server.getClients(), disconnectPacket);
+      server.getNetworkManager(), server.getClients(), disconnectPacket);
   return SUCCESS;
 }

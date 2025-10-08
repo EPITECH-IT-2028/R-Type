@@ -8,19 +8,14 @@
 #include "Macros.hpp"
 #include "PacketSender.hpp"
 
-server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
-    : _endpoint(endpoint), _player_id(id) {
+server::Client::Client(int id) : _player_id(id) {
   _connected = true;
   _last_heartbeat = std::chrono::steady_clock::now();
   _last_position_update = std::chrono::steady_clock::now();
 }
 
-server::Server::Server(asio::io_context &io_context, std::uint16_t port,
-                       std::uint16_t max_clients)
-    : _io_context(io_context),
-      _socket(io_context,
-              asio::ip::udp::endpoint(asio::ip::udp::v4(),
-                                      static_cast<unsigned short>(port))),
+server::Server::Server(std::uint16_t port, std::uint16_t max_clients)
+    : _networkManager(port),
       _max_clients(max_clients),
       _port(port),
       _player_count(0),
@@ -35,39 +30,24 @@ void server::Server::start() {
 
   startReceive();
 
-  _eventTimer = std::make_shared<asio::steady_timer>(_io_context);
-  scheduleEventProcessing();
+  _networkManager.scheduleEventProcessing(std::chrono::milliseconds(50),
+                                          [this]() { processGameEvents(); });
+  _networkManager.scheduleTimeout(std::chrono::seconds(1),
+                                  [this]() { handleTimeout(); });
+}
 
-  _timeoutTimer = std::make_shared<asio::steady_timer>(_io_context);
-  scheduleTimeoutCheck();
+void server::Server::processGameEvents() {
+  queue::GameEvent event;
+
+  while (_game.getEventQueue().popRequest(event)) {
+    handleGameEvent(event);
+  }
 }
 
 void server::Server::stop() {
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
-  if (_eventTimer) {
-    _eventTimer->cancel();
-  }
-
-  if (_timeoutTimer) {
-    _timeoutTimer->cancel();
-  }
-
+  _networkManager.closeSocket();
   _game.stop();
-  _socket.close();
-}
-
-void server::Server::scheduleTimeoutCheck() {
-  if (_timeoutScheduled)
-    return;
-  _timeoutScheduled = true;
-  _timeoutTimer->expires_after(std::chrono::seconds(1));
-  _timeoutTimer->async_wait([this](const asio::error_code &error) {
-    _timeoutScheduled = false;
-    if (!error) {
-      handleTimeout();
-      scheduleTimeoutCheck();
-    }
-  });
 }
 
 void server::Server::handleTimeout() {
@@ -85,7 +65,6 @@ void server::Server::handleTimeout() {
         now - client->_last_heartbeat);
     if (duration.count() > 10) {
       const int pid = client->_player_id;
-      const auto endpoint = client->_endpoint;
       std::cout << "[WORLD] Player " << pid << " timed out due to inactivity."
                 << std::endl;
       client->_connected = false;
@@ -99,45 +78,25 @@ void server::Server::handleTimeout() {
       auto disconnectMsg = PacketBuilder::makeMessage(
           "Player " + std::to_string(pid) +
           " has been disconnected due to inactivity.");
-      packet::PacketSender::sendPacket(_socket, endpoint, disconnectMsg);
+      packet::PacketSender::sendPacket(_networkManager, disconnectMsg);
 
       auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
       client.reset();
-      broadcast::Broadcast::broadcastPlayerDisconnect(_socket, _clients,
+      broadcast::Broadcast::broadcastPlayerDisconnect(_networkManager, _clients,
                                                       disconnectPacket);
     }
   }
 }
 
-/*
- * This function create an event loop that processes game events at regular
- * intervals.
- */
-void server::Server::scheduleEventProcessing() {
-  _eventTimer->expires_after(std::chrono::milliseconds(50));
-  _eventTimer->async_wait([this](const asio::error_code &error) {
-    if (!error) {
-      processGameEvents();
-      scheduleEventProcessing();
-    }
-  });
-}
-
-void server::Server::processGameEvents() {
-  queue::GameEvent event;
-
-  while (_game.getEventQueue().popRequest(event)) {
-    handleGameEvent(event);
-  }
-}
-
 /**
- * @brief Translate a game event into its network packet and broadcast it to all connected clients.
+ * @brief Translate a game event into its network packet and broadcast it to all
+ * connected clients.
  *
- * Handles each concrete variant of `queue::GameEvent` (EnemySpawnEvent, EnemyDestroyEvent,
- * EnemyHitEvent, EnemyMoveEvent, ProjectileSpawnEvent, ProjectileDestroyEvent, PlayerHitEvent,
- * PlayerDestroyEvent) by building the corresponding network packet and broadcasting it to every
- * connected client via the server's UDP socket.
+ * Handles each concrete variant of `queue::GameEvent` (EnemySpawnEvent,
+ * EnemyDestroyEvent, EnemyHitEvent, EnemyMoveEvent, ProjectileSpawnEvent,
+ * ProjectileDestroyEvent, PlayerHitEvent, PlayerDestroyEvent) by building the
+ * corresponding network packet and broadcasting it to every connected client
+ * via the server's UDP socket.
  *
  * @param event Variant containing the specific game event to handle.
  */
@@ -151,26 +110,26 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.enemy_id, static_cast<EnemyType>(0x01),
               specificEvent.x, specificEvent.y, specificEvent.vx,
               specificEvent.vy, specificEvent.health, specificEvent.max_health);
-          broadcast::Broadcast::broadcastEnemySpawn(_socket, _clients,
+          broadcast::Broadcast::broadcastEnemySpawn(_networkManager, _clients,
                                                     enemySpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
           auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
               specificEvent.player_id, specificEvent.score);
-          broadcast::Broadcast::broadcastEnemyDeath(_socket, _clients,
+          broadcast::Broadcast::broadcastEnemyDeath(_networkManager, _clients,
                                                     enemyDeathPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyHitEvent>) {
           auto enemyHitPacket = PacketBuilder::makeEnemyHit(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
               specificEvent.damage, specificEvent.sequence_number);
-          broadcast::Broadcast::broadcastEnemyHit(_socket, _clients,
+          broadcast::Broadcast::broadcastEnemyHit(_networkManager, _clients,
                                                   enemyHitPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyMoveEvent>) {
           auto enemyMovePacket = PacketBuilder::makeEnemyMove(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
               specificEvent.vx, specificEvent.vy,
               specificEvent.sequence_number);
-          broadcast::Broadcast::broadcastEnemyMove(_socket, _clients,
+          broadcast::Broadcast::broadcastEnemyMove(_networkManager, _clients,
                                                    enemyMovePacket);
         } else if constexpr (std::is_same_v<T, queue::ProjectileSpawnEvent>) {
           auto projectileSpawnPacket = PacketBuilder::makeProjectileSpawn(
@@ -178,23 +137,23 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.y, specificEvent.vx, specificEvent.vy,
               specificEvent.is_enemy_projectile, specificEvent.damage,
               specificEvent.owner_id);
-          broadcast::Broadcast::broadcastProjectileSpawn(_socket, _clients,
-                                                         projectileSpawnPacket);
+          broadcast::Broadcast::broadcastProjectileSpawn(
+              _networkManager, _clients, projectileSpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::PlayerHitEvent>) {
           auto playerHitPacket = PacketBuilder::makePlayerHit(
               specificEvent.player_id, specificEvent.damage, specificEvent.x,
               specificEvent.y, specificEvent.sequence_number);
-          broadcast::Broadcast::broadcastPlayerHit(_socket, _clients,
+          broadcast::Broadcast::broadcastPlayerHit(_networkManager, _clients,
                                                    playerHitPacket);
         } else if constexpr (std::is_same_v<T, queue::ProjectileDestroyEvent>) {
           auto projectileDestroyPacket = PacketBuilder::makeProjectileDestroy(
               specificEvent.projectile_id, specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastProjectileDestroy(
-              _socket, _clients, projectileDestroyPacket);
+              _networkManager, _clients, projectileDestroyPacket);
         } else if constexpr (std::is_same_v<T, queue::PlayerDestroyEvent>) {
           auto playerDestroyPacket = PacketBuilder::makePlayerDeath(
               specificEvent.player_id, specificEvent.x, specificEvent.y);
-          broadcast::Broadcast::broadcastPlayerDeath(_socket, _clients,
+          broadcast::Broadcast::broadcastPlayerDeath(_networkManager, _clients,
                                                      playerDestroyPacket);
         }
       },
@@ -205,23 +164,20 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
  * Begin asynchronous receive operation.
  */
 void server::Server::startReceive() {
-  _socket.async_receive_from(
-      asio::buffer(_recv_buffer), _remote_endpoint,
-      [this](const asio::error_code &error, std::size_t bytes_transferred) {
-        handleReceive(error, bytes_transferred);
-      });
+  _networkManager.startReceive(
+      [this](const char *data, std::size_t size) { handleReceive(size); });
 }
 
 /*
  * Handle completion of a receive operation.
  */
-void server::Server::handleReceive(const asio::error_code &error,
-                                   std::size_t bytes_transferred) {
-  if (error) {
-    if (error == asio::error::operation_aborted) {
+void server::Server::handleReceive(std::size_t bytes_transferred) {
+  if (_networkManager.getLastError()) {
+    if (_networkManager.getLastError() == asio::error::operation_aborted) {
       return;
     }
-    std::cerr << "[WARNING] Receive failed: " << error.message() << std::endl;
+    std::cerr << "[WARNING] Receive failed: "
+              << _networkManager.getLastError().message() << std::endl;
     startReceive();
     return;
   }
@@ -232,14 +188,15 @@ void server::Server::handleReceive(const asio::error_code &error,
     return;
   }
 
-  int client_idx = findOrCreateClient(_remote_endpoint);
+  int client_idx = findOrCreateClient();
   if (client_idx == ERROR) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
     startReceive();
     return;
   } else {
-    handleClientData(client_idx, _recv_buffer.data(), bytes_transferred);
+    handleClientData(client_idx, _networkManager.getRecvBuffer().data(),
+                     bytes_transferred);
   }
 }
 
@@ -248,10 +205,9 @@ void server::Server::handleReceive(const asio::error_code &error,
  * Returns the index of the client in the _clients vector, or -1 if no space
  * is available.
  */
-int server::Server::findOrCreateClient(
-    const asio::ip::udp::endpoint &endpoint) {
+int server::Server::findOrCreateClient() {
   for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_endpoint == endpoint) {
+    if (_clients[i] && _clients[i]->_connected) {
       _clients[i]->_connected = true;
       return static_cast<int>(i);
     }
@@ -259,13 +215,13 @@ int server::Server::findOrCreateClient(
 
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
-      _clients[i] = std::make_shared<Client>(endpoint, _next_player_id++);
+      _clients[i] = std::make_shared<Client>(_next_player_id++);
       _player_count++;
       _clients[i]->_connected = true;
       std::cout << "[WORLD] New player connected with ID "
                 << _clients[i]->_player_id << std::endl;
       auto msg = PacketBuilder::makeMessage("Welcome to the server!");
-      packet::PacketSender::sendPacket(_socket, _clients[i]->_endpoint, msg);
+      packet::PacketSender::sendPacket(_networkManager, msg);
       return static_cast<int>(i);
     }
   }

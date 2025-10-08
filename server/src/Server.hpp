@@ -1,24 +1,20 @@
 #pragma once
 
-#include <array>
 #include <asio.hpp>
 #include <chrono>
 #include <cstdint>
 #include <memory>
 #include <vector>
 #include "Game.hpp"
+#include "NetworkManager.hpp"
 #include "PacketFactory.hpp"
-
-inline constexpr std::size_t BUFFER_SIZE = 2048;
 
 namespace server {
 
   struct Client {
     public:
-      Client(const asio::ip::udp::endpoint &endpoint, int id);
+      Client(int id);
       ~Client() = default;
-
-      const asio::ip::udp::endpoint _endpoint;
 
       bool _connected = false;
       int _player_id = -1;
@@ -29,12 +25,15 @@ namespace server {
 
   class Server {
     public:
-      Server(asio::io_context &io_context, std::uint16_t port,
-             std::uint16_t max_clients);
+      Server(std::uint16_t port, std::uint16_t max_clients);
       ~Server() = default;
 
       void start();
       void stop();
+
+      NetworkManager &getNetworkManager() {
+        return _networkManager;
+      }
 
       std::uint16_t getPort() const {
         return _port;
@@ -60,10 +59,6 @@ namespace server {
         return _clients;
       }
 
-      asio::ip::udp::socket &getSocket() {
-        return _socket;
-      }
-
       game::Game &getGame() {
         return _game;
       }
@@ -72,8 +67,7 @@ namespace server {
 
     private:
       void startReceive();
-      void handleReceive(const asio::error_code &error,
-                         std::size_t bytes_transferred);
+      void handleReceive(std::size_t bytes_transferred);
 
       void handleTimeout();
       void scheduleTimeoutCheck();
@@ -82,19 +76,16 @@ namespace server {
       void processGameEvents();
       void handleGameEvent(const queue::GameEvent &event);
 
-      int findOrCreateClient(const asio::ip::udp::endpoint &endpoint);
+      int findOrCreateClient();
       void handleClientData(std::size_t client_idx, const char *data,
                             std::size_t size);
 
       std::shared_ptr<Client> getClient(std::size_t idx) const;
 
     private:
-      asio::io_context &_io_context;
-      asio::ip::udp::socket _socket;
-      asio::ip::udp::endpoint _remote_endpoint;
+      NetworkManager _networkManager;
 
       std::vector<std::shared_ptr<Client>> _clients;
-      std::array<char, BUFFER_SIZE> _recv_buffer;
       packet::PacketHandlerFactory _factory;
 
       uint16_t screen_width = 800;
@@ -106,9 +97,6 @@ namespace server {
       std::uint16_t _port;
       int _player_count;
       int _next_player_id;
-      std::shared_ptr<asio::steady_timer> _eventTimer;
-      std::shared_ptr<asio::steady_timer> _timeoutTimer;
-      bool _timeoutScheduled = false;
       std::uint32_t _projectile_count;
   };
 }  // namespace server
