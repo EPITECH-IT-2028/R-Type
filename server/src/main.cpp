@@ -12,7 +12,7 @@ int main(int ac, char **av) {
   try {
     if (ac == 2 && std::strcmp(av[1], "--help") == 0) {
       Help::help();
-      return SUCCESS;
+      return OK;
     } else if (ac >= 2) {
       throw ParamsError(
           "Too much arguments, check --help for more informations.");
@@ -29,10 +29,10 @@ int main(int ac, char **av) {
 
   } catch (const ParamsError &e) {
     std::cerr << "Error: " << e.what() << std::endl;
-    return ERROR;
+    return KO;
   } catch (const std::exception &e) {
     std::cerr << "Error: " << e.what() << std::endl;
-    return ERROR;
+    return KO;
   }
-  return SUCCESS;
+  return OK;
 }

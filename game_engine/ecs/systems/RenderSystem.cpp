@@ -2,6 +2,8 @@
 #include "BackgroundTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
+#include "ScaleComponent.hpp"
+#include "SpriteComponent.hpp"
 #include "raylib.h"
 
 ecs::RenderSystem::~RenderSystem() noexcept {
@@ -12,7 +14,8 @@ ecs::RenderSystem::~RenderSystem() noexcept {
 
 void ecs::RenderSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
-    auto &positionComp = _ecsManager.getComponent<ecs::PositionComponent>(entity);
+    auto &positionComp =
+        _ecsManager.getComponent<ecs::PositionComponent>(entity);
     auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
     const std::string &path = renderComp._texturePath;
 
@@ -32,6 +35,10 @@ void ecs::RenderSystem::update(float deltaTime) {
 
     Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(texture.width),
                            static_cast<float>(texture.height)};
+    if (_ecsManager.hasComponent<ecs::SpriteComponent>(entity)) {
+      auto &spriteComp = _ecsManager.getComponent<ecs::SpriteComponent>(entity);
+      sourceRec = spriteComp.sourceRect;
+    }
     Rectangle destRec;
 
     if (_ecsManager.hasComponent<BackgroundTagComponent>(entity)) {
@@ -52,10 +59,15 @@ void ecs::RenderSystem::update(float deltaTime) {
       destRec.y = positionComp.y + renderComp._offsetY;
       destRec.width = (renderComp._width > 0)
                           ? renderComp._width
-                          : static_cast<float>(texture.width);
+                          : static_cast<float>(sourceRec.width);
       destRec.height = (renderComp._height > 0)
                            ? renderComp._height
-                           : static_cast<float>(texture.height);
+                           : static_cast<float>(sourceRec.height);
+    }
+    if (_ecsManager.hasComponent<ecs::ScaleComponent>(entity)) {
+      auto &scaleComp = _ecsManager.getComponent<ecs::ScaleComponent>(entity);
+      destRec.width *= scaleComp.scaleX;
+      destRec.height *= scaleComp.scaleY;
     }
     Vector2 origin = {0.0f, 0.0f};
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);

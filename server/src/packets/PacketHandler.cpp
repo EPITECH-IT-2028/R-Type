@@ -12,13 +12,13 @@ int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
   if (size < sizeof(MessagePacket)) {
-    return ERROR;
+    return KO;
   }
 
   const MessagePacket *packet = reinterpret_cast<const MessagePacket *>(data);
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet->message << std::endl;
-  return SUCCESS;
+  return OK;
 }
 
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
@@ -26,7 +26,7 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             const char *data,
                                             std::size_t size) {
   if (size < sizeof(PlayerInfoPacket)) {
-    return ERROR;
+    return KO;
   }
 
   const PlayerInfoPacket *packet =
@@ -58,20 +58,20 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   broadcast::Broadcast::broadcastAncientPlayer(
       server.getNetworkManager(), server.getClients(), newPlayerPacket);
 
-  return SUCCESS;
+  return OK;
 }
 
 int packet::PositionHandler::handlePacket(server::Server &server,
                                           server::Client &client,
                                           const char *data, std::size_t size) {
   if (size < sizeof(PositionPacket)) {
-    return ERROR;
+    return KO;
   }
   const PositionPacket *packet = reinterpret_cast<const PositionPacket *>(data);
 
   auto player = server.getGame().getPlayer(client._player_id);
   if (!player) {
-    return ERROR;
+    return KO;
   }
 
   float oldX = player->getPosition().first;
@@ -94,7 +94,7 @@ int packet::PositionHandler::handlePacket(server::Server &server,
       std::cout << "[ANTICHEAT] Player " << client._player_id
                 << " is moving too fast!" << std::endl;
       player->setSequenceNumber(packet->sequence_number);
-      return ERROR;
+      return KO;
     }
   }
   player->setPosition(packet->x, packet->y);
@@ -106,21 +106,21 @@ int packet::PositionHandler::handlePacket(server::Server &server,
       client._player_id, player->getSequenceNumber(), pos.first, pos.second);
   broadcast::Broadcast::broadcastPlayerMove(server.getNetworkManager(),
                                             server.getClients(), movePacket);
-  return SUCCESS;
+  return OK;
 }
 
 int packet::HeartbeatPlayerHandler::handlePacket(
     [[maybe_unused]] server::Server &server, server::Client &client,
     const char *data, std::size_t size) {
   if (size < sizeof(HeartbeatPlayerPacket)) {
-    return ERROR;
+    return KO;
   }
   const auto *hb = reinterpret_cast<const HeartbeatPlayerPacket *>(data);
   if (hb->player_id != static_cast<uint32_t>(client._player_id)) {
-    return ERROR;
+    return KO;
   }
   client._last_heartbeat = std::chrono::steady_clock::now();
-  return SUCCESS;
+  return OK;
 }
 
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
@@ -128,7 +128,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              const char *data,
                                              std::size_t size) {
   if (size < sizeof(PlayerShootPacket)) {
-    return ERROR;
+    return KO;
   }
 
   const PlayerShootPacket *packet =
@@ -136,7 +136,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 
   auto player = server.getGame().getPlayer(client._player_id);
   if (!player) {
-    return ERROR;
+    return KO;
   }
 
   std::pair<float, float> pos = player->getPosition();
@@ -158,7 +158,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
       vx, vy);
 
   if (!projectile) {
-    return ERROR;
+    return KO;
   }
 
   auto playerShotPacket = PacketBuilder::makePlayerShoot(
@@ -166,7 +166,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   broadcast::Broadcast::broadcastPlayerShoot(
       server.getNetworkManager(), server.getClients(), playerShotPacket);
 
-  return SUCCESS;
+  return OK;
 }
 
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
@@ -174,11 +174,11 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     const char *data,
                                                     std::size_t size) {
   if (size < sizeof(PlayerDisconnectPacket)) {
-    return ERROR;
+    return KO;
   }
   const auto *disc = reinterpret_cast<const PlayerDisconnectPacket *>(data);
   if (disc->player_id != static_cast<uint32_t>(client._player_id)) {
-    return ERROR;
+    return KO;
   }
   std::cout << "[WORLD] Player " << client._player_id << " disconnected."
             << std::endl;
@@ -204,5 +204,5 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
       PacketBuilder::makePlayerDisconnect(client._player_id);
   broadcast::Broadcast::broadcastPlayerDisconnect(
       server.getNetworkManager(), server.getClients(), disconnectPacket);
-  return SUCCESS;
+  return OK;
 }

@@ -191,8 +191,8 @@ void server::Server::handleReceive(const char *data,
     return;
   }
 
-  int client_idx = findOrCreateClient();
-  if (client_idx == ERROR) {
+  int client_idx = findOrCreateClient(_remote_endpoint);
+  if (client_idx == KO) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
     return;
@@ -247,7 +247,7 @@ int server::Server::findOrCreateClient() {
     }
   }
 
-  return ERROR;
+  return KO;
 }
 
 /*

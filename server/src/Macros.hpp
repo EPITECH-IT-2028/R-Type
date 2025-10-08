@@ -7,8 +7,8 @@
 
 constexpr std::size_t BUFFER_SIZE = 2048;
 /* Macros for function's returns */
-constexpr int SUCCESS = 0;
-constexpr int ERROR = -1;
+constexpr int OK = 0;
+constexpr int KO = -1;
 
 /* Macros for ports */
 constexpr int MAX_PORT = 65535;

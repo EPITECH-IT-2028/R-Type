@@ -9,6 +9,7 @@ set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/InputSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/MovementSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BackgroundSystem.cpp
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BoundarySystem.cpp
 )
 
 add_executable(${PROJECT_NAME}
@@ -23,4 +24,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/tags/
 )

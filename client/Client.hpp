@@ -3,13 +3,26 @@
 #include "ECSManager.hpp"
 
 namespace client {
+  constexpr int OK = 0;
+  constexpr int KO = 1;
+  constexpr float PLAYER_SPEED = 500.0f;
+}  // namespace client
+
+namespace client {
   class Client {
     public:
-      Client();
+      Client() : _ecsManager(ecs::ECSManager::getInstance()) {}
       ~Client() = default;
 
+      void initializeECS();
+
     private:
-      void initECS();
+      void registerComponent();
+      void registerSystem();
+      void signSystem();
+
+      void createBackgroundEntities();
+      void createPlayerEntity();
 
       ecs::ECSManager &_ecsManager;
   };
