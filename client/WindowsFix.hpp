@@ -1,9 +1,16 @@
 #pragma once
 
-#define PLATFORM_DESKTOP
-
-#include "raylib.h"
-
-#if defined(_WIN32)
-  #undef LoadImage
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#define NOGDI
+#include <windows.h>
+#undef Rectangle
+#undef CloseWindow
+#undef ShowCursor
+#undef LoadImage
 #endif

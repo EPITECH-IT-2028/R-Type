@@ -19,6 +19,12 @@ add_executable(${PROJECT_NAME}
 )
 
 if(WIN32)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE 
+    _WIN32_WINNT=0x0601
+    NOMINMAX
+    WIN32_LEAN_AND_MEAN
+    NOGDI
+  )
   target_compile_options(${PROJECT_NAME} PRIVATE -include ${CMAKE_CURRENT_SOURCE_DIR}/WindowsFix.hpp)
 endif()
 
