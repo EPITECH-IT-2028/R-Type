@@ -1,6 +1,13 @@
 #pragma once
 
 #include <cstdarg>
+#define NOGDI
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#undef Rectangle
+#undef CloseWindow
+#undef ShowCursor
+#undef LoadImage
 #include "raylib.h"
 
 namespace renderManager {
