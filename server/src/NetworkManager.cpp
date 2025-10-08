@@ -1,5 +1,5 @@
 #include "NetworkManager.hpp"
-#include <asio/error_code.hpp>
+#include <asio.hpp>
 #include <iostream>
 
 server::NetworkManager::NetworkManager(std::uint16_t port)
@@ -21,12 +21,21 @@ void server::NetworkManager::send(const char *data, std::size_t size) {
 }
 
 void server::NetworkManager::checkSignals() {
-  _signals.async_wait([](const asio::error_code &error, [[maybe_unused]] int) {
-    if (!error) {
-      std::cout << "\nStopping server..." << std::endl;
-    }
-  });
-  _isRunning = false;
+  _signals.async_wait(
+      [this](const asio::error_code &error, [[maybe_unused]] int) {
+        if (!error) {
+          std::cout << "\nStopping server..." << std::endl;
+          this->_isRunning = false;
+          if (_stopCallback) {
+            _stopCallback();
+          }
+          this->stop();
+        }
+      });
+}
+
+void server::NetworkManager::run() {
+  checkSignals();
   _io_context.run();
 }
 
@@ -44,9 +53,10 @@ void server::NetworkManager::startReceive(
                       << std::endl;
           }
         }
-        startReceive(callback);
+        if (_isRunning) {
+          startReceive(callback);
+        }
       });
-  checkSignals();
 }
 
 void server::NetworkManager::scheduleEventProcessing(
@@ -78,12 +88,18 @@ void server::NetworkManager::scheduleTimeout(
 }
 
 void server::NetworkManager::stop() {
+  _isRunning = false;
+
   if (_eventTimer) {
     _eventTimer->cancel();
   }
 
   if (_timeoutTimer) {
     _timeoutTimer->cancel();
+  }
+
+  if (_stopCallback) {
+    _stopCallback();
   }
 
   _io_context.stop();

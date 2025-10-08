@@ -28,12 +28,21 @@ void server::Server::start() {
   std::cout << "[CONSOLE] Server started on port " << _port << std::endl;
   _game.start();
 
+  _networkManager.setStopCallback([this]() {
+    static bool stopping = false;
+    if (stopping) return;
+    stopping = true;
+    std::cout << "[CONSOLE] Network manager stopped, shutting down server..." << std::endl;
+    _game.stop();
+  });
+
   startReceive();
 
   _networkManager.scheduleEventProcessing(std::chrono::milliseconds(50),
                                           [this]() { processGameEvents(); });
   _networkManager.scheduleTimeout(std::chrono::seconds(1),
                                   [this]() { handleTimeout(); });
+  _networkManager.run();
 }
 
 void server::Server::processGameEvents() {

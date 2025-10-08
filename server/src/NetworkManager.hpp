@@ -18,6 +18,16 @@ namespace server {
       void scheduleTimeout(std::chrono::seconds interval,
                            const std::function<void()> &callback);
       void stop();
+      
+      void setStopCallback(const std::function<void()> &callback) {
+        _stopCallback = callback;
+      }
+
+      bool getIsRunning() {
+        return _isRunning;
+      }
+
+      void run();
 
       asio::error_code getLastError() const {
         return _socket.local_endpoint().address().is_unspecified()
@@ -58,6 +68,7 @@ namespace server {
       }
 
       void checkSignals();
+
     private:
       bool _isRunning = true;
       asio::io_context _io_context;
@@ -68,6 +79,7 @@ namespace server {
       std::shared_ptr<asio::steady_timer> _timeoutTimer;
       bool _timeoutScheduled = false;
       std::array<char, BUFFER_SIZE> _recv_buffer;
+      std::function<void()> _stopCallback;
   };
 
 }  // namespace server
