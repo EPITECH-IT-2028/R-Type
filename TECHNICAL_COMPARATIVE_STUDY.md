@@ -179,24 +179,6 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 }
 ```
 
-### Identified Vulnerabilities
-
-**1. Packet Spoofing**
-
-- **Risk**: UDP packets can be forged
-- **Mitigation**: Enhanced client authentication needed
-
-**2. DoS Attacks**
-
-- **Risk**: Server overwhelm with packets
-- **Current**: Basic client limits
-- **Recommended**: Rate limiting implementation
-
-**3. Data Integrity**
-
-- **Current**: Basic size checks
-- **Recommended**: CRC32 checksums for packet validation
-
 ---
 
 ## 🚀 Build System
@@ -225,12 +207,6 @@ asio/1.36.0
 ## 📊 Performance Considerations
 
 ### Benchmarks
-
-**ECS Performance**:
-
-- Entity creation: ~1M entities/second
-- System updates: <0.1ms for 1000 entities
-- Memory usage: ~50 bytes per entity
 
 **Network Performance**:
 
