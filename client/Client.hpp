@@ -1,26 +1,36 @@
 #pragma once
 
+#if defined(_WIN32)
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+    #ifndef _WIN32_WINNT
+        #define _WIN32_WINNT 0x0601
+    #endif
+    #ifndef ASIO_NO_WIN32_LEAN_AND_MEAN
+        #define ASIO_NO_WIN32_LEAN_AND_MEAN
+    #endif
+    #define PLATFORM_DESKTOP
+    #define NOGDI  // This is crucial - it prevents GDI functions like Rectangle from being defined
+    #define NOUSER
+    #define _WINSOCK_DEPRECATED_NO_WARNINGS
+    #define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <array>
 #include <atomic>
 #include <chrono>
 #include <iostream>
 #include <string>
+
+#include <asio.hpp>
+
 #include "ECSManager.hpp"
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
-
-#if defined(_WIN32)
-    #define PLATFORM_DESKTOP
-    #define NOGDI
-    #define NOMINMAX
-    #define NOUSER
-    #define WIN32_LEAN_AND_MEAN
-    #define _WINSOCK_DEPRECATED_NO_WARNINGS
-    #define _CRT_SECURE_NO_WARNINGS
-    #define _WIN32_WINNT 0x0601
-    #define ASIO_NO_WIN32_LEAN_AND_MEAN
-#endif
-#include <asio.hpp>
 
 #define TIMEOUT_MS 100
 
