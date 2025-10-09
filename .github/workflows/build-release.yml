@@ -1,0 +1,298 @@
+name: Release R-Type
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  actions: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.txt', '**/conanfile_server.txt') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-pip
+            base-devel
+            git
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Conan
+        shell: msys2 {0}
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install conan
+
+      - name: Configure Conan profile
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
+          conan profile detect --force
+          conan profile show
+
+      - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          export CC=gcc
+          export CXX=g++
+          export CMAKE_MAKE_PROGRAM=ninja
+          export CONAN_CMAKE_GENERATOR=Ninja
+          export LDFLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic"
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload Client Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-client-windows
+          path: r_type_client.exe
+          if-no-files-found: error
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-server-windows
+          path: r_type_server.exe
+          if-no-files-found: error
+
+  build-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.txt', '**/conanfile_server.txt') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            python3-pip \
+            python3
+
+      - name: Install Conan
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install conan
+
+      - name: Configure Conan profile
+        run: |
+          conan profile detect --force
+          conan profile show
+
+      - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
+        run: |
+          export CMAKE_MAKE_PROGRAM=ninja
+          export CONAN_CMAKE_GENERATOR=Ninja
+          chmod +x build.sh
+          ./build.sh server
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-server-linux
+          path: r_type_server
+          if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Conan packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.conan2/p
+          key: conan-${{ runner.os }}-${{ hashFiles('**/conanfile.txt', '**/conanfile_server.txt') }}
+          restore-keys: |
+            conan-${{ runner.os }}-
+
+      - name: Install system dependencies
+        run: |
+          brew update
+          brew install cmake ninja pkg-config python@3.11
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Conan
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install conan
+
+      - name: Configure Conan profile
+        run: |
+          conan profile detect --force
+          conan profile show
+
+      - name: Build Release
+        env:
+          CMAKE_GENERATOR: "Ninja"
+        run: |
+          export CMAKE_MAKE_PROGRAM=ninja
+          export CONAN_CMAKE_GENERATOR=Ninja
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload Client Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-client-macos
+          path: r_type_client
+          if-no-files-found: error
+
+      - name: Upload Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r-type-server-macos
+          path: r_type_server
+          if-no-files-found: error
+
+  create-release:
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: r-type-*-windows
+          path: ./artifacts/windows/
+          merge-multiple: true
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: r-type-*-linux
+          path: ./artifacts/linux/
+          merge-multiple: true
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: r-type-*-macos
+          path: ./artifacts/macos/
+          merge-multiple: true
+
+      - name: Create platform archives
+        run: |
+          cd artifacts
+
+          cd windows
+          zip ../r-type-windows.zip *
+          cd ..
+
+          cd linux
+          chmod +x r_type_server
+          tar -czf ../r-type-linux.tar.gz r_type_server
+          cd ..
+
+          cd macos
+          chmod +x r_type_client r_type_server
+          tar -czf ../r-type-macos.tar.gz *
+          cd ..
+
+      - name: List all files
+        run: |
+          ls -lR ./artifacts/
+
+      - name: Generate release tag
+        id: tag
+        run: echo "tag=v$(date +'%Y.%m.%d')-$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Get build date
+        id: build_date
+        run: echo "date=$(date -u +"%Y-%m-%d")" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: R-Type Release ${{ steps.tag.outputs.tag }}
+          body: |
+            **Release of R-Type - Multi-Platform**
+
+            **Built from commit:** ${{ github.sha }}
+            **Build date:** ${{ steps.build_date.outputs.date }}
+
+            ## Downloads
+            Choose your platform:
+
+            ### Windows
+            - Download r-type-windows.zip
+            - Extract and run r_type_server.exe first, then r_type_client.exe
+
+            ### Linux (Server Only)
+            - Download r-type-linux.tar.gz
+            - Extract: tar -xzf r-type-linux.tar.gz
+            - Run: ./r_type_server
+
+            ### macOS
+            - Download r-type-macos.tar.gz
+            - Extract: tar -xzf r-type-macos.tar.gz
+            - Run: ./r_type_server first, then ./r_type_client
+          files: |
+            ./artifacts/r-type-windows.zip
+            ./artifacts/r-type-linux.tar.gz
+            ./artifacts/r-type-macos.tar.gz
+          draft: false
+          prerelease: false
+          generate_release_notes: true

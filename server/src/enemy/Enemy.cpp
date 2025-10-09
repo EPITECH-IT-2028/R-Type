@@ -1,8 +1,8 @@
 #include "Enemy.hpp"
 #include <algorithm>
+#include <optional>
 #include "EnemyComponent.hpp"
 #include "HealthComponent.hpp"
-#include "Macros.hpp"
 #include "PositionComponent.hpp"
 #include "VelocityComponent.hpp"
 
@@ -30,26 +30,27 @@ void game::Enemy::move(float deltaX, float deltaY) {
   }
 }
 
-int game::Enemy::getHealth() const {
+std::optional<int> game::Enemy::getHealth() const {
   if (hasComponent<ecs::HealthComponent>()) {
     const auto &health = getComponent<ecs::HealthComponent>();
     return health.health;
   }
-  return SUCCESS;
+  return std::nullopt;
 }
 
-int game::Enemy::getMaxHealth() const {
+std::optional<int> game::Enemy::getMaxHealth() const {
   if (hasComponent<ecs::HealthComponent>()) {
     const auto &health = getComponent<ecs::HealthComponent>();
     return health.max_health;
   }
-  return SUCCESS;
+  return std::nullopt;
 }
 
 void game::Enemy::setHealth(int health) {
   if (hasComponent<ecs::HealthComponent>()) {
     auto &healthComp = getComponent<ecs::HealthComponent>();
-    const int clampedHealth = std::clamp(health, 0, getMaxHealth());
+    const int clampedHealth =
+        std::clamp(health, 0, getMaxHealth().value_or(health));
     healthComp.health = clampedHealth;
 
     if (hasComponent<ecs::EnemyComponent>()) {
@@ -60,11 +61,11 @@ void game::Enemy::setHealth(int health) {
 }
 
 void game::Enemy::takeDamage(int damage) {
-  setHealth(getHealth() - damage);
+  setHealth(getHealth().value_or(0) - damage);
 }
 
 void game::Enemy::heal(int amount) {
-  setHealth(getHealth() + amount);
+  setHealth(getHealth().value_or(0) + amount);
 }
 
 bool game::Enemy::isAlive() const {

@@ -1,7 +1,7 @@
 #include "Player.hpp"
 #include <algorithm>
+#include <optional>
 #include "HealthComponent.hpp"
-#include "Macros.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
@@ -36,24 +36,25 @@ void game::Player::move(float deltaX, float deltaY) {
   }
 }
 
-int game::Player::getHealth() const {
+std::optional<int> game::Player::getHealth() const {
   if (hasComponent<ecs::HealthComponent>()) {
     return getComponent<ecs::HealthComponent>().health;
   }
-  return SUCCESS;
+  return std::nullopt;
 }
 
-int game::Player::getMaxHealth() const {
+std::optional<int> game::Player::getMaxHealth() const {
   if (hasComponent<ecs::HealthComponent>()) {
     return getComponent<ecs::HealthComponent>().max_health;
   }
-  return SUCCESS;
+  return std::nullopt;
 }
 
 void game::Player::setHealth(int health) {
   if (hasComponent<ecs::HealthComponent>()) {
     auto &healthComp = getComponent<ecs::HealthComponent>();
-    const int clampedHealth = std::clamp(health, 0, getMaxHealth());
+    const int clampedHealth =
+        std::clamp(health, 0, getMaxHealth().value_or(health));
     healthComp.health = clampedHealth;
 
     if (hasComponent<ecs::PlayerComponent>()) {
@@ -64,11 +65,11 @@ void game::Player::setHealth(int health) {
 }
 
 void game::Player::takeDamage(int damage) {
-  setHealth(getHealth() - damage);
+  setHealth(getHealth().value_or(0) - damage);
 }
 
 void game::Player::heal(int amount) {
-  setHealth(getHealth() + amount);
+  setHealth(getHealth().value_or(0) + amount);
 }
 
 bool game::Player::isAlive() const {
@@ -107,11 +108,11 @@ void game::Player::setVelocity(float vx, float vy) {
   }
 }
 
-uint32_t game::Player::getSequenceNumber() const {
+std::optional<uint32_t> game::Player::getSequenceNumber() const {
   if (hasComponent<ecs::PlayerComponent>()) {
     return getComponent<ecs::PlayerComponent>().sequence_number;
   }
-  return SUCCESS;
+  return std::nullopt;
 }
 
 void game::Player::setSequenceNumber(uint32_t seq) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 #include "ECSManager.hpp"
 #include "Packet.hpp"
@@ -37,13 +38,13 @@ namespace game {
       std::pair<float, float> getVelocity() const;
       void setVelocity(float vx, float vy);
 
-      std::uint32_t getSequenceNumber() const;
+      std::optional<uint32_t> getSequenceNumber() const;
       void setSequenceNumber(std::uint32_t seq);
 
       ProjectileType getType() const;
       void setType(ProjectileType type);
 
-      std::uint32_t getDamage() const;
+      std::optional<uint32_t> getDamage() const;
       void setDamage(std::uint32_t damage);
 
       void update(float deltaTime);

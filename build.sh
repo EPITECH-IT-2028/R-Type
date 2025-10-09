@@ -118,19 +118,22 @@ fi
 
 echo "Building R-Type with target: $TARGET, build type: $BUILD_TYPE"
 
-# Clean and recreate build directory to avoid any cache issues
-if [ -d ".build" ]; then
-    echo "Cleaning existing build directory..."
-    rm -rf .build
-fi
-
-# Install conan dependencies
 echo "Installing conan dependencies..."
 if ! conan profile show default > /dev/null 2>&1; then
     echo "[INFO] Conan default profile not found. Detecting..."
     conan profile detect --force > /dev/null 2>&1
 fi
-conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+
+CONAN_EXTRA_ARGS=""
+if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
+    CONAN_EXTRA_ARGS="-c tools.system.package_manager:mode=install"
+fi
+
+if [ "$TARGET" == "server" ]; then
+    conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+else
+    conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+fi
 
 case $TARGET in
     "client")
