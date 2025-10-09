@@ -41,7 +41,7 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   client._entity_id = player->getEntityId();
   std::pair<float, float> pos = player->getPosition();
   float speed = player->getSpeed();
-  int health = player->getHealth();
+  int health = player->getHealth().value_or(0);
 
   // Broadcast existing players to the new client
   broadcast::Broadcast::broadcastExistingPlayers(
@@ -103,7 +103,8 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   std::pair<float, float> pos = player->getPosition();
 
   auto movePacket = PacketBuilder::makeMove(
-      client._player_id, player->getSequenceNumber(), pos.first, pos.second);
+      client._player_id, player->getSequenceNumber().value_or(0), pos.first,
+      pos.second);
   broadcast::Broadcast::broadcastPlayerMove(server.getNetworkManager(),
                                             server.getClients(), movePacket);
   return OK;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include "ECSManager.hpp"
@@ -23,8 +25,8 @@ namespace game {
       void setPosition(float x, float y);
       void move(float deltaX, float deltaY);
 
-      int getHealth() const;
-      int getMaxHealth() const;
+      std::optional<int> getHealth() const;
+      std::optional<int> getMaxHealth() const;
       void setHealth(int health);
       void takeDamage(int damage);
       void heal(int amount);
@@ -36,7 +38,7 @@ namespace game {
       std::pair<float, float> getVelocity() const;
       void setVelocity(float vx, float vy);
 
-      uint32_t getSequenceNumber() const;
+      std::optional<uint32_t> getSequenceNumber() const;
       void setSequenceNumber(uint32_t seq);
       bool isConnected() const;
       void setConnected(bool connected);

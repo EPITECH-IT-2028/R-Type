@@ -47,7 +47,7 @@ namespace broadcast {
               player->getPlayerId() != newPlayerID) {
             std::pair<float, float> pos = player->getPosition();
             float speed = player->getSpeed();
-            int health = player->getHealth();
+            int health = player->getHealth().value_or(0);
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), pos.first, pos.second, speed, health);
