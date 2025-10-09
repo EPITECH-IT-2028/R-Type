@@ -23,7 +23,8 @@ namespace ecs {
         if (animation.frameTime < 0 || !animation.isPlaying) {
           animation.startFrame = 2;
           animation.endFrame = 4;
-          animation.currentFrame = 2;
+          animation.currentFrame =
+              std::clamp(2, animation.startFrame, animation.endFrame);
           animation.frameTime = std::abs(defaultFrameTime);
           animation.isPlaying = true;
         }
@@ -31,7 +32,8 @@ namespace ecs {
         if (animation.frameTime > 0 || !animation.isPlaying) {
           animation.startFrame = 0;
           animation.endFrame = 2;
-          animation.currentFrame = 2;
+          animation.currentFrame =
+              std::clamp(2, animation.startFrame, animation.endFrame);
           animation.frameTime = -std::abs(defaultFrameTime);
           animation.isPlaying = true;
         }
