@@ -1,4 +1,5 @@
 #include "InputSystem.hpp"
+#include <algorithm>
 #include <cmath>
 #include "components/SpeedComponent.hpp"
 #include "components/SpriteAnimationComponent.hpp"
