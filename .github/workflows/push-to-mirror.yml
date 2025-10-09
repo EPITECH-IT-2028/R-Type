@@ -1,0 +1,46 @@
+name: Mirror Repository
+
+on:
+  workflow_run:
+    workflows: ["Release R-Type"]
+    types:
+      - completed
+    branches: [main]
+
+env:
+  MIRROR_URL: "git@github.com:EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git"
+
+jobs:
+  compare-keys:
+    name: Check Repository
+    runs-on: ubuntu-latest
+    if: >
+      github.repository != 'EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4' &&
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Checkout GH repo
+        uses: actions/checkout@v4
+
+      - name: Check repository
+        run: echo "Repository check passed"
+
+  push_to_mirror:
+    needs: [compare-keys]
+    if: >
+      github.repository != 'EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4' &&
+      github.event.workflow_run.conclusion == 'success'
+    name: Push to Mirror Repository
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Mirror
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+          target_repo_url: ${{ env.MIRROR_URL }}
