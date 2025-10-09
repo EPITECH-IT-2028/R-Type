@@ -33,21 +33,34 @@ namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
   constexpr float PLAYER_SPEED = 500.0f;
-}  // namespace client
 
-namespace ecs {
-  constexpr float PLAYER_SPRITE_RECT_X = 0.0f;
-  constexpr float PLAYER_SPRITE_RECT_Y = 0.0f;
-  constexpr float PLAYER_SPRITE_RECT_WIDTH = 33.0f;
-  constexpr float PLAYER_SPRITE_RECT_HEIGHT = 17.0f;
-  constexpr int PLAYER_SPRITE_SCALE = 2.0f;
-  constexpr int PLAYER_ANIM_TOTAL_COLUMNS = 5;
-  constexpr int PLAYER_ANIM_TOTAL_ROWS = 5;
-  constexpr int PLAYER_ANIM_END_FRAME = 4;
-  constexpr int PLAYER_ANIM_SELECTED_ROW = 0;
-  constexpr float PLAYER_ANIM_FRAME_TIME = 0.05f;
-  constexpr int PLAYER_ANIM_NEUTRAL_FRAME = 2;
-}  // namespace ecs
+  /**
+   * Player sprite and animation configuration.
+   * Values must match the layout of the player sprite-sheet used for rendering.
+   */
+  struct PlayerSpriteConfig {
+      static constexpr float RECT_X = 0.0f;  ///< X coordinate in sprite sheet
+      static constexpr float RECT_Y = 0.0f;  ///< Y coordinate in sprite sheet
+      static constexpr float RECT_WIDTH = 33.0f;   ///< Width of player sprite
+      static constexpr float RECT_HEIGHT = 17.0f;  ///< Height of player sprite
+      static constexpr int SCALE = 2;          ///< Scale factor for rendering
+      static constexpr int TOTAL_COLUMNS = 5;  ///< Columns in sprite sheet
+      static constexpr int TOTAL_ROWS = 5;     ///< Rows in sprite sheet
+      static constexpr float FRAME_TIME =
+          0.05f;  ///< Time per animation frame (seconds)
+  };
+
+  /**
+   * Frame indices for player animation.
+   * These map directly to specific sprite-sheet frames and
+   * must match the order/layout of the player sprite asset.
+   */
+  enum class PlayerSpriteFrameIndex {
+    SELECTED_ROW = 0,  ///< Row for basic movement/idle
+    NEUTRAL = 2,       ///< Neutral frame index
+    END = 4            ///< End frame index (e.g., tilt/extreme)
+  };
+}  // namespace client
 
 namespace client {
   class Client {

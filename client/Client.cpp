@@ -243,22 +243,22 @@ namespace client {
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
     ecs::SpriteComponent sprite;
-    sprite.sourceRect = {ecs::PLAYER_SPRITE_RECT_X, ecs::PLAYER_SPRITE_RECT_Y,
-                         ecs::PLAYER_SPRITE_RECT_WIDTH,
-                         ecs::PLAYER_SPRITE_RECT_HEIGHT};
+    sprite.sourceRect = {PlayerSpriteConfig::RECT_X, PlayerSpriteConfig::RECT_Y,
+                         PlayerSpriteConfig::RECT_WIDTH,
+                         PlayerSpriteConfig::RECT_HEIGHT};
     _ecsManager.addComponent<ecs::SpriteComponent>(player, sprite);
     _ecsManager.addComponent<ecs::ScaleComponent>(
-        player, {ecs::PLAYER_SPRITE_SCALE, ecs::PLAYER_SPRITE_SCALE});
+        player, {PlayerSpriteConfig::SCALE, PlayerSpriteConfig::SCALE});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
     ecs::SpriteAnimationComponent anim;
-    anim.totalColumns = ecs::PLAYER_ANIM_TOTAL_COLUMNS;
-    anim.totalRows = ecs::PLAYER_ANIM_TOTAL_ROWS;
-    anim.endFrame = ecs::PLAYER_ANIM_END_FRAME;
-    anim.selectedRow = ecs::PLAYER_ANIM_SELECTED_ROW;
+    anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
+    anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
+    anim.endFrame = static_cast<int>(PlayerSpriteFrameIndex::END);
+    anim.selectedRow = static_cast<int>(PlayerSpriteFrameIndex::SELECTED_ROW);
     anim.isPlaying = false;
-    anim.frameTime = ecs::PLAYER_ANIM_FRAME_TIME;
+    anim.frameTime = PlayerSpriteConfig::FRAME_TIME;
     anim.loop = false;
-    anim.neutralFrame = ecs::PLAYER_ANIM_NEUTRAL_FRAME;
+    anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client
