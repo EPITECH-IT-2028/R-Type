@@ -20,21 +20,17 @@ namespace ecs {
 
       if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
         if (animation.frameTime < 0 || !animation.isPlaying) {
-          animation.startFrame = static_cast<int>(PlayerTiltFrame::NEUTRAL);
-          animation.endFrame = static_cast<int>(PlayerTiltFrame::END);
-          animation.currentFrame =
-              std::clamp(static_cast<int>(PlayerTiltFrame::NEUTRAL),
-                         animation.startFrame, animation.endFrame);
+          animation.startFrame = animation.startFrame;
+          animation.endFrame = animation.endFrame;
+          animation.currentFrame = animation.neutralFrame;
           animation.frameTime = std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
       } else if (IsKeyDown(KEY_DOWN) && !IsKeyDown(KEY_UP)) {
         if (animation.frameTime > 0 || !animation.isPlaying) {
-          animation.startFrame = static_cast<int>(PlayerTiltFrame::START);
-          animation.endFrame = static_cast<int>(PlayerTiltFrame::NEUTRAL);
-          animation.currentFrame =
-              std::clamp(static_cast<int>(PlayerTiltFrame::NEUTRAL),
-                         animation.startFrame, animation.endFrame);
+          animation.startFrame = animation.startFrame;
+          animation.endFrame = animation.endFrame;
+          animation.currentFrame = animation.neutralFrame;
           animation.frameTime = -std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
