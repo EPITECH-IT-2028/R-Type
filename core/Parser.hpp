@@ -34,14 +34,14 @@ class Parser {
       return _max_clients;
     }
 
-    std::string getIp() const {
-      return _ip;
+    std::string getHost() const {
+      return _host;
     }
 
   private:
     const std::string _propertiesPath;
     std::uint16_t _port = 4242;
-    std::string _ip = "127.0.0.1";
+    std::string _host = "127.0.0.1";
     std::uint16_t _max_clients = 4;
     std::unordered_map<std::string, std::function<void(const std::string &)>>
         _propertyParsers = {
@@ -60,11 +60,11 @@ class Parser {
                }
              }},
             {"IP",
-             [this](const std::string &ip) {
-               if (!ip.empty()) {
-                 _ip = ip;
+             [this](const std::string &host) {
+               if (!host.empty()) {
+                 _host = host;
                } else {
-                 throw ParamsError("Invalid IP in client properties file.");
+                 throw ParamsError("Invalid host in client properties file.");
                }
              }},
             {"MAX_CLIENTS",
