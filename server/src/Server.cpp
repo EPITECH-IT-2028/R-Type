@@ -6,9 +6,10 @@
 #include "Events.hpp"
 #include "IPacket.hpp"
 #include "Macros.hpp"
+#include "NetworkManager.hpp"
 #include "PacketSender.hpp"
 
-server::Client::Client(asio::ip::udp::endpoint endpoint, int id) : _endpoint(endpoint), _player_id(id) {
+server::Client::Client(int id) : _player_id(id) {
   _connected = true;
   _last_heartbeat = std::chrono::steady_clock::now();
   _last_position_update = std::chrono::steady_clock::now();
@@ -90,7 +91,7 @@ void server::Server::handleTimeout() {
       auto disconnectMsg = PacketBuilder::makeMessage(
           "Player " + std::to_string(pid) +
           " has been disconnected due to inactivity.");
-      packet::PacketSender::sendPacket(_networkManager, disconnectMsg, _clients[i]->_endpoint);
+      packet::PacketSender::sendPacket(_networkManager, disconnectMsg);
 
       auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
       client.reset();
@@ -210,46 +211,33 @@ void server::Server::handleReceive(const char *data,
 int server::Server::findOrCreateClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
-  // First, look for existing connected client with same endpoint
   for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected && 
-        _clients[i]->_endpoint == current_endpoint) {
-      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
-      return static_cast<int>(i);
-    }
-  }
-
-  // Then, look for disconnected client with same endpoint (reconnection)
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && !_clients[i]->_connected && 
-        _clients[i]->_endpoint == current_endpoint) {
+    if (_clients[i] && _clients[i]->_connected &&
+        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
+            current_endpoint) {
       _clients[i]->_connected = true;
       _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
       _player_count++;
-      std::cout << "[WORLD] Player reconnected with ID "
-                << _clients[i]->_player_id << " from " 
-                << current_endpoint.address().to_string() << ":" 
-                << current_endpoint.port() << std::endl;
       return static_cast<int>(i);
     }
   }
 
-  // Finally, create new client if there's space
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
-      _clients[i] = std::make_shared<Client>(current_endpoint, _next_player_id++);
+      int id = _next_player_id++;
+      _clients[i] = std::make_shared<Client>(id);
       _clients[i]->_connected = true;
       _player_count++;
-      std::cout << "[WORLD] New player connected with ID "
-                << _clients[i]->_player_id << " from " 
-                << current_endpoint.address().to_string() << ":" 
-                << current_endpoint.port() << std::endl;
+      _networkManager.registerClient(id, current_endpoint);
+
+      std::cout << "[WORLD] New player connected with ID " << id << std::endl;
+
       auto msg = PacketBuilder::makeMessage("Welcome to the server!");
-      packet::PacketSender::sendPacket(_networkManager, msg, _clients[i]->_endpoint);
+      _networkManager.sendToClient(id, reinterpret_cast<const char *>(&msg),
+                                   sizeof(msg));
       return static_cast<int>(i);
     }
   }
-
   return KO;
 }
 

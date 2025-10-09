@@ -9,26 +9,42 @@ server::NetworkManager::NetworkManager(std::uint16_t port)
       _timeoutTimer(std::make_shared<asio::steady_timer>(_io_context)) {
 }
 
-void server::NetworkManager::send(const char *data, std::size_t size) {
+void server::NetworkManager::registerClient(
+    int id, const asio::ip::udp::endpoint &endpoint) {
+  _clientEndpoints[id] = endpoint;
+}
+
+void server::NetworkManager::unregisterClient(int id) {
+  _clientEndpoints.erase(id);
+}
+
+void server::NetworkManager::sendToClient(int id, const char *data,
+                                          std::size_t size) {
+  auto it = _clientEndpoints.find(id);
+  if (it == _clientEndpoints.end())
+    return;
+
+  const auto &endpoint = it->second;
   _socket.async_send_to(
-      asio::buffer(data, size), _remote_endpoint,
-      [data](const asio::error_code &error,
-             [[maybe_unused]] std::size_t bytes_sent) {
+      asio::buffer(data, size), endpoint,
+      [data](const asio::error_code &error, std::size_t bytes_sent) {
         if (error) {
           std::cerr << "[ERROR] Send failed: " << error.message() << std::endl;
         }
       });
 }
 
-void server::NetworkManager::send(const char *data, std::size_t size, const asio::ip::udp::endpoint& endpoint) {
-  _socket.async_send_to(
-      asio::buffer(data, size), endpoint,
-      [data](const asio::error_code &error,
-             [[maybe_unused]] std::size_t bytes_sent) {
-        if (error) {
-          std::cerr << "[ERROR] Send failed: " << error.message() << std::endl;
-        }
-      });
+void server::NetworkManager::sendToAll(const char *data, std::size_t size) {
+  for (const auto &[id, endpoint] : _clientEndpoints) {
+    _socket.async_send_to(
+        asio::buffer(data, size), endpoint,
+        [data](const asio::error_code &error, std::size_t bytes_sent) {
+          if (error) {
+            std::cerr << "[ERROR] Broadcast failed: " << error.message()
+                      << std::endl;
+          }
+        });
+  }
 }
 
 void server::NetworkManager::checkSignals() {

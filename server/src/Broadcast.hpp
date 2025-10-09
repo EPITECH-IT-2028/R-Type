@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asio.hpp>
+#include "NetworkManager.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
@@ -17,8 +18,7 @@ namespace broadcast {
           const Packet &packet, Pred pred) {
         for (const auto &client : clients) {
           if (client && client->_connected && pred(*client)) {
-            packet::PacketSender::sendPacket(networkManager, packet,
-                                             client->_endpoint);
+            packet::PacketSender::sendPacket(networkManager, packet);
           }
         }
       }
@@ -39,7 +39,7 @@ namespace broadcast {
        */
       static void broadcastExistingPlayers(
           server::NetworkManager &networkManager, game::Game &game,
-          int newPlayerID, const asio::ip::udp::endpoint &newPlayerEndpoint) {
+          int newPlayerID) {
         auto players = game.getAllPlayers();
 
         for (const auto &player : players) {
@@ -51,8 +51,7 @@ namespace broadcast {
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), pos.first, pos.second, speed, health);
-            packet::PacketSender::sendPacket(networkManager, existPlayerPacket,
-                                             newPlayerEndpoint);
+            packet::PacketSender::sendPacket(networkManager, existPlayerPacket);
           }
         }
       }
