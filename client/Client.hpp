@@ -40,7 +40,7 @@ namespace client {
 namespace client {
   class Client {
     public:
-      Client(const std::string &host, const std::string &port);
+      Client(const std::string &host, uint16_t port);
       ~Client() = default;
 
       bool isConnected() const {
@@ -74,7 +74,7 @@ namespace client {
       asio::ip::udp::socket _socket;
       asio::ip::udp::endpoint _server_endpoint;
       std::string _host;
-      std::string _port;
+      std::uint16_t _port;
       std::array<char, 2048> _recv_buffer;
       std::atomic<uint32_t> _sequence_number;
       std::atomic<bool> _running;

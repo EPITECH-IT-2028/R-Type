@@ -13,9 +13,14 @@ set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BoundarySystem.cpp
 )
 
+set(CORE_SOURCES
+  ${CMAKE_SOURCE_DIR}/core/Parser.cpp
+)
+
 add_executable(${PROJECT_NAME}
   ${CLIENT_SOURCES}
   ${ECS_SOURCES}
+  ${CORE_SOURCES}
 )
 
 add_compile_options(-W -Wall -Wextra)
@@ -24,6 +29,8 @@ target_link_libraries(${PROJECT_NAME} raylib asio::asio)
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/client/
   ${CMAKE_SOURCE_DIR}/client/packets/
+  ${CMAKE_SOURCE_DIR}/core/
+  ${CMAKE_SOURCE_DIR}/core/errors/
   ${CMAKE_SOURCE_DIR}/core/network/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/

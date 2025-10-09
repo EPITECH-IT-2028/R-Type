@@ -15,7 +15,7 @@
 #include "systems/RenderSystem.hpp"
 
 namespace client {
-  Client::Client(const std::string &host, const std::string &port)
+  Client::Client(const std::string &host, uint16_t port)
       : _socket(_io_context),
         _host(host),
         _port(port),
@@ -30,7 +30,7 @@ namespace client {
   void Client::connect() {
     try {
       asio::ip::udp::resolver resolver(_io_context);
-      auto endpoints = resolver.resolve(asio::ip::udp::v4(), _host, _port);
+      auto endpoints = resolver.resolve(asio::ip::udp::v4(), _host, std::to_string(_port));
       if (endpoints.empty()) {
         std::cerr << "Failed to resolve host: " << _host << ":" << _port
                   << std::endl;
