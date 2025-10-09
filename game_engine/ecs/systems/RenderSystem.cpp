@@ -12,6 +12,8 @@ ecs::RenderSystem::~RenderSystem() noexcept {
   }
 }
 
+#include "SpriteAnimationComponent.hpp"
+
 void ecs::RenderSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
     auto &positionComp =
@@ -32,6 +34,17 @@ void ecs::RenderSystem::update(float deltaTime) {
       _textureCache[path] = newTexture;
     }
     Texture2D &texture = _textureCache[path];
+
+    if (_ecsManager.hasComponent<ecs::SpriteAnimationComponent>(entity)) {
+      auto &anim = _ecsManager.getComponent<ecs::SpriteAnimationComponent>(entity);
+      if (!anim.isInitialized) {
+        if (anim.totalColumns > 0 && anim.totalRows > 0) {
+          anim.frameWidth = texture.width / anim.totalColumns;
+          anim.frameHeight = texture.height / anim.totalRows;
+          anim.isInitialized = true;
+        }
+      }
+    }
 
     Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(texture.width),
                            static_cast<float>(texture.height)};
