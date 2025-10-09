@@ -1,6 +1,7 @@
 #include "InputSystem.hpp"
 #include <cmath>
 #include "components/SpeedComponent.hpp"
+#include "components/SpriteAnimationComponent.hpp"
 #include "components/VelocityComponent.hpp"
 #include "raylib.h"
 
@@ -9,11 +10,23 @@ namespace ecs {
     for (auto const &entity : _entities) {
       auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
       auto const &speed = _ecsManager.getComponent<SpeedComponent>(entity);
+      auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
       float dirY = static_cast<float>((IsKeyDown(KEY_DOWN) ? 1 : 0) -
                                       (IsKeyDown(KEY_UP) ? 1 : 0));
       float dirX = static_cast<float>((IsKeyDown(KEY_RIGHT) ? 1 : 0) -
                                       (IsKeyDown(KEY_LEFT) ? 1 : 0));
+
+      if (dirY != 0) {
+        if (!animation.isPlaying &&
+            animation.currentFrame != animation.endFrame) {
+          animation.currentFrame = animation.startFrame;
+          animation.isPlaying = true;
+        }
+      } else {
+        animation.isPlaying = false;
+        animation.currentFrame = animation.neutralFrame;
+      }
 
       float length = std::sqrt(dirX * dirX + dirY * dirY);
       if (length > 0.0f) {

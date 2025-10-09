@@ -9,25 +9,27 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
     auto &sprite = _ecsManager.getComponent<SpriteComponent>(entity);
     auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-    if (!animation.isPlaying)
-      continue;
-    animation.frameTimer += deltaTime;
-    if (animation.frameTime <= 0.0f)
-      animation.currentFrame++;
-    else {
-      while (animation.frameTimer >= animation.frameTime) {
-        animation.frameTimer -= animation.frameTime;
+    if (animation.isPlaying) {
+      animation.frameTimer += deltaTime;
+      if (animation.frameTime <= 0.0f)
         animation.currentFrame++;
-      }
-    }
-    if (animation.currentFrame > animation.endFrame) {
-      if (animation.loop)
-        animation.currentFrame = animation.startFrame;
       else {
-        animation.currentFrame = animation.endFrame;
-        animation.isPlaying = false;
+        while (animation.frameTimer >= animation.frameTime) {
+          animation.frameTimer -= animation.frameTime;
+          animation.currentFrame++;
+        }
+      }
+
+      if (animation.currentFrame > animation.endFrame) {
+        if (animation.loop)
+          animation.currentFrame = animation.startFrame;
+        else {
+          animation.currentFrame = animation.endFrame;
+          animation.isPlaying = false;
+        }
       }
     }
+
     sprite.sourceRect = getCurrentFrameRect(entity);
   }
 }
@@ -37,7 +39,7 @@ void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
 
   if (row >= 0 && row < animation.totalRows) {
     animation.selectedRow = row;
-    animation.selectedColumn = -1;  // Mutually exclusive
+    animation.selectedColumn = -1;
     animation.currentFrame = animation.startFrame;
     animation.frameTimer = 0.0f;
   }
@@ -48,7 +50,7 @@ void ecs::SpriteAnimationSystem::setSelectedColumn(Entity entity, int column) {
 
   if (column >= 0 && column < animation.totalColumns) {
     animation.selectedColumn = column;
-    animation.selectedRow = -1;  // Mutually exclusive
+    animation.selectedRow = -1;
     animation.currentFrame = animation.startFrame;
     animation.frameTimer = 0.0f;
   }

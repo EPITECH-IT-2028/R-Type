@@ -156,10 +156,10 @@ namespace client {
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
-    _ecsManager.registerSystem<ecs::RenderSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
+    _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
   void Client::signSystem() {
@@ -187,6 +187,7 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
@@ -248,10 +249,12 @@ namespace client {
     ecs::SpriteAnimationComponent anim;
     anim.totalColumns = 5;
     anim.totalRows = 5;
-    anim.startFrame = 0;
     anim.endFrame = 4;
     anim.selectedRow = 0;
-    anim.frameTime = 0.1f;
+    anim.isPlaying = false;
+    anim.frameTime = 0.05f;
+    anim.loop = false;
+    anim.neutralFrame = 0;
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client

@@ -15,6 +15,7 @@ namespace ecs {
       float frameTimer = 0.0f;
       bool isPlaying = true;
       bool loop = true;
+      int neutralFrame = 0;
 
       int frameWidth = 0;
       int frameHeight = 0;
