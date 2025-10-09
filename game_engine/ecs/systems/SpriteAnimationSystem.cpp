@@ -49,7 +49,7 @@ void ecs::SpriteAnimationSystem::setAnimationRange(Entity entity, int start, int
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   
 
-  int totalFrames = animation.totalColumns * animation.totalRows;
+  int totalFrames = animation.totalColumns;
 
   if (start < 0 || end < start || end >= totalFrames) {
     return;
@@ -88,22 +88,13 @@ void ecs::SpriteAnimationSystem::restart(Entity entity) {
 Rectangle ecs::SpriteAnimationSystem::getCurrentFrameRect(Entity entity) const {
   const auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-  int totalFrames = animation.totalColumns * animation.totalRows;
+  int totalFrames = animation.totalColumns;
   int start = std::max(0, std::min(animation.startFrame, totalFrames - 1));
   int end = std::max(start, std::min(animation.endFrame, totalFrames - 1));
   int safeFrame = std::max(start, std::min(animation.currentFrame, end));
-  int rangeLen = end - start + 1;
 
-  int column = 0;
-  int row = 0;
-  if (rangeLen <= animation.totalColumns) {
-    int relative = safeFrame - start;
-    column = relative % animation.totalColumns;
-    row = animation.selectedRow;
-  } else {
-    column = safeFrame % animation.totalColumns;
-    row = safeFrame / animation.totalColumns;
-  }
+  int row = animation.selectedRow;
+  int column = safeFrame;
 
   return {
     static_cast<float>(column * animation.frameWidth),

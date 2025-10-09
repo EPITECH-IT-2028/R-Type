@@ -20,5 +20,6 @@ namespace ecs {
     // Dimensions of each frame
     int frameWidth = 0;
     int frameHeight = 0;
+    bool isInitialized = false;
   };
 } // namespace ecs
