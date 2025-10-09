@@ -1,9 +1,9 @@
 #include "InputSystem.hpp"
 #include <algorithm>
 #include <cmath>
-#include "components/SpeedComponent.hpp"
-#include "components/SpriteAnimationComponent.hpp"
-#include "components/VelocityComponent.hpp"
+#include "SpeedComponent.hpp"
+#include "SpriteAnimationComponent.hpp"
+#include "VelocityComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
@@ -20,19 +20,21 @@ namespace ecs {
 
       if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
         if (animation.frameTime < 0 || !animation.isPlaying) {
-          animation.startFrame = 2;
-          animation.endFrame = 4;
+          animation.startFrame = PLAYER_TILT_NEUTRAL;
+          animation.endFrame = PLAYER_TILT_END;
           animation.currentFrame =
-              std::clamp(2, animation.startFrame, animation.endFrame);
+              std::clamp(PLAYER_TILT_NEUTRAL, animation.startFrame,
+                         animation.endFrame);
           animation.frameTime = std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
       } else if (IsKeyDown(KEY_DOWN) && !IsKeyDown(KEY_UP)) {
         if (animation.frameTime > 0 || !animation.isPlaying) {
-          animation.startFrame = 0;
-          animation.endFrame = 2;
+          animation.startFrame = PLAYER_TILT_START;
+          animation.endFrame = PLAYER_TILT_NEUTRAL;
           animation.currentFrame =
-              std::clamp(2, animation.startFrame, animation.endFrame);
+              std::clamp(PLAYER_TILT_NEUTRAL, animation.startFrame,
+                         animation.endFrame);
           animation.frameTime = -std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
