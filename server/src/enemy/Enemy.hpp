@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include "ECSManager.hpp"
 namespace game {
 
@@ -24,8 +25,8 @@ namespace game {
       std::pair<float, float> getPosition() const;
       void setPosition(float x, float y);
       void move(float deltaX, float deltaY);
-      int getHealth() const;
-      int getMaxHealth() const;
+      std::optional<int> getHealth() const;
+      std::optional<int> getMaxHealth() const;
       void setHealth(int health);
       void takeDamage(int damage);
       void heal(int amount);
