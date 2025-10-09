@@ -1,15 +1,20 @@
 #pragma once
-#include "System.hpp"
 #include "ECSManager.hpp"
-#include "SpriteComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
+#include "SpriteComponent.hpp"
+#include "System.hpp"
 #include "raylib.h"
 
 namespace ecs {
   class SpriteAnimationSystem : public System {
     public:
-      explicit SpriteAnimationSystem(ECSManager &ecsManager = ECSManager::getInstance())
-        : _ecsManager(ecsManager) {}
+      explicit SpriteAnimationSystem(
+          ECSManager &ecsManager = ECSManager::getInstance())
+          : _ecsManager(ecsManager) {}
+
+      void initializeAnimation(Entity entity, const std::shared_ptr<Texture2D> &texture);
+      void initializeFromTexture(Entity entity, int textureWidth, int textureHeight);
+      Rectangle getCurrentFrameRect(Entity entity) const;
 
       void update(float deltaTime) override;
 
@@ -19,13 +24,9 @@ namespace ecs {
       void play(Entity entity);
       void pause(Entity entity);
       void stop(Entity entity);
-      void restart(Entity entity);   
-   
-      void initializeAnimation(Entity entity, const std::shared_ptr<Texture2D>& texture);
-      void initializeFromTexture(Entity entity, int textureWidth, int textureHeight);
-      Rectangle getCurrentFrameRect(Entity entity) const;
+      void restart(Entity entity);
 
     private:
       ECSManager &_ecsManager;
   };
-} // namespace ecs
+}  // namespace ecs
