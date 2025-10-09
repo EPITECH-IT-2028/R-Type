@@ -1,6 +1,7 @@
 #include "Client.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
+#include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
@@ -8,6 +9,8 @@
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
 #include "SpeedComponent.hpp"
+#include "SpriteAnimationComponent.hpp"
+#include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
@@ -147,6 +150,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
+    _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
   }
 
   void Client::registerSystem() {
@@ -155,6 +159,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::RenderSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
+    _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
   }
 
   void Client::signSystem() {
@@ -190,6 +195,12 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
       _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
+      _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
     }
   }
 
@@ -233,5 +244,13 @@ namespace client {
         player, ecs::SpriteComponent{{0.0f, 0.0f, 33.0f, 17.0f}});
     _ecsManager.addComponent<ecs::ScaleComponent>(player, {2.0f, 2.0f});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
+    ecs::SpriteAnimationComponent anim;
+    anim.totalColumns = 5;
+    anim.totalRows = 5;
+    anim.startFrame = 0;
+    anim.endFrame = 4;
+    anim.selectedRow = 0;
+    anim.frameTime = 0.1f;
+    _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client
