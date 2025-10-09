@@ -18,13 +18,11 @@
 #endif
 
 #include <array>
+#include <asio.hpp>
 #include <atomic>
 #include <chrono>
 #include <iostream>
 #include <string>
-
-#include <asio.hpp>
-
 #include "ECSManager.hpp"
 #include "PacketFactory.hpp"
 #include "PacketSender.hpp"
@@ -36,6 +34,20 @@ namespace client {
   constexpr int KO = 1;
   constexpr float PLAYER_SPEED = 500.0f;
 }  // namespace client
+
+namespace ecs {
+  constexpr float PLAYER_SPRITE_RECT_X = 0.0f;
+  constexpr float PLAYER_SPRITE_RECT_Y = 0.0f;
+  constexpr float PLAYER_SPRITE_RECT_WIDTH = 33.0f;
+  constexpr float PLAYER_SPRITE_RECT_HEIGHT = 17.0f;
+  constexpr int PLAYER_SPRITE_SCALE = 2.0f;
+  constexpr int PLAYER_ANIM_TOTAL_COLUMNS = 5;
+  constexpr int PLAYER_ANIM_TOTAL_ROWS = 5;
+  constexpr int PLAYER_ANIM_END_FRAME = 4;
+  constexpr int PLAYER_ANIM_SELECTED_ROW = 0;
+  constexpr float PLAYER_ANIM_FRAME_TIME = 0.05f;
+  constexpr int PLAYER_ANIM_NEUTRAL_FRAME = 2;
+}  // namespace ecs
 
 namespace client {
   class Client {

@@ -242,19 +242,23 @@ namespace client {
     _ecsManager.addComponent<ecs::SpeedComponent>(player, {PLAYER_SPEED});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
-    _ecsManager.addComponent<ecs::SpriteComponent>(
-        player, ecs::SpriteComponent{{0.0f, 0.0f, 33.0f, 17.0f}});
-    _ecsManager.addComponent<ecs::ScaleComponent>(player, {2.0f, 2.0f});
+    ecs::SpriteComponent sprite;
+    sprite.sourceRect = {ecs::PLAYER_SPRITE_RECT_X, ecs::PLAYER_SPRITE_RECT_Y,
+                         ecs::PLAYER_SPRITE_RECT_WIDTH,
+                         ecs::PLAYER_SPRITE_RECT_HEIGHT};
+    _ecsManager.addComponent<ecs::SpriteComponent>(player, sprite);
+    _ecsManager.addComponent<ecs::ScaleComponent>(
+        player, {ecs::PLAYER_SPRITE_SCALE, ecs::PLAYER_SPRITE_SCALE});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
     ecs::SpriteAnimationComponent anim;
-    anim.totalColumns = 5;
-    anim.totalRows = 5;
-    anim.endFrame = 4;
-    anim.selectedRow = 0;
+    anim.totalColumns = ecs::PLAYER_ANIM_TOTAL_COLUMNS;
+    anim.totalRows = ecs::PLAYER_ANIM_TOTAL_ROWS;
+    anim.endFrame = ecs::PLAYER_ANIM_END_FRAME;
+    anim.selectedRow = ecs::PLAYER_ANIM_SELECTED_ROW;
     anim.isPlaying = false;
-    anim.frameTime = 0.05f;
+    anim.frameTime = ecs::PLAYER_ANIM_FRAME_TIME;
     anim.loop = false;
-    anim.neutralFrame = 2;
+    anim.neutralFrame = ecs::PLAYER_ANIM_NEUTRAL_FRAME;
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client
