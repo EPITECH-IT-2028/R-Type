@@ -6,6 +6,18 @@
 #include "raylib.h"
 
 namespace ecs {
+  /**
+   * @brief Update per-entity movement velocity and vertical sprite animation state based on keyboard input.
+   *
+   * For each entity in the system, reads up/down/left/right key state to compute a normalized movement direction,
+   * assigns the entity's velocity by multiplying the direction by its SpeedComponent, and updates the entity's
+   * SpriteAnimationComponent vertical state:
+   * - When UP (and not DOWN) is pressed, ensures animation plays forward (positive frameTime) from the neutral frame.
+   * - When DOWN (and not UP) is pressed, ensures animation plays backward (negative frameTime) from the neutral frame.
+   * - When neither or both vertical keys are pressed, stops the animation and resets to the neutral frame with non-negative frameTime.
+   *
+   * @param deltaTime Time elapsed since the last update in seconds (provided by caller; not used by this implementation).
+   */
   void InputSystem::update(float deltaTime) {
     for (auto const &entity : _entities) {
       auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
