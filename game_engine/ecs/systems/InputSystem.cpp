@@ -1,5 +1,4 @@
 #include "InputSystem.hpp"
-#include <algorithm>
 #include <cmath>
 #include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
@@ -20,16 +19,12 @@ namespace ecs {
 
       if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
         if (animation.frameTime < 0 || !animation.isPlaying) {
-          animation.startFrame = animation.startFrame;
-          animation.endFrame = animation.endFrame;
           animation.currentFrame = animation.neutralFrame;
           animation.frameTime = std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
       } else if (IsKeyDown(KEY_DOWN) && !IsKeyDown(KEY_UP)) {
         if (animation.frameTime > 0 || !animation.isPlaying) {
-          animation.startFrame = animation.startFrame;
-          animation.endFrame = animation.endFrame;
           animation.currentFrame = animation.neutralFrame;
           animation.frameTime = -std::abs(animation.frameTime);
           animation.isPlaying = true;
