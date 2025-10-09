@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include "raylib.h"
 
 void ecs::SpriteAnimationSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
@@ -126,11 +127,3 @@ void ecs::SpriteAnimationSystem::initializeFromTexture(Entity entity, int textur
   animation.frameHeight = textureHeight / animation.totalRows;
 }
 
-void ecs::SpriteAnimationSystem::initializeAnimation(Entity entity, const std::shared_ptr<Texture2D>& texture) {
-  auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
-  auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
-
-  sprite.texture = texture;
-  initializeFromTexture(entity, texture->width, texture->height);
-  sprite.sourceRect = getCurrentFrameRect(entity);
-}
