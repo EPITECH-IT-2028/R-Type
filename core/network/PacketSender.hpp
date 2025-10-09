@@ -1,19 +1,19 @@
 #pragma once
 
 #include <asio.hpp>
-#include "NetworkManager.hpp"
+#include "BaseNetworkManager.hpp"
 
 namespace packet {
 
   class PacketSender {
     public:
       template <typename T>
-      static void sendPacket(server::NetworkManager &networkManager,
+      static void sendPacket(network::BaseNetworkManager &networkManager,
                              const T &packet) {
         auto buffer = std::make_shared<std::vector<uint8_t>>(sizeof(T));
         std::memcpy(buffer->data(), &packet, sizeof(T));
 
-        networkManager.sendToAll(reinterpret_cast<const char *>(buffer->data()),
+        networkManager.send(reinterpret_cast<const char *>(buffer->data()),
                             buffer->size());
       }
   };

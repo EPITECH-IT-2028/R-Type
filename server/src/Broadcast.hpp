@@ -1,7 +1,7 @@
 #pragma once
 
 #include <asio.hpp>
-#include "NetworkManager.hpp"
+#include "ServerNetworkManager.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
@@ -13,7 +13,7 @@ namespace broadcast {
     public:
       template <typename Packet, typename Pred>
       static void broadcastTo(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
         for (const auto &client : clients) {
@@ -25,7 +25,7 @@ namespace broadcast {
 
       template <typename Packet>
       static void broadcastToAll(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet) {
         broadcastTo(networkManager, clients, packet,
@@ -38,7 +38,7 @@ namespace broadcast {
        * game.
        */
       static void broadcastExistingPlayers(
-          server::NetworkManager &networkManager, game::Game &game,
+          network::ServerNetworkManager &networkManager, game::Game &game,
           int newPlayerID) {
         auto players = game.getAllPlayers();
 
@@ -61,7 +61,7 @@ namespace broadcast {
        * clients.
        */
       static void broadcastAncientPlayer(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const NewPlayerPacket &packet) {
         broadcastTo(
@@ -74,7 +74,7 @@ namespace broadcast {
        * Broadcast the player movement to all other connected clients.
        */
       static void broadcastPlayerMove(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const MovePacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -84,7 +84,7 @@ namespace broadcast {
        * Broadcast the player shoot to all other connected clients.
        */
       static void broadcastPlayerShoot(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const PlayerShootPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -94,7 +94,7 @@ namespace broadcast {
        * Broadcast the enemy spawned to all connected clients.
        */
       static void broadcastEnemySpawn(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const EnemySpawnPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -104,7 +104,7 @@ namespace broadcast {
        * Broadcast the enemy moved to all connected clients.
        */
       static void broadcastEnemyMove(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const EnemyMovePacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -119,7 +119,7 @@ namespace broadcast {
        * @param packet Enemy death event packet to send to clients.
        */
       static void broadcastEnemyDeath(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const EnemyDeathPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -132,7 +132,7 @@ namespace broadcast {
        * data.
        */
       static void broadcastEnemyHit(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const EnemyHitPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -142,7 +142,7 @@ namespace broadcast {
        * Broadcast the projectile spawned to all connected clients.
        */
       static void broadcastProjectileSpawn(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const ProjectileSpawnPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -152,7 +152,7 @@ namespace broadcast {
        * Broadcast the projectile hit to all connected clients.
        */
       static void broadcastProjectileHit(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const ProjectileHitPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -162,7 +162,7 @@ namespace broadcast {
        * Broadcast the projectile destroyed to all connected clients.
        */
       static void broadcastProjectileDestroy(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const ProjectileDestroyPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -172,7 +172,7 @@ namespace broadcast {
        * Broadcast the game start to all connected clients.
        */
       static void broadcastGameStart(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const GameStartPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -187,7 +187,7 @@ namespace broadcast {
        * @param packet GameEndPacket to be sent to recipients.
        */
       static void broadcastGameEnd(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const GameEndPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -200,7 +200,7 @@ namespace broadcast {
        * clients.
        */
       static void broadcastPlayerDeath(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const PlayerDeathPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -213,7 +213,7 @@ namespace broadcast {
        * every connected client.
        */
       static void broadcastPlayerHit(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const PlayerHitPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
@@ -229,7 +229,7 @@ namespace broadcast {
        * player id).
        */
       static void broadcastPlayerDisconnect(
-          server::NetworkManager &networkManager,
+          network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const PlayerDisconnectPacket &packet) {
         broadcastToAll(networkManager, clients, packet);

@@ -6,8 +6,8 @@
 #include <memory>
 #include <vector>
 #include "Game.hpp"
-#include "NetworkManager.hpp"
 #include "PacketFactory.hpp"
+#include "ServerNetworkManager.hpp"
 
 namespace server {
 
@@ -31,7 +31,7 @@ namespace server {
       void start();
       void stop();
 
-      NetworkManager &getNetworkManager() {
+      network::ServerNetworkManager &getNetworkManager() {
         return _networkManager;
       }
 
@@ -83,7 +83,7 @@ namespace server {
       std::shared_ptr<Client> getClient(std::size_t idx) const;
 
     private:
-      NetworkManager _networkManager;
+      network::ServerNetworkManager _networkManager;
 
       std::vector<std::shared_ptr<Client>> _clients;
       packet::PacketHandlerFactory _factory;
