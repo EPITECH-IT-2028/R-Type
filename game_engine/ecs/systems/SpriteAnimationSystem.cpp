@@ -31,7 +31,6 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
     sprite.sourceRect = getCurrentFrameRect(entity);
     }
   }
-}
 
 void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
