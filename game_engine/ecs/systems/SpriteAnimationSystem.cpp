@@ -9,23 +9,32 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
     auto &sprite = _ecsManager.getComponent<SpriteComponent>(entity);
     auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-    if (animation.isPlaying) {
+    if (animation.isPlaying && animation.frameTime != 0) {
       animation.frameTimer += deltaTime;
-      if (animation.frameTime <= 0.0f)
-        animation.currentFrame++;
-      else {
-        while (animation.frameTimer >= animation.frameTime) {
-          animation.frameTimer -= animation.frameTime;
+
+      while (animation.frameTimer >= std::abs(animation.frameTime)) {
+        animation.frameTimer -= std::abs(animation.frameTime);
+        if (animation.frameTime > 0) {
           animation.currentFrame++;
+        } else {
+          animation.currentFrame--;
         }
       }
 
-      if (animation.currentFrame > animation.endFrame) {
-        if (animation.loop)
-          animation.currentFrame = animation.startFrame;
-        else {
-          animation.currentFrame = animation.endFrame;
-          animation.isPlaying = false;
+      bool finished = (animation.frameTime > 0 &&
+                       animation.currentFrame > animation.endFrame) ||
+                      (animation.frameTime < 0 &&
+                       animation.currentFrame < animation.startFrame);
+
+      if (finished) {
+        if (animation.loop) {
+          animation.currentFrame = (animation.frameTime > 0)
+                                       ? animation.startFrame
+                                       : animation.endFrame;
+        } else {
+          animation.currentFrame = (animation.frameTime > 0)
+                                       ? animation.endFrame
+                                       : animation.startFrame;
         }
       }
     }
@@ -33,7 +42,6 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
     sprite.sourceRect = getCurrentFrameRect(entity);
   }
 }
-
 void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 

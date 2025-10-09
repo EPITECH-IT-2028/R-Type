@@ -254,7 +254,7 @@ namespace client {
     anim.isPlaying = false;
     anim.frameTime = 0.05f;
     anim.loop = false;
-    anim.neutralFrame = 0;
+    anim.neutralFrame = 2;
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client

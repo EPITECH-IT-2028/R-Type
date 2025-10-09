@@ -17,15 +17,28 @@ namespace ecs {
       float dirX = static_cast<float>((IsKeyDown(KEY_RIGHT) ? 1 : 0) -
                                       (IsKeyDown(KEY_LEFT) ? 1 : 0));
 
-      if (dirY != 0) {
-        if (!animation.isPlaying &&
-            animation.currentFrame != animation.endFrame) {
-          animation.currentFrame = animation.startFrame;
+      float defaultFrameTime = 0.1f;
+
+      if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
+        if (animation.frameTime < 0 || !animation.isPlaying) {
+          animation.startFrame = 2;
+          animation.endFrame = 4;
+          animation.currentFrame = 2;
+          animation.frameTime = std::abs(defaultFrameTime);
+          animation.isPlaying = true;
+        }
+      } else if (IsKeyDown(KEY_DOWN) && !IsKeyDown(KEY_UP)) {
+        if (animation.frameTime > 0 || !animation.isPlaying) {
+          animation.startFrame = 0;
+          animation.endFrame = 2;
+          animation.currentFrame = 2;
+          animation.frameTime = -std::abs(defaultFrameTime);
           animation.isPlaying = true;
         }
       } else {
         animation.isPlaying = false;
         animation.currentFrame = animation.neutralFrame;
+        animation.frameTime = std::abs(defaultFrameTime);
       }
 
       float length = std::sqrt(dirX * dirX + dirY * dirY);
