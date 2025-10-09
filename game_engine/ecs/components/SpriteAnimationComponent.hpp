@@ -6,7 +6,8 @@ namespace ecs {
     // Sprite configuration
     int totalRows = 1;
     int totalColumns = 1;
-    int selectedRow = 0;
+    int selectedRow = -1;
+    int selectedColumn = -1;
 
     // Animation state
     int currentFrame = 0;

@@ -14,6 +14,7 @@ namespace ecs {
       void update(float deltaTime) override;
 
       void setSelectedRow(Entity entity, int row);
+      void setSelectedColumn(Entity entity, int column);
       void setAnimationRange(Entity entity, int start, int end);
       void play(Entity entity);
       void pause(Entity entity);

@@ -35,21 +35,37 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
 
 void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
-  auto& sprite = _ecsManager.getComponent<SpriteComponent>(entity);
-  
+
   if (row >= 0 && row < animation.totalRows) {
     animation.selectedRow = row;
+    animation.selectedColumn = -1; // Mutually exclusive
     animation.currentFrame = animation.startFrame;
     animation.frameTimer = 0.0f;
   }
-  sprite.sourceRect = getCurrentFrameRect(entity);
+}
+
+void ecs::SpriteAnimationSystem::setSelectedColumn(Entity entity, int column) {
+  auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
+
+  if (column >= 0 && column < animation.totalColumns) {
+    animation.selectedColumn = column;
+    animation.selectedRow = -1; // Mutually exclusive
+    animation.currentFrame = animation.startFrame;
+    animation.frameTimer = 0.0f;
+  }
 }
 
 void ecs::SpriteAnimationSystem::setAnimationRange(Entity entity, int start, int end) {
   auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
-  
 
-  int totalFrames = animation.totalColumns;
+  int totalFrames = 0;
+  if (animation.selectedRow != -1) {
+    totalFrames = animation.totalColumns;
+  } else if (animation.selectedColumn != -1) {
+    totalFrames = animation.totalRows;
+  } else {
+    totalFrames = animation.totalColumns * animation.totalRows;
+  }
 
   if (start < 0 || end < start || end >= totalFrames) {
     return;
@@ -88,20 +104,38 @@ void ecs::SpriteAnimationSystem::restart(Entity entity) {
 Rectangle ecs::SpriteAnimationSystem::getCurrentFrameRect(Entity entity) const {
   const auto& animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-  int totalFrames = animation.totalColumns;
+  int totalFrames;
+  if (animation.selectedRow != -1) {
+    totalFrames = animation.totalColumns;
+  } else if (animation.selectedColumn != -1) {
+    totalFrames = animation.totalRows;
+  } else {
+    totalFrames = animation.totalColumns * animation.totalRows;
+  }
+
   int start = std::max(0, std::min(animation.startFrame, totalFrames - 1));
   int end = std::max(start, std::min(animation.endFrame, totalFrames - 1));
   int safeFrame = std::max(start, std::min(animation.currentFrame, end));
 
-  int row = animation.selectedRow;
-  int column = safeFrame;
+  int column = 0;
+  int row = 0;
+
+  if (animation.selectedRow != -1) { // Horizontal animation
+    row = animation.selectedRow;
+    column = safeFrame;
+  } else if (animation.selectedColumn != -1) { // Vertical animation
+    column = animation.selectedColumn;
+    row = safeFrame;
+  } else { // Default: treat as linear sequence
+    column = safeFrame % animation.totalColumns;
+    row = safeFrame / animation.totalColumns;
+  }
 
   return {
-    static_cast<float>(column * animation.frameWidth),
-    static_cast<float>(row * animation.frameHeight),
-    static_cast<float>(animation.frameWidth),
-    static_cast<float>(animation.frameHeight)
-  };
+      static_cast<float>(column * animation.frameWidth),
+      static_cast<float>(row * animation.frameHeight),
+      static_cast<float>(animation.frameWidth),
+      static_cast<float>(animation.frameHeight)};
 }
 
 void ecs::SpriteAnimationSystem::initializeFromTexture(Entity entity, int textureWidth, int textureHeight) {
