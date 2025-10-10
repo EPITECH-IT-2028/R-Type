@@ -4,6 +4,18 @@
 #include <memory>
 #include "raylib.h"
 
+/**
+ * @brief Advance sprite animations for all tracked entities and update their source rectangles.
+ *
+ * Advances each entity's SpriteAnimationComponent based on the elapsed time and the component's
+ * configuration: when the animation is playing and `frameTime` is non-zero, accumulated time is
+ * used to move the current frame forward (positive `frameTime`) or backward (negative
+ * `frameTime`). When the animation passes its start/end bounds it will either loop back to the
+ * configured start/end frame if `loop` is true, or clamp to the final frame if `loop` is false.
+ * After advancing frames, the sprite's `sourceRect` is refreshed from the current frame.
+ *
+ * @param deltaTime Elapsed time in seconds since the last update.
+ */
 void ecs::SpriteAnimationSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
     auto &sprite = _ecsManager.getComponent<SpriteComponent>(entity);
@@ -42,6 +54,17 @@ void ecs::SpriteAnimationSystem::update(float deltaTime) {
     sprite.sourceRect = getCurrentFrameRect(entity);
   }
 }
+/**
+ * @brief Selects a specific sprite sheet row for the entity's animation.
+ *
+ * If the provided row is within [0, totalRows-1], sets that row as the active
+ * selection, clears any column selection, resets the current frame to the
+ * animation's start frame, and resets the frame timer to 0. Does nothing when
+ * the row is out of range.
+ *
+ * @param entity The entity whose animation will be modified.
+ * @param row Zero-based index of the row to select.
+ */
 void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
@@ -53,6 +76,15 @@ void ecs::SpriteAnimationSystem::setSelectedRow(Entity entity, int row) {
   }
 }
 
+/**
+ * @brief Selects a specific column of frames for the entity's animation and resets playback state.
+ *
+ * If `column` is within the entity animation's valid range, sets the animation to use that column,
+ * clears any row selection, resets the current frame to the animation's start frame, and resets the frame timer.
+ *
+ * @param entity The entity whose animation will be modified.
+ * @param column Column index to select (must be between 0 and `totalColumns - 1`).
+ */
 void ecs::SpriteAnimationSystem::setSelectedColumn(Entity entity, int column) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
@@ -64,6 +96,17 @@ void ecs::SpriteAnimationSystem::setSelectedColumn(Entity entity, int column) {
   }
 }
 
+/**
+ * @brief Sets the active frame range for an entity's sprite animation and resets playback to the range start.
+ *
+ * Updates the animation's startFrame and endFrame to the provided values, sets currentFrame to start,
+ * and resets the internal frame timer. If the requested range is invalid (start < 0, end < start, or
+ * end >= number of available frames for the current selection mode), the function makes no changes.
+ *
+ * @param entity Entity whose animation range will be changed.
+ * @param start Index of the first frame in the new range (inclusive).
+ * @param end Index of the last frame in the new range (inclusive).
+ */
 void ecs::SpriteAnimationSystem::setAnimationRange(Entity entity, int start,
                                                    int end) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
@@ -84,16 +127,39 @@ void ecs::SpriteAnimationSystem::setAnimationRange(Entity entity, int start,
   animation.frameTimer = 0.0f;
 }
 
+/**
+ * @brief Start playback of the sprite animation for the specified entity.
+ *
+ * Marks the entity's SpriteAnimationComponent as playing so frame advancement
+ * will occur during subsequent updates.
+ *
+ * @param entity Entity whose sprite animation should be started (must have a SpriteAnimationComponent).
+ */
 void ecs::SpriteAnimationSystem::play(Entity entity) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   animation.isPlaying = true;
 }
 
+/**
+ * @brief Pauses playback of the sprite animation for the specified entity.
+ *
+ * Stops the entity's sprite animation from advancing frames until playback is resumed.
+ *
+ * @param entity The entity whose sprite animation will be paused.
+ */
 void ecs::SpriteAnimationSystem::pause(Entity entity) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   animation.isPlaying = false;
 }
 
+/**
+ * @brief Stops the sprite animation for the specified entity and resets it to the configured start frame.
+ *
+ * Sets the animation's playback state to stopped, resets the current frame to the animation's startFrame,
+ * and clears the internal frame timer.
+ *
+ * @param entity The entity whose sprite animation will be stopped and reset.
+ */
 void ecs::SpriteAnimationSystem::stop(Entity entity) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   animation.isPlaying = false;
@@ -101,6 +167,14 @@ void ecs::SpriteAnimationSystem::stop(Entity entity) {
   animation.frameTimer = 0.0f;
 }
 
+/**
+ * @brief Restart the animation for the given entity and begin playback from its start frame.
+ *
+ * Resets the animation's current frame to its configured start frame, clears the frame timer,
+ * and marks the animation as playing.
+ *
+ * @param entity Entity whose SpriteAnimationComponent will be restarted.
+ */
 void ecs::SpriteAnimationSystem::restart(Entity entity) {
   auto &animation = _ecsManager.getComponent<SpriteAnimationComponent>(entity);
   animation.currentFrame = animation.startFrame;
@@ -108,6 +182,16 @@ void ecs::SpriteAnimationSystem::restart(Entity entity) {
   animation.isPlaying = true;
 }
 
+/**
+ * @brief Computes the source rectangle for the entity's current animation frame.
+ *
+ * Determines the valid frame index based on the component's selected row/column or full-grid mode,
+ * constrains start/end/current frames into the valid range, and maps the chosen frame to its
+ * column and row in the sprite sheet.
+ *
+ * @param entity Entity whose current animation frame rectangle is requested.
+ * @return Rectangle Source rectangle (x, y, width, height) for the current frame in texture coordinates.
+ */
 Rectangle ecs::SpriteAnimationSystem::getCurrentFrameRect(Entity entity) const {
   const auto &animation =
       _ecsManager.getComponent<SpriteAnimationComponent>(entity);
@@ -144,6 +228,18 @@ Rectangle ecs::SpriteAnimationSystem::getCurrentFrameRect(Entity entity) const {
           static_cast<float>(animation.frameHeight)};
 }
 
+/**
+ * @brief Initializes the animation frame dimensions from a texture's size.
+ *
+ * Computes and stores each frame's width and height using the entity's
+ * configured totalColumns and totalRows. If the animation's column or row
+ * count is not greater than zero, the function logs an error and leaves the
+ * component unchanged.
+ *
+ * @param entity Entity whose SpriteAnimationComponent will be initialized.
+ * @param textureWidth Width of the source texture in pixels.
+ * @param textureHeight Height of the source texture in pixels.
+ */
 void ecs::SpriteAnimationSystem::initializeFromTexture(Entity entity,
                                                        int textureWidth,
                                                        int textureHeight) {
