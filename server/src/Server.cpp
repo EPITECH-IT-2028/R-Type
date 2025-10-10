@@ -6,7 +6,7 @@
 #include "Events.hpp"
 #include "IPacket.hpp"
 #include "Macro.hpp"
-#include "ServerNetworkManager.hpp"
+#include "Packet.hpp"
 #include "PacketSender.hpp"
 
 server::Client::Client(int id) : _player_id(id) {
@@ -120,9 +120,9 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
 
         if constexpr (std::is_same_v<T, queue::EnemySpawnEvent>) {
           auto enemySpawnPacket = PacketBuilder::makeEnemySpawn(
-              specificEvent.enemy_id, static_cast<EnemyType>(0x01),
-              specificEvent.x, specificEvent.y, specificEvent.vx,
-              specificEvent.vy, specificEvent.health, specificEvent.max_health);
+              specificEvent.enemy_id, EnemyType::BASIC_FIGHTER, specificEvent.x,
+              specificEvent.y, specificEvent.vx, specificEvent.vy,
+              specificEvent.health, specificEvent.max_health);
           broadcast::Broadcast::broadcastEnemySpawn(_networkManager, _clients,
                                                     enemySpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
@@ -168,6 +168,13 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.player_id, specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerDeath(_networkManager, _clients,
                                                      playerDestroyPacket);
+        } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
+          auto gameStartPacket =
+              PacketBuilder::makeGameStart(specificEvent.game_started);
+          broadcast::Broadcast::broadcastGameStart(_networkManager, _clients,
+                                                   gameStartPacket);
+        } else {
+          std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }
       },
       event);

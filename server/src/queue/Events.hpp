@@ -74,9 +74,13 @@ namespace queue {
       float y;
   };
 
+  struct GameStartEvent {
+      bool game_started;
+  };
+
   using GameEvent =
       std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent,
                    ProjectileSpawnEvent, PlayerHitEvent, EnemyHitEvent,
-                   ProjectileDestroyEvent, PlayerDestroyEvent>;
+                   ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent>;
 
 }  // namespace queue
