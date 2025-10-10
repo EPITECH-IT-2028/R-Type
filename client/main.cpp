@@ -5,6 +5,7 @@
 #include "RenderManager.hpp"
 #include "raylib.h"
 #include "Parser.hpp"
+#include "EmbeddedAssets.hpp"
 
 void gameLoop(client::Client &client) {
   while (client.isConnected())
@@ -27,6 +28,7 @@ int main(void) {
   client::Client client(parser.getHost(), parser.getPort());
   client.initializeECS();
   client.connect();
+  asset::initEmbeddedAssets();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
