@@ -8,7 +8,7 @@ using namespace network;
 
 ClientNetworkManager::ClientNetworkManager(const std::string &host,
                                            std::uint16_t port)
-    : BaseNetworkManager(port),
+    : BaseNetworkManager(0),
       _server_endpoint(asio::ip::make_address(host), port),
       _host(host),
       _port(port),
