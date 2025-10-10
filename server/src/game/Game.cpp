@@ -9,6 +9,7 @@
 #include "EntityManager.hpp"
 #include "Events.hpp"
 #include "HealthComponent.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
@@ -173,7 +174,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
 
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {10.0f, 10.0f});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
-  _ecsManager.addComponent<ecs::SpeedComponent>(entity, {5.0f});
+  _ecsManager.addComponent<ecs::SpeedComponent>(entity, {PLAYER_SPEED});
   _ecsManager.addComponent<ecs::PlayerComponent>(
       entity, {player_id, name, true, 0, true});
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
@@ -263,7 +264,8 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
-  _ecsManager.addComponent<ecs::VelocityComponent>(entity, {-3.0f, 0.0f});
+  _ecsManager.addComponent<ecs::VelocityComponent>(entity,
+                                                   {ENNEMY_SPEED, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
