@@ -7,7 +7,7 @@
 
 void gameLoop(client::Client &client) {
   while (client.isConnected())
-    client.receivePackets();
+    client.startReceive();
 }
 
 int main(void) {
@@ -20,10 +20,13 @@ int main(void) {
   }
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
-  client::Client client("localhost", "4242");
-  MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
+  client::Client client("127.0.0.1", 4243);
   client.initializeECS();
   client.connect();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
   client.send(welcomeMsg);
 
   std::thread networkThread(gameLoop, std::ref(client));

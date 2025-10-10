@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include "Help.hpp"
-#include "Macros.hpp"
+#include "Macro.hpp"
 #include "ParamsError.hpp"
 #include "Parser.hpp"
 #include "Server.hpp"
@@ -21,23 +21,12 @@ int main(int ac, char **av) {
     Parser parser;
     parser.parseServerProperties();
 
-    asio::io_context io_context;
-
-    server::Server server(io_context, parser.getPort(), parser.getMaxClients());
+    server::Server server(parser.getPort(), parser.getMaxClients());
 
     std::cout << "Starting server on port " << parser.getPort() << "..."
               << std::endl;
     server.start();
 
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
-    signals.async_wait(
-        [&server](const asio::error_code &error, [[maybe_unused]] int) {
-          if (!error) {
-            std::cout << "\nStopping server..." << std::endl;
-            server.stop();
-          }
-        });
-    io_context.run();
   } catch (const ParamsError &e) {
     std::cerr << "Error: " << e.what() << std::endl;
     return KO;
