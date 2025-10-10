@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iostream>
 #include "ParamsError.hpp"
-#include "Macro.hpp"
 
 std::string Parser::trimString(const std::string &str) const {
   size_t first = str.find_first_not_of(" \t");
@@ -13,13 +12,18 @@ std::string Parser::trimString(const std::string &str) const {
   return str.substr(first, last - first + 1);
 }
 
-void Parser::parseServerProperties() {
-  std::ifstream ifs(SERVER_PROPERTIES);
+void Parser::parseProperties() {
+  if (_propertiesPath != SERVER_PROPERTIES && _propertiesPath != CLIENT_PROPERTIES) {
+    throw ParamsError("Invalid properties file path.");
+  }
+
+  std::ifstream ifs(_propertiesPath);
   if (!ifs.is_open()) {
-    std::cerr << "No " << SERVER_PROPERTIES
+    std::cerr << "No " << _propertiesPath
               << " file found, using default values.";
     return;
   }
+
   std::string line;
   while (std::getline(ifs, line)) {
     auto first = line.find_first_not_of(" \t");
@@ -40,8 +44,14 @@ void Parser::parseServerProperties() {
       std::cerr << "Unknown property: " << key << std::endl;
     }
   }
-  if (_max_clients <= 0 || _port <= MIN_PORT || _port > MAX_PORT) {
-    throw ParamsError("Invalid server properties.");
+
+  if (_propertiesPath == SERVER_PROPERTIES) {
+    if (_max_clients <= 0 || _port <= MIN_PORT || _port > MAX_PORT) {
+      throw ParamsError("Invalid server properties.");
+    }
+  } else if (_propertiesPath == CLIENT_PROPERTIES) {
+    if (_port <= MIN_PORT || _port > MAX_PORT) {
+      throw ParamsError("Invalid client properties.");
+    }
   }
-  return;
 }

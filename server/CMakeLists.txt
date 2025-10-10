@@ -21,9 +21,14 @@ foreach(source_file ${ALL_GAME_ENGINE_SOURCES})
     endif()
 endforeach()
 
+set(CORE_SOURCES
+  ${CMAKE_SOURCE_DIR}/core/Parser.cpp
+)
+
 add_executable(${PROJECT_NAME}
   ${SERVER_SOURCES}
   ${GAME_ENGINE_SOURCES}
+  ${CORE_SOURCES}
   ${CORE_NETWORK_SOURCES}
 )
 
@@ -38,6 +43,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   src/enemy/
   src/queue/
   src/projectile/
+  ${CMAKE_SOURCE_DIR}/core/
+  ${CMAKE_SOURCE_DIR}/core/errors/
   ${CMAKE_SOURCE_DIR}/core/network/
   ${CMAKE_SOURCE_DIR}/core/utils/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/

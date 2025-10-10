@@ -4,6 +4,7 @@
 #include "PacketBuilder.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
+#include "Parser.hpp"
 
 void gameLoop(client::Client &client) {
   while (client.isConnected())
@@ -19,8 +20,11 @@ int main(void) {
     return client::KO;
   }
 
+  Parser parser(CLIENT_PROPERTIES);
+  parser.parseProperties();
+
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
-  client::Client client("127.0.0.1", 4243);
+  client::Client client(parser.getHost(), parser.getPort());
   client.initializeECS();
   client.connect();
 

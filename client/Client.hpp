@@ -103,12 +103,12 @@ namespace client {
       }
 
     private:
+      std::array<char, 2048> _recv_buffer;
+      std::atomic<uint32_t> _sequence_number;
+      std::atomic<bool> _running;
       network::ClientNetworkManager _networkManager;
       std::atomic<uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
-      std::atomic<uint32_t> _sequence_number;
-      std::atomic<bool> _running;
-      std::array<char, 2048> _recv_buffer;
 
       void registerComponent();
       void registerSystem();

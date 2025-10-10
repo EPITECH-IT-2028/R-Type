@@ -9,7 +9,6 @@ public:
 
   const char *what() const noexcept override { return _msg.c_str(); }
 
-
 private:
   std::string _msg;
 };
