@@ -17,6 +17,8 @@
 #include "systems/BackgroundSystem.hpp"
 #include "systems/MovementSystem.hpp"
 #include "systems/RenderSystem.hpp"
+#include "EnemyComponent.hpp"
+#include "Packet.hpp"
 
 namespace client {
   Client::Client(const std::string &host, const std::uint16_t &port)
@@ -32,7 +34,6 @@ namespace client {
     registerSystem();
     signSystem();
     createBackgroundEntities();
-    createPlayerEntity();
   }
 
   /**
@@ -53,6 +54,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
+    _ecsManager.registerComponent<ecs::EnemyComponent>();
   }
 
   /**
@@ -177,11 +179,11 @@ namespace client {
    * column/row counts, selected/neutral frames, frame timing, and non-playing,
    * non-looping defaults.
    */
-  void Client::createPlayerEntity() {
+  void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
-    _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});
+    _ecsManager.addComponent<ecs::PositionComponent>(player, {packet.x, packet.y});
     _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::SpeedComponent>(player, {PLAYER_SPEED});
+    _ecsManager.addComponent<ecs::SpeedComponent>(player, {packet.speed});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
     ecs::SpriteComponent sprite;
@@ -202,5 +204,38 @@ namespace client {
     anim.loop = false;
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
+
+    if (_playerId == -1) {
+      _playerId = packet.player_id;
+      TraceLog(LOG_INFO, "Assigned player ID: %u", _playerId);
+    }
+    _playerEntities[_playerId] = player;
+  }
+
+  void Client::createEnemyEntity(EnemySpawnPacket packet) {
+    auto enemy = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::PositionComponent>(enemy, {packet.x, packet.y});
+    _ecsManager.addComponent<ecs::VelocityComponent>(enemy, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::RenderComponent>(
+        enemy, {renderManager::ENEMY_PATH});
+    ecs::SpriteComponent sprite;
+    sprite.sourceRect = {EnemySpriteConfig::RECT_X, EnemySpriteConfig::RECT_Y,
+                         EnemySpriteConfig::RECT_WIDTH,
+                         EnemySpriteConfig::RECT_HEIGHT};
+    _ecsManager.addComponent<ecs::SpriteComponent>(enemy, sprite);
+    _ecsManager.addComponent<ecs::ScaleComponent>(
+        enemy, {EnemySpriteConfig::SCALE, EnemySpriteConfig::SCALE});
+    ecs::SpriteAnimationComponent anim;
+    anim.totalColumns = EnemySpriteConfig::TOTAL_COLUMNS;
+    anim.totalRows = EnemySpriteConfig::TOTAL_ROWS;
+    anim.endFrame = static_cast<int>(EnemySpriteFrameIndex::END);
+    anim.selectedRow = static_cast<int>(EnemySpriteFrameIndex::SELECTED_ROW);
+    anim.isPlaying = false;
+    anim.frameTime = EnemySpriteConfig::FRAME_TIME;
+    anim.loop = false;
+    anim.neutralFrame = static_cast<int>(EnemySpriteFrameIndex::NEUTRAL);
+    _ecsManager.addComponent<ecs::SpriteAnimationComponent>(enemy, anim);
+
+    _enemyEntities[packet.enemy_id] = enemy;
   }
 }  // namespace client

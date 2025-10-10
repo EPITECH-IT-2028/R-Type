@@ -19,10 +19,15 @@ namespace packet {
           PacketType, std::function<std::unique_ptr<IPacket>()>>
           _handlers = {{PacketType::Message,
                         []() { return std::make_unique<MessageHandler>(); }},
-                       {PacketType::Move,
-                        []() { return std::make_unique<MoveHandler>(); }},
-                      {PacketType::EnemySpawn,
-                        []() { return std::make_unique<EnemySpawnHandler>(); }}};
+                        {PacketType::NewPlayer,
+                        []() { return std::make_unique<NewPlayerHandler>(); }},
+                        {PacketType::EnemySpawn,
+                          []() { return std::make_unique<EnemySpawnHandler>(); }},
+                        {PacketType::EnemyMove,
+                          []() { return std::make_unique<EnemyMoveHandler>(); }},
+                        {PacketType::EnemyDeath,
+                        []() { return std::make_unique<EnemyDeathHandler>(); }}
+                      };
 
   };
 }  // namespace packet

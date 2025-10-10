@@ -9,6 +9,10 @@
 #include "SpriteComponent.hpp"
 #include "ScaleComponent.hpp"
 #include "EnemyComponent.hpp"
+#include "PlayerTagComponent.hpp"
+#include "SpeedComponent.hpp"
+
+#include "Client.hpp"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -27,36 +31,23 @@ int packet::MessageHandler::handlePacket(client::Client &client,
   return 0;
 }
 
-int packet::MoveHandler::handlePacket(client::Client &client,
-                                      const char *data, std::size_t size) {
-  if (size < sizeof(MovePacket)) {
+int packet::NewPlayerHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  if (size < sizeof(NewPlayerPacket)) {
     TraceLog(LOG_ERROR,
              "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(MovePacket));
+             size, sizeof(NewPlayerPacket));
     return packet::KO;
   }
 
-  MovePacket packet;
-  std::memcpy(&packet, data, sizeof(MovePacket));
+  NewPlayerPacket packet;
+  std::memcpy(&packet, data, sizeof(NewPlayerPacket));
 
-  TraceLog(LOG_INFO, "[MOVE] Player ID: %u moved to (%f, %f)", packet.player_id,
-           packet.x, packet.y);
+  TraceLog(LOG_INFO,
+           "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
+           packet.player_id, packet.x, packet.y, packet.speed);
 
-  auto &ecsManager = ecs::ECSManager::getInstance();
-
-  try {
-    auto &position = ecsManager.getComponent<ecs::PositionComponent>(packet.player_id);
-    position.x = packet.x;
-    position.y = packet.y;
-    
-    TraceLog(LOG_DEBUG, "[MOVE] Player ID %u position updated to (%f, %f)", 
-             packet.player_id, packet.x, packet.y);
-  } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[MOVE] Failed to update player %u: %s", 
-             packet.player_id, e.what());
-    return packet::KO;
-  }
-
+  client.createPlayerEntity(packet);
   return packet::OK;
 }
 
@@ -77,14 +68,64 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
            packet.enemy_id, static_cast<int>(packet.enemy_type), packet.x,
            packet.y);
 
-  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
-  auto enemyEntity = ecsManager.createEntity();
+  client.createEnemyEntity(packet);
+  return packet::OK;
+}
 
-  ecsManager.addComponent<ecs::EnemyComponent>(enemyEntity, {static_cast<int>(packet.enemy_id), packet.enemy_type});
-  ecsManager.addComponent<ecs::PositionComponent>(enemyEntity, {packet.x, packet.y});
-  ecsManager.addComponent<ecs::RenderComponent>(
-      enemyEntity, {renderManager::PLAYER_PATH});
-  ecsManager.addComponent<ecs::SpriteComponent>(enemyEntity, {0.0f, 0.0f, 33.0f, 17.0f});
-  ecsManager.addComponent<ecs::ScaleComponent>(enemyEntity, {2.0f, 2.0f});
+int packet::EnemyMoveHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  if (size < sizeof(EnemyMovePacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(EnemyMovePacket));
+    return packet::KO;
+  }
+
+  EnemyMovePacket packet;
+  std::memcpy(&packet, data, sizeof(EnemyMovePacket));
+
+  TraceLog(LOG_INFO, "[ENEMY MOVE] Enemy ID: %u moved to (%f, %f)",
+           packet.enemy_id, packet.x, packet.y);
+  
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
+    auto &position = ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
+    position.x = packet.x;
+    position.y = packet.y;
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to update enemy %u: %s", 
+             packet.enemy_id, e.what());
+    return packet::KO;
+  }
+  return packet::OK;
+}
+
+int packet::EnemyDeathHandler::handlePacket(client::Client &client,
+                                            const char *data,
+                                            std::size_t size) {
+  if (size < sizeof(EnemyDeathPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(EnemyDeathPacket));
+    return packet::KO;
+  }
+
+  EnemyDeathPacket packet;
+  std::memcpy(&packet, data, sizeof(EnemyDeathPacket));
+
+  TraceLog(LOG_INFO, "[ENEMY DEATH] Enemy ID: %u has been destroyed",
+           packet.enemy_id);
+  
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
+    ecsManager.destroyEntity(enemyEntity);
+    client.destroyEnemyEntity(packet.enemy_id);
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to destroy enemy %u: %s", 
+             packet.enemy_id, e.what());
+    return packet::KO;
+  }
   return packet::OK;
 }
