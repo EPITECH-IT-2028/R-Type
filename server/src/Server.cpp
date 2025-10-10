@@ -6,6 +6,7 @@
 #include "Events.hpp"
 #include "IPacket.hpp"
 #include "Macros.hpp"
+#include "Packet.hpp"
 #include "PacketSender.hpp"
 
 server::Client::Client(const asio::ip::udp::endpoint &endpoint, int id)
@@ -150,9 +151,10 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
 
         if constexpr (std::is_same_v<T, queue::EnemySpawnEvent>) {
           auto enemySpawnPacket = PacketBuilder::makeEnemySpawn(
-              specificEvent.enemy_id, static_cast<EnemyType>(0x01),
-              specificEvent.x, specificEvent.y, specificEvent.vx,
-              specificEvent.vy, specificEvent.health, specificEvent.max_health);
+              specificEvent.enemy_id,
+              static_cast<EnemyType>(EnemyType::BASIC_FIGHTER), specificEvent.x,
+              specificEvent.y, specificEvent.vx, specificEvent.vy,
+              specificEvent.health, specificEvent.max_health);
           broadcast::Broadcast::broadcastEnemySpawn(_socket, _clients,
                                                     enemySpawnPacket);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
@@ -198,6 +200,12 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               specificEvent.player_id, specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerDeath(_socket, _clients,
                                                      playerDestroyPacket);
+        } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
+          auto gameStartPacket = PacketBuilder::makeGameStart();
+          broadcast::Broadcast::broadcastGameStart(_socket, _clients,
+                                                   gameStartPacket);
+        } else {
+          std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }
       },
       event);
