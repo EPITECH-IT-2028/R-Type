@@ -343,20 +343,4 @@ struct PacketBuilder {
       packet.player_id = player_id;
       return packet;
     }
-
-    /**
-     * @brief Create a GameStart packet indicating the game has started.
-     *
-     * @param game_start Boolean indicating if the game has started.
-     * @return GameStartPacket Packet with header type set to
-     * PacketType::GameStart, header size set to the packet's sizeof, and
-     * game_start populated.
-     */
-    static GameStartPacket makeGameStart() {
-      GameStartPacket packet{};
-      packet.header.type = PacketType::GameStart;
-      packet.header.size = sizeof(packet);
-      packet.game_start = true;
-      return packet;
-    }
 };

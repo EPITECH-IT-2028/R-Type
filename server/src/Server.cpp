@@ -151,8 +151,7 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
 
         if constexpr (std::is_same_v<T, queue::EnemySpawnEvent>) {
           auto enemySpawnPacket = PacketBuilder::makeEnemySpawn(
-              specificEvent.enemy_id,
-              static_cast<EnemyType>(EnemyType::BASIC_FIGHTER), specificEvent.x,
+              specificEvent.enemy_id, EnemyType::BASIC_FIGHTER, specificEvent.x,
               specificEvent.y, specificEvent.vx, specificEvent.vy,
               specificEvent.health, specificEvent.max_health);
           broadcast::Broadcast::broadcastEnemySpawn(_socket, _clients,
@@ -201,7 +200,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
           broadcast::Broadcast::broadcastPlayerDeath(_socket, _clients,
                                                      playerDestroyPacket);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
-          auto gameStartPacket = PacketBuilder::makeGameStart();
+          auto gameStartPacket =
+              PacketBuilder::makeGameStart(specificEvent.game_started);
           broadcast::Broadcast::broadcastGameStart(_socket, _clients,
                                                    gameStartPacket);
         } else {
