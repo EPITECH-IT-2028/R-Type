@@ -12,6 +12,7 @@ set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/MovementSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BackgroundSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BoundarySystem.cpp
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/SpriteAnimationSystem.cpp
 )
 
 add_executable(${PROJECT_NAME}

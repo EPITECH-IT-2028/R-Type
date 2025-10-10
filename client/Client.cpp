@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
+#include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
@@ -9,6 +10,8 @@
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
 #include "SpeedComponent.hpp"
+#include "SpriteAnimationComponent.hpp"
+#include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
@@ -41,14 +44,16 @@ namespace client {
     _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
+    _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
   }
 
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
-    _ecsManager.registerSystem<ecs::RenderSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
+    _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
+    _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
   void Client::signSystem() {
@@ -77,6 +82,7 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
@@ -85,6 +91,12 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
       _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
+      _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
     }
   }
 
@@ -125,9 +137,23 @@ namespace client {
     _ecsManager.addComponent<ecs::SpeedComponent>(player, {PLAYER_SPEED});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
-    _ecsManager.addComponent<ecs::SpriteComponent>(player,
-                                                   {0.0f, 0.0f, 33.0f, 17.0f});
-    _ecsManager.addComponent<ecs::ScaleComponent>(player, {2.0f, 2.0f});
+    ecs::SpriteComponent sprite;
+    sprite.sourceRect = {PlayerSpriteConfig::RECT_X, PlayerSpriteConfig::RECT_Y,
+                         PlayerSpriteConfig::RECT_WIDTH,
+                         PlayerSpriteConfig::RECT_HEIGHT};
+    _ecsManager.addComponent<ecs::SpriteComponent>(player, sprite);
+    _ecsManager.addComponent<ecs::ScaleComponent>(
+        player, {PlayerSpriteConfig::SCALE, PlayerSpriteConfig::SCALE});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
+    ecs::SpriteAnimationComponent anim;
+    anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
+    anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
+    anim.endFrame = static_cast<int>(PlayerSpriteFrameIndex::END);
+    anim.selectedRow = static_cast<int>(PlayerSpriteFrameIndex::SELECTED_ROW);
+    anim.isPlaying = false;
+    anim.frameTime = PlayerSpriteConfig::FRAME_TIME;
+    anim.loop = false;
+    anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
+    _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client

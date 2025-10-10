@@ -34,6 +34,33 @@ namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
   constexpr float PLAYER_SPEED = 500.0f;
+
+  /**
+   * Player sprite and animation configuration.
+   * Values must match the layout of the player sprite-sheet used for rendering.
+   */
+  struct PlayerSpriteConfig {
+      static constexpr float RECT_X = 0.0f;  ///< X coordinate in sprite sheet
+      static constexpr float RECT_Y = 0.0f;  ///< Y coordinate in sprite sheet
+      static constexpr float RECT_WIDTH = 33.0f;   ///< Width of player sprite
+      static constexpr float RECT_HEIGHT = 17.0f;  ///< Height of player sprite
+      static constexpr int SCALE = 2;          ///< Scale factor for rendering
+      static constexpr int TOTAL_COLUMNS = 5;  ///< Columns in sprite sheet
+      static constexpr int TOTAL_ROWS = 5;     ///< Rows in sprite sheet
+      static constexpr float FRAME_TIME =
+          0.05f;  ///< Time per animation frame (seconds)
+  };
+
+  /**
+   * Frame indices for player animation.
+   * These map directly to specific sprite-sheet frames and
+   * must match the order/layout of the player sprite asset.
+   */
+  enum class PlayerSpriteFrameIndex {
+    SELECTED_ROW = 0,  ///< Row for basic movement/idle
+    NEUTRAL = 2,       ///< Neutral frame index
+    END = 4            ///< End frame index (e.g., tilt/extreme)
+  };
 }  // namespace client
 
 namespace client {
