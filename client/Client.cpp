@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include <cstdint>
+#include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
 #include "EntityManager.hpp"
@@ -139,7 +140,7 @@ namespace client {
    * referencing the background texture, and background tag components.
    */
   void Client::createBackgroundEntities() {
-    Image backgroundImage = LoadImage(renderManager::BG_PATH);
+    Image backgroundImage = asset::AssetManager::loadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
     float aspectRatio = 1.0f;
     float scaledWidth = screenHeight;
@@ -147,7 +148,6 @@ namespace client {
       aspectRatio = static_cast<float>(backgroundImage.width) /
                     static_cast<float>(backgroundImage.height);
       scaledWidth = screenHeight * aspectRatio;
-      UnloadImage(backgroundImage);
     }
 
     auto background1 = _ecsManager.createEntity();
