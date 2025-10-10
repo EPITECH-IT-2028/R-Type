@@ -6,12 +6,31 @@
 #include "SpriteComponent.hpp"
 #include "raylib.h"
 
+/**
+ * @brief Releases GPU texture resources held by the render system.
+ *
+ * Iterates over the internal texture cache and unloads each cached Texture2D to free associated GPU memory.
+ */
 ecs::RenderSystem::~RenderSystem() noexcept {
   for (auto &pair : _textureCache) {
     UnloadTexture(pair.second);
   }
 }
 
+#include "SpriteAnimationComponent.hpp"
+
+/**
+ * @brief Renders all entities managed by this system, loading and caching textures and initializing sprite animations when needed.
+ *
+ * Iterates over tracked entities and, for each one with a non-empty texture path, ensures the texture is loaded and cached, initializes
+ * SpriteAnimationComponent frame dimensions if the component is present and not initialized, constructs source and destination rectangles
+ * (respecting SpriteComponent source rects, RenderComponent size/offsets, BackgroundTagComponent fullscreen-aspect behavior, and ScaleComponent),
+ * and issues the draw call for the computed rectangles.
+ *
+ * Observable side effects:
+ * - Loads textures from disk and stores them in the system's texture cache.
+ * - Logs a warning and skips rendering if a texture fails to load or has zero height for background entities.
+ */
 void ecs::RenderSystem::update(float deltaTime) {
   for (Entity entity : _entities) {
     auto &positionComp =
@@ -32,6 +51,17 @@ void ecs::RenderSystem::update(float deltaTime) {
       _textureCache[path] = newTexture;
     }
     Texture2D &texture = _textureCache[path];
+
+    if (_ecsManager.hasComponent<ecs::SpriteAnimationComponent>(entity)) {
+      auto &anim = _ecsManager.getComponent<ecs::SpriteAnimationComponent>(entity);
+      if (!anim.isInitialized) {
+        if (anim.totalColumns > 0 && anim.totalRows > 0) {
+          anim.frameWidth = texture.width / anim.totalColumns;
+          anim.frameHeight = texture.height / anim.totalRows;
+          anim.isInitialized = true;
+        }
+      }
+    }
 
     Rectangle sourceRec = {0.0f, 0.0f, static_cast<float>(texture.width),
                            static_cast<float>(texture.height)};

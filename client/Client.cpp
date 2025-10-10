@@ -1,6 +1,8 @@
 #include "Client.hpp"
+#include <cstdint>
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
+#include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
@@ -8,6 +10,8 @@
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
 #include "SpeedComponent.hpp"
+#include "SpriteAnimationComponent.hpp"
+#include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
@@ -15,14 +19,10 @@
 #include "systems/RenderSystem.hpp"
 
 namespace client {
-  Client::Client(const std::string &host, uint16_t port)
-      : _socket(_io_context),
-        _host(host),
-        _port(port),
+  Client::Client(const std::string &host, const std::uint16_t &port)
+      : _networkManager(host, port),
         _sequence_number{0},
         _packet_count{0},
-        _timeout(TIMEOUT_MS),
-        _packetFactory(),
         _ecsManager(ecs::ECSManager::getInstance()) {
     _running.store(false, std::memory_order_release);
   }
@@ -138,6 +138,14 @@ namespace client {
     createPlayerEntity();
   }
 
+  /**
+   * @brief Registers all component types used by the client with the ECS manager.
+   *
+   * Registers the following components so they can be attached to entities and
+   * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
+   * SpeedComponent, SpriteComponent, ScaleComponent, BackgroundTagComponent,
+   * PlayerTagComponent, and SpriteAnimationComponent.
+   */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
@@ -147,22 +155,43 @@ namespace client {
     _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
+    _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
   }
 
+  /**
+   * @brief Registers the game's ECS systems with the ECS manager.
+   *
+   * Registers the background, movement, input, boundary, sprite animation, and render
+   * systems so they are tracked and updated by the ECS manager.
+   */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
-    _ecsManager.registerSystem<ecs::RenderSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
+    _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
+    _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
+  /**
+   * @brief Assigns component signatures to each ECS system used by the client.
+   *
+   * Configures which component types each system requires so the ECS manager can
+   * match entities to systems. The mappings set here are:
+   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
+   * - MovementSystem: PositionComponent, VelocityComponent
+   * - RenderSystem: PositionComponent, RenderComponent
+   * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent, SpriteAnimationComponent
+   * - BoundarySystem: PositionComponent, SpriteComponent, PlayerTagComponent
+   * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
+   */
   void Client::signSystem() {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
       signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::BackgroundTagComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::BackgroundTagComponent>());
       _ecsManager.setSystemSignature<ecs::BackgroundSystem>(signature);
     }
     {
@@ -182,6 +211,7 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
@@ -191,8 +221,22 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
       _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
     }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
+      _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
+    }
   }
 
+  /**
+   * @brief Creates two scrolling background entities for a continuously tiled backdrop.
+   *
+   * Loads the background image to determine its aspect ratio and computes a scaled
+   * width based on the current screen height, then spawns two entities positioned
+   * side-by-side with leftward velocity, render components referencing the
+   * background texture, and background tag components.
+   */
   void Client::createBackgroundEntities() {
     Image backgroundImage = LoadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
@@ -209,19 +253,33 @@ namespace client {
     _ecsManager.addComponent<ecs::PositionComponent>(background1, {0.0f, 0.0f});
     _ecsManager.addComponent<ecs::VelocityComponent>(
         background1, {-renderManager::SCROLL_SPEED, 0.0f});
-    _ecsManager.addComponent<ecs::RenderComponent>(
-        background1, {renderManager::BG_PATH});
+    _ecsManager.addComponent<ecs::RenderComponent>(background1,
+                                                   {renderManager::BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background1, {});
 
     auto background2 = _ecsManager.createEntity();
-    _ecsManager.addComponent<ecs::PositionComponent>(background2, {scaledWidth, 0.0f});
+    _ecsManager.addComponent<ecs::PositionComponent>(background2,
+                                                     {scaledWidth, 0.0f});
     _ecsManager.addComponent<ecs::VelocityComponent>(
         background2, {-renderManager::SCROLL_SPEED, 0.0f});
-    _ecsManager.addComponent<ecs::RenderComponent>(
-        background2, {renderManager::BG_PATH});
+    _ecsManager.addComponent<ecs::RenderComponent>(background2,
+                                                   {renderManager::BG_PATH});
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
   }
 
+  /**
+   * @brief Creates and configures the player entity in the ECS.
+   *
+   * Constructs a player entity and attaches its initial components: position, velocity,
+   * movement speed, render asset, sprite source rectangle, scale, player tag, and
+   * sprite animation metadata.
+   *
+   * The created entity is positioned at (100, 100) with zero initial velocity and
+   * uses renderManager::PLAYER_PATH for rendering. Sprite and scale values are taken
+   * from PlayerSpriteConfig. The sprite animation component is initialized with
+   * column/row counts, selected/neutral frames, frame timing, and non-playing,
+   * non-looping defaults.
+   */
   void Client::createPlayerEntity() {
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});
@@ -229,8 +287,23 @@ namespace client {
     _ecsManager.addComponent<ecs::SpeedComponent>(player, {PLAYER_SPEED});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
-    _ecsManager.addComponent<ecs::SpriteComponent>(player, {0.0f, 0.0f, 33.0f, 17.0f});
-    _ecsManager.addComponent<ecs::ScaleComponent>(player, {2.0f, 2.0f});
+    ecs::SpriteComponent sprite;
+    sprite.sourceRect = {PlayerSpriteConfig::RECT_X, PlayerSpriteConfig::RECT_Y,
+                         PlayerSpriteConfig::RECT_WIDTH,
+                         PlayerSpriteConfig::RECT_HEIGHT};
+    _ecsManager.addComponent<ecs::SpriteComponent>(player, sprite);
+    _ecsManager.addComponent<ecs::ScaleComponent>(
+        player, {PlayerSpriteConfig::SCALE, PlayerSpriteConfig::SCALE});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
+    ecs::SpriteAnimationComponent anim;
+    anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
+    anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
+    anim.endFrame = static_cast<int>(PlayerSpriteFrameIndex::END);
+    anim.selectedRow = static_cast<int>(PlayerSpriteFrameIndex::SELECTED_ROW);
+    anim.isPlaying = false;
+    anim.frameTime = PlayerSpriteConfig::FRAME_TIME;
+    anim.loop = false;
+    anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
+    _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
   }
 }  // namespace client

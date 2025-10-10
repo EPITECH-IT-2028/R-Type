@@ -5,6 +5,7 @@ set(PROJECT_NAME r_type_server)
 
 file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 file(GLOB_RECURSE ALL_GAME_ENGINE_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/game_engine/ecs/*.cpp")
+file(GLOB_RECURSE CORE_NETWORK_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/core/network/ServerNetworkManager.cpp")
 
 set(GAME_ENGINE_SOURCES "")
 foreach(source_file ${ALL_GAME_ENGINE_SOURCES})
@@ -28,6 +29,7 @@ add_executable(${PROJECT_NAME}
   ${SERVER_SOURCES}
   ${GAME_ENGINE_SOURCES}
   ${CORE_SOURCES}
+  ${CORE_NETWORK_SOURCES}
 )
 
 add_compile_options(-W -Wall -Wextra)
@@ -44,6 +46,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/core/
   ${CMAKE_SOURCE_DIR}/core/errors/
   ${CMAKE_SOURCE_DIR}/core/network/
+  ${CMAKE_SOURCE_DIR}/core/utils/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/

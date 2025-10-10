@@ -55,36 +55,3 @@ void Parser::parseProperties() {
     }
   }
 }
-
-// void Parser::parseServerProperties() {
-//   std::ifstream ifs(_propertiesPath);
-//   if (!ifs.is_open()) {
-//     std::cerr << "No " << _propertiesPath
-//               << " file found, using default values.";
-//     return;
-//   }
-//   std::string line;
-//   while (std::getline(ifs, line)) {
-//     auto first = line.find_first_not_of(" \t");
-//     if (first == std::string::npos || line[first] == '#')
-//       continue;
-//     auto pos = line.find('=', first);
-//     if (pos == std::string::npos)
-//       continue;
-//     std::string key = line.substr(first, pos - first);
-//     std::string value = line.substr(pos + 1);
-//     key = trimString(key);
-//     value = trimString(value);
-//     std::transform(key.begin(), key.end(), key.begin(), ::toupper);
-//     auto it = _propertyParsers.find(key);
-//     if (it != _propertyParsers.end()) {
-//       it->second(value);
-//     } else {
-//       std::cerr << "Unknown property: " << key << std::endl;
-//     }
-//   }
-//   if (_max_clients <= 0 || _port <= MIN_PORT || _port > MAX_PORT) {
-//     throw ParamsError("Invalid server properties.");
-//   }
-//   return;
-// }

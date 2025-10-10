@@ -4,6 +4,7 @@ find_package(asio REQUIRED)
 set(PROJECT_NAME r_type_client)
 
 file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "*.cpp")
+file(GLOB_RECURSE CORE_NETWORK_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/core/network/ClientNetworkManager.cpp")
 set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/EntityManager.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/RenderSystem.cpp
@@ -11,6 +12,7 @@ set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/MovementSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BackgroundSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BoundarySystem.cpp
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/SpriteAnimationSystem.cpp
 )
 
 set(CORE_SOURCES
@@ -21,6 +23,7 @@ add_executable(${PROJECT_NAME}
   ${CLIENT_SOURCES}
   ${ECS_SOURCES}
   ${CORE_SOURCES}
+  ${CORE_NETWORK_SOURCES}
 )
 
 add_compile_options(-W -Wall -Wextra)
@@ -32,6 +35,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/core/
   ${CMAKE_SOURCE_DIR}/core/errors/
   ${CMAKE_SOURCE_DIR}/core/network/
+  ${CMAKE_SOURCE_DIR}/core/utils/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/

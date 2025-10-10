@@ -4,6 +4,6 @@
 
 namespace ecs {
   struct SpriteComponent {
-      Rectangle sourceRect = {0.0f, 0.0f, 0.0f, 0.0f};
+    Rectangle sourceRect;
   };
-}  // namespace ecs
+}

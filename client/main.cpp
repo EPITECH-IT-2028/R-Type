@@ -8,7 +8,7 @@
 
 void gameLoop(client::Client &client) {
   while (client.isConnected())
-    client.receivePackets();
+    client.startReceive();
 }
 
 int main(void) {
@@ -28,6 +28,10 @@ int main(void) {
   MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
   client.initializeECS();
   client.connect();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
   client.send(welcomeMsg);
 
   std::thread networkThread(gameLoop, std::ref(client));
