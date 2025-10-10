@@ -132,12 +132,14 @@ void server::Server::processGameEvents() {
 }
 
 /**
- * @brief Translate a game event into its network packet and broadcast it to all connected clients.
+ * @brief Translate a game event into its network packet and broadcast it to all
+ * connected clients.
  *
- * Handles each concrete variant of `queue::GameEvent` (EnemySpawnEvent, EnemyDestroyEvent,
- * EnemyHitEvent, EnemyMoveEvent, ProjectileSpawnEvent, ProjectileDestroyEvent, PlayerHitEvent,
- * PlayerDestroyEvent) by building the corresponding network packet and broadcasting it to every
- * connected client via the server's UDP socket.
+ * Handles each concrete variant of `queue::GameEvent` (EnemySpawnEvent,
+ * EnemyDestroyEvent, EnemyHitEvent, EnemyMoveEvent, ProjectileSpawnEvent,
+ * ProjectileDestroyEvent, PlayerHitEvent, PlayerDestroyEvent) by building the
+ * corresponding network packet and broadcasting it to every connected client
+ * via the server's UDP socket.
  *
  * @param event Variant containing the specific game event to handle.
  */
@@ -233,7 +235,7 @@ void server::Server::handleReceive(const asio::error_code &error,
   }
 
   int client_idx = findOrCreateClient(_remote_endpoint);
-  if (client_idx == ERROR) {
+  if (client_idx == KO) {
     std::cerr << "[WARNING] Max clients reached. Refused connection."
               << std::endl;
     startReceive();
@@ -270,7 +272,7 @@ int server::Server::findOrCreateClient(
     }
   }
 
-  return ERROR;
+  return KO;
 }
 
 /*

@@ -1,5 +1,6 @@
 #include "Projectile.hpp"
 #include <cstdint>
+#include <optional>
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "SpeedComponent.hpp"
@@ -80,17 +81,18 @@ ProjectileType game::Projectile::getType() const {
   }
   return ProjectileType{};
 }
+
 void game::Projectile::setType(ProjectileType type) {
   if (hasComponent<ecs::ProjectileComponent>()) {
     getComponent<ecs::ProjectileComponent>().type = type;
   }
 }
 
-std::uint32_t game::Projectile::getSequenceNumber() const {
+std::optional<uint32_t> game::Projectile::getSequenceNumber() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
     return getComponent<ecs::ProjectileComponent>().sequence_number;
   }
-  return 0;
+  return std::nullopt;
 }
 
 void game::Projectile::setSequenceNumber(std::uint32_t seq) {
@@ -99,11 +101,11 @@ void game::Projectile::setSequenceNumber(std::uint32_t seq) {
   }
 }
 
-std::uint32_t game::Projectile::getDamage() const {
+std::optional<uint32_t> game::Projectile::getDamage() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
     return getComponent<ecs::ProjectileComponent>().damage;
   }
-  return 0;
+  return std::nullopt;
 }
 
 void game::Projectile::setDamage(std::uint32_t damage) {

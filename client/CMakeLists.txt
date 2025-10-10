@@ -1,4 +1,5 @@
 find_package(raylib REQUIRED)
+find_package(asio REQUIRED)
 
 set(PROJECT_NAME r_type_client)
 
@@ -9,18 +10,26 @@ set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/InputSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/MovementSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BackgroundSystem.cpp
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/BoundarySystem.cpp
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/SpriteAnimationSystem.cpp
 )
 
 add_executable(${PROJECT_NAME}
   ${CLIENT_SOURCES}
   ${ECS_SOURCES}
 )
+
 add_compile_options(-W -Wall -Wextra)
 
-target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME} raylib asio::asio)
 target_include_directories(${PROJECT_NAME} PRIVATE
-  ${CMAKE_SOURCE_DIR}/client
+  ${CMAKE_SOURCE_DIR}/client/
+  ${CMAKE_SOURCE_DIR}/client/packets/
+  ${CMAKE_SOURCE_DIR}/core/network/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/tags/
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ASIO_STANDALONE ASIO_NO_WIN32_LEAN_AND_MEAN)
