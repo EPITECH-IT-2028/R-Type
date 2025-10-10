@@ -3,6 +3,7 @@
 #include <asio.hpp>
 #include <array>
 #include <functional>
+#include <cstdint>
 #include "Macro.hpp"
 
 namespace network {

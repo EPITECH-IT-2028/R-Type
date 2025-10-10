@@ -213,7 +213,7 @@ int server::Server::findOrCreateClient() {
 
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_connected &&
-        _networkManager.getClientEndpoit(_clients[i]->_player_id) ==
+        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
             current_endpoint) {
       _clients[i]->_connected = true;
       _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();

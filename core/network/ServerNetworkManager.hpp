@@ -41,7 +41,7 @@ namespace network {
         return;
       };
 
-      asio::ip::udp::endpoint getClientEndpoit(std::uint32_t player_id) {
+      asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
         return _clientEndpoints.at(player_id);
       }
       

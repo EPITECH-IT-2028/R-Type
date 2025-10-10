@@ -26,13 +26,20 @@ void ClientNetworkManager::startReceive(
                                  callback(_recv_buffer.data(),
                                           bytes_transferred);
                                }
-                               startReceive(callback);
+                               if (_running.load(std::memory_order_acquire)) {
+                                 startReceive(callback);
+                               }
                              });
 }
 
 void ClientNetworkManager::send(const char *data, std::size_t size) {
-  _socket.async_send_to(asio::buffer(data, size), _server_endpoint,
-                        [](auto, auto) {});
+  _socket.async_send_to(
+      asio::buffer(data, size), _server_endpoint,
+      [](const asio::error_code &ec, std::size_t) {
+        if (ec) {
+          std::cerr << "[WARNING] Send failed: " << ec.message() << std::endl;
+        }
+      });
 }
 
 void ClientNetworkManager::connect() {
@@ -120,9 +127,9 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
           continue;
         }
 
-        const PacketHeader *header =
-            reinterpret_cast<const PacketHeader *>(data);
-        PacketType packet_type = static_cast<PacketType>(header->type);
+        PacketHeader header;
+        std::memcpy(&header, data, sizeof(PacketHeader));
+        PacketType packet_type = static_cast<PacketType>(header.type);
 
         auto handler = _packetFactory.createHandler(packet_type);
         if (handler) {
