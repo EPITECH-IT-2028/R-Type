@@ -1,0 +1,31 @@
+set(EMBEDDED_ASSETS_DIR "${CMAKE_BINARY_DIR}/embedded_assets")
+file(MAKE_DIRECTORY ${EMBEDDED_ASSETS_DIR})
+
+add_executable(embed_assets
+  ../EmbedAssets.cpp
+  ../AssetManager.cpp
+)
+target_link_libraries(embed_assets raylib)
+target_include_directories(embed_assets PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+
+add_custom_command(
+  OUTPUT
+    ${EMBEDDED_ASSETS_DIR}/background_data.h
+    ${EMBEDDED_ASSETS_DIR}/players_data.h
+  COMMAND embed_assets
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${EMBEDDED_ASSETS_DIR}
+  DEPENDS
+    embed_assets
+    ${CMAKE_CURRENT_SOURCE_DIR}/background.png
+    ${CMAKE_CURRENT_SOURCE_DIR}/players.gif
+  COMMENT "Generating embedded asset headers..."
+  VERBATIM
+)
+
+add_custom_target(generate_embedded_assets ALL
+  COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/embed_assets"
+  DEPENDS
+    ${EMBEDDED_ASSETS_DIR}/background_data.h
+    ${EMBEDDED_ASSETS_DIR}/players_data.h
+)
