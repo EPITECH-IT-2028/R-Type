@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include "ParamsError.hpp"
-#include "Macros.hpp"
+#include "Macro.hpp"
 
 std::string Parser::trimString(const std::string &str) const {
   size_t first = str.find_first_not_of(" \t");

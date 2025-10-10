@@ -1,5 +1,11 @@
 #pragma once
 
+#include <cstddef>
+#ifdef ERROR
+  #undef ERROR
+#endif
+
+constexpr std::size_t BUFFER_SIZE = 2048;
 /* Macros for function's returns */
 constexpr int OK = 0;
 constexpr int KO = -1;

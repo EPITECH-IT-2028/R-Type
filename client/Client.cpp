@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include <cstdint>
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
 #include "EntityManager.hpp"
@@ -18,119 +19,12 @@
 #include "systems/RenderSystem.hpp"
 
 namespace client {
-  Client::Client(const std::string &host, const std::string &port)
-      : _socket(_io_context),
-        _host(host),
-        _port(port),
+  Client::Client(const std::string &host, const std::uint16_t &port)
+      : _networkManager(host, port),
         _sequence_number{0},
         _packet_count{0},
-        _timeout(TIMEOUT_MS),
-        _packetFactory(),
         _ecsManager(ecs::ECSManager::getInstance()) {
     _running.store(false, std::memory_order_release);
-  }
-
-  void Client::connect() {
-    try {
-      asio::ip::udp::resolver resolver(_io_context);
-      auto endpoints = resolver.resolve(asio::ip::udp::v4(), _host, _port);
-      if (endpoints.empty()) {
-        std::cerr << "Failed to resolve host: " << _host << ":" << _port
-                  << std::endl;
-        return;
-      }
-      _server_endpoint = *endpoints.begin();
-      _socket.open(_server_endpoint.protocol());
-      _running.store(true, std::memory_order_release);
-      std::cout << "Connected to " << _host << ":" << _port << std::endl;
-    } catch (std::exception &e) {
-      std::cerr << "Connection error: " << e.what() << std::endl;
-    }
-  }
-
-  void Client::disconnect() {
-    _running.store(false, std::memory_order_release);
-    _socket.close();
-    std::cout << "Disconnected from server." << std::endl;
-  }
-
-  void Client::receivePackets() {
-    if (!_running.load(std::memory_order_acquire)) {
-      std::cerr << "Client is not connected. Cannot receive packets."
-                << std::endl;
-      return;
-    }
-
-    while (_running.load(std::memory_order_acquire)) {
-      try {
-        asio::ip::udp::endpoint sender_endpoint;
-        std::size_t length = 0;
-        asio::error_code ec;
-
-        asio::steady_timer timer(_io_context);
-        bool received = false;
-
-        _socket.async_receive_from(
-            asio::buffer(_recv_buffer), sender_endpoint,
-            [&](const asio::error_code &error, std::size_t bytes_recvd) {
-              ec = error;
-              length = bytes_recvd;
-              received = true;
-              timer.cancel();
-            });
-
-        timer.expires_after(_timeout);
-        timer.async_wait([&](const asio::error_code &error) {
-          if (!error && !received) {
-            _socket.cancel();
-          }
-        });
-
-        _io_context.restart();
-        _io_context.run();
-
-        if (!received)
-          continue;
-
-        if (ec == asio::error::operation_aborted) {
-          continue;
-        }
-        if (ec) {
-          std::cerr << "Receive error: " << ec.message() << std::endl;
-          continue;
-        }
-
-        if (length > 0) {
-          const char *data = _recv_buffer.data();
-          std::size_t size = length;
-
-          if (size < sizeof(PacketHeader)) {
-            std::cerr << "Received packet too small to contain header."
-                      << std::endl;
-            continue;
-          }
-
-          const PacketHeader *header =
-              reinterpret_cast<const PacketHeader *>(data);
-          PacketType packet_type = static_cast<PacketType>(header->type);
-
-          auto handler = _packetFactory.createHandler(packet_type);
-          if (handler) {
-            int result = handler->handlePacket(*this, data, size);
-            if (result != 0) {
-              std::cerr << "Error handling packet of type "
-                        << static_cast<int>(packet_type) << ": " << result
-                        << std::endl;
-            }
-          } else {
-            std::cerr << "No handler for packet type "
-                      << static_cast<int>(packet_type) << std::endl;
-          }
-        }
-      } catch (std::exception &e) {
-        std::cerr << "Receive error: " << e.what() << std::endl;
-      }
-    }
   }
 
   void Client::initializeECS() {
@@ -141,6 +35,14 @@ namespace client {
     createPlayerEntity();
   }
 
+  /**
+   * @brief Registers all component types used by the client with the ECS manager.
+   *
+   * Registers the following components so they can be attached to entities and
+   * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
+   * SpeedComponent, SpriteComponent, ScaleComponent, BackgroundTagComponent,
+   * PlayerTagComponent, and SpriteAnimationComponent.
+   */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
@@ -153,6 +55,12 @@ namespace client {
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
   }
 
+  /**
+   * @brief Registers the game's ECS systems with the ECS manager.
+   *
+   * Registers the background, movement, input, boundary, sprite animation, and render
+   * systems so they are tracked and updated by the ECS manager.
+   */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
@@ -162,12 +70,25 @@ namespace client {
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
+  /**
+   * @brief Assigns component signatures to each ECS system used by the client.
+   *
+   * Configures which component types each system requires so the ECS manager can
+   * match entities to systems. The mappings set here are:
+   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
+   * - MovementSystem: PositionComponent, VelocityComponent
+   * - RenderSystem: PositionComponent, RenderComponent
+   * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent, SpriteAnimationComponent
+   * - BoundarySystem: PositionComponent, SpriteComponent, PlayerTagComponent
+   * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
+   */
   void Client::signSystem() {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
       signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::BackgroundTagComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::BackgroundTagComponent>());
       _ecsManager.setSystemSignature<ecs::BackgroundSystem>(signature);
     }
     {
@@ -205,6 +126,14 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Creates two scrolling background entities for a continuously tiled backdrop.
+   *
+   * Loads the background image to determine its aspect ratio and computes a scaled
+   * width based on the current screen height, then spawns two entities positioned
+   * side-by-side with leftward velocity, render components referencing the
+   * background texture, and background tag components.
+   */
   void Client::createBackgroundEntities() {
     Image backgroundImage = LoadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
@@ -235,6 +164,19 @@ namespace client {
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
   }
 
+  /**
+   * @brief Creates and configures the player entity in the ECS.
+   *
+   * Constructs a player entity and attaches its initial components: position, velocity,
+   * movement speed, render asset, sprite source rectangle, scale, player tag, and
+   * sprite animation metadata.
+   *
+   * The created entity is positioned at (100, 100) with zero initial velocity and
+   * uses renderManager::PLAYER_PATH for rendering. Sprite and scale values are taken
+   * from PlayerSpriteConfig. The sprite animation component is initialized with
+   * column/row counts, selected/neutral frames, frame timing, and non-playing,
+   * non-looping defaults.
+   */
   void Client::createPlayerEntity() {
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player, {100.0f, 100.0f});

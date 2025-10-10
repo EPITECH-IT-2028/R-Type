@@ -8,7 +8,14 @@
 namespace ecs {
   class SpriteAnimationSystem : public System {
     public:
-      explicit SpriteAnimationSystem(
+      /**
+           * @brief Constructs a SpriteAnimationSystem bound to a given ECS manager.
+           *
+           * The provided ECSManager reference is stored and used to access entity/component data.
+           *
+           * @param ecsManager Reference to the ECSManager to associate with this system. Defaults to ECSManager::getInstance().
+           */
+          explicit SpriteAnimationSystem(
           ECSManager &ecsManager = ECSManager::getInstance())
           : _ecsManager(ecsManager) {}
 
