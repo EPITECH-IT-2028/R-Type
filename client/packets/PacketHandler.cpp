@@ -1,16 +1,9 @@
 #include "PacketHandler.hpp"
 #include <cstring>
 #include "Packet.hpp"
-#include "RenderComponent.hpp"
 #include "raylib.h"
 #include "ECSManager.hpp"
 #include "PositionComponent.hpp"
-#include "RenderManager.hpp"
-#include "SpriteComponent.hpp"
-#include "ScaleComponent.hpp"
-#include "EnemyComponent.hpp"
-#include "PlayerTagComponent.hpp"
-#include "SpeedComponent.hpp"
 
 #include "Client.hpp"
 
