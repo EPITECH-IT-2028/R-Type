@@ -25,7 +25,6 @@ int main(void) {
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   client::Client client(parser.getHost(), parser.getPort());
-  MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
   client.initializeECS();
   client.connect();
 
