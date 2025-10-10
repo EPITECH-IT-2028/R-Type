@@ -1,6 +1,6 @@
 [requires]
 raylib/5.5
-asio/1.29.0
+asio/1.36.0
 
 [generators]
 CMakeDeps
