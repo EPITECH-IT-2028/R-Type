@@ -57,6 +57,8 @@ void ClientNetworkManager::connect() {
       _socket.open(_server_endpoint.protocol());
     }
 
+    _socket.non_blocking(true);
+
     _running.store(true, std::memory_order_release);
     std::cout << "Connected to " << _host << ":" << _port << std::endl;
   } catch (std::exception &e) {
@@ -74,78 +76,53 @@ void ClientNetworkManager::disconnect() {
 }
 
 void ClientNetworkManager::receivePackets(client::Client &client) {
-  while (!_running.load(std::memory_order_acquire)) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  if (!_running.load(std::memory_order_acquire)) {
+    return;
   }
 
-  while (_running.load(std::memory_order_acquire)) {
-    try {
-      asio::ip::udp::endpoint sender_endpoint;
-      std::size_t length = 0;
-      asio::error_code ec;
-
-      asio::steady_timer timer(_io_context);
-      bool received = false;
-
-      _socket.async_receive_from(
-          asio::buffer(_recv_buffer), sender_endpoint,
-          [&](const asio::error_code &error, std::size_t bytes_recvd) {
-            ec = error;
-            length = bytes_recvd;
-            received = true;
-            timer.cancel();
-          });
-
-      timer.expires_after(_timeout);
-      timer.async_wait([&](const asio::error_code &error) {
-        if (!error && !received) {
-          _socket.cancel();
-        }
-      });
-
-      _io_context.restart();
-      _io_context.run();
-
-      if (!received)
-        continue;
-
-      if (ec == asio::error::operation_aborted) {
-        continue;
-      }
-      if (ec) {
-        std::cerr << "Receive error: " << ec.message() << std::endl;
-        continue;
-      }
-
-      if (length > 0) {
-        const char *data = _recv_buffer.data();
-        std::size_t size = length;
-
-        if (size < sizeof(PacketHeader)) {
-          std::cerr << "Received packet too small to contain header."
-                    << std::endl;
-          continue;
-        }
-
-        PacketHeader header;
-        std::memcpy(&header, data, sizeof(PacketHeader));
-        PacketType packet_type = static_cast<PacketType>(header.type);
-
-        auto handler = _packetFactory.createHandler(packet_type);
-        if (handler) {
-          int result = handler->handlePacket(client, data, size);
-          if (result != 0) {
-            std::cerr << "Error handling packet of type "
-                      << static_cast<int>(packet_type) << ": " << result
-                      << std::endl;
-          }
-        } else {
-          std::cerr << "No handler for packet type "
-                    << static_cast<int>(packet_type) << std::endl;
-        }
-      }
-    } catch (std::exception &e) {
-      std::cerr << "Receive error: " << e.what() << std::endl;
+  try {
+    if (_socket.available() == 0) {
+      return;
     }
+
+    asio::ip::udp::endpoint sender_endpoint;
+    asio::error_code ec;
+    
+    std::size_t length = _socket.receive_from(
+        asio::buffer(_recv_buffer), sender_endpoint, 0, ec);
+
+    if (ec && ec != asio::error::would_block) {
+      std::cerr << "Receive error: " << ec.message() << std::endl;
+      return;
+    }
+
+    if (length > 0) {
+      const char *data = _recv_buffer.data();
+      std::size_t size = length;
+
+      if (size < sizeof(PacketHeader)) {
+        std::cerr << "Received packet too small to contain header." << std::endl;
+        return;
+      }
+
+      PacketHeader header;
+      std::memcpy(&header, data, sizeof(PacketHeader));
+      PacketType packet_type = static_cast<PacketType>(header.type);
+
+      auto handler = _packetFactory.createHandler(packet_type);
+      if (handler) {
+        int result = handler->handlePacket(client, data, size);
+        if (result != 0) {
+          std::cerr << "Error handling packet of type "
+                    << static_cast<int>(packet_type) << ": " << result
+                    << std::endl;
+        }
+      } else {
+        std::cerr << "No handler for packet type "
+                  << static_cast<int>(packet_type) << std::endl;
+      }
+    }
+  } catch (std::exception &e) {
+    std::cerr << "Receive error: " << e.what() << std::endl;
   }
 }
