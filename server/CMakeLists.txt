@@ -39,6 +39,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   src/queue/
   src/projectile/
   ${CMAKE_SOURCE_DIR}/core/network/
+  ${CMAKE_SOURCE_DIR}/core/utils/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/

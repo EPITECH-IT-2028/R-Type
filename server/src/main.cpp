@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include "Help.hpp"
-#include "Macros.hpp"
+#include "Macro.hpp"
 #include "ParamsError.hpp"
 #include "Parser.hpp"
 #include "Server.hpp"
