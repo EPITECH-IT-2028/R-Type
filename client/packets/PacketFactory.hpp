@@ -32,8 +32,13 @@ namespace packet {
                         {PacketType::EnemyMove,
                         []() { return std::make_unique<EnemyMoveHandler>(); }},
                         {PacketType::EnemyDeath,
-                        []() { return std::make_unique<EnemyDeathHandler>(); }}
+                        []() { return std::make_unique<EnemyDeathHandler>(); }},
+                        {PacketType::PlayerShoot,
+                        []() { return std::make_unique<PlayerShootHandler>(); }},
+                        {PacketType::EnemyHit,
+                        []() { return std::make_unique<EnemyHitHandler>(); }},
+                        {PacketType::PlayerHit,
+                        []() { return std::make_unique<PlayerHitHandler>(); }}
                       };
-
   };
 }  // namespace packet

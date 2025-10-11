@@ -58,4 +58,23 @@ namespace packet {
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
+
+  class PlayerShootHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class EnemyHitHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class PlayerHitHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
 }  // namespace packet

@@ -253,3 +253,57 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
   }
   return packet::OK;
 }
+
+int packet::PlayerShootHandler::handlePacket(client::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
+  if (size < sizeof(PlayerShootPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(PlayerShootPacket));
+    return packet::KO;
+  }
+
+  PlayerShootPacket packet;
+  std::memcpy(&packet, data, sizeof(PlayerShootPacket));
+
+  TraceLog(LOG_INFO, "[PLAYER SHOOT] at (%f, %f) with type %d", packet.x, packet.y, static_cast<int>(packet.projectile_type));
+
+  return packet::OK;
+}
+
+int packet::EnemyHitHandler::handlePacket(client::Client &client,
+                                          const char *data,
+                                          std::size_t size) {
+  if (size < sizeof(EnemyHitPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(EnemyHitPacket));
+    return packet::KO;
+  }
+
+  EnemyHitPacket packet;
+  std::memcpy(&packet, data, sizeof(EnemyHitPacket));
+
+  TraceLog(LOG_INFO, "[ENEMY HIT] Enemy ID: %u, Damage: %f, at (%f, %f)", packet.enemy_id, packet.damage, packet.hit_x, packet.hit_y);
+
+  return packet::OK;
+}
+
+int packet::PlayerHitHandler::handlePacket(client::Client &client,
+                                           const char *data,
+                                           std::size_t size) {
+  if (size < sizeof(PlayerHitPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(PlayerHitPacket));
+    return packet::KO;
+  }
+
+  PlayerHitPacket packet;
+  std::memcpy(&packet, data, sizeof(PlayerHitPacket));
+
+  TraceLog(LOG_INFO, "[PLAYER HIT] Player ID: %u, Damage: %u, at (%f, %f)", packet.player_id, packet.damage, packet.x, packet.y);
+
+  return packet::OK;
+}
