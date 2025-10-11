@@ -26,7 +26,13 @@ int main(int argc, char **argv) {
   std::string outputDir = argv[2];
   bool success = true;
   SetTraceLogLevel(LOG_WARNING);
-  std::filesystem::create_directories(outputDir);
+  try {
+    std::filesystem::create_directories(outputDir);
+  } catch (const std::filesystem::filesystem_error &e) {
+    std::cerr << "[ERROR] Failed to create output directory: " << e.what()
+              << std::endl;
+    return KO;
+  }
 
   std::cout << "=== Asset Exporter ===" << std::endl;
   std::cout << "Resources: " << resourcesDir << std::endl;
