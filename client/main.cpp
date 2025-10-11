@@ -26,9 +26,9 @@ int main(void) {
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   client::Client client(parser.getHost(), parser.getPort());
+  asset::initEmbeddedAssets();
   client.initializeECS();
   client.connect();
-  asset::initEmbeddedAssets();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
