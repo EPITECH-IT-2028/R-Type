@@ -44,7 +44,13 @@ namespace asset {
       } else {
         TraceLog(LOG_WARNING, "[WARN] Embedded asset not found: %s",
                  assetName.c_str());
-        return Texture2D{0};
+        Texture2D texture;
+        texture.id = 0;
+        texture.width = 0;
+        texture.height = 0;
+        texture.mipmaps = 1;
+        texture.format = 0;
+        return Texture2D{texture};
       }
     }
     return LoadTexture(path.c_str());
@@ -68,7 +74,13 @@ namespace asset {
       } else {
         TraceLog(LOG_WARNING, "[WARN] Embedded asset not found: %s",
                  assetName.c_str());
-        return Image{nullptr, 0, 0, 1, 0};
+        Image img;
+        img.data = nullptr;
+        img.width = 0;
+        img.height = 0;
+        img.mipmaps = 1;
+        img.format = 0;
+        return Image{img};
       }
     }
     return LoadImage(path.c_str());
