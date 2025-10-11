@@ -1,11 +1,11 @@
 #include <iostream>
 #include <thread>
 #include "Client.hpp"
+#include "EmbeddedAssets.hpp"
 #include "PacketBuilder.hpp"
+#include "Parser.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
-#include "Parser.hpp"
-#include "EmbeddedAssets.hpp"
 
 void gameLoop(client::Client &client) {
   while (client.isConnected())
