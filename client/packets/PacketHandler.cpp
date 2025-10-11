@@ -9,6 +9,8 @@
 #include "SpriteComponent.hpp"
 #include "ScaleComponent.hpp"
 #include "EnemyComponent.hpp"
+#include "ProjectileComponent.hpp"
+#include "VelocityComponent.hpp"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -86,5 +88,42 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
       enemyEntity, {renderManager::PLAYER_PATH});
   ecsManager.addComponent<ecs::SpriteComponent>(enemyEntity, {0.0f, 0.0f, 33.0f, 17.0f});
   ecsManager.addComponent<ecs::ScaleComponent>(enemyEntity, {2.0f, 2.0f});
+  return packet::OK;
+}
+
+int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
+                                                 const char *data,
+                                                 std::size_t size) {
+  if (size < sizeof(ProjectileSpawnPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(ProjectileSpawnPacket));
+    return packet::KO;
+  }
+
+  ProjectileSpawnPacket packet;
+  std::memcpy(&packet, data, sizeof(ProjectileSpawnPacket));
+
+  TraceLog(LOG_INFO, "[PROJECTILE SPAWN] id=%u owner=%u type=%d pos=(%f,%f)",
+           packet.projectile_id, packet.owner_id,
+           static_cast<int>(packet.projectile_type), packet.x, packet.y);
+
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  auto entityProjectile = ecsManager.createEntity();
+
+  ecs::ProjectileComponent projComp;
+  projComp.projectile_id = packet.projectile_id;
+  projComp.type = packet.projectile_type;
+  projComp.owner_id = packet.owner_id;
+  projComp.damage = packet.damage;
+  projComp.is_destroy = false;
+  ecsManager.addComponent<ecs::ProjectileComponent>(entityProjectile, projComp);
+
+  ecsManager.addComponent<ecs::PositionComponent>(entityProjectile, {packet.x, packet.y});
+  ecsManager.addComponent<ecs::VelocityComponent>(entityProjectile, {packet.velocity_x, packet.velocity_y});
+  ecsManager.addComponent<ecs::RenderComponent>(
+      entityProjectile, {renderManager::PROJECTILE_PATH});
+  ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {130.0f, 0.0f, 16.0f, 16.0f});
+  ecsManager.addComponent<ecs::ScaleComponent>(entityProjectile, {2.0f, 2.0f});
   return packet::OK;
 }
