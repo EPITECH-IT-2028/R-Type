@@ -44,6 +44,45 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+int packet::PlayerDisconnectedHandler::handlePacket(
+    client::Client &client, const char *data, std::size_t size) {
+  if (size < sizeof(PlayerDisconnectPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(PlayerDisconnectPacket));
+    return packet::KO;
+  }
+
+  PlayerDisconnectPacket packet;
+  std::memcpy(&packet, data, sizeof(PlayerDisconnectPacket));
+
+  TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Player ID: %u disconnected",
+           packet.player_id);
+
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto playerEntity = client.getPlayerEntity(packet.player_id);
+    if (playerEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[PLAYER DISCONNECTED] Player ID: %u not found",
+               packet.player_id);
+      return packet::KO;
+    }
+    ecsManager.destroyEntity(playerEntity);
+    client.destroyPlayerEntity(packet.player_id);
+
+    if (client.getPlayerId() == packet.player_id) {
+      TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Our player ID %u disconnected",
+               packet.player_id);
+      client.disconnect();
+    }
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[PLAYER DISCONNECTED] Failed to remove player %u: %s",
+             packet.player_id, e.what());
+    return packet::KO;
+  }
+  return packet::OK;
+}
+
 int packet::PlayerMoveHandler::handlePacket(client::Client &client,
                                             const char *data, std::size_t size) {
   if (size < sizeof(MovePacket)) {

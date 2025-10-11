@@ -21,12 +21,14 @@ namespace packet {
                         []() { return std::make_unique<MessageHandler>(); }},
                         {PacketType::NewPlayer,
                         []() { return std::make_unique<NewPlayerHandler>(); }},
+                        {PacketType::PlayerDisconnected,
+                        []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
                         {PacketType::Move,
                         []() { return std::make_unique<PlayerMoveHandler>(); }},
                         {PacketType::EnemySpawn,
-                          []() { return std::make_unique<EnemySpawnHandler>(); }},
+                        []() { return std::make_unique<EnemySpawnHandler>(); }},
                         {PacketType::EnemyMove,
-                          []() { return std::make_unique<EnemyMoveHandler>(); }},
+                        []() { return std::make_unique<EnemyMoveHandler>(); }},
                         {PacketType::EnemyDeath,
                         []() { return std::make_unique<EnemyDeathHandler>(); }}
                       };
