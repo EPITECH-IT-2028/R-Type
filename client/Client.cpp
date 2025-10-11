@@ -17,6 +17,7 @@
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
 #include "systems/MovementSystem.hpp"
+#include "systems/ProjectileSystem.hpp"
 #include "systems/RenderSystem.hpp"
 
 namespace client {
@@ -69,6 +70,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
+    _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
@@ -125,6 +127,13 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::ProjectileComponent>());
+      _ecsManager.setSystemSignature<ecs::ProjectileSystem>(signature);
     }
   }
 
