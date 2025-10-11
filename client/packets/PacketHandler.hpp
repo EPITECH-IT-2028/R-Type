@@ -22,4 +22,22 @@ namespace packet {
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
+
+  class ProjectileSpawnHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class ProjectileHitHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class ProjectileDestroyHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
 }  // namespace packet
