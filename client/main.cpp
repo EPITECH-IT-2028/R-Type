@@ -2,7 +2,6 @@
 #include <thread>
 #include "Client.hpp"
 #include "Packet.hpp"
-#include "PacketBuilder.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
 #include "Parser.hpp"

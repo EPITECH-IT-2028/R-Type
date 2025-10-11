@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EntityManager.hpp"
+#include "Packet.hpp"
 #include <cstdint>
 #include <unordered_map>
 #if defined(_WIN32)
@@ -29,6 +30,7 @@
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
 #include "PacketSender.hpp"
+#include "PacketBuilder.hpp"
 
 #define TIMEOUT_MS 100
 
@@ -96,10 +98,14 @@ namespace client {
       void startReceive() {
         _networkManager.receivePackets(*this);
       }
+      
       void connect() {
         _networkManager.connect();
       }
+
       void disconnect() {
+        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(_playerId);
+        send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
       }

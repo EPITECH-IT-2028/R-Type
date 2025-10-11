@@ -19,7 +19,6 @@
 #include "systems/RenderSystem.hpp"
 #include "EnemyComponent.hpp"
 #include "Packet.hpp"
-#include "PacketBuilder.hpp"
 
 namespace client {
   Client::Client(const std::string &host, const std::uint16_t &port)
@@ -242,7 +241,7 @@ namespace client {
 
 void Client::sendPosition() {
   if (_playerId == static_cast<uint32_t>(-1)) {
-    TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
+    // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
     return;
   }
 
