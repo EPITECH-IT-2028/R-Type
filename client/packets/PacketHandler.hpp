@@ -17,6 +17,18 @@ namespace packet {
                        std::size_t size) override;
   };
 
+  class PlayerMoveHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class PositionHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
   class EnemySpawnHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,

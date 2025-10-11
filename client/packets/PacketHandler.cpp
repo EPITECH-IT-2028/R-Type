@@ -44,6 +44,57 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+int packet::PlayerMoveHandler::handlePacket(client::Client &client,
+                                            const char *data, std::size_t size) {
+  if (size < sizeof(MovePacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(MovePacket));
+    return packet::KO;
+  }
+
+  MovePacket packet;
+  std::memcpy(&packet, data, sizeof(MovePacket));
+
+  TraceLog(LOG_INFO, "[PLAYER MOVE] Player ID: %u, Seq: %u, moved to (%f, %f)",
+           packet.player_id, packet.sequence_number, packet.x, packet.y);
+  
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto playerEntity = client.getPlayerEntity(packet.player_id);
+    if (playerEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[PLAYER MOVE] Player ID: %u not found", packet.player_id);
+      return packet::KO;
+    }
+
+    if (client.getPlayerId() == packet.player_id) {
+      uint32_t lastSeqNum = client.getSequenceNumber();
+      if (packet.sequence_number <= lastSeqNum) {
+        TraceLog(LOG_DEBUG, "[PLAYER MOVE] Ignoring old packet: seq %u <= last seq %u",
+          packet.sequence_number, lastSeqNum);
+          return packet::OK;
+      }
+    }
+
+    auto &position = ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+    position.x = packet.x;
+    position.y = packet.y;
+
+    if (client.getPlayerId() == packet.player_id) {
+      client.updateSequenceNumber(packet.sequence_number);
+    }
+
+    TraceLog(LOG_DEBUG, "[PLAYER MOVE] Updated player %u position to (%f, %f) with seq %u",
+             packet.player_id, packet.x, packet.y, packet.sequence_number);
+
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s", 
+             packet.player_id, e.what());
+    return packet::KO;
+  }
+  return packet::OK;
+}
+
 int packet::EnemySpawnHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
@@ -83,6 +134,10 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
+    if (enemyEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[ENEMY MOVE] Enemy ID: %u not found", packet.enemy_id);
+      return packet::KO;
+    }
     auto &position = ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
     position.x = packet.x;
     position.y = packet.y;
@@ -113,6 +168,10 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
+    if (enemyEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[ENEMY DEATH] Enemy ID: %u not found", packet.enemy_id);
+      return packet::KO;
+    }
     ecsManager.destroyEntity(enemyEntity);
     client.destroyEnemyEntity(packet.enemy_id);
   } catch (const std::exception &e) {

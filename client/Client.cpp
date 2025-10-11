@@ -19,6 +19,7 @@
 #include "systems/RenderSystem.hpp"
 #include "EnemyComponent.hpp"
 #include "Packet.hpp"
+#include "PacketBuilder.hpp"
 
 namespace client {
   Client::Client(const std::string &host, const std::uint16_t &port)
@@ -209,7 +210,7 @@ namespace client {
       _playerId = packet.player_id;
       TraceLog(LOG_INFO, "Assigned player ID: %u", _playerId);
     }
-    _playerEntities[_playerId] = player;
+    _playerEntities[packet.player_id] = player;
   }
 
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
@@ -238,4 +239,29 @@ namespace client {
 
     _enemyEntities[packet.enemy_id] = enemy;
   }
+
+void Client::sendPosition() {
+  if (_playerId == static_cast<uint32_t>(-1)) {
+    TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
+    return;
+  }
+
+  auto it = _playerEntities.find(_playerId);
+  Entity playerEntity = it->second;
+
+  try {
+    auto &position = _ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+    
+    PositionPacket packet = PacketBuilder::makePosition(
+        position.x,
+        position.y,
+        _sequence_number.load(std::memory_order_acquire));
+    
+    send(packet);
+    _sequence_number.fetch_add(1, std::memory_order_release);
+    
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
+  }
+}
 }  // namespace client

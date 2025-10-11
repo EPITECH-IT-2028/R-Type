@@ -121,16 +121,24 @@ namespace client {
         }
       }
 
-      void updateEnemyEntity(int enemyId, const Entity &entity) {
-        _enemyEntities[enemyId] = entity;
-      }
-
       uint32_t getEnemyEntity(uint32_t enemy_id) const {
         auto it = _enemyEntities.find(enemy_id);
         if (it != _enemyEntities.end()) {
           return it->second;
         }
-        return 0;
+        return KO;
+      }
+
+      uint32_t getPlayerEntity(uint32_t player_id) const {
+        auto it = _playerEntities.find(player_id);
+        if (it != _playerEntities.end()) {
+          return it->second;
+        }
+        return KO;
+      }
+
+      void destroyPlayerEntity(int playerId) {
+        _playerEntities.erase(playerId);
       }
 
       void destroyEnemyEntity(int enemyId) {
@@ -143,6 +151,16 @@ namespace client {
       uint32_t getPlayerId() const {
         return _playerId;
       }
+
+      uint32_t getSequenceNumber() const {
+        return _sequence_number.load(std::memory_order_acquire);
+      }
+
+      void updateSequenceNumber(uint32_t seq) {
+        _sequence_number.store(seq, std::memory_order_release);
+      }
+
+      void sendPosition();
 
     private:
       std::array<char, 2048> _recv_buffer;

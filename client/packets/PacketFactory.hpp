@@ -21,6 +21,8 @@ namespace packet {
                         []() { return std::make_unique<MessageHandler>(); }},
                         {PacketType::NewPlayer,
                         []() { return std::make_unique<NewPlayerHandler>(); }},
+                        {PacketType::Move,
+                        []() { return std::make_unique<PlayerMoveHandler>(); }},
                         {PacketType::EnemySpawn,
                           []() { return std::make_unique<EnemySpawnHandler>(); }},
                         {PacketType::EnemyMove,
