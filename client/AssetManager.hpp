@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <mutex>
 #include "raylib.h"
 
 namespace asset {
@@ -76,5 +77,6 @@ namespace asset {
       };
 
       static std::unordered_map<std::string, EmbeddedImageData> _embeddedImages;
+      static std::mutex _mutex;
   };
 }  // namespace asset

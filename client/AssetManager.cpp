@@ -5,6 +5,7 @@
 namespace asset {
   std::unordered_map<std::string, AssetManager::EmbeddedImageData>
       AssetManager::_embeddedImages;
+  std::mutex AssetManager::_mutex;
 
   bool AssetManager::exportImageAsCode(const std::string &imagePath,
                                        const std::string &outputHeaderPath) {
@@ -30,6 +31,7 @@ namespace asset {
 
     if (path.find(prefix) == 0) {
       std::string assetName = path.substr(prefix.length());
+      std::lock_guard<std::mutex> lock(_mutex);
       auto idx = _embeddedImages.find(assetName);
 
       if (idx != _embeddedImages.end()) {
@@ -61,6 +63,7 @@ namespace asset {
 
     if (path.find(prefix) == 0) {
       std::string assetName = path.substr(prefix.length());
+      std::lock_guard<std::mutex> lock(_mutex);
       auto idx = _embeddedImages.find(assetName);
 
       if (idx != _embeddedImages.end()) {
@@ -88,6 +91,7 @@ namespace asset {
 
   void AssetManager::registerEmbeddedImage(const std::string &name, void *data,
                                            int width, int height, int format) {
+    std::lock_guard<std::mutex> lock(_mutex);
     _embeddedImages[name] = {data, width, height, format};
     TraceLog(LOG_INFO, "[INFO] Registered embedded image: %s (%dx%d)",
              name.c_str(), width, height);
