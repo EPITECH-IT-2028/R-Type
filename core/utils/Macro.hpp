@@ -18,3 +18,7 @@ constexpr float CONVERT_MS_TO_S = 1000.0f;
 constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
+
+constexpr float PLAYER_SPEED = 100.0f;
+
+constexpr float ENNEMY_SPEED = -80.0f;
