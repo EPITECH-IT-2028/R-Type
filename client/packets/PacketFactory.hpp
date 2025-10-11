@@ -21,6 +21,8 @@ namespace packet {
                         []() { return std::make_unique<MessageHandler>(); }},
                         {PacketType::NewPlayer,
                         []() { return std::make_unique<NewPlayerHandler>(); }},
+                        {PacketType::PlayerDeath,
+                        []() { return std::make_unique<PlayerDeathHandler>(); }},
                         {PacketType::PlayerDisconnected,
                         []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
                         {PacketType::Move,
