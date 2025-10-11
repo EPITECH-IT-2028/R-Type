@@ -8,6 +8,14 @@ add_executable(embed_assets
 target_link_libraries(embed_assets raylib)
 target_include_directories(embed_assets PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
+set(REQUIRED_ASSETS background.png players.gif)
+foreach(asset ${REQUIRED_ASSETS})
+  if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${asset}")
+    message(FATAL_ERROR "Required asset not found: ${asset}")
+  endif()
+endforeach()
+
+
 add_custom_command(
   OUTPUT
     ${EMBEDDED_ASSETS_DIR}/background_data.h
@@ -24,7 +32,7 @@ add_custom_command(
 )
 
 add_custom_target(generate_embedded_assets ALL
-  COMMAND ${CMAKE_COMMAND} -E remove "${PROJECT_SOURCE_DIR}/embed_assets"
+  COMMAND ${CMAKE_COMMAND} -E remove -f "${PROJECT_SOURCE_DIR}/embed_assets"
   DEPENDS
     ${EMBEDDED_ASSETS_DIR}/background_data.h
     ${EMBEDDED_ASSETS_DIR}/players_data.h
