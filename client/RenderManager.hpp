@@ -9,6 +9,7 @@ namespace renderManager {
   constexpr float SCROLL_SPEED = 250.0f;
   constexpr const char *BG_PATH = "client/resources/background.png";
   constexpr const char *PLAYER_PATH = "client/resources/players.gif";
+  constexpr const char *PROJECTILE_PATH = "client/resources/projectiles.gif";
 }  // namespace renderManager
 
 namespace renderManager {
