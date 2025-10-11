@@ -1,11 +1,22 @@
 #include "PacketHandler.hpp"
 #include <cstring>
 #include "Packet.hpp"
-#include "raylib.h"
 #include "ECSManager.hpp"
 #include "PositionComponent.hpp"
-
 #include "Client.hpp"
+#include "ECSManager.hpp"
+#include "EnemyComponent.hpp"
+#include "HealthComponent.hpp"
+#include "Packet.hpp"
+#include "PlayerComponent.hpp"
+#include "PositionComponent.hpp"
+#include "ProjectileComponent.hpp"
+#include "RenderComponent.hpp"
+#include "RenderManager.hpp"
+#include "ScaleComponent.hpp"
+#include "SpriteComponent.hpp"
+#include "VelocityComponent.hpp"
+#include "raylib.h"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -267,32 +278,24 @@ int packet::PlayerShootHandler::handlePacket(client::Client &client,
   PlayerShootPacket packet;
   std::memcpy(&packet, data, sizeof(PlayerShootPacket));
 
-  TraceLog(LOG_INFO, "[PLAYER SHOOT] at (%f, %f) with type %d", packet.x, packet.y, static_cast<int>(packet.projectile_type));
+  TraceLog(LOG_INFO, "[PLAYER SHOOT] at (%f, %f) with type %d", packet.x,
+           packet.y, static_cast<int>(packet.projectile_type));
 
-  return packet::OK;
-}
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  auto projectileEntity = ecsManager.createEntity();
 
-int packet::EnemyHitHandler::handlePacket(client::Client &client,
-                                          const char *data,
-                                          std::size_t size) {
-  if (size < sizeof(EnemyHitPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(EnemyHitPacket));
-    return packet::KO;
-  }
-
-  EnemyHitPacket packet;
-  std::memcpy(&packet, data, sizeof(EnemyHitPacket));
-
-  TraceLog(LOG_INFO, "[ENEMY HIT] Enemy ID: %u, Damage: %f, at (%f, %f)", packet.enemy_id, packet.damage, packet.hit_x, packet.hit_y);
+  ecsManager.addComponent<ecs::ProjectileComponent>(projectileEntity, {0, packet.projectile_type, 0, false, packet.sequence_number});
+  ecsManager.addComponent<ecs::PositionComponent>(projectileEntity, {packet.x, packet.y});
+  ecsManager.addComponent<ecs::VelocityComponent>(projectileEntity, {10.0f, 0.0f});
+  ecsManager.addComponent<ecs::RenderComponent>(projectileEntity, {renderManager::PLAYER_PATH});
+  ecsManager.addComponent<ecs::SpriteComponent>(projectileEntity, {0.0f, 0.0f, 10.0f, 10.0f});
+  ecsManager.addComponent<ecs::ScaleComponent>(projectileEntity, {1.0f, 1.0f});
 
   return packet::OK;
 }
 
 int packet::PlayerHitHandler::handlePacket(client::Client &client,
-                                           const char *data,
-                                           std::size_t size) {
+                                           const char *data, std::size_t size) {
   if (size < sizeof(PlayerHitPacket)) {
     TraceLog(LOG_ERROR,
              "Packet too small: got %zu bytes, expected at least %zu bytes.",
@@ -303,7 +306,62 @@ int packet::PlayerHitHandler::handlePacket(client::Client &client,
   PlayerHitPacket packet;
   std::memcpy(&packet, data, sizeof(PlayerHitPacket));
 
-  TraceLog(LOG_INFO, "[PLAYER HIT] Player ID: %u, Damage: %u, at (%f, %f)", packet.player_id, packet.damage, packet.x, packet.y);
+  TraceLog(LOG_INFO, "[PLAYER HIT] Player ID: %u, Damage: %u, at (%f, %f)",
+           packet.player_id, packet.damage, packet.x, packet.y);
+
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  for (auto entity : ecsManager.getAllEntities()) {
+    if (ecsManager.hasComponent<ecs::PlayerComponent>(entity)) {
+      auto &playerComponent = ecsManager.getComponent<ecs::PlayerComponent>(entity);
+      if (playerComponent.player_id == packet.player_id) {
+        if (ecsManager.hasComponent<ecs::HealthComponent>(entity)) {
+          auto &healthComponent = ecsManager.getComponent<ecs::HealthComponent>(entity);
+          healthComponent.health -= packet.damage;
+          if (healthComponent.health <= 0) {
+            TraceLog(LOG_INFO, "Player with ID %u has been defeated.",
+                     packet.player_id);
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  return packet::OK;
+}
+
+int packet::EnemyHitHandler::handlePacket(client::Client &client,
+                                          const char *data, std::size_t size) {
+  if (size < sizeof(EnemyHitPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(EnemyHitPacket));
+    return packet::KO;
+  }
+
+  EnemyHitPacket packet;
+  std::memcpy(&packet, data, sizeof(EnemyHitPacket));
+
+  TraceLog(LOG_INFO, "[ENEMY HIT] Enemy ID: %u, Damage: %f, at (%f, %f)",
+           packet.enemy_id, packet.damage, packet.hit_x, packet.hit_y);
+
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  for (auto entity : ecsManager.getAllEntities()) {
+    if (ecsManager.hasComponent<ecs::EnemyComponent>(entity)) {
+      auto &enemyComponent = ecsManager.getComponent<ecs::EnemyComponent>(entity);
+      if (enemyComponent.enemy_id == packet.enemy_id) {
+        if (ecsManager.hasComponent<ecs::HealthComponent>(entity)) {
+          auto &healthComponent = ecsManager.getComponent<ecs::HealthComponent>(entity);
+          healthComponent.health -= packet.damage;
+          if (healthComponent.health <= 0) {
+            ecsManager.destroyEntity(entity);
+            TraceLog(LOG_INFO, "Enemy with ID %u destroyed.", packet.enemy_id);
+          }
+        }
+        break;
+      }
+    }
+  }
 
   return packet::OK;
 }
