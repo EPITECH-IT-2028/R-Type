@@ -45,6 +45,10 @@ elif [ $# -eq 1 ]; then
                 echo -e "\033[1;31m[ OK ] Removing r_type_server executable...\033[0m"
                 rm -f r_type_server
             fi
+            if [ -f "embed_assets" ]; then
+                echo -e "\033[1;31m[ OK ] Removing embed_assets executable...\033[0m"
+                rm -f embed_assets
+            fi
             echo -e "\033[1;32m[ OK ] Clean completed successfully!\033[0m"
             exit 0
             ;;
