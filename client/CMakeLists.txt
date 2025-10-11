@@ -3,7 +3,11 @@ find_package(asio REQUIRED)
 
 set(PROJECT_NAME r_type_client)
 
+add_subdirectory(resources)
+
 file(GLOB_RECURSE CLIENT_SOURCES CONFIGURE_DEPENDS "*.cpp")
+list(FILTER CLIENT_SOURCES EXCLUDE REGEX "EmbedAssets.cpp")
+
 file(GLOB_RECURSE CORE_NETWORK_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/core/network/ClientNetworkManager.cpp")
 set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/EntityManager.cpp
@@ -25,6 +29,7 @@ add_executable(${PROJECT_NAME}
   ${CORE_SOURCES}
   ${CORE_NETWORK_SOURCES}
 )
+add_dependencies(${PROJECT_NAME} generate_embedded_assets)
 
 add_compile_options(-W -Wall -Wextra)
 
@@ -40,6 +45,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/tags/
+  ${CMAKE_BINARY_DIR}/embedded_assets
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ASIO_STANDALONE ASIO_NO_WIN32_LEAN_AND_MEAN)

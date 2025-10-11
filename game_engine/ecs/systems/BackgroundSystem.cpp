@@ -1,6 +1,7 @@
 #include "BackgroundSystem.hpp"
 #include "PositionComponent.hpp"
 #include "RenderManager.hpp"
+#include "AssetManager.hpp"
 #include "raylib.h"
 
 ecs::BackgroundSystem::~BackgroundSystem() noexcept {
@@ -17,7 +18,7 @@ void ecs::BackgroundSystem::update(float deltaTime) {
 
   const std::string &path = renderManager::BG_PATH;
   if (_textureCache.find(path) == _textureCache.end()) {
-    Texture2D newTexture = LoadTexture(path.c_str());
+    Texture2D newTexture = asset::AssetManager::loadTexture(path);
     if (newTexture.id == 0)
       return;
     _textureCache[path] = newTexture;
