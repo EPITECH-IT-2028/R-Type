@@ -250,6 +250,10 @@ void Client::sendPosition() {
   }
 
   auto it = _playerEntities.find(_playerId);
+  if (it == _playerEntities.end()) {
+    TraceLog(LOG_WARNING, "[SEND POSITION] Player entity not found for ID: %u", _playerId);
+    return;
+  }
   Entity playerEntity = it->second;
 
   try {
@@ -261,7 +265,6 @@ void Client::sendPosition() {
         _sequence_number.load(std::memory_order_acquire));
     
     send(packet);
-    _sequence_number.fetch_add(1, std::memory_order_release);
     
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());

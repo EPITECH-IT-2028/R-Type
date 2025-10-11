@@ -53,11 +53,11 @@ int packet::PlayerDeathHandler::handlePacket(
     return packet::KO;
   }
 
-  PlayerDisconnectPacket packet;
-  std::memcpy(&packet, data, sizeof(PlayerDisconnectPacket));
+  PlayerDeathPacket packet;
+  std::memcpy(&packet, data, sizeof(PlayerDeathPacket));
 
-  TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Player ID: %u disconnected",
-           packet.player_id);
+  TraceLog(LOG_INFO, "[PLAYER DEATH] Player ID: %u died at (%f, %f)",
+           packet.player_id, packet.x, packet.y);
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
