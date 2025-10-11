@@ -6,8 +6,8 @@
 
 void ecs::ProjectileSystem::update(float dt) {
   for (const auto &entity : _entities) {
-    if (_ecsManager->hasComponent<ProjectileComponent>(entity)) {
-      auto &projectile = _ecsManager->getComponent<ProjectileComponent>(entity);
+    if (_ecsManager.hasComponent<ProjectileComponent>(entity)) {
+      auto &projectile = _ecsManager.getComponent<ProjectileComponent>(entity);
 
       switch (projectile.type) {
         case ProjectileType::PLAYER_BASIC:
@@ -22,12 +22,23 @@ void ecs::ProjectileSystem::update(float dt) {
 }
 
 void ecs::ProjectileSystem::moveBasics(const Entity &entity, float dt) {
-  if (!_ecsManager->hasComponent<PositionComponent>(entity) ||
-      !_ecsManager->hasComponent<VelocityComponent>(entity)) {
+  if (!_ecsManager.hasComponent<PositionComponent>(entity) ||
+      !_ecsManager.hasComponent<VelocityComponent>(entity)) {
     return;
   }
-  auto &position = _ecsManager->getComponent<PositionComponent>(entity);
-  auto &velocity = _ecsManager->getComponent<VelocityComponent>(entity);
+  auto &position = _ecsManager.getComponent<PositionComponent>(entity);
+  auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
   position.x += velocity.vx * dt;
   position.y += velocity.vy * dt;
+}
+
+bool ecs::ProjectileSystem::isOutOfBounds(const Entity &entity, float screenWidth, float screenHeight) {
+  if (!_ecsManager.hasComponent<PositionComponent>(entity)) {
+    return false;
+  }
+  auto &position = _ecsManager.getComponent<PositionComponent>(entity);
+  
+  const float margin = 100.0f;
+  return (position.x < -margin || position.x > screenWidth + margin ||
+          position.y < -margin || position.y > screenHeight + margin);
 }
