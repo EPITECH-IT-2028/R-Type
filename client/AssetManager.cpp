@@ -21,7 +21,7 @@ namespace asset {
                 << std::endl;
     else
       std::cerr << "[ERROR] Failed to export image to: " << outputHeaderPath
-                << std::endl;
+                << " (check file permissions and disk space)" << std::endl;
     return success;
   }
 
