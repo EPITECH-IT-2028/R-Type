@@ -3,6 +3,7 @@
 #include "EntityManager.hpp"
 #include "Packet.hpp"
 #include <cstdint>
+#include <sys/stat.h>
 #include <unordered_map>
 #if defined(_WIN32)
   #ifndef NOMINMAX
@@ -98,7 +99,7 @@ namespace client {
       void startReceive() {
         _networkManager.receivePackets(*this);
       }
-      
+
       void connect() {
         _networkManager.connect();
       }
@@ -143,11 +144,11 @@ namespace client {
         return KO;
       }
 
-      void destroyPlayerEntity(int playerId) {
+      void destroyPlayerEntity(uint32_t playerId) {
         _playerEntities.erase(playerId);
       }
 
-      void destroyEnemyEntity(int enemyId) {
+      void destroyEnemyEntity(uint32_t enemyId) {
         _enemyEntities.erase(enemyId);
       }
 
@@ -177,7 +178,7 @@ namespace client {
       std::chrono::milliseconds _timeout;
       std::unordered_map<uint32_t, Entity> _playerEntities;
       std::unordered_map<uint32_t, Entity> _enemyEntities;
-      std::uint32_t _playerId = -1;
+      std::uint32_t _playerId = static_cast<std::uint32_t>(-1);
 
       void registerComponent();
       void registerSystem();

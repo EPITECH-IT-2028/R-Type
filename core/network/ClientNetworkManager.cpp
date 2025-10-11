@@ -91,6 +91,13 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
     std::size_t length = _socket.receive_from(
         asio::buffer(_recv_buffer), sender_endpoint, 0, ec);
 
+    if (!ec && sender_endpoint != _server_endpoint) {
+      std::cerr << "Received packet from unknown sender: "
+                << sender_endpoint.address().to_string() << ":"
+                << sender_endpoint.port() << std::endl;
+      return;
+    }
+    
     if (ec && ec != asio::error::would_block) {
       std::cerr << "Receive error: " << ec.message() << std::endl;
       return;
