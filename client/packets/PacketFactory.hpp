@@ -25,10 +25,11 @@ namespace packet {
                         []() { return std::make_unique<EnemySpawnHandler>(); }},
                        {PacketType::ProjectileSpawn,
                         []() { return std::make_unique<ProjectileSpawnHandler>(); }},
-                       {PacketType::ProjectileHit,
-                        []() { return std::make_unique<ProjectileHitHandler>(); }},
-                       {PacketType::ProjectileDestroy,
-                        []() { return std::make_unique<ProjectileDestroyHandler>(); }}};
+                      //  {PacketType::ProjectileHit,
+                      //   []() { return std::make_unique<ProjectileHitHandler>(); }},
+                      //  {PacketType::ProjectileDestroy,
+                      //   []() { return std::make_unique<ProjectileDestroyHandler>(); }}
+                      };
 
   };
 }  // namespace packet
