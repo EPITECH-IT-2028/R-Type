@@ -6,6 +6,7 @@
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
+#include "ProjectileComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
@@ -53,6 +54,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
+    _ecsManager.registerComponent<ecs::ProjectileComponent>();
   }
 
   /**
