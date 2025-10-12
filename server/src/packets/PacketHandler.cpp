@@ -43,10 +43,12 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   float speed = player->getSpeed();
   int health = player->getHealth().value_or(0);
 
-  // Send the new player is own information
+  // Send own player info back to the client
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, pos.first, pos.second, speed, health);
-  packet::PacketSender::sendPacket(server.getNetworkManager(), ownPlayerPacket);
+  server.getNetworkManager().sendToClient(
+      client._player_id, reinterpret_cast<const char *>(&ownPlayerPacket),
+      sizeof(ownPlayerPacket));
 
   // Broadcast existing players to the new client
   broadcast::Broadcast::broadcastExistingPlayers(
