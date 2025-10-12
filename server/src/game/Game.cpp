@@ -273,7 +273,10 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {ENEMY_SPEED, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
-  _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  ecs::ColliderComponent collider;
+  collider.center = {10.f, 10.f};
+  collider.halfSize = {10.f, 10.f};
+  _ecsManager.addComponent<ecs::ColliderComponent>(entity, collider);
   switch (type) {
     case EnemyType::BASIC_FIGHTER:
       _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
