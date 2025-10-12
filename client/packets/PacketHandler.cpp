@@ -8,7 +8,6 @@
 #include "RenderManager.hpp"
 #include "SpriteComponent.hpp"
 #include "ScaleComponent.hpp"
-#include "EnemyComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "RenderComponent.hpp"
@@ -274,11 +273,6 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
 
   ProjectileSpawnPacket packet;
   std::memcpy(&packet, data, sizeof(ProjectileSpawnPacket));
-
-  TraceLog(LOG_INFO, "[PROJECTILE SPAWN] id=%u owner=%u type=%d pos=(%f,%f) enemy=%u speed=%f",
-           packet.projectile_id, packet.owner_id,
-           static_cast<int>(packet.projectile_type), packet.x, packet.y,
-           packet.is_enemy_projectile, packet.speed);
 
   auto &ecsManager = ecs::ECSManager::getInstance();
   auto entityProjectile = ecsManager.createEntity();

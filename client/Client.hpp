@@ -173,6 +173,7 @@ namespace client {
       }
 
       void sendPosition();
+      void sendShoot(float x, float y);
 
     private:
       std::array<char, 2048> _recv_buffer;

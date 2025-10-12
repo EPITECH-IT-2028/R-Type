@@ -288,4 +288,22 @@ void Client::sendPosition() {
     TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
   }
 }
+
+void Client::sendShoot(float x, float y) {
+  if (_player_id == static_cast<uint32_t>(-1)) {
+    // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
+    return;
+  }
+
+  try {
+    PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
+        x, y, ProjectileType::PLAYER_BASIC,
+        _sequence_number.load(std::memory_order_acquire));
+    
+    send(packet);
+    
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
+  }
+}
 }  // namespace client
