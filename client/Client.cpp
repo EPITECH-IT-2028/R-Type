@@ -8,6 +8,7 @@
 #include "PlayerTagComponent.hpp"
 #include "LocalPlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
+#include "ProjectileComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
@@ -18,6 +19,7 @@
 #include "VelocityComponent.hpp"
 #include "systems/BackgroundSystem.hpp"
 #include "systems/MovementSystem.hpp"
+#include "systems/ProjectileSystem.hpp"
 #include "systems/RenderSystem.hpp"
 #include "EnemyComponent.hpp"
 #include "Packet.hpp"
@@ -35,6 +37,11 @@ namespace client {
     registerComponent();
     registerSystem();
     signSystem();
+
+    auto inputSystem = _ecsManager.getSystem<ecs::InputSystem>();
+    if (inputSystem)
+      inputSystem->setClient(this);
+
     createBackgroundEntities();
   }
 
@@ -58,6 +65,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
     _ecsManager.registerComponent<ecs::LocalPlayerTagComponent>();
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
+    _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
   }
 
@@ -73,6 +81,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
+    _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
@@ -131,6 +140,13 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::ProjectileComponent>());
+      _ecsManager.setSystemSignature<ecs::ProjectileSystem>(signature);
     }
   }
 
@@ -250,6 +266,25 @@ namespace client {
     _enemyEntities[packet.enemy_id] = enemy;
   }
 
+  void Client::addProjectileEntity(uint32_t projectileId, Entity entity) {
+    std::lock_guard<std::mutex> lock(_projectileMutex);
+    _projectileEntities[projectileId] = entity;
+  }
+
+  Entity Client::getProjectileEntity(uint32_t projectileId) {
+    std::lock_guard<std::mutex> lock(_projectileMutex);
+    auto it = _projectileEntities.find(projectileId);
+    if (it != _projectileEntities.end()) {
+      return it->second;
+    }
+    return static_cast<Entity>(-1);
+  }
+
+  void Client::removeProjectileEntity(uint32_t projectileId) {
+    std::lock_guard<std::mutex> lock(_projectileMutex);
+    _projectileEntities.erase(projectileId);
+  }
+
 void Client::sendPosition() {
   if (_player_id == static_cast<uint32_t>(-1)) {
     // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
@@ -275,6 +310,24 @@ void Client::sendPosition() {
     
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
+  }
+}
+
+void Client::sendShoot(float x, float y) {
+  if (_player_id == static_cast<uint32_t>(-1)) {
+    // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
+    return;
+  }
+
+  try {
+    PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
+        x, y, ProjectileType::PLAYER_BASIC,
+        _sequence_number.load(std::memory_order_acquire));
+    
+    send(packet);
+    
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
   }
 }
 }  // namespace client

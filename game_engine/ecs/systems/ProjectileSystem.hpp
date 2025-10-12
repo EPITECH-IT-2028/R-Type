@@ -6,16 +6,19 @@
 namespace ecs {
   class ProjectileSystem : public System {
     public:
-      ProjectileSystem() = default;
-      ~ProjectileSystem() = default;
+      explicit ProjectileSystem(
+          ECSManager &ecsManager = ECSManager::getInstance())
+          : _ecsManager(ecsManager) {}
 
       void setECSManager(ECSManager *ecsManager) {
-        _ecsManager = ecsManager;
+        _ecsManagerPtr = ecsManager;
       }
       void update(float dt) override;
       void moveBasics(const Entity &entity, float dt);
+      bool isOutOfBounds(const Entity &entity, float screenWidth, float screenHeight);
 
     private:
-      ECSManager *_ecsManager;
+      ECSManager &_ecsManager;
+      ECSManager *_ecsManagerPtr = nullptr;
   };
 }  // namespace ecs

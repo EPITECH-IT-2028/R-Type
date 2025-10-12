@@ -1,11 +1,18 @@
 #include "PacketHandler.hpp"
 #include <cstring>
-#include "Packet.hpp"
-#include "raylib.h"
-#include "ECSManager.hpp"
-#include "PositionComponent.hpp"
-
 #include "Client.hpp"
+#include "ECSManager.hpp"
+#include "EntityManager.hpp"
+#include "Packet.hpp"
+#include "PositionComponent.hpp"
+#include "ProjectileComponent.hpp"
+#include "ProjectileSpriteConfig.hpp"
+#include "RenderComponent.hpp"
+#include "RenderManager.hpp"
+#include "ScaleComponent.hpp"
+#include "SpriteComponent.hpp"
+#include "VelocityComponent.hpp"
+#include "raylib.h"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -251,5 +258,130 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
              packet.enemy_id, e.what());
     return packet::KO;
   }
+  return packet::OK;
+}
+
+int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
+                                                 const char *data,
+                                                 std::size_t size) {
+  if (size < sizeof(ProjectileSpawnPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(ProjectileSpawnPacket));
+    return packet::KO;
+  }
+
+  ProjectileSpawnPacket packet;
+  std::memcpy(&packet, data, sizeof(ProjectileSpawnPacket));
+
+  if (client.getProjectileEntity(packet.projectile_id) != static_cast<Entity>(-1)) {
+    TraceLog(LOG_WARNING, "Projectile with ID %u already exists, ignoring spawn packet.", packet.projectile_id);
+    return packet::OK;
+  }
+
+  try {
+    auto &ecsManager = ecs::ECSManager::getInstance();
+    auto entityProjectile = ecsManager.createEntity();
+
+    ecs::ProjectileComponent projComp;
+    projComp.projectile_id = packet.projectile_id;
+    projComp.type = packet.projectile_type;
+    projComp.owner_id = packet.owner_id;
+    projComp.damage = packet.damage;
+    projComp.is_destroy = false;
+    projComp.is_enemy_projectile = static_cast<bool>(packet.is_enemy_projectile);
+    projComp.speed = packet.speed;
+    ecsManager.addComponent<ecs::ProjectileComponent>(entityProjectile, projComp);
+
+    ecsManager.addComponent<ecs::PositionComponent>(entityProjectile, {packet.x, packet.y});
+    ecsManager.addComponent<ecs::VelocityComponent>(entityProjectile, {packet.velocity_x, packet.velocity_y});
+    ecsManager.addComponent<ecs::RenderComponent>(
+        entityProjectile, {renderManager::PROJECTILE_PATH});
+
+    if (packet.is_enemy_projectile) {
+      ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {
+        renderManager::ProjectileSprite::ENEMY_BASIC_X,
+        renderManager::ProjectileSprite::ENEMY_BASIC_Y,
+        renderManager::ProjectileSprite::ENEMY_BASIC_WIDTH,
+        renderManager::ProjectileSprite::ENEMY_BASIC_HEIGHT
+      });
+    } else {
+      ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {
+        renderManager::ProjectileSprite::PLAYER_BASIC_X,
+        renderManager::ProjectileSprite::PLAYER_BASIC_Y,
+        renderManager::ProjectileSprite::PLAYER_BASIC_WIDTH,
+        renderManager::ProjectileSprite::PLAYER_BASIC_HEIGHT
+      });
+    }
+
+    ecsManager.addComponent<ecs::ScaleComponent>(entityProjectile, {
+      renderManager::ProjectileSprite::DEFAULT_SCALE_X,
+      renderManager::ProjectileSprite::DEFAULT_SCALE_Y
+    });
+    client.addProjectileEntity(packet.projectile_id, entityProjectile);
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "Failed to create projectile entity: %s", e.what());
+    return packet::KO;
+  }
+  
+  return packet::OK;
+}
+
+int packet::ProjectileHitHandler::handlePacket(client::Client &client,
+                                               const char *data,
+                                               std::size_t size) {
+  if (size < sizeof(ProjectileHitPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(ProjectileHitPacket));
+    return packet::KO;
+  }
+
+  ProjectileHitPacket packet;
+  std::memcpy(&packet, data, sizeof(ProjectileHitPacket));
+
+  TraceLog(LOG_INFO, "[PROJECTILE HIT] projectile=%u target=%u is_player=%u at=(%f,%f)",
+           packet.projectile_id, packet.target_id, packet.target_is_player,
+           packet.hit_x, packet.hit_y);
+
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  auto entity = client.getProjectileEntity(packet.projectile_id);
+  if (entity != static_cast<Entity>(-1)) {
+    if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
+      ecsManager.destroyEntity(entity);
+      client.removeProjectileEntity(packet.projectile_id);
+    }
+  } else {
+    TraceLog(LOG_WARNING, "[PROJECTILE HIT] projectile entity not found: %u", packet.projectile_id);
+  }
+
+  return packet::OK;
+}
+
+int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
+                                                   const char *data,
+                                                   std::size_t size) {
+  if (size < sizeof(ProjectileDestroyPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(ProjectileDestroyPacket));
+    return packet::KO;
+  }
+
+  ProjectileDestroyPacket packet;
+  std::memcpy(&packet, data, sizeof(ProjectileDestroyPacket));
+
+  TraceLog(LOG_INFO, "[PROJECTILE DESTROY] projectile=%u at=(%f,%f)",
+           packet.projectile_id, packet.x, packet.y);
+
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  auto entity = client.getProjectileEntity(packet.projectile_id);
+  if (entity != static_cast<Entity>(-1)) {
+    ecsManager.destroyEntity(entity);
+    client.removeProjectileEntity(packet.projectile_id);
+  } else {
+    TraceLog(LOG_WARNING, "[PROJECTILE DESTROY] projectile entity not found: %u", packet.projectile_id);
+  }
+
   return packet::OK;
 }
