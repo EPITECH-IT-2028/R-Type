@@ -312,20 +312,9 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
     renderManager::ProjectileSprite::DEFAULT_SCALE_X,
     renderManager::ProjectileSprite::DEFAULT_SCALE_Y
   });
+  client.addProjectileEntity(packet.projectile_id, entityProjectile);
   
   return packet::OK;
-}
-
-static Entity findProjectileEntityById(ecs::ECSManager &ecsManager, uint32_t projectileId) {
-  for (auto entity : ecsManager.getAllEntities()) {
-    if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
-      auto &pc = ecsManager.getComponent<ecs::ProjectileComponent>(entity);
-      if (pc.projectile_id == projectileId) {
-        return entity;
-      }
-    }
-  }
-  return static_cast<Entity>(-1);
 }
 
 int packet::ProjectileHitHandler::handlePacket(client::Client &client,
@@ -346,7 +335,7 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
            packet.hit_x, packet.hit_y);
 
   auto &ecsManager = ecs::ECSManager::getInstance();
-  auto entity = findProjectileEntityById(ecsManager, packet.projectile_id);
+  auto entity = client.getProjectileEntity(packet.projectile_id);
   if (entity != static_cast<Entity>(-1)) {
     if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
       auto &pc = ecsManager.getComponent<ecs::ProjectileComponent>(entity);
@@ -376,9 +365,10 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
            packet.projectile_id, packet.x, packet.y);
 
   auto &ecsManager = ecs::ECSManager::getInstance();
-  auto entity = findProjectileEntityById(ecsManager, packet.projectile_id);
+  auto entity = client.getProjectileEntity(packet.projectile_id);
   if (entity != static_cast<Entity>(-1)) {
     ecsManager.destroyEntity(entity);
+    client.removeProjectileEntity(packet.projectile_id);
   } else {
     TraceLog(LOG_WARNING, "[PROJECTILE DESTROY] projectile entity not found: %u", packet.projectile_id);
   }

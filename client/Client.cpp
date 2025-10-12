@@ -261,6 +261,25 @@ namespace client {
     _enemyEntities[packet.enemy_id] = enemy;
   }
 
+  void Client::addProjectileEntity(uint32_t projectileId, Entity entity) {
+    std::lock_guard<std::mutex> lock(_projectileMutex);
+    _projectileEntities[projectileId] = entity;
+  }
+
+  Entity Client::getProjectileEntity(uint32_t projectileId) {
+    std::lock_guard<std::mutex> lock(_projectileMutex);
+    auto it = _projectileEntities.find(projectileId);
+    if (it != _projectileEntities.end()) {
+      return it->second;
+    }
+    return static_cast<Entity>(-1);
+  }
+
+  void Client::removeProjectileEntity(uint32_t projectileId) {
+    std::lock_guard<std::mutex> lock(_projectileMutex);
+    _projectileEntities.erase(projectileId);
+  }
+
 void Client::sendPosition() {
   if (_player_id == static_cast<uint32_t>(-1)) {
     // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");

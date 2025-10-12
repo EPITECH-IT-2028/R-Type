@@ -27,6 +27,7 @@
 #include <atomic>
 #include <chrono>
 #include <iostream>
+#include <mutex>
 #include <string>
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
@@ -160,6 +161,10 @@ namespace client {
       void createPlayerEntity(NewPlayerPacket packet);
       void createEnemyEntity(EnemySpawnPacket packet);
 
+      void addProjectileEntity(uint32_t projectileId, Entity entity);
+      Entity getProjectileEntity(uint32_t projectileId);
+      void removeProjectileEntity(uint32_t projectileId);
+
       uint32_t getPlayerId() const {
         return _player_id;
       }
@@ -184,6 +189,8 @@ namespace client {
       std::chrono::milliseconds _timeout;
       std::unordered_map<uint32_t, Entity> _playerEntities;
       std::unordered_map<uint32_t, Entity> _enemyEntities;
+      std::unordered_map<uint32_t, Entity> _projectileEntities;
+      std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
 
       void registerComponent();
