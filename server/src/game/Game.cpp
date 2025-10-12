@@ -1,6 +1,7 @@
 #include "Game.hpp"
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <mutex>
 #include <thread>
 #include "ColliderComponent.hpp"
@@ -23,6 +24,7 @@
 game::Game::Game()
     : _running(false), _ecsManager(ecs::ECSManager::getInstance()) {
   initECS();
+  srand(time(nullptr));
 }
 
 /**
@@ -261,8 +263,12 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager.createEntity();
 
+  float spawnY =
+      static_cast<float>(rand() % ENEMY_WINDOW_HEIGHT + ENEMY_SPAWN_OFFSET);
+  float spawnX = ENEMY_WINDOW_WIDTH;
+
   _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
-  _ecsManager.addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
+  _ecsManager.addComponent<ecs::PositionComponent>(entity, {spawnX, spawnY});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager.addComponent<ecs::VelocityComponent>(entity,
                                                    {ENEMY_SPEED, 0.0f});
