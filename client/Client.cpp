@@ -37,6 +37,11 @@ namespace client {
     registerComponent();
     registerSystem();
     signSystem();
+
+    auto inputSystem = _ecsManager.getSystem<ecs::InputSystem>();
+    if (inputSystem)
+      inputSystem->setClient(this);
+
     createBackgroundEntities();
   }
 
