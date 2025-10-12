@@ -56,6 +56,15 @@ int main(int argc, char **argv) {
       success = false;
     }
   }
+  {
+    std::string projectilePath = resourcesDir + "/projectiles.gif";
+    std::string outputPath = outputDir + "/projectiles_data.h";
+
+    if (!asset::AssetManager::exportImageAsCode(projectilePath, outputPath)) {
+      std::cerr << "[ERROR] Failed to export projectiles.gif" << std::endl;
+      success = false;
+    }
+  }
 
   if (success) {
     std::cout << "=== Completed ===" << std::endl;
