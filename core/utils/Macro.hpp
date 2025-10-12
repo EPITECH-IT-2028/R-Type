@@ -21,4 +21,4 @@ constexpr float FPS = 60.0f;
 
 constexpr float PLAYER_SPEED = 100.0f;
 
-constexpr float ENNEMY_SPEED = -80.0f;
+constexpr float ENEMY_SPEED = -80.0f;

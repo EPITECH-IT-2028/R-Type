@@ -265,7 +265,7 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {800.0f, 50.0f});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
   _ecsManager.addComponent<ecs::VelocityComponent>(entity,
-                                                   {ENNEMY_SPEED, 0.0f});
+                                                   {ENEMY_SPEED, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
