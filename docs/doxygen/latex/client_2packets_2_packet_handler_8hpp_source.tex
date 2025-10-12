@@ -1,0 +1,85 @@
+\doxysection{Packet\+Handler.\+hpp}
+\hypertarget{client_2packets_2_packet_handler_8hpp_source}{}\label{client_2packets_2_packet_handler_8hpp_source}\index{client/packets/PacketHandler.hpp@{client/packets/PacketHandler.hpp}}
+\mbox{\hyperlink{client_2packets_2_packet_handler_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{client_2packets_2_i_packet_8hpp}{IPacket.hpp}}"{}}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{00005\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespacepacket_ae2d80e2e77893bc1afeb6c0c4624bc77}{KO}}\ =\ -\/1;}
+\DoxyCodeLine{00006\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespacepacket_a8a923f03d96fbebc1a6263203248e21a}{OK}}\ =\ 0;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_message_handler}{MessageHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_message_handler_a87feec78be88a1746aa41c500f61a0f5}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00012\ \ \ \};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_new_player_handler}{NewPlayerHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_new_player_handler_ad3a2aa1121a24a284b386099e986ee50}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00018\ \ \ \};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_player_death_handler}{PlayerDeathHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_player_death_handler_a4cf8d2f069fe0390a09d2d58254fea44}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00024\ \ \ \};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_player_disconnected_handler}{PlayerDisconnectedHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_player_disconnected_handler_a3579c56a7ffc0912133ffbac3d42fe31}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00030\ \ \ \};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_player_move_handler}{PlayerMoveHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_player_move_handler_a6c5ac037f81e78e3ca2f34554039a092}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00036\ \ \ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_position_handler}{PositionHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_position_handler_a988b8073601984acb70ae647b8d1d560}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00042\ \ \ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_projectile_spawn_handler}{ProjectileSpawnHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_projectile_spawn_handler_a44f33fe94027f12178a795f7a998609c}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00048\ \ \ \};}
+\DoxyCodeLine{00049\ \ \ }
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_projectile_hit_handler}{ProjectileHitHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_projectile_hit_handler_ac038d4105568bcbf89a514c9efbea0d9}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00054\ \ \ \ \ \};}
+\DoxyCodeLine{00055\ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_projectile_destroy_handler}{ProjectileDestroyHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_projectile_destroy_handler_a98d9e07bede354a2d6ffe402b73415e4}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00060\ \ \ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_enemy_spawn_handler}{EnemySpawnHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_enemy_spawn_handler_a7cb68d4203c3252ded3b4aa225db64bd}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00066\ \ \ \};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_enemy_move_handler}{EnemyMoveHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_enemy_move_handler_adff9c0d290fa12359ee8afc6cabd7332}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00072\ \ \ \};}
+\DoxyCodeLine{00073\ \ \ }
+\DoxyCodeLine{00074\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_enemy_death_handler}{EnemyDeathHandler}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_enemy_death_handler_a73d1196aed4ffcdd3410398d90f877dd}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00078\ \ \ \};}
+\DoxyCodeLine{00079\ \}\ \ \textcolor{comment}{//\ namespace\ packet}}
+
+\end{DoxyCode}

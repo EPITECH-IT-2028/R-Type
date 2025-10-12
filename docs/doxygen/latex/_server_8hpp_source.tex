@@ -1,0 +1,108 @@
+\doxysection{Server.\+hpp}
+\hypertarget{_server_8hpp_source}{}\label{_server_8hpp_source}\index{server/src/Server.hpp@{server/src/Server.hpp}}
+\mbox{\hyperlink{_server_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <asio.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_game_8hpp}{Game.hpp}}"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}PacketFactory.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_server_network_manager_8hpp}{ServerNetworkManager.hpp}}"{}}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceserver}{server}}\ \{}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structserver_1_1_client_a0414aef7d965966228a5510a7ffaae0a}{Client}}\ \{}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \mbox{\hyperlink{structserver_1_1_client_a0414aef7d965966228a5510a7ffaae0a}{Client}}(\textcolor{keywordtype}{int}\ \textcolor{keywordtype}{id});}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \mbox{\hyperlink{structserver_1_1_client_a24cf2ce30063967cad1240f12d6e4e6e}{\string~Client}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structserver_1_1_client_a47bd11c5cff8735a9e737ca34f12456d}{\_connected}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structserver_1_1_client_a56ba0d172c00dcd14e0772e393de3050}{\_player\_id}}\ =\ -\/1;}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ std::chrono::steady\_clock::time\_point\ \mbox{\hyperlink{structserver_1_1_client_a65aaca302348c4171d973eb0cb2e7f0c}{\_last\_heartbeat}};}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ std::chrono::steady\_clock::time\_point\ \mbox{\hyperlink{structserver_1_1_client_ac5cd93a2d49407aec7959b7688751828}{\_last\_position\_update}};}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ uint32\_t\ \mbox{\hyperlink{structserver_1_1_client_a9fa1c36d1c1ac536b79ec3f45246b482}{\_entity\_id}}\ =\ std::numeric\_limits<uint32\_t>::max();}
+\DoxyCodeLine{00024\ \ \ \};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classserver_1_1_server_a699e6e133b562d9c3c7373848d452507}{Server}}\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \mbox{\hyperlink{classserver_1_1_server_a699e6e133b562d9c3c7373848d452507}{Server}}(std::uint16\_t\ port,\ std::uint16\_t\ max\_clients);}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \mbox{\hyperlink{classserver_1_1_server_a0af12a0cdc895b52e8ca880ca57917a7}{\string~Server}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classserver_1_1_server_a048cceeffcf392c6b2d71a5c4c38195c}{start}}();}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classserver_1_1_server_a674e85b17ebbd7aa1873a5948b67d4dc}{stop}}();}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&\mbox{\hyperlink{classserver_1_1_server_ad1a36e850f3f2e94e4fe20586d3264c4}{getNetworkManager}}()\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_networkManager;}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \ \ std::uint16\_t\ \mbox{\hyperlink{classserver_1_1_server_a77feb706ddc1844d3e88cee909b36de8}{getPort}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_port;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classserver_1_1_server_a763973e0ad6ac3fb8040d979e3a1390e}{getPlayerCount}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_player\_count;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{classserver_1_1_server_aa725b33ec0b63f1957556a1cda5e707f}{getProjectileCount}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_projectile\_count;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classserver_1_1_server_a4b0aa1ee2c9ccb751eafb17781edb93f}{setProjectileCount}}(std::uint32\_t\ projectile\_count)\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \_projectile\_count\ =\ projectile\_count;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classserver_1_1_server_a1829559c29e9c329fec3f02016519f92}{setPlayerCount}}(\textcolor{keywordtype}{int}\ player\_count)\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \_player\_count\ =\ player\_count;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<Client>>\ \&\mbox{\hyperlink{classserver_1_1_server_a70c9df26c5fd894970876b938cb066b3}{getClients}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_clients;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game}{game::Game}}\ \&\mbox{\hyperlink{classserver_1_1_server_a6d94e1deb9f2672840345a7e0cb04cc9}{getGame}}()\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_game;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classserver_1_1_server_a0a4a39bcb1e5041daa8e9a0348ab24ec}{clearClientSlot}}(\textcolor{keywordtype}{int}\ player\_id);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ startReceive();}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ handleReceive(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,\ std::size\_t\ bytes\_transferred);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ handleTimeout();}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ scheduleTimeoutCheck();}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ scheduleEventProcessing();}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ processGameEvents();}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ handleGameEvent(\textcolor{keyword}{const}\ \mbox{\hyperlink{namespacequeue_a8d808b17c3198fbbc337f72d5847eba6}{queue::GameEvent}}\ \&event);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ findOrCreateClient();}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ handleClientData(std::size\_t\ client\_idx,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size);}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ std::shared\_ptr<Client>\ getClient(std::size\_t\ idx)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \_networkManager;}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ std::vector<std::shared\_ptr<Client>>\ \_clients;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory}{packet::PacketHandlerFactory}}\ \_factory;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ uint16\_t\ screen\_width\ =\ 800;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ uint16\_t\ screen\_height\ =\ 1200;}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game}{game::Game}}\ \_game;}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ std::uint16\_t\ \_max\_clients;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ std::uint16\_t\ \_port;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \_player\_count;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \_next\_player\_id;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ std::uint32\_t\ \_projectile\_count;}
+\DoxyCodeLine{00101\ \ \ \};}
+\DoxyCodeLine{00102\ \}\ \ \textcolor{comment}{//\ namespace\ server}}
+
+\end{DoxyCode}

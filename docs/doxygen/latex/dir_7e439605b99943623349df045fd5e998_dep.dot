@@ -1,0 +1,14 @@
+digraph "server/src/player"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  compound=true
+  subgraph clusterdir_a063914ab482288b7b0e1b2fca86158c {
+    graph [ bgcolor="#dfdfdf", pencolor="grey50", label="src", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_a063914ab482288b7b0e1b2fca86158c.html",tooltip=""]
+  dir_7e439605b99943623349df045fd5e998 [label="player", fillcolor="#dfdfdf", color="grey25", style="filled,bold", URL="dir_7e439605b99943623349df045fd5e998.html",tooltip=""];
+  }
+  dir_987a69e5dc275a1a11316b417e3a1926 [label="game_engine", fillcolor="#dfdfdf", color="red", style="filled", URL="dir_987a69e5dc275a1a11316b417e3a1926.html",tooltip=""];
+  dir_7e439605b99943623349df045fd5e998->dir_987a69e5dc275a1a11316b417e3a1926 [headlabel="6", labeldistance=1.5 headhref="dir_000012_000008.html" href="dir_000012_000008.html" color="steelblue1" fontcolor="steelblue1"];
+}

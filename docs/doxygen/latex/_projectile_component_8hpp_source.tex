@@ -1,0 +1,29 @@
+\doxysection{Projectile\+Component.\+hpp}
+\hypertarget{_projectile_component_8hpp_source}{}\label{_projectile_component_8hpp_source}\index{game\_engine/ecs/components/ProjectileComponent.hpp@{game\_engine/ecs/components/ProjectileComponent.hpp}}
+\mbox{\hyperlink{_projectile_component_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00007\ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ \ \ *\ ProjectileComponent\ represents\ a\ projectile\ entity\ in\ the\ game.}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ \ *\ This\ component\ is\ used\ to\ manage\ the\ properties\ and\ behavior\ of}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ \ \ *\ projectiles.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structecs_1_1_projectile_component}{ProjectileComponent}}\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structecs_1_1_projectile_component_a01c066dcc40aa91b01d33ab3eac67c27}{projectile\_id}}\ =\ 0;}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ \mbox{\hyperlink{structecs_1_1_projectile_component_a1ee8166456780c13b4add917672de7de}{type}}\ =\ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba745874f0e99a8576753624c95e03d43c}{ProjectileType::PLAYER\_BASIC}};}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structecs_1_1_projectile_component_a147ce7f8ea2c42adb8d0379fdb20427c}{owner\_id}}\ =\ 0;}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_projectile_component_a33b62664d0d4f83574f4d99bc0b90b9f}{is\_destroy}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_projectile_component_aca87423c48d312effe12054570f5a333}{is\_enemy\_projectile}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structecs_1_1_projectile_component_a8ee914a8ba58c47c0969053ea1b0c417}{speed}}\ =\ 0.0f;}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structecs_1_1_projectile_component_af21409e13624f59f33df2cf43f86e625}{sequence\_number}}\ =\ 0;}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structecs_1_1_projectile_component_a926f7d2ff4492cd45d710b640101612b}{damage}};}
+\DoxyCodeLine{00021\ \ \ \};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

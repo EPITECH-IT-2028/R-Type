@@ -1,0 +1,36 @@
+\chapter{R-\/\+Type Project }
+\hypertarget{md_docs_2wiki_2_home}{}\label{md_docs_2wiki_2_home}\index{R-\/Type Project@{R-\/Type Project}}
+\label{md_docs_2wiki_2_home_autotoc_md90}%
+\Hypertarget{md_docs_2wiki_2_home_autotoc_md90}%
+
+
+Welcome to the R-\/\+Type project wiki! This document provides an overview of the project, its architecture, and how to get started.\hypertarget{md_docs_2wiki_2_home_autotoc_md91}{}\doxysection{\texorpdfstring{Overview}{Overview}}\label{md_docs_2wiki_2_home_autotoc_md91}
+This project is a re-\/implementation of the classic arcade game R-\/\+Type, built with a focus on a modular and extensible architecture using an Entity-\/\+Component-\/\+System (ECS) pattern. It features both a client and a server component, allowing for networked multiplayer gameplay.\hypertarget{md_docs_2wiki_2_home_autotoc_md92}{}\doxysection{\texorpdfstring{Features}{Features}}\label{md_docs_2wiki_2_home_autotoc_md92}
+
+\begin{DoxyItemize}
+\item {\bfseries{Client-\/\+Server Architecture}}\+: Dedicated server for game logic and client for rendering and user interaction.
+\item {\bfseries{Entity-\/\+Component-\/\+System (ECS)}}\+: A flexible and powerful architecture for game entities and their behaviors.
+\item {\bfseries{Networked Gameplay}}\+: Supports multiple players connecting to a central server.
+\item {\bfseries{Asset Management}}\+: Efficient handling of game assets like sprites and backgrounds.
+\item {\bfseries{Cross-\/platform}}\+: Designed to be runnable on various operating systems.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_home_autotoc_md93}{}\doxysection{\texorpdfstring{Project Structure}{Project Structure}}\label{md_docs_2wiki_2_home_autotoc_md93}
+The project is organized into several key directories\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily client/}\+: Contains all client-\/side specific code, including rendering, input handling, and client-\/side networking.
+\item {\ttfamily server/}\+: Contains all server-\/side specific code, including game logic, entity management, and server-\/side networking.
+\item {\ttfamily core/}\+: Shared utilities and networking components used by both client and server.
+\item {\ttfamily game\+\_\+engine/}\+: The core ECS implementation, including components, systems, and managers.
+\item {\ttfamily docs/}\+: Project documentation, including protocol specifications and server setup guides.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_home_autotoc_md94}{}\doxysection{\texorpdfstring{Getting Started}{Getting Started}}\label{md_docs_2wiki_2_home_autotoc_md94}
+Please refer to the \doxysectlink{md_docs_2wiki_2_getting_started}{Getting Started}{0} page for detailed instructions on how to build and run the project.\hypertarget{md_docs_2wiki_2_home_autotoc_md95}{}\doxysection{\texorpdfstring{Contributing}{Contributing}}\label{md_docs_2wiki_2_home_autotoc_md95}
+We welcome contributions! Please see the \doxysectlink{md_docs_2wiki_2_contribution_guidelines}{Contribution Guidelines}{0} for more information.\hypertarget{md_docs_2wiki_2_home_autotoc_md96}{}\doxysection{\texorpdfstring{Technical Details}{Technical Details}}\label{md_docs_2wiki_2_home_autotoc_md96}
+For more in-\/depth technical information, explore the following sections\+:
+
+
+\begin{DoxyItemize}
+\item \doxysectlink{md_docs_2wiki_2_game_engine_e_c_s}{Game Engine (ECS)}{0}
+\item \doxysectlink{md_docs_2wiki_2_networking}{Networking}{0}
+\item \doxysectlink{md_docs_2wiki_2_asset_management}{Asset Management}{0} 
+\end{DoxyItemize}

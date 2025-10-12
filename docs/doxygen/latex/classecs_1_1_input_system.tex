@@ -1,0 +1,90 @@
+\doxysection{ecs\+::Input\+System Class Reference}
+\hypertarget{classecs_1_1_input_system}{}\label{classecs_1_1_input_system}\index{ecs::InputSystem@{ecs::InputSystem}}
+
+
+{\ttfamily \#include $<$Input\+System.\+hpp$>$}
+
+
+
+Inheritance diagram for ecs\+::Input\+System\+:
+% FIG 0
+
+
+Collaboration diagram for ecs\+::Input\+System\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classecs_1_1_input_system_ac1be644f0eafb477cabce494120a79fe}{Input\+System}} (\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \&ecs\+Manager=\mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager\+::get\+Instance}}())
+\item 
+void \mbox{\hyperlink{classecs_1_1_input_system_ac62d81429b0f58e2a884e7f14ed5b260}{update}} (float delta\+Time) override
+\begin{DoxyCompactList}\small\item\em Update per-\/entity movement velocity and vertical sprite animation state based on keyboard input. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classecs_1_1_input_system_a5b33053cd82635e8270e23dde77151cd}{set\+Client}} (\mbox{\hyperlink{classclient_1_1_client}{client\+::\+Client}} \texorpdfstring{$\ast$}{*}client)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classecs_1_1_system_ab0ae8f1804130e3b8cfa2bbe2b0c5e6b}{\texorpdfstring{$\sim$}{\string~}\+System}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+std\+::set$<$ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} $>$ \mbox{\hyperlink{classecs_1_1_system_aac90f58f0dc1a58487ae1b35a84087a6}{\+\_\+entities}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classecs_1_1_input_system_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classecs_1_1_input_system_ac1be644f0eafb477cabce494120a79fe}\index{ecs::InputSystem@{ecs::InputSystem}!InputSystem@{InputSystem}}
+\index{InputSystem@{InputSystem}!ecs::InputSystem@{ecs::InputSystem}}
+\doxysubsubsection{\texorpdfstring{InputSystem()}{InputSystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_input_system_ac1be644f0eafb477cabce494120a79fe} 
+ecs\+::\+Input\+System\+::\+Input\+System (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \&}]{ecs\+Manager}{ = {\ttfamily \mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager\+::get\+Instance}}()}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_input_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_input_system_a5b33053cd82635e8270e23dde77151cd}\index{ecs::InputSystem@{ecs::InputSystem}!setClient@{setClient}}
+\index{setClient@{setClient}!ecs::InputSystem@{ecs::InputSystem}}
+\doxysubsubsection{\texorpdfstring{setClient()}{setClient()}}
+{\footnotesize\ttfamily \label{classecs_1_1_input_system_a5b33053cd82635e8270e23dde77151cd} 
+void ecs\+::\+Input\+System\+::set\+Client (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classclient_1_1_client}{client\+::\+Client}} \texorpdfstring{$\ast$}{*}}]{client}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_input_system_ac62d81429b0f58e2a884e7f14ed5b260}\index{ecs::InputSystem@{ecs::InputSystem}!update@{update}}
+\index{update@{update}!ecs::InputSystem@{ecs::InputSystem}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classecs_1_1_input_system_ac62d81429b0f58e2a884e7f14ed5b260} 
+void ecs\+::\+Input\+System\+::update (\begin{DoxyParamCaption}\item[{float}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Update per-\/entity movement velocity and vertical sprite animation state based on keyboard input. 
+
+For each entity in the system, reads up/down/left/right key state to compute a normalized movement direction, assigns the entity\textquotesingle{}s velocity by multiplying the direction by its \doxylink{structecs_1_1_speed_component}{Speed\+Component}, and updates the entity\textquotesingle{}s \doxylink{structecs_1_1_sprite_animation_component}{Sprite\+Animation\+Component} vertical state\+:
+\begin{DoxyItemize}
+\item When UP (and not DOWN) is pressed, ensures animation plays forward (positive frame\+Time) from the neutral frame.
+\item When DOWN (and not UP) is pressed, ensures animation plays backward (negative frame\+Time) from the neutral frame.
+\item When neither or both vertical keys are pressed, stops the animation and resets to the neutral frame with non-\/negative frame\+Time.
+\end{DoxyItemize}
+
+Also handles shooting input\+: when the space bar is pressed, calls the client\textquotesingle{}s send\+Shoot method with the local player\textquotesingle{}s position.
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Time elapsed since the last update in seconds (provided by caller; not used by this implementation). \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{classecs_1_1_system_a84b6aff0b9dd3932497b4c0dca03fa35}{ecs\+::\+System}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_input_system_8hpp}{Input\+System.\+hpp}}\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_input_system_8cpp}{Input\+System.\+cpp}}\end{DoxyCompactItemize}

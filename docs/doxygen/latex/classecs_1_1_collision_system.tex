@@ -1,0 +1,203 @@
+\doxysection{ecs\+::Collision\+System Class Reference}
+\hypertarget{classecs_1_1_collision_system}{}\label{classecs_1_1_collision_system}\index{ecs::CollisionSystem@{ecs::CollisionSystem}}
+
+
+{\ttfamily \#include $<$Collision\+System.\+hpp$>$}
+
+
+
+Inheritance diagram for ecs\+::Collision\+System\+:
+% FIG 0
+
+
+Collaboration diagram for ecs\+::Collision\+System\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classecs_1_1_collision_system_a352db9139af378107e02f997f42ac163}{Collision\+System}} (\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \&ecs\+Manager=\mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager\+::get\+Instance}}())
+\begin{DoxyCompactList}\small\item\em Constructs a \doxylink{classecs_1_1_collision_system}{Collision\+System} and binds it to an ECS manager. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classecs_1_1_collision_system_a9f1fbc9a971529e31c8d7a1c27a32435}{\texorpdfstring{$\sim$}{\string~}\+Collision\+System}} () override=default
+\begin{DoxyCompactList}\small\item\em Destroys the \doxylink{classecs_1_1_collision_system}{Collision\+System} and performs any necessary cleanup. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classecs_1_1_collision_system_aa4d0ae044f750754b894d72b9e76fd8a}{set\+Game}} (\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \texorpdfstring{$\ast$}{*}game)
+\begin{DoxyCompactList}\small\item\em Associates this \doxylink{classecs_1_1_collision_system}{Collision\+System} with a Game instance. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classecs_1_1_collision_system_a294a912ccf337109cb41cc9bcaf6d205}{set\+Event\+Queue}} (\mbox{\hyperlink{classqueue_1_1_event_queue}{queue\+::\+Event\+Queue}} \texorpdfstring{$\ast$}{*}event\+Queue)
+\begin{DoxyCompactList}\small\item\em Sets the Event\+Queue used by the collision system for dispatching events. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classecs_1_1_collision_system_a63a23fc93f428b8a671687062c385512}{update}} (float delta\+Time) override
+\begin{DoxyCompactList}\small\item\em Processes collisions among managed entities by checking all unique pairs for AABB overlap and invoking collision handling when overlaps are detected. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classecs_1_1_collision_system_a19eca65badf59c864128bcd705f5cfc2}{overlap\+AABBAABB}} (const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&a, const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&b) const
+\begin{DoxyCompactList}\small\item\em Determines whether the axis-\/aligned bounding boxes of two entities overlap. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classecs_1_1_collision_system_ade0824c4a8c253adc92a04c925aad079}{handle\+Collision}} (const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&entity1, const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&entity2)
+\begin{DoxyCompactList}\small\item\em Resolve a collision between two entities and apply game effects. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classecs_1_1_collision_system_a5691850c4cde4f84999596c00200efd0}{increment\+Player\+Score}} (std\+::uint32\+\_\+t owner\+\_\+id, std\+::uint32\+\_\+t value)
+\begin{DoxyCompactList}\small\item\em Increments the score of the player with the given owner ID. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classecs_1_1_system_ab0ae8f1804130e3b8cfa2bbe2b0c5e6b}{\texorpdfstring{$\sim$}{\string~}\+System}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+std\+::set$<$ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} $>$ \mbox{\hyperlink{classecs_1_1_system_aac90f58f0dc1a58487ae1b35a84087a6}{\+\_\+entities}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classecs_1_1_collision_system_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classecs_1_1_collision_system_a352db9139af378107e02f997f42ac163}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!CollisionSystem@{CollisionSystem}}
+\index{CollisionSystem@{CollisionSystem}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{CollisionSystem()}{CollisionSystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_a352db9139af378107e02f997f42ac163} 
+ecs\+::\+Collision\+System\+::\+Collision\+System (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \&}]{ecs\+Manager}{ = {\ttfamily \mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager\+::get\+Instance}}()}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a \doxylink{classecs_1_1_collision_system}{Collision\+System} and binds it to an ECS manager. 
+
+Initializes the system with the provided \doxylink{classecs_1_1_e_c_s_manager}{ECSManager} reference; if none is supplied, the global singleton instance is used.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ecs\+Manager} & Reference to the \doxylink{classecs_1_1_e_c_s_manager}{ECSManager} that the collision system will use. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classecs_1_1_collision_system_a9f1fbc9a971529e31c8d7a1c27a32435}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!````~CollisionSystem@{\texorpdfstring{$\sim$}{\string~}CollisionSystem}}
+\index{````~CollisionSystem@{\texorpdfstring{$\sim$}{\string~}CollisionSystem}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CollisionSystem()}{\string~CollisionSystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_a9f1fbc9a971529e31c8d7a1c27a32435} 
+ecs\+::\+Collision\+System\+::\texorpdfstring{$\sim$}{\string~}\+Collision\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [default]}}
+
+
+
+Destroys the \doxylink{classecs_1_1_collision_system}{Collision\+System} and performs any necessary cleanup. 
+
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_collision_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_collision_system_ade0824c4a8c253adc92a04c925aad079}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!handleCollision@{handleCollision}}
+\index{handleCollision@{handleCollision}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{handleCollision()}{handleCollision()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_ade0824c4a8c253adc92a04c925aad079} 
+void ecs\+::\+Collision\+System\+::handle\+Collision (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&}]{entity1}{, }\item[{const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&}]{entity2}{}\end{DoxyParamCaption})}
+
+
+
+Resolve a collision between two entities and apply game effects. 
+
+Determines the roles of the two entities (projectile, player, enemy) and processes one of the supported collision cases\+:
+\begin{DoxyItemize}
+\item Projectile vs Enemy\+: applies projectile damage to the enemy, enqueues an Enemy\+Hit\+Event or Enemy\+Destroy\+Event as appropriate, enqueues a Projectile\+Destroy\+Event, and destroys the projectile (and the enemy if destroyed).
+\item Projectile vs Player\+: applies projectile damage to the player, enqueues a Player\+Hit\+Event or Player\+Destroy\+Event as appropriate, enqueues a Projectile\+Destroy\+Event, and destroys the projectile (and the player if destroyed).
+\item Player vs Enemy\+: applies a fixed collision damage to both entities, enqueues Player\+Hit/\+Player\+Destroy and Enemy\+Hit/\+Enemy\+Destroy events as appropriate, and destroys entities whose health reaches zero.
+\end{DoxyItemize}
+
+If an event queue is available, the corresponding events are enqueued before entities are destroyed. The function ignores projectile collisions that do not match the expected projectile type for the target (e.\+g., enemy projectiles hitting enemies or player projectiles hitting players).
+
+
+\begin{DoxyParams}{Parameters}
+{\em entity1} & The first colliding entity. \\
+\hline
+{\em entity2} & The second colliding entity. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classecs_1_1_collision_system_a5691850c4cde4f84999596c00200efd0}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!incrementPlayerScore@{incrementPlayerScore}}
+\index{incrementPlayerScore@{incrementPlayerScore}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{incrementPlayerScore()}{incrementPlayerScore()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_a5691850c4cde4f84999596c00200efd0} 
+void ecs\+::\+Collision\+System\+::increment\+Player\+Score (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{owner\+\_\+id}{, }\item[{std\+::uint32\+\_\+t}]{score}{}\end{DoxyParamCaption})}
+
+
+
+Increments the score of the player with the given owner ID. 
+
+Searches for an entity that has both a \doxylink{structecs_1_1_player_component}{Player\+Component} with matching {\ttfamily player\+\_\+id} and a \doxylink{structecs_1_1_score_component}{Score\+Component}, then adds {\ttfamily score} to that entity\textquotesingle{}s \doxylink{structecs_1_1_score_component}{Score\+Component}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+\_\+id} & The player ID whose score should be incremented. \\
+\hline
+{\em score} & Amount to add to the player\textquotesingle{}s existing score.\\
+\hline
+\end{DoxyParams}
+If no matching player entity is found, a warning is written to std\+::cerr. \Hypertarget{classecs_1_1_collision_system_a19eca65badf59c864128bcd705f5cfc2}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!overlapAABBAABB@{overlapAABBAABB}}
+\index{overlapAABBAABB@{overlapAABBAABB}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{overlapAABBAABB()}{overlapAABBAABB()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_a19eca65badf59c864128bcd705f5cfc2} 
+bool ecs\+::\+Collision\+System\+::overlap\+AABBAABB (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&}]{a}{, }\item[{const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&}]{b}{}\end{DoxyParamCaption}) const}
+
+
+
+Determines whether the axis-\/aligned bounding boxes of two entities overlap. 
+
+Checks that both entities have a \doxylink{structecs_1_1_collider_component}{Collider\+Component} and \doxylink{structecs_1_1_position_component}{Position\+Component}; if either entity is missing these components the function returns {\ttfamily false}. Otherwise computes each entity\textquotesingle{}s AABB using position + collider center ± half\+Size and reports whether the boxes intersect on both the x and y axes.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & First entity to test for overlap (must have \doxylink{structecs_1_1_position_component}{Position\+Component} and \doxylink{structecs_1_1_collider_component}{Collider\+Component}). \\
+\hline
+{\em b} & Second entity to test for overlap (must have \doxylink{structecs_1_1_position_component}{Position\+Component} and \doxylink{structecs_1_1_collider_component}{Collider\+Component}). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the entities\textquotesingle{} AABBs intersect on both axes, false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{classecs_1_1_collision_system_a294a912ccf337109cb41cc9bcaf6d205}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!setEventQueue@{setEventQueue}}
+\index{setEventQueue@{setEventQueue}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{setEventQueue()}{setEventQueue()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_a294a912ccf337109cb41cc9bcaf6d205} 
+void ecs\+::\+Collision\+System\+::set\+Event\+Queue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classqueue_1_1_event_queue}{queue\+::\+Event\+Queue}} \texorpdfstring{$\ast$}{*}}]{event\+Queue}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the Event\+Queue used by the collision system for dispatching events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event\+Queue} & Pointer to the Event\+Queue to use; may be {\ttfamily nullptr} to disable event dispatch. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classecs_1_1_collision_system_aa4d0ae044f750754b894d72b9e76fd8a}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!setGame@{setGame}}
+\index{setGame@{setGame}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{setGame()}{setGame()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_aa4d0ae044f750754b894d72b9e76fd8a} 
+void ecs\+::\+Collision\+System\+::set\+Game (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \texorpdfstring{$\ast$}{*}}]{game}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Associates this \doxylink{classecs_1_1_collision_system}{Collision\+System} with a Game instance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em game} & Pointer to the Game to associate with the system; may be nullptr to clear the association. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classecs_1_1_collision_system_a63a23fc93f428b8a671687062c385512}\index{ecs::CollisionSystem@{ecs::CollisionSystem}!update@{update}}
+\index{update@{update}!ecs::CollisionSystem@{ecs::CollisionSystem}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classecs_1_1_collision_system_a63a23fc93f428b8a671687062c385512} 
+void ecs\+::\+Collision\+System\+::update (\begin{DoxyParamCaption}\item[{float}]{dt}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Processes collisions among managed entities by checking all unique pairs for AABB overlap and invoking collision handling when overlaps are detected. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & Elapsed time since the previous update in seconds (currently unused). \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{classecs_1_1_system_a84b6aff0b9dd3932497b4c0dca03fa35}{ecs\+::\+System}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_collision_system_8hpp}{Collision\+System.\+hpp}}\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_collision_system_8cpp}{Collision\+System.\+cpp}}\end{DoxyCompactItemize}

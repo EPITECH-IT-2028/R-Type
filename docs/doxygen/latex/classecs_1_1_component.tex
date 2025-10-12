@@ -1,0 +1,81 @@
+\doxysection{ecs\+::Component\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\hypertarget{classecs_1_1_component}{}\label{classecs_1_1_component}\index{ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}}
+
+
+{\ttfamily \#include $<$Component.\+hpp$>$}
+
+
+
+Inheritance diagram for ecs\+::Component\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>}\+:
+% FIG 0
+
+
+Collaboration diagram for ecs\+::Component\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>}\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classecs_1_1_component_ae5e62c7fac1d30aa7b9cb9115f10385a}{insert\+Data}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id, T component)
+\item 
+void \mbox{\hyperlink{classecs_1_1_component_aa0bf269bb64b02e4f7892602aaa4cdc3}{remove\+Data}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\item 
+T \& \mbox{\hyperlink{classecs_1_1_component_ad0b76360a5f0a1350c8413386609ab5b}{get\+Data}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\item 
+bool \mbox{\hyperlink{classecs_1_1_component_ab37186513957b2e8e925e717304b4dee}{has\+Data}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id) const
+\item 
+void \mbox{\hyperlink{classecs_1_1_component_a279c7f3529601388646bcc2a2d985efa}{entity\+Destroyed}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classecs_1_1_i_component_array}{ecs\+::\+IComponent\+Array}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classecs_1_1_i_component_array_a545718692c898d7b4bc31af496efb90e}{\texorpdfstring{$\sim$}{\string~}\+IComponent\+Array}} ()=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_component_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_component_a279c7f3529601388646bcc2a2d985efa}\index{ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}!entityDestroyed@{entityDestroyed}}
+\index{entityDestroyed@{entityDestroyed}!ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{entityDestroyed()}{entityDestroyed()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_a279c7f3529601388646bcc2a2d985efa} 
+template$<$typename T$>$ \\
+void \mbox{\hyperlink{classecs_1_1_component}{ecs\+::\+Component}}$<$ T $>$\+::entity\+Destroyed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classecs_1_1_i_component_array_ad47c7ac0442af67cebe726ff2f52fe5b}{ecs\+::\+IComponent\+Array}}.
+
+\Hypertarget{classecs_1_1_component_ad0b76360a5f0a1350c8413386609ab5b}\index{ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}!getData@{getData}}
+\index{getData@{getData}!ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getData()}{getData()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_ad0b76360a5f0a1350c8413386609ab5b} 
+template$<$typename T$>$ \\
+T \& \mbox{\hyperlink{classecs_1_1_component}{ecs\+::\+Component}}$<$ T $>$\+::get\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_ab37186513957b2e8e925e717304b4dee}\index{ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}!hasData@{hasData}}
+\index{hasData@{hasData}!ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{hasData()}{hasData()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_ab37186513957b2e8e925e717304b4dee} 
+template$<$typename T$>$ \\
+bool \mbox{\hyperlink{classecs_1_1_component}{ecs\+::\+Component}}$<$ T $>$\+::has\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_ae5e62c7fac1d30aa7b9cb9115f10385a}\index{ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}!insertData@{insertData}}
+\index{insertData@{insertData}!ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{insertData()}{insertData()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_ae5e62c7fac1d30aa7b9cb9115f10385a} 
+template$<$typename T$>$ \\
+void \mbox{\hyperlink{classecs_1_1_component}{ecs\+::\+Component}}$<$ T $>$\+::insert\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{, }\item[{T}]{component}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_aa0bf269bb64b02e4f7892602aaa4cdc3}\index{ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}!removeData@{removeData}}
+\index{removeData@{removeData}!ecs::Component$<$ T $>$@{ecs::Component$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{removeData()}{removeData()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_aa0bf269bb64b02e4f7892602aaa4cdc3} 
+template$<$typename T$>$ \\
+void \mbox{\hyperlink{classecs_1_1_component}{ecs\+::\+Component}}$<$ T $>$\+::remove\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/\mbox{\hyperlink{_component_8hpp}{Component.\+hpp}}\end{DoxyCompactItemize}

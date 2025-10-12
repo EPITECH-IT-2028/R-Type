@@ -1,0 +1,68 @@
+\doxysection{packet\+::Message\+Handler Class Reference}
+\hypertarget{classpacket_1_1_message_handler}{}\label{classpacket_1_1_message_handler}\index{packet::MessageHandler@{packet::MessageHandler}}
+
+
+{\ttfamily \#include $<$Packet\+Handler.\+hpp$>$}
+
+
+
+Inheritance diagram for packet\+::Message\+Handler\+:
+% FIG 0
+
+
+Collaboration diagram for packet\+::Message\+Handler\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classpacket_1_1_message_handler_a87feec78be88a1746aa41c500f61a0f5}{handle\+Packet}} (\mbox{\hyperlink{classclient_1_1_client}{client\+::\+Client}} \&client, const char \texorpdfstring{$\ast$}{*}data, std\+::size\+\_\+t size) override
+\item 
+int \mbox{\hyperlink{classpacket_1_1_message_handler_ace52a98762e27337523d0b523473b66f}{handle\+Packet}} (\mbox{\hyperlink{classserver_1_1_server}{server\+::\+Server}} \&server, \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} \&client, const char \texorpdfstring{$\ast$}{*}data, std\+::size\+\_\+t size) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classpacket_1_1_i_packet}{packet\+::\+IPacket}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_i_packet_a36d3b7ff905210b6b1f58083ebc8e78a}{\texorpdfstring{$\sim$}{\string~}\+IPacket}} ()=default
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_i_packet_a36d3b7ff905210b6b1f58083ebc8e78a}{\texorpdfstring{$\sim$}{\string~}\+IPacket}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classpacket_1_1_a_packet}{packet\+::\+APacket}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_a_packet_a23c9c5b1d44769de0ac4c680fe7816f6}{\texorpdfstring{$\sim$}{\string~}\+APacket}} ()=default
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_a_packet_a23c9c5b1d44769de0ac4c680fe7816f6}{\texorpdfstring{$\sim$}{\string~}\+APacket}} ()=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{classpacket_1_1_message_handler_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classpacket_1_1_message_handler_a87feec78be88a1746aa41c500f61a0f5}\index{packet::MessageHandler@{packet::MessageHandler}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!packet::MessageHandler@{packet::MessageHandler}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classpacket_1_1_message_handler_a87feec78be88a1746aa41c500f61a0f5} 
+int packet\+::\+Message\+Handler\+::handle\+Packet (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classclient_1_1_client}{client\+::\+Client}} \&}]{client}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{std\+::size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classpacket_1_1_i_packet_a2bbe8ea25315508fc1c8649b10e37d10}{packet\+::\+IPacket}}.
+
+\Hypertarget{classpacket_1_1_message_handler_ace52a98762e27337523d0b523473b66f}\index{packet::MessageHandler@{packet::MessageHandler}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!packet::MessageHandler@{packet::MessageHandler}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classpacket_1_1_message_handler_ace52a98762e27337523d0b523473b66f} 
+int packet\+::\+Message\+Handler\+::handle\+Packet (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classserver_1_1_server}{server\+::\+Server}} \&}]{server}{, }\item[{\mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} \&}]{client}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{std\+::size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classpacket_1_1_i_packet_a05038f5c80eaf2b2b1b9e12f45193d7a}{packet\+::\+IPacket}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+client/packets/\mbox{\hyperlink{client_2packets_2_packet_handler_8hpp}{Packet\+Handler.\+hpp}}\item 
+server/src/packets/\mbox{\hyperlink{server_2src_2packets_2_packet_handler_8hpp}{Packet\+Handler.\+hpp}}\item 
+client/packets/\mbox{\hyperlink{client_2packets_2_packet_handler_8cpp}{Packet\+Handler.\+cpp}}\item 
+server/src/packets/\mbox{\hyperlink{server_2src_2packets_2_packet_handler_8cpp}{Packet\+Handler.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,68 @@
+\chapter{Game Engine (ECS) }
+\hypertarget{md_docs_2wiki_2_game_engine_e_c_s}{}\label{md_docs_2wiki_2_game_engine_e_c_s}\index{Game Engine (ECS)@{Game Engine (ECS)}}
+\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md76}%
+\Hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md76}%
+
+
+This section describes the Entity-\/\+Component-\/\+System (ECS) architecture implemented in the R-\/\+Type game engine. The ECS pattern promotes a clear separation of concerns, leading to more flexible, scalable, and maintainable game logic.\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md77}{}\doxysection{\texorpdfstring{Core Concepts}{Core Concepts}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md77}
+The R-\/\+Type ECS is built around three fundamental concepts\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Entities}}\+: Represent unique game objects (e.\+g., a player, an enemy, a projectile). An entity is essentially just a unique ID.
+\item {\bfseries{Components}}\+: Raw data associated with an entity (e.\+g., {\ttfamily Position\+Component}, {\ttfamily Health\+Component}, {\ttfamily Sprite\+Component}). Components contain no logic; they only store data.
+\item {\bfseries{Systems}}\+: Logic that operates on entities that possess a specific set of components (e.\+g., {\ttfamily Movement\+System} operates on entities with {\ttfamily Position\+Component} and {\ttfamily Velocity\+Component}). Systems perform actions and modify component data.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md78}{}\doxysection{\texorpdfstring{Architecture Overview}{Architecture Overview}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md78}
+The ECS implementation consists of several key managers\+:\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md79}{}\doxysubsection{\texorpdfstring{{\ttfamily ECSManager}}{{\ttfamily ECSManager}}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md79}
+The {\ttfamily ECSManager} is the central orchestrator of the entire ECS. It provides the main interface for interacting with the ECS, abstracting away the complexities of the underlying managers. It is responsible for\+:
+
+
+\begin{DoxyItemize}
+\item Creating and destroying entities.
+\item Registering component types.
+\item Adding and removing components from entities.
+\item Retrieving components from entities.
+\item Registering and setting signatures for systems.
+\item Triggering the update cycle for all registered systems.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md80}{}\doxysubsection{\texorpdfstring{{\ttfamily Entity\+Manager}}{{\ttfamily Entity\+Manager}}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md80}
+The {\ttfamily Entity\+Manager} is responsible for managing the lifecycle of entities. It\+:
+
+
+\begin{DoxyItemize}
+\item Assigns unique IDs to new entities.
+\item Recycles IDs of destroyed entities.
+\item Maintains a {\ttfamily \doxylink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}} for each entity, which is a bitset indicating which components are attached to that entity.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md81}{}\doxysubsection{\texorpdfstring{{\ttfamily Component\+Manager}}{{\ttfamily Component\+Manager}}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md81}
+The {\ttfamily Component\+Manager} handles the registration and storage of different component types. Key features include\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Component Registration}}\+: Allows new component types to be registered with the ECS.
+\item {\bfseries{Data-\/\+Oriented Storage}}\+: Components of the same type are stored contiguously in memory using {\ttfamily std\+::array\texorpdfstring{$<$}{<}T, MAX\+\_\+\+ENTITIES\texorpdfstring{$>$}{>}} within {\ttfamily \doxylink{classecs_1_1_component}{ecs\+::\+Component}\texorpdfstring{$<$}{<}T\texorpdfstring{$>$}{>}}, improving cache performance.
+\item {\bfseries{Component Operations}}\+: Provides methods to add, remove, and retrieve components for specific entities.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md82}{}\doxysubsection{\texorpdfstring{{\ttfamily System\+Manager}}{{\ttfamily System\+Manager}}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md82}
+The {\ttfamily System\+Manager} is responsible for managing all the systems in the ECS. It\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{System Registration}}\+: Allows new systems to be registered.
+\item {\bfseries{System Signatures}}\+: Each system has a {\ttfamily \doxylink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}} that defines the set of components an entity must possess for the system to process it. When an entity\textquotesingle{}s components change, the {\ttfamily System\+Manager} updates which entities each system is interested in.
+\item {\bfseries{System Updates}}\+: Iterates through all registered systems and calls their {\ttfamily update} method, passing the {\ttfamily delta\+Time}.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md83}{}\doxysubsection{\texorpdfstring{{\ttfamily System} Base Class}{{\ttfamily System} Base Class}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md83}
+All systems inherit from the {\ttfamily \doxylink{classecs_1_1_system}{ecs\+::\+System}} base class. A system typically\+:
+
+
+\begin{DoxyItemize}
+\item Maintains a {\ttfamily std\+::set\texorpdfstring{$<$}{<}\doxylink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}\texorpdfstring{$>$}{>}} of entities that match its signature.
+\item Implements an {\ttfamily update(float delta\+Time)} method where its logic is executed. This method iterates over the entities in its set and performs operations based on their components.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md84}{}\doxysection{\texorpdfstring{How it Works Together}{How it Works Together}}\label{md_docs_2wiki_2_game_engine_e_c_s_autotoc_md84}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Initialization}}\+: The {\ttfamily ECSManager} is initialized, which in turn initializes the {\ttfamily Entity\+Manager}, {\ttfamily Component\+Manager}, and {\ttfamily System\+Manager}.
+\item {\bfseries{\doxylink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity} Creation}}\+: When {\ttfamily create\+Entity()} is called, the {\ttfamily Entity\+Manager} provides a new unique ID.
+\item {\bfseries{Component Attachment}}\+: When {\ttfamily add\+Component()} is called, the {\ttfamily Component\+Manager} stores the component data, and the {\ttfamily Entity\+Manager} updates the entity\textquotesingle{}s {\ttfamily \doxylink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}. The {\ttfamily System\+Manager} is then notified to update which systems are interested in this entity.
+\item {\bfseries{System Logic}}\+: During each game loop iteration, {\ttfamily ECSManager\+::update()} calls {\ttfamily System\+Manager\+::update()}, which then calls the {\ttfamily update()} method of each registered system. Each system then processes the entities that match its signature.
+\item {\bfseries{\doxylink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity} Destruction}}\+: When {\ttfamily destroy\+Entity()} is called, the {\ttfamily ECSManager} orchestrates the removal of all components associated with the entity and notifies systems to remove the entity from their processing sets.
+\end{DoxyEnumerate}
+
+This modular design allows for easy addition of new game features by simply creating new components and systems without modifying existing code. 

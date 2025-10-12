@@ -1,0 +1,65 @@
+\chapter{Networking }
+\hypertarget{md_docs_2wiki_2_networking}{}\label{md_docs_2wiki_2_networking}\index{Networking@{Networking}}
+\label{md_docs_2wiki_2_networking_autotoc_md97}%
+\Hypertarget{md_docs_2wiki_2_networking_autotoc_md97}%
+
+
+This page explains the networking architecture and protocols used in the R-\/\+Type client-\/server communication.\hypertarget{md_docs_2wiki_2_networking_autotoc_md98}{}\doxysection{\texorpdfstring{Overview}{Overview}}\label{md_docs_2wiki_2_networking_autotoc_md98}
+The R-\/\+Type project utilizes a {\bfseries{UDP-\/based client-\/server architecture}} for real-\/time multiplayer gameplay. This choice prioritizes low-\/latency communication, which is crucial for fast-\/paced action games, over guaranteed delivery. Both the client and server implement their own mechanisms for sequencing and re-\/synchronization to handle UDP\textquotesingle{}s unreliable nature.\hypertarget{md_docs_2wiki_2_networking_autotoc_md99}{}\doxysection{\texorpdfstring{Core Components}{Core Components}}\label{md_docs_2wiki_2_networking_autotoc_md99}
+\hypertarget{md_docs_2wiki_2_networking_autotoc_md100}{}\doxysubsection{\texorpdfstring{{\ttfamily Base\+Network\+Manager}}{{\ttfamily Base\+Network\+Manager}}}\label{md_docs_2wiki_2_networking_autotoc_md100}
+Located in {\ttfamily \doxylink{_base_network_manager_8hpp}{core/network/\+Base\+Network\+Manager.\+hpp}}, this abstract base class provides the fundamental functionalities for network communication using {\ttfamily asio} (Boost.\+Asio or Standalone Asio). It sets up a UDP socket and defines the basic interface for sending and receiving data.
+
+Key responsibilities\+:
+\begin{DoxyItemize}
+\item Initialization of an {\ttfamily asio\+::io\+\_\+context} and a {\ttfamily asio\+::ip\+::udp\+::socket}.
+\item Provides virtual methods for {\ttfamily start\+Receive}, {\ttfamily send}, {\ttfamily run}, and {\ttfamily stop} that concrete network managers must implement.
+\item Manages a receive buffer ({\ttfamily \+\_\+recv\+\_\+buffer}).
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_networking_autotoc_md101}{}\doxysubsection{\texorpdfstring{{\ttfamily Client\+Network\+Manager}}{{\ttfamily Client\+Network\+Manager}}}\label{md_docs_2wiki_2_networking_autotoc_md101}
+Implemented in {\ttfamily \doxylink{_client_network_manager_8hpp}{core/network/\+Client\+Network\+Manager.\+hpp}}, this class extends {\ttfamily Base\+Network\+Manager} and handles all client-\/side networking logic. It connects to a specific server and manages the sending of player actions and receiving of game state updates.
+
+Key responsibilities\+:
+\begin{DoxyItemize}
+\item Connecting to a remote server endpoint.
+\item Sending client-\/specific packets (e.\+g., player movement, shoot events).
+\item Receiving and processing server-\/sent packets.
+\item Managing connection state (e.\+g., {\ttfamily is\+Connected}).
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_networking_autotoc_md102}{}\doxysubsection{\texorpdfstring{{\ttfamily Server\+Network\+Manager}}{{\ttfamily Server\+Network\+Manager}}}\label{md_docs_2wiki_2_networking_autotoc_md102}
+Implemented in {\ttfamily \doxylink{_server_network_manager_8hpp}{core/network/\+Server\+Network\+Manager.\+hpp}}, this class also extends {\ttfamily Base\+Network\+Manager} and manages all server-\/side networking logic. It listens for incoming client connections, registers clients, and broadcasts game state updates.
+
+Key responsibilities\+:
+\begin{DoxyItemize}
+\item Listening for incoming UDP packets from multiple clients.
+\item Registering and unregistering clients, mapping client IDs to their network endpoints.
+\item Sending specific packets to individual clients or broadcasting to all connected clients.
+\item Scheduling event processing and connection timeouts.
+\item Handling signals for graceful shutdown.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_networking_autotoc_md103}{}\doxysubsection{\texorpdfstring{{\ttfamily Packet.\+hpp}}{{\ttfamily Packet.\+hpp}}}\label{md_docs_2wiki_2_networking_autotoc_md103}
+This file ({\ttfamily \doxylink{_packet_8hpp}{core/network/\+Packet.\+hpp}}) defines the structure of all network packets used in the R-\/\+Type protocol. It includes\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{{\ttfamily \doxylink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}} Enum}}\+: An enumeration of all possible packet types (e.\+g., {\ttfamily Message}, {\ttfamily Move}, {\ttfamily New\+Player}, {\ttfamily Enemy\+Spawn}, {\ttfamily Player\+Shoot}). Each type is assigned a unique {\ttfamily uint8\+\_\+t} value.
+\item {\bfseries{{\ttfamily \doxylink{struct_packet_header}{Packet\+Header}} Struct}}\+: A common header for all packets, containing {\ttfamily \doxylink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type} type} and {\ttfamily uint32\+\_\+t size} (total size of the packet including header).
+\item {\bfseries{Specific Packet Structs}}\+: Various {\ttfamily struct} definitions for different packet types (e.\+g., {\ttfamily \doxylink{struct_move_packet}{Move\+Packet}}, {\ttfamily \doxylink{struct_new_player_packet}{New\+Player\+Packet}}, {\ttfamily \doxylink{struct_player_info_packet}{Player\+Info\+Packet}}, {\ttfamily \doxylink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}}, {\ttfamily \doxylink{struct_projectile_spawn_packet}{Projectile\+Spawn\+Packet}}). These structs are {\ttfamily alignas(4)} to ensure consistent binary layout.
+\item {\bfseries{Enums for Game Elements}}\+: {\ttfamily \doxylink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}} and {\ttfamily \doxylink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} enums are also defined here to categorize different game elements.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_networking_autotoc_md104}{}\doxysection{\texorpdfstring{R-\/\+Type Network Protocol (RTNP)}{R-\/\+Type Network Protocol (RTNP)}}\label{md_docs_2wiki_2_networking_autotoc_md104}
+The detailed specification of the R-\/\+Type Network Protocol (RTNP) can be found in {\ttfamily \doxylink{server__protocol_8md}{docs/server\+\_\+protocol.\+md}}. Key aspects include\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{UDP-\/based}}\+: All communication occurs over UDP datagrams.
+\item {\bfseries{Single Packet per Datagram}}\+: Each UDP datagram contains exactly one packet.
+\item {\bfseries{Packet Structure}}\+: All packets begin with a {\ttfamily \doxylink{struct_packet_header}{Packet\+Header}} followed by a type-\/specific payload.
+\item {\bfseries{Unreliable Nature}}\+: Due to UDP\textquotesingle{}s unreliability, clients and servers implement their own sequencing and re-\/synchronization mechanisms using {\ttfamily sequence\+\_\+number} fields in various packet types.
+\item {\bfseries{Message Types}}\+: A comprehensive list of client-\/to-\/server and server-\/to-\/client messages, detailing their purpose and payload fields.
+\item {\bfseries{Data Types}}\+: Specifies the data types used (e.\+g., {\ttfamily uint8\+\_\+t}, {\ttfamily uint32\+\_\+t}, {\ttfamily float}, {\ttfamily char\mbox{[}\mbox{]}} for strings) and their endianness/alignment.
+\item {\bfseries{Message Semantics}}\+: Guidelines for packet validation, sequence number usage, and heartbeat mechanisms.
+\item {\bfseries{No Authentication/\+Encryption}}\+: The current protocol does not include authentication or encryption and is intended for controlled environments. Future work may address these security considerations.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_networking_autotoc_md105}{}\doxysection{\texorpdfstring{Communication Flow Example}{Communication Flow Example}}\label{md_docs_2wiki_2_networking_autotoc_md105}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Client Connection}}\+: A client sends a {\ttfamily Player\+Info} packet to the server to identify itself.
+\item {\bfseries{Server Acknowledgment}}\+: The server responds with a {\ttfamily New\+Player} packet to the client and broadcasts it to other connected clients.
+\item {\bfseries{Gameplay Loop}}\+: Both client and server continuously exchange movement, projectile, and event packets to synchronize game state.
+\item {\bfseries{Keep-\/\+Alive}}\+: {\ttfamily Heartbeat} packets are exchanged periodically to maintain the connection state and prevent timeouts. 
+\end{DoxyEnumerate}

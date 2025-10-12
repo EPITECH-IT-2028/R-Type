@@ -1,0 +1,105 @@
+\doxysection{Game.\+hpp}
+\hypertarget{_game_8hpp_source}{}\label{_game_8hpp_source}\index{server/src/game/Game.hpp@{server/src/game/Game.hpp}}
+\mbox{\hyperlink{_game_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <thread>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_collision_system_8hpp}{CollisionSystem.hpp}}"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_enemy_8hpp}{Enemy.hpp}}"{}}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_enemy_system_8hpp}{EnemySystem.hpp}}"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_player_8hpp}{Player.hpp}}"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_projectile_8hpp}{Projectile.hpp}}"{}}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_projectile_system_8hpp}{ProjectileSystem.hpp}}"{}}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_queue_8hpp}{Queue.hpp}}"{}}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacegame}{game}}\ \{}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41}{Game}}\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41}{Game}}();}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game_a9fd96a37b55d908071105879d015df8c}{\string~Game}}();}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_game_ae6b767b9e115989af62b4b236efcbc04}{start}}();}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_game_a0db7f0f387723cf677e5d084cea5a7b4}{stop}}();}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \textcolor{comment}{/*\ \ Player\ Management\ */}}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ std::shared\_ptr<Player>\ \mbox{\hyperlink{classgame_1_1_game_a0ebc16bc429b7e075a8d8925f912834e}{createPlayer}}(std::uint32\_t\ player\_id,}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&name);}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \ \ std::shared\_ptr<game::Projectile>\ \mbox{\hyperlink{classgame_1_1_game_a11a22476638d0eb12d920b3af44cc755}{createProjectile}}(}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ std::uint32\_t\ projectile\_id,\ std::uint32\_t\ owner\_id,}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ type,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ vx,\ \textcolor{keywordtype}{float}\ vy);}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_game_a36369cf4aa9b45c7a916a23a723b3013}{destroyPlayer}}(\textcolor{keywordtype}{int}\ player\_id);}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_game_acf25c4de36893557e77e76d12135bdc5}{destroyProjectile}}(std::uint32\_t\ projectile\_id);}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ \ \ std::shared\_ptr<Player>\ \mbox{\hyperlink{classgame_1_1_game_a3d53185172a1242797e975fbbd0fe120}{getPlayer}}(\textcolor{keywordtype}{int}\ player\_id);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \ \ std::shared\_ptr<Projectile>\ \mbox{\hyperlink{classgame_1_1_game_aff6843b2c36554ae2134ecc8486e1995}{getProjectile}}(std::uint32\_t\ projectile\_id);}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ std::vector<std::shared\_ptr<Player>>\ \mbox{\hyperlink{classgame_1_1_game_a4ffd1799d02e54a47a430e2e74afd933}{getAllPlayers}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \textcolor{comment}{/*\ Enemy\ Management\ */}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ std::shared\_ptr<Enemy>\ \mbox{\hyperlink{classgame_1_1_game_ac0ad3f4a3a019f48e9b8b7b77b4a965f}{createEnemy}}(\textcolor{keywordtype}{int}\ enemy\_id,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{EnemyType}}\ type);}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_game_a4168a75844307bec3ed099299108ec0d}{destroyEnemy}}(\textcolor{keywordtype}{int}\ enemy\_id);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ std::shared\_ptr<Enemy>\ \mbox{\hyperlink{classgame_1_1_game_aa6ec38f815adf750a9059a6ad647aad1}{getEnemy}}(\textcolor{keywordtype}{int}\ enemy\_id);}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ std::vector<std::shared\_ptr<Enemy>>\ \mbox{\hyperlink{classgame_1_1_game_ac66bec1545c35383ea25907982529029}{getAllEnemies}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs::ECSManager}}\ \&\mbox{\hyperlink{classgame_1_1_game_a236b4d4fd4f3478be7b6d6e04dc17472}{getECSManager}}()\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_ecsManager;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \ \ std::shared\_ptr<ecs::EnemySystem>\ \mbox{\hyperlink{classgame_1_1_game_ac6ac23981f1b6202c924f6ef0bddc055}{getEnemySystem}}()\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_enemySystem;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \mbox{\hyperlink{classqueue_1_1_event_queue}{queue::EventQueue}}\ \&\mbox{\hyperlink{classgame_1_1_game_a9753bae87d96209b420b144fe93ee7d4}{getEventQueue}}()\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_eventQueue;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ std::vector<std::shared\_ptr<Projectile>>\ \mbox{\hyperlink{classgame_1_1_game_a9bb26f32e3145bb3b5d45311e7f11ecb}{getAllProjectiles}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ std::uint64\_t\ \mbox{\hyperlink{classgame_1_1_game_a676cee622beeedbd140c837ad6b2a056}{getNextProjectileId}}()\ noexcept\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_nextProjectileId++;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{client_2main_8cpp_ab059affa7f0bca881865930d519bc411}{gameLoop}}();}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ initECS();}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ std::atomic<bool>\ \_running;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ std::thread\ \_gameThread;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ spawnEnemy(\textcolor{keywordtype}{float}\ deltaTime);}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ std::shared\_ptr<ecs::EnemySystem>\ \_enemySystem;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ std::shared\_ptr<ecs::ProjectileSystem>\ \_projectileSystem;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ std::shared\_ptr<ecs::CollisionSystem>\ \_collisionSystem;}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ std::unordered\_map<int,\ std::shared\_ptr<Enemy>>\ \_enemies;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ std::unordered\_map<int,\ std::shared\_ptr<Player>>\ \_players;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ std::unordered\_map<std::uint32\_t,\ std::shared\_ptr<Projectile>>}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \_projectiles;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \_enemySpawnTimer\ =\ 0.0f;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \_enemySpawnInterval\ =\ 5.0f;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \_nextEnemyId\ =\ 0;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ std::atomic<std::uint64\_t>\ \_nextProjectileId\{0\};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs::ECSManager}}\ \&\_ecsManager;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \_ecsMutex;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \_playerMutex;}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \_enemyMutex;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \mbox{\hyperlink{classqueue_1_1_event_queue}{queue::EventQueue}}\ \_eventQueue;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \_projectileMutex;}
+\DoxyCodeLine{00097\ \ \ \};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \}\ \ \textcolor{comment}{//\ namespace\ game}}
+
+\end{DoxyCode}

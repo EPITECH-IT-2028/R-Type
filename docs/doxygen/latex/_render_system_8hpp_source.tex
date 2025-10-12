@@ -1,0 +1,32 @@
+\doxysection{Render\+System.\+hpp}
+\hypertarget{_render_system_8hpp_source}{}\label{_render_system_8hpp_source}\index{game\_engine/ecs/systems/RenderSystem.hpp@{game\_engine/ecs/systems/RenderSystem.hpp}}
+\mbox{\hyperlink{_render_system_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}raylib.h"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classecs_1_1_system}{System}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}(\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ \&ecsManager\ =\ \mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager::getInstance}}())}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ \ \ :\ \_ecsManager(ecsManager)\ \{\}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_render_system_aaa2ede9d0a8d384dd6ac2ce169282736}{RenderSystem}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\&\ \mbox{\hyperlink{classecs_1_1_render_system_a575c76b0aca429224143cf6979bcb8a3}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_render_system_a34774dac058d52bdeb8145e90be6afc6}{RenderSystem}}(\mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\&\&)\ noexcept\ =\ default;}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\&\ operator=(\mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}\&\&)\ =\ delete;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \string~\mbox{\hyperlink{classecs_1_1_render_system_a18c13842450ed830621489397a56e510}{RenderSystem}}()\ noexcept;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_render_system_aa742e01ffb14c1d38ee36e01dc758b6d}{update}}(\textcolor{keywordtype}{float}\ deltaTime)\ override;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ private:}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ \&\_ecsManager;}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ std::unordered\_map<std::\textcolor{keywordtype}{string},\ Texture2D>\ \_textureCache;}
+\DoxyCodeLine{00025\ \ \ \};}
+\DoxyCodeLine{00026\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

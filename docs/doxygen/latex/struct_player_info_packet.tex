@@ -1,0 +1,45 @@
+\doxysection{Player\+Info\+Packet Struct Reference}
+\hypertarget{struct_player_info_packet}{}\label{struct_player_info_packet}\index{PlayerInfoPacket@{PlayerInfoPacket}}
+
+
+{\ttfamily \#include $<$Packet.\+hpp$>$}
+
+
+
+Collaboration diagram for Player\+Info\+Packet\+:
+% FIG 0
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} \mbox{\hyperlink{struct_player_info_packet_a6e586c80edc8682d531fc6a749bc4f63}{header}}
+\item 
+char \mbox{\hyperlink{struct_player_info_packet_ad5cc92a100c1aa029e6175bf802fe0cc}{name}} \mbox{[}32\mbox{]}
+\begin{DoxyCompactList}\small\item\em Packet sent from the client to the server to provide the player\textquotesingle{}s display name. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_player_info_packet_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_player_info_packet_a6e586c80edc8682d531fc6a749bc4f63}\index{PlayerInfoPacket@{PlayerInfoPacket}!header@{header}}
+\index{header@{header}!PlayerInfoPacket@{PlayerInfoPacket}}
+\doxysubsubsection{\texorpdfstring{header}{header}}
+{\footnotesize\ttfamily \label{struct_player_info_packet_a6e586c80edc8682d531fc6a749bc4f63} 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} Player\+Info\+Packet\+::header}
+
+\Hypertarget{struct_player_info_packet_ad5cc92a100c1aa029e6175bf802fe0cc}\index{PlayerInfoPacket@{PlayerInfoPacket}!name@{name}}
+\index{name@{name}!PlayerInfoPacket@{PlayerInfoPacket}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{struct_player_info_packet_ad5cc92a100c1aa029e6175bf802fe0cc} 
+char Player\+Info\+Packet\+::name\mbox{[}32\mbox{]}}
+
+
+
+Packet sent from the client to the server to provide the player\textquotesingle{}s display name. 
+
+Contains the common packet header and a fixed-\/size name buffer. The name is stored as a null-\/terminated UTF-\/8 string in the 32-\/byte {\ttfamily name} field; maximum 31 bytes of character data plus a terminating NUL.
+
+Player\textquotesingle{}s display name (null-\/terminated UTF-\/8). 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_8hpp}{Packet.\+hpp}}\end{DoxyCompactItemize}

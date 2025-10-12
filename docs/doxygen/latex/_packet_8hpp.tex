@@ -1,0 +1,220 @@
+\doxysection{core/network/\+Packet.hpp File Reference}
+\hypertarget{_packet_8hpp}{}\label{_packet_8hpp}\index{core/network/Packet.hpp@{core/network/Packet.hpp}}
+{\ttfamily \#include $<$cstddef$>$}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+Include dependency graph for Packet.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_packet_header}{Packet\+Header}}
+\item 
+struct \mbox{\hyperlink{struct_message_packet}{Message\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_move_packet}{Move\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_player_disconnect_packet}{Player\+Disconnect\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_heartbeat_player_packet}{Heartbeat\+Player\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_player_info_packet}{Player\+Info\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_player_hit_packet}{Player\+Hit\+Packet}}
+\begin{DoxyCompactList}\small\item\em Packet sent from client to server to report a player hit event. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_position_packet}{Position\+Packet}}
+\begin{DoxyCompactList}\small\item\em Sends the client\textquotesingle{}s current position with an ordering sequence number. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_enemy_move_packet}{Enemy\+Move\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_enemy_death_packet}{Enemy\+Death\+Packet}}
+\begin{DoxyCompactList}\small\item\em Describes an enemy death event sent from server to client. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_player_shoot_packet}{Player\+Shoot\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_projectile_spawn_packet}{Projectile\+Spawn\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_projectile_hit_packet}{Projectile\+Hit\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_projectile_destroy_packet}{Projectile\+Destroy\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_game_start_packet}{Game\+Start\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_game_end_packet}{Game\+End\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_enemy_hit_packet}{Enemy\+Hit\+Packet}}
+\item 
+struct \mbox{\hyperlink{struct_player_death_packet}{Player\+Death\+Packet}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}~alignas(4)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}} \+: uint8\+\_\+t \{ \newline
+\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4}{Message}} = 0x01
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a6bc362dbf494c61ea117fe3c71ca48a5}{Move}} = 0x02
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a31435ad802459589a67356c4eb44ee2f}{New\+Player}} = 0x03
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf}{Player\+Info}} = 0x04
+, \newline
+\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a52f5e0bc3859bc5f5e25130b6c7e8881}{Position}} = 0x05
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b}{Enemy\+Spawn}} = 0x06
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4}{Enemy\+Move}} = 0x07
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c}{Enemy\+Death}} = 0x08
+, \newline
+\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab8c261cbfda10bf4a28e8e34ed4358c5}{Player\+Shoot}} = 0x09
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a16164d21abaa91f4ff410c8ebab62f1d}{Projectile\+Spawn}} = 0x0A
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56acbda45001b65945889cb6008e0120a70}{Projectile\+Hit}} = 0x0B
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56aea51190bde5a3322efb2a4c930c6ad2f}{Projectile\+Destroy}} = 0x0C
+, \newline
+\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a492785297322c6add81eb6abe8744bdf}{Game\+Start}} = 0x0D
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56abd6252bdc40fb60b3044db4eace65340}{Game\+End}} = 0x0E
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}{Player\+Disconnected}} = 0x0F
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e}{Heartbeat}} = 0x10
+, \newline
+\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6}{Enemy\+Hit}} = 0x11
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a63ae15ec306649a88bd42ec52d28a042}{Player\+Hit}} = 0x12
+, \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab9fbac179f1be377fe125f9deb1a4ba9}{Player\+Death}} = 0x13
+ \}
+\item 
+enum class \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}} \+: uint8\+\_\+t \{ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7aab3ed89adcb1b63e98088a4528803cbf7}{BASIC\+\_\+\+FIGHTER}} = 0x01
+ \}
+\item 
+enum class \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} \+: uint8\+\_\+t \{ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba745874f0e99a8576753624c95e03d43c}{PLAYER\+\_\+\+BASIC}} = 0x01
+, \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba4d42895150dec75f199d31ade6ff3f49}{ENEMY\+\_\+\+BASIC}} = 0x02
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_packet_8hpp_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}\index{Packet.hpp@{Packet.hpp}!ALIGNED@{ALIGNED}}
+\index{ALIGNED@{ALIGNED}!Packet.hpp@{Packet.hpp}}
+\doxysubsubsection{\texorpdfstring{ALIGNED}{ALIGNED}}
+{\footnotesize\ttfamily \label{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6} 
+\#define ALIGNED~alignas(4)}
+
+
+
+\label{doc-enum-members}
+\Hypertarget{_packet_8hpp_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}\index{Packet.hpp@{Packet.hpp}!EnemyType@{EnemyType}}
+\index{EnemyType@{EnemyType}!Packet.hpp@{Packet.hpp}}
+\doxysubsubsection{\texorpdfstring{EnemyType}{EnemyType}}
+{\footnotesize\ttfamily \label{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a} 
+enum class \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}} \+: uint8\+\_\+t\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BASIC\_FIGHTER@{BASIC\_FIGHTER}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!BASIC\_FIGHTER@{BASIC\_FIGHTER}}}\Hypertarget{_packet_8hpp_a8e5148839b6f99970d3343f906623d7aab3ed89adcb1b63e98088a4528803cbf7}\label{_packet_8hpp_a8e5148839b6f99970d3343f906623d7aab3ed89adcb1b63e98088a4528803cbf7} 
+BASIC\+\_\+\+FIGHTER&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}\index{Packet.hpp@{Packet.hpp}!PacketType@{PacketType}}
+\index{PacketType@{PacketType}!Packet.hpp@{Packet.hpp}}
+\doxysubsubsection{\texorpdfstring{PacketType}{PacketType}}
+{\footnotesize\ttfamily \label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56} 
+enum class \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}} \+: uint8\+\_\+t\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Message@{Message}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!Message@{Message}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4} 
+Message&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Move@{Move}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!Move@{Move}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a6bc362dbf494c61ea117fe3c71ca48a5}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a6bc362dbf494c61ea117fe3c71ca48a5} 
+Move&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NewPlayer@{NewPlayer}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!NewPlayer@{NewPlayer}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a31435ad802459589a67356c4eb44ee2f}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a31435ad802459589a67356c4eb44ee2f} 
+New\+Player&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PlayerInfo@{PlayerInfo}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!PlayerInfo@{PlayerInfo}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf} 
+Player\+Info&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Position@{Position}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!Position@{Position}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a52f5e0bc3859bc5f5e25130b6c7e8881}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a52f5e0bc3859bc5f5e25130b6c7e8881} 
+Position&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EnemySpawn@{EnemySpawn}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!EnemySpawn@{EnemySpawn}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b} 
+Enemy\+Spawn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EnemyMove@{EnemyMove}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!EnemyMove@{EnemyMove}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4} 
+Enemy\+Move&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EnemyDeath@{EnemyDeath}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!EnemyDeath@{EnemyDeath}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c} 
+Enemy\+Death&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PlayerShoot@{PlayerShoot}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!PlayerShoot@{PlayerShoot}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab8c261cbfda10bf4a28e8e34ed4358c5}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab8c261cbfda10bf4a28e8e34ed4358c5} 
+Player\+Shoot&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ProjectileSpawn@{ProjectileSpawn}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!ProjectileSpawn@{ProjectileSpawn}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a16164d21abaa91f4ff410c8ebab62f1d}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a16164d21abaa91f4ff410c8ebab62f1d} 
+Projectile\+Spawn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ProjectileHit@{ProjectileHit}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!ProjectileHit@{ProjectileHit}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56acbda45001b65945889cb6008e0120a70}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56acbda45001b65945889cb6008e0120a70} 
+Projectile\+Hit&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ProjectileDestroy@{ProjectileDestroy}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!ProjectileDestroy@{ProjectileDestroy}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56aea51190bde5a3322efb2a4c930c6ad2f}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56aea51190bde5a3322efb2a4c930c6ad2f} 
+Projectile\+Destroy&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GameStart@{GameStart}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!GameStart@{GameStart}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a492785297322c6add81eb6abe8744bdf}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a492785297322c6add81eb6abe8744bdf} 
+Game\+Start&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GameEnd@{GameEnd}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!GameEnd@{GameEnd}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56abd6252bdc40fb60b3044db4eace65340}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56abd6252bdc40fb60b3044db4eace65340} 
+Game\+End&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PlayerDisconnected@{PlayerDisconnected}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!PlayerDisconnected@{PlayerDisconnected}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783} 
+Player\+Disconnected&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Heartbeat@{Heartbeat}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!Heartbeat@{Heartbeat}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e} 
+Heartbeat&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EnemyHit@{EnemyHit}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!EnemyHit@{EnemyHit}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6} 
+Enemy\+Hit&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PlayerHit@{PlayerHit}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!PlayerHit@{PlayerHit}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a63ae15ec306649a88bd42ec52d28a042}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a63ae15ec306649a88bd42ec52d28a042} 
+Player\+Hit&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PlayerDeath@{PlayerDeath}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!PlayerDeath@{PlayerDeath}}}\Hypertarget{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab9fbac179f1be377fe125f9deb1a4ba9}\label{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab9fbac179f1be377fe125f9deb1a4ba9} 
+Player\+Death&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}\index{Packet.hpp@{Packet.hpp}!ProjectileType@{ProjectileType}}
+\index{ProjectileType@{ProjectileType}!Packet.hpp@{Packet.hpp}}
+\doxysubsubsection{\texorpdfstring{ProjectileType}{ProjectileType}}
+{\footnotesize\ttfamily \label{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b} 
+enum class \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} \+: uint8\+\_\+t\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PLAYER\_BASIC@{PLAYER\_BASIC}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!PLAYER\_BASIC@{PLAYER\_BASIC}}}\Hypertarget{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba745874f0e99a8576753624c95e03d43c}\label{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba745874f0e99a8576753624c95e03d43c} 
+PLAYER\+\_\+\+BASIC&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ENEMY\_BASIC@{ENEMY\_BASIC}!Packet.hpp@{Packet.hpp}}\index{Packet.hpp@{Packet.hpp}!ENEMY\_BASIC@{ENEMY\_BASIC}}}\Hypertarget{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba4d42895150dec75f199d31ade6ff3f49}\label{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba4d42895150dec75f199d31ade6ff3f49} 
+ENEMY\+\_\+\+BASIC&\\
+\hline
+
+\end{DoxyEnumFields}

@@ -1,0 +1,96 @@
+\doxysection{Player\+Hit\+Packet Struct Reference}
+\hypertarget{struct_player_hit_packet}{}\label{struct_player_hit_packet}\index{PlayerHitPacket@{PlayerHitPacket}}
+
+
+Packet sent from client to server to report a player hit event.  
+
+
+
+
+{\ttfamily \#include $<$Packet.\+hpp$>$}
+
+
+
+Collaboration diagram for Player\+Hit\+Packet\+:
+% FIG 0
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} \mbox{\hyperlink{struct_player_hit_packet_ad78aaace4137ef67f44d44149d30e2e3}{header}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{struct_player_hit_packet_af09e469b2b2f50f72e939464b6e05824}{player\+\_\+id}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{struct_player_hit_packet_a1d28ec394205c65c99acfbe8904cdf48}{damage}}
+\item 
+float \mbox{\hyperlink{struct_player_hit_packet_aa9dd6fdad89750f32214b95473d6fa25}{x}}
+\item 
+float \mbox{\hyperlink{struct_player_hit_packet_a85fb9a5771cb5d6272cec175e6005f42}{y}}
+\item 
+int \mbox{\hyperlink{struct_player_hit_packet_a29ddf543457adbda56f1ee183aa4a89d}{sequence\+\_\+number}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Packet sent from client to server to report a player hit event. 
+
+Contains the common packet header and the identifying and contextual data for a hit\+: the affected player\textquotesingle{}s id, the damage amount, the world coordinates where the hit occurred, and a sequence number to correlate with client-\/side action/state.
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & Identifier of the player that was hit. \\
+\hline
+{\em damage} & Amount of damage applied to the player. \\
+\hline
+{\em x} & World X coordinate where the hit occurred. \\
+\hline
+{\em y} & World Y coordinate where the hit occurred. \\
+\hline
+{\em sequence\+\_\+number} & Client-\/side sequence number used to correlate this event with prior actions. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_player_hit_packet_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_player_hit_packet_a1d28ec394205c65c99acfbe8904cdf48}\index{PlayerHitPacket@{PlayerHitPacket}!damage@{damage}}
+\index{damage@{damage}!PlayerHitPacket@{PlayerHitPacket}}
+\doxysubsubsection{\texorpdfstring{damage}{damage}}
+{\footnotesize\ttfamily \label{struct_player_hit_packet_a1d28ec394205c65c99acfbe8904cdf48} 
+uint32\+\_\+t Player\+Hit\+Packet\+::damage}
+
+\Hypertarget{struct_player_hit_packet_ad78aaace4137ef67f44d44149d30e2e3}\index{PlayerHitPacket@{PlayerHitPacket}!header@{header}}
+\index{header@{header}!PlayerHitPacket@{PlayerHitPacket}}
+\doxysubsubsection{\texorpdfstring{header}{header}}
+{\footnotesize\ttfamily \label{struct_player_hit_packet_ad78aaace4137ef67f44d44149d30e2e3} 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} Player\+Hit\+Packet\+::header}
+
+\Hypertarget{struct_player_hit_packet_af09e469b2b2f50f72e939464b6e05824}\index{PlayerHitPacket@{PlayerHitPacket}!player\_id@{player\_id}}
+\index{player\_id@{player\_id}!PlayerHitPacket@{PlayerHitPacket}}
+\doxysubsubsection{\texorpdfstring{player\_id}{player\_id}}
+{\footnotesize\ttfamily \label{struct_player_hit_packet_af09e469b2b2f50f72e939464b6e05824} 
+uint32\+\_\+t Player\+Hit\+Packet\+::player\+\_\+id}
+
+\Hypertarget{struct_player_hit_packet_a29ddf543457adbda56f1ee183aa4a89d}\index{PlayerHitPacket@{PlayerHitPacket}!sequence\_number@{sequence\_number}}
+\index{sequence\_number@{sequence\_number}!PlayerHitPacket@{PlayerHitPacket}}
+\doxysubsubsection{\texorpdfstring{sequence\_number}{sequence\_number}}
+{\footnotesize\ttfamily \label{struct_player_hit_packet_a29ddf543457adbda56f1ee183aa4a89d} 
+int Player\+Hit\+Packet\+::sequence\+\_\+number}
+
+\Hypertarget{struct_player_hit_packet_aa9dd6fdad89750f32214b95473d6fa25}\index{PlayerHitPacket@{PlayerHitPacket}!x@{x}}
+\index{x@{x}!PlayerHitPacket@{PlayerHitPacket}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{struct_player_hit_packet_aa9dd6fdad89750f32214b95473d6fa25} 
+float Player\+Hit\+Packet\+::x}
+
+\Hypertarget{struct_player_hit_packet_a85fb9a5771cb5d6272cec175e6005f42}\index{PlayerHitPacket@{PlayerHitPacket}!y@{y}}
+\index{y@{y}!PlayerHitPacket@{PlayerHitPacket}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{struct_player_hit_packet_a85fb9a5771cb5d6272cec175e6005f42} 
+float Player\+Hit\+Packet\+::y}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_8hpp}{Packet.\+hpp}}\end{DoxyCompactItemize}

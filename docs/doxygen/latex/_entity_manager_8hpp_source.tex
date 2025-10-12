@@ -1,0 +1,41 @@
+\doxysection{Entity\+Manager.\+hpp}
+\hypertarget{_entity_manager_8hpp_source}{}\label{_entity_manager_8hpp_source}\index{game\_engine/ecs/EntityManager.hpp@{game\_engine/ecs/EntityManager.hpp}}
+\mbox{\hyperlink{_entity_manager_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <bitset>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_entity_manager_8hpp_a7a228dc9d5bc738008aae7189b96f1cc}{MAX\_ENTITIES}}\ =\ 5000;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69}{MAX\_COMPONENTS}}\ =\ 32;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{using\ }\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ =\ std::uint32\_t;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{using\ }\mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}\ =\ std::bitset<MAX\_COMPONENTS>;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_entity_manager_acba3847d62f7cd79e22d5ffa490c1f53}{EntityManager}}\ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_entity_manager_acba3847d62f7cd79e22d5ffa490c1f53}{EntityManager}}();}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_entity_manager_aff49d037faf0dd9e2a3ae5bad2ca7161}{\string~EntityManager}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ \mbox{\hyperlink{classecs_1_1_entity_manager_a468004b08f560fb82ccf1e3ac7f9ffe7}{createEntity}}();}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_entity_manager_a5164e3928016d3adc5480339a76ed667}{destroyEntity}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId);}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_entity_manager_a0db4fb8c8579f8e293244230752dbbf9}{setSignature}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId,\ \mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}\ signature);}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}\ \mbox{\hyperlink{classecs_1_1_entity_manager_a9f4d7e03615aa8106a8581e2587b18d0}{getSignature}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ std::vector<Entity>\ \mbox{\hyperlink{classecs_1_1_entity_manager_ae2291117cbbe8845ce2cf0c9f9d59104}{getAllEntities}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ std::queue<Entity>\ \_entities;}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ std::array<Signature,\ MAX\_ENTITIES>\ \_signatures;}
+\DoxyCodeLine{00033\ \ \ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \}}
+
+\end{DoxyCode}

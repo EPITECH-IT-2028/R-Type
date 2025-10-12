@@ -1,0 +1,46 @@
+\doxysection{Enemy\+System.\+hpp}
+\hypertarget{_enemy_system_8hpp_source}{}\label{_enemy_system_8hpp_source}\index{game\_engine/ecs/systems/EnemySystem.hpp@{game\_engine/ecs/systems/EnemySystem.hpp}}
+\mbox{\hyperlink{_enemy_system_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_queue_8hpp}{Queue.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_system_8hpp}{System.hpp}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacegame}{game}}\ \{}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classgame_1_1_game}{Game}};}
+\DoxyCodeLine{00009\ \}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_enemy_system_a69f3f1381a87fe856eb65d52962307b6}{EnemySystem}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classecs_1_1_system}{System}}\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_enemy_system_a69f3f1381a87fe856eb65d52962307b6}{EnemySystem}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_enemy_system_aa6abb83dd78a3a93ac408bc983d20fc0}{\string~EnemySystem}}()\ \textcolor{keyword}{override}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_enemy_system_a3ed4d48d03551f9fbc35e27e7f03d3d1}{setECSManager}}(\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ *ecsManager)\ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \_ecsManager\ =\ ecsManager;}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_enemy_system_a3a7dc230184e49038d8d03fac143004d}{setGame}}(\mbox{\hyperlink{classgame_1_1_game}{game::Game}}\ *\mbox{\hyperlink{namespacegame}{game}})\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \_game\ =\ \mbox{\hyperlink{namespacegame}{game}};}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_enemy_system_a2092a25672c31a0826693efaf5aa8858}{setEventQueue}}(\mbox{\hyperlink{classqueue_1_1_event_queue}{queue::EventQueue}}\ *eventQueue)\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \_eventQueue\ =\ eventQueue;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_enemy_system_a328297a4b422629b86e9230e4e0aa464}{update}}(\textcolor{keywordtype}{float}\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ *\_ecsManager\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game}{game::Game}}\ *\_game\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \mbox{\hyperlink{classqueue_1_1_event_queue}{queue::EventQueue}}\ *\_eventQueue\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ moveBasics(\textcolor{keywordtype}{float}\ deltaTime,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ \&entity);}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ shootAtPlayer(\textcolor{keywordtype}{float}\ deltaTime,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ \&entity);}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ std::pair<float,\ float>\ findNearest(\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y);}
+\DoxyCodeLine{00039\ \ \ \};}
+\DoxyCodeLine{00040\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}
