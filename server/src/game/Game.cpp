@@ -23,6 +23,7 @@
 game::Game::Game()
     : _running(false), _ecsManager(ecs::ECSManager::getInstance()) {
   initECS();
+  srand(time(nullptr));
 }
 
 /**
@@ -260,8 +261,6 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager.createEntity();
-
-  srand(time(nullptr));
 
   float spawnY = static_cast<float>(rand() % 700 + 50);
   float spawnX = 800.0f;
