@@ -18,3 +18,7 @@ constexpr float CONVERT_MS_TO_S = 1000.0f;
 constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
+
+constexpr int WINDOW_HEIGHT = 1000.0f;
+
+constexpr float WINDOW_WIDTH = 800.0f;

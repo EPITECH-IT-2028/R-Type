@@ -10,6 +10,7 @@
 #include "EntityManager.hpp"
 #include "Events.hpp"
 #include "HealthComponent.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
@@ -262,8 +263,8 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager.createEntity();
 
-  float spawnY = static_cast<float>(rand() % 700 + 50);
-  float spawnX = 800.0f;
+  float spawnY = static_cast<float>(rand() % WINDOW_HEIGHT + 50);
+  float spawnX = WINDOW_HEIGHT;
 
   _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {spawnX, spawnY});
