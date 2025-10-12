@@ -6,7 +6,7 @@
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
-#include "PlayerComponent.hpp"
+#include "LocalPlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
@@ -56,6 +56,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
     _ecsManager.registerComponent<ecs::PlayerTagComponent>();
+    _ecsManager.registerComponent<ecs::LocalPlayerTagComponent>();
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
   }
@@ -114,7 +115,7 @@ namespace client {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
@@ -212,6 +213,7 @@ namespace client {
 
     if (_player_id == -1) {
       _player_id = packet.player_id;
+      _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
       TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
     }
     _playerEntities[packet.player_id] = player;
