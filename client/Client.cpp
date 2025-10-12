@@ -220,14 +220,14 @@ namespace client {
     anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
     anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
     anim.endFrame = static_cast<int>(PlayerSpriteFrameIndex::END);
-    anim.selectedRow = static_cast<int>(PlayerSpriteFrameIndex::SELECTED_ROW);
+    anim.selectedRow = static_cast<int>(packet.player_id);
     anim.isPlaying = false;
     anim.frameTime = PlayerSpriteConfig::FRAME_TIME;
     anim.loop = false;
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
-    if (_player_id == -1) {
+    if (_player_id == static_cast<uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
       TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
