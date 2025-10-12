@@ -346,8 +346,8 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
   auto entity = client.getProjectileEntity(packet.projectile_id);
   if (entity != static_cast<Entity>(-1)) {
     if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
-      auto &pc = ecsManager.getComponent<ecs::ProjectileComponent>(entity);
-      pc.is_destroy = true;
+      ecsManager.destroyEntity(entity);
+      client.removeProjectileEntity(packet.projectile_id);
     }
   } else {
     TraceLog(LOG_WARNING, "[PROJECTILE HIT] projectile entity not found: %u", packet.projectile_id);
