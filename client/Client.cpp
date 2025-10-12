@@ -1,10 +1,12 @@
 #include "Client.hpp"
 #include <cstdint>
+#include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
+#include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
@@ -37,7 +39,8 @@ namespace client {
   }
 
   /**
-   * @brief Registers all component types used by the client with the ECS manager.
+   * @brief Registers all component types used by the client with the ECS
+   * manager.
    *
    * Registers the following components so they can be attached to entities and
    * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
@@ -60,8 +63,8 @@ namespace client {
   /**
    * @brief Registers the game's ECS systems with the ECS manager.
    *
-   * Registers the background, movement, input, boundary, sprite animation, and render
-   * systems so they are tracked and updated by the ECS manager.
+   * Registers the background, movement, input, boundary, sprite animation, and
+   * render systems so they are tracked and updated by the ECS manager.
    */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
@@ -75,12 +78,14 @@ namespace client {
   /**
    * @brief Assigns component signatures to each ECS system used by the client.
    *
-   * Configures which component types each system requires so the ECS manager can
-   * match entities to systems. The mappings set here are:
-   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
+   * Configures which component types each system requires so the ECS manager
+   * can match entities to systems. The mappings set here are:
+   * - BackgroundSystem: PositionComponent, RenderComponent,
+   * BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent, SpriteAnimationComponent
+   * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent,
+   * SpriteAnimationComponent
    * - BoundarySystem: PositionComponent, SpriteComponent, PlayerTagComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
    */
@@ -129,15 +134,16 @@ namespace client {
   }
 
   /**
-   * @brief Creates two scrolling background entities for a continuously tiled backdrop.
+   * @brief Creates two scrolling background entities for a continuously tiled
+   * backdrop.
    *
-   * Loads the background image to determine its aspect ratio and computes a scaled
-   * width based on the current screen height, then spawns two entities positioned
-   * side-by-side with leftward velocity, render components referencing the
-   * background texture, and background tag components.
+   * Loads the background image to determine its aspect ratio and computes a
+   * scaled width based on the current screen height, then spawns two entities
+   * positioned side-by-side with leftward velocity, render components
+   * referencing the background texture, and background tag components.
    */
   void Client::createBackgroundEntities() {
-    Image backgroundImage = LoadImage(renderManager::BG_PATH);
+    Image backgroundImage = asset::AssetManager::loadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
     float aspectRatio = 1.0f;
     float scaledWidth = screenHeight;
@@ -145,7 +151,6 @@ namespace client {
       aspectRatio = static_cast<float>(backgroundImage.width) /
                     static_cast<float>(backgroundImage.height);
       scaledWidth = screenHeight * aspectRatio;
-      UnloadImage(backgroundImage);
     }
 
     auto background1 = _ecsManager.createEntity();
@@ -169,15 +174,15 @@ namespace client {
   /**
    * @brief Creates and configures the player entity in the ECS.
    *
-   * Constructs a player entity and attaches its initial components: position, velocity,
-   * movement speed, render asset, sprite source rectangle, scale, player tag, and
-   * sprite animation metadata.
+   * Constructs a player entity and attaches its initial components: position,
+   * velocity, movement speed, render asset, sprite source rectangle, scale,
+   * player tag, and sprite animation metadata.
    *
-   * The created entity is positioned at (100, 100) with zero initial velocity and
-   * uses renderManager::PLAYER_PATH for rendering. Sprite and scale values are taken
-   * from PlayerSpriteConfig. The sprite animation component is initialized with
-   * column/row counts, selected/neutral frames, frame timing, and non-playing,
-   * non-looping defaults.
+   * The created entity is positioned at (100, 100) with zero initial velocity
+   * and uses renderManager::PLAYER_PATH for rendering. Sprite and scale values
+   * are taken from PlayerSpriteConfig. The sprite animation component is
+   * initialized with column/row counts, selected/neutral frames, frame timing,
+   * and non-playing, non-looping defaults.
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -205,14 +210,18 @@ namespace client {
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
-    if (_playerId == -1) {
-      _playerId = packet.player_id;
-      TraceLog(LOG_INFO, "Assigned player ID: %u", _playerId);
+    if (_player_id == -1) {
+      _player_id = packet.player_id;
+      TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
     }
     _playerEntities[packet.player_id] = player;
   }
 
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
+    if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
+      TraceLog(LOG_WARNING, "[ENEMY SPAWN] Enemy ID: %u already exists", packet.enemy_id);
+      return;
+    }
     auto enemy = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(enemy, {packet.x, packet.y});
     _ecsManager.addComponent<ecs::VelocityComponent>(enemy, {0.0f, 0.0f});
@@ -240,14 +249,14 @@ namespace client {
   }
 
 void Client::sendPosition() {
-  if (_playerId == static_cast<uint32_t>(-1)) {
+  if (_player_id == static_cast<uint32_t>(-1)) {
     // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
     return;
   }
 
-  auto it = _playerEntities.find(_playerId);
+  auto it = _playerEntities.find(_player_id);
   if (it == _playerEntities.end()) {
-    TraceLog(LOG_WARNING, "[SEND POSITION] Player entity not found for ID: %u", _playerId);
+    TraceLog(LOG_WARNING, "[SEND POSITION] Player entity not found for ID: %u", _player_id);
     return;
   }
   Entity playerEntity = it->second;

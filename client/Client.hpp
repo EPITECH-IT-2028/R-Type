@@ -105,7 +105,7 @@ namespace client {
       }
 
       void disconnect() {
-        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(_playerId);
+        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(_player_id);
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
@@ -156,7 +156,7 @@ namespace client {
       void createEnemyEntity(EnemySpawnPacket packet);
 
       uint32_t getPlayerId() const {
-        return _playerId;
+        return _player_id;
       }
 
       uint32_t getSequenceNumber() const {
@@ -178,7 +178,7 @@ namespace client {
       std::chrono::milliseconds _timeout;
       std::unordered_map<uint32_t, Entity> _playerEntities;
       std::unordered_map<uint32_t, Entity> _enemyEntities;
-      std::uint32_t _playerId = static_cast<std::uint32_t>(-1);
+      std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
 
       void registerComponent();
       void registerSystem();

@@ -1,14 +1,18 @@
 #include <iostream>
 #include <thread>
 #include "Client.hpp"
+#include "EmbeddedAssets.hpp"
 #include "Packet.hpp"
+#include "PacketBuilder.hpp"
+#include "Parser.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
-#include "Parser.hpp"
 
 void gameLoop(client::Client &client) {
   auto lastHeartbeat = std::chrono::steady_clock::now();
+  auto lastPosSend = std::chrono::steady_clock::now();
   const auto heartbeatInterval = std::chrono::seconds(1);
+  const auto posInterval = std::chrono::milliseconds(50);
 
   while (client.isConnected()) {
     client.startReceive();
@@ -21,7 +25,10 @@ void gameLoop(client::Client &client) {
       TraceLog(LOG_INFO, "[HEARTBEAT] Sent to server");
     }
 
-    client.sendPosition();
+    if (now - lastPosSend >= posInterval) {
+      client.sendPosition();
+      lastPosSend = now;
+    }
   }
 }
 
@@ -39,6 +46,7 @@ int main(void) {
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   client::Client client(parser.getHost(), parser.getPort());
+  asset::initEmbeddedAssets();
   client.initializeECS();
   client.connect();
 
