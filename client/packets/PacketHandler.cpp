@@ -1,17 +1,18 @@
 #include "PacketHandler.hpp"
 #include <cstring>
-#include "Packet.hpp"
-#include "raylib.h"
+#include "Client.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
+#include "Packet.hpp"
 #include "PositionComponent.hpp"
-#include "RenderManager.hpp"
-#include "SpriteComponent.hpp"
-#include "ScaleComponent.hpp"
 #include "ProjectileComponent.hpp"
-#include "RenderComponent.hpp"
 #include "ProjectileSpriteConfig.hpp"
-#include "Client.hpp"
+#include "RenderComponent.hpp"
+#include "RenderManager.hpp"
+#include "ScaleComponent.hpp"
+#include "SpriteComponent.hpp"
+#include "VelocityComponent.hpp"
+#include "raylib.h"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -293,6 +294,7 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
     ecsManager.addComponent<ecs::ProjectileComponent>(entityProjectile, projComp);
 
     ecsManager.addComponent<ecs::PositionComponent>(entityProjectile, {packet.x, packet.y});
+    ecsManager.addComponent<ecs::VelocityComponent>(entityProjectile, {packet.velocity_x, packet.velocity_y});
     ecsManager.addComponent<ecs::RenderComponent>(
         entityProjectile, {renderManager::PROJECTILE_PATH});
 
