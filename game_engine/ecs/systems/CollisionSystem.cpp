@@ -113,7 +113,7 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       }
 
       queue::ProjectileDestroyEvent projDestroyEvent;
-      projDestroyEvent.projectile_id = projectileEntity;
+      projDestroyEvent.projectile_id = projectile.projectile_id;
       projDestroyEvent.x =
           _ecsManager.getComponent<PositionComponent>(projectileEntity).x;
       projDestroyEvent.y =

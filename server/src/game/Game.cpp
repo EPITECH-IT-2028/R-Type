@@ -147,9 +147,9 @@ void game::Game::gameLoop() {
     std::chrono::duration<float> deltaTime = now - lastTime;
     lastTime = now;
 
-    _collisionSystem->update(deltaTime.count());
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
+    _collisionSystem->update(deltaTime.count());
 
     spawnEnemy(deltaTime.count());
 

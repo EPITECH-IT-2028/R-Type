@@ -12,6 +12,6 @@ namespace ecs {
    */
   struct ColliderComponent {
       Vec2 center = {0.0f, 0.0f};
-      Vec2 halfSize = {0.5f, 0.5f};
+      Vec2 halfSize = {3.0f, 3.0f};
   };
 }  // namespace ecs

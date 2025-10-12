@@ -143,7 +143,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   }
 
   std::pair<float, float> pos = player->getPosition();
-  const float speed = 15.0f;
+  const float speed = PROJECTILE_SPEED;
 
   float vx = speed;
   float vy = 0.0f;
