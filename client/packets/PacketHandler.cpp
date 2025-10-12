@@ -51,8 +51,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
-int packet::PlayerDeathHandler::handlePacket(
-    client::Client &client, const char *data, std::size_t size) {
+int packet::PlayerDeathHandler::handlePacket(client::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
   if (size < sizeof(PlayerDeathPacket)) {
     TraceLog(LOG_ERROR,
              "Packet too small: got %zu bytes, expected at least %zu bytes.",
@@ -90,8 +91,9 @@ int packet::PlayerDeathHandler::handlePacket(
   return packet::OK;
 }
 
-int packet::PlayerDisconnectedHandler::handlePacket(
-    client::Client &client, const char *data, std::size_t size) {
+int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
   if (size < sizeof(PlayerDisconnectPacket)) {
     TraceLog(LOG_ERROR,
              "Packet too small: got %zu bytes, expected at least %zu bytes.",
@@ -130,7 +132,8 @@ int packet::PlayerDisconnectedHandler::handlePacket(
 }
 
 int packet::PlayerMoveHandler::handlePacket(client::Client &client,
-                                            const char *data, std::size_t size) {
+                                            const char *data,
+                                            std::size_t size) {
   if (size < sizeof(MovePacket)) {
     TraceLog(LOG_ERROR,
              "Packet too small: got %zu bytes, expected at least %zu bytes.",
@@ -140,25 +143,28 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 
   MovePacket packet;
   std::memcpy(&packet, data, sizeof(MovePacket));
-  
+
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto playerEntity = client.getPlayerEntity(packet.player_id);
     if (playerEntity == client::KO) {
-      // TraceLog(LOG_WARNING, "[PLAYER MOVE] Player ID: %u not found", packet.player_id);
+      // TraceLog(LOG_WARNING, "[PLAYER MOVE] Player ID: %u not found",
+      // packet.player_id);
       return packet::OK;
     }
 
     if (client.getPlayerId() == packet.player_id) {
       uint32_t lastSeqNum = client.getSequenceNumber();
       if (packet.sequence_number <= lastSeqNum) {
-        TraceLog(LOG_DEBUG, "[PLAYER MOVE] Ignoring old packet: seq %u <= last seq %u",
-          packet.sequence_number, lastSeqNum);
-          return packet::OK;
+        TraceLog(LOG_DEBUG,
+                 "[PLAYER MOVE] Ignoring old packet: seq %u <= last seq %u",
+                 packet.sequence_number, lastSeqNum);
+        return packet::OK;
       }
     }
 
-    auto &position = ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+    auto &position =
+        ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
     position.x = packet.x;
     position.y = packet.y;
 
@@ -166,11 +172,12 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       client.updateSequenceNumber(packet.sequence_number);
     }
 
-    TraceLog(LOG_DEBUG, "[PLAYER MOVE] Updated player %u position to (%f, %f) with seq %u",
+    TraceLog(LOG_DEBUG,
+             "[PLAYER MOVE] Updated player %u position to (%f, %f) with seq %u",
              packet.player_id, packet.x, packet.y, packet.sequence_number);
 
   } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s", 
+    TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s",
              packet.player_id, e.what());
     return packet::KO;
   }
@@ -190,9 +197,9 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
   EnemySpawnPacket packet;
   std::memcpy(&packet, data, sizeof(EnemySpawnPacket));
 
-  TraceLog(LOG_INFO, "[ENEMY SPAWN] Enemy ID: %u of type %d spawned at (%f, %f)",
-           packet.enemy_id, static_cast<int>(packet.enemy_type), packet.x,
-           packet.y);
+  TraceLog(
+      LOG_INFO, "[ENEMY SPAWN] Enemy ID: %u of type %d spawned at (%f, %f)",
+      packet.enemy_id, static_cast<int>(packet.enemy_type), packet.x, packet.y);
 
   client.createEnemyEntity(packet);
   return packet::OK;
@@ -209,19 +216,21 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
 
   EnemyMovePacket packet;
   std::memcpy(&packet, data, sizeof(EnemyMovePacket));
-  
+
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
     if (enemyEntity == client::KO) {
-      TraceLog(LOG_WARNING, "[ENEMY MOVE] Enemy ID: %u not found", packet.enemy_id);
+      TraceLog(LOG_WARNING, "[ENEMY MOVE] Enemy ID: %u not found",
+               packet.enemy_id);
       return packet::KO;
     }
-    auto &position = ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
+    auto &position =
+        ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
     position.x = packet.x;
     position.y = packet.y;
   } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to update enemy %u: %s", 
+    TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to update enemy %u: %s",
              packet.enemy_id, e.what());
     return packet::KO;
   }
@@ -243,18 +252,19 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
 
   TraceLog(LOG_INFO, "[ENEMY DEATH] Enemy ID: %u has been destroyed",
            packet.enemy_id);
-  
+
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
     if (enemyEntity == client::KO) {
-      TraceLog(LOG_WARNING, "[ENEMY DEATH] Enemy ID: %u not found", packet.enemy_id);
+      TraceLog(LOG_WARNING, "[ENEMY DEATH] Enemy ID: %u not found",
+               packet.enemy_id);
       return packet::KO;
     }
     ecsManager.destroyEntity(enemyEntity);
     client.destroyEnemyEntity(packet.enemy_id);
   } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to destroy enemy %u: %s", 
+    TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to destroy enemy %u: %s",
              packet.enemy_id, e.what());
     return packet::KO;
   }
@@ -274,8 +284,11 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
   ProjectileSpawnPacket packet;
   std::memcpy(&packet, data, sizeof(ProjectileSpawnPacket));
 
-  if (client.getProjectileEntity(packet.projectile_id) != static_cast<Entity>(-1)) {
-    TraceLog(LOG_WARNING, "Projectile with ID %u already exists, ignoring spawn packet.", packet.projectile_id);
+  if (client.getProjectileEntity(packet.projectile_id) !=
+      static_cast<Entity>(-1)) {
+    TraceLog(LOG_WARNING,
+             "Projectile with ID %u already exists, ignoring spawn packet.",
+             packet.projectile_id);
     return packet::OK;
   }
 
@@ -289,41 +302,44 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
     projComp.owner_id = packet.owner_id;
     projComp.damage = packet.damage;
     projComp.is_destroy = false;
-    projComp.is_enemy_projectile = static_cast<bool>(packet.is_enemy_projectile);
+    projComp.is_enemy_projectile =
+        static_cast<bool>(packet.is_enemy_projectile);
     projComp.speed = packet.speed;
-    ecsManager.addComponent<ecs::ProjectileComponent>(entityProjectile, projComp);
+    ecsManager.addComponent<ecs::ProjectileComponent>(entityProjectile,
+                                                      projComp);
 
-    ecsManager.addComponent<ecs::PositionComponent>(entityProjectile, {packet.x, packet.y});
-    ecsManager.addComponent<ecs::VelocityComponent>(entityProjectile, {packet.velocity_x, packet.velocity_y});
+    ecsManager.addComponent<ecs::PositionComponent>(entityProjectile,
+                                                    {packet.x, packet.y});
+    ecsManager.addComponent<ecs::VelocityComponent>(
+        entityProjectile, {packet.velocity_x, packet.velocity_y});
     ecsManager.addComponent<ecs::RenderComponent>(
         entityProjectile, {renderManager::PROJECTILE_PATH});
 
     if (packet.is_enemy_projectile) {
-      ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {
-        renderManager::ProjectileSprite::ENEMY_BASIC_X,
-        renderManager::ProjectileSprite::ENEMY_BASIC_Y,
-        renderManager::ProjectileSprite::ENEMY_BASIC_WIDTH,
-        renderManager::ProjectileSprite::ENEMY_BASIC_HEIGHT
-      });
+      ecsManager.addComponent<ecs::SpriteComponent>(
+          entityProjectile,
+          {renderManager::ProjectileSprite::ENEMY_BASIC_X,
+           renderManager::ProjectileSprite::ENEMY_BASIC_Y,
+           renderManager::ProjectileSprite::ENEMY_BASIC_WIDTH,
+           renderManager::ProjectileSprite::ENEMY_BASIC_HEIGHT});
     } else {
-      ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {
-        renderManager::ProjectileSprite::PLAYER_BASIC_X,
-        renderManager::ProjectileSprite::PLAYER_BASIC_Y,
-        renderManager::ProjectileSprite::PLAYER_BASIC_WIDTH,
-        renderManager::ProjectileSprite::PLAYER_BASIC_HEIGHT
-      });
+      ecsManager.addComponent<ecs::SpriteComponent>(
+          entityProjectile,
+          {renderManager::ProjectileSprite::PLAYER_BASIC_X,
+           renderManager::ProjectileSprite::PLAYER_BASIC_Y,
+           renderManager::ProjectileSprite::PLAYER_BASIC_WIDTH,
+           renderManager::ProjectileSprite::PLAYER_BASIC_HEIGHT});
     }
 
-    ecsManager.addComponent<ecs::ScaleComponent>(entityProjectile, {
-      renderManager::ProjectileSprite::DEFAULT_SCALE_X,
-      renderManager::ProjectileSprite::DEFAULT_SCALE_Y
-    });
+    ecsManager.addComponent<ecs::ScaleComponent>(
+        entityProjectile, {renderManager::ProjectileSprite::DEFAULT_SCALE_X,
+                           renderManager::ProjectileSprite::DEFAULT_SCALE_Y});
     client.addProjectileEntity(packet.projectile_id, entityProjectile);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "Failed to create projectile entity: %s", e.what());
     return packet::KO;
   }
-  
+
   return packet::OK;
 }
 
@@ -340,7 +356,8 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
   ProjectileHitPacket packet;
   std::memcpy(&packet, data, sizeof(ProjectileHitPacket));
 
-  TraceLog(LOG_INFO, "[PROJECTILE HIT] projectile=%u target=%u is_player=%u at=(%f,%f)",
+  TraceLog(LOG_INFO,
+           "[PROJECTILE HIT] projectile=%u target=%u is_player=%u at=(%f,%f)",
            packet.projectile_id, packet.target_id, packet.target_is_player,
            packet.hit_x, packet.hit_y);
 
@@ -352,7 +369,8 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
       client.removeProjectileEntity(packet.projectile_id);
     }
   } else {
-    TraceLog(LOG_WARNING, "[PROJECTILE HIT] projectile entity not found: %u", packet.projectile_id);
+    TraceLog(LOG_WARNING, "[PROJECTILE HIT] projectile entity not found: %u",
+             packet.projectile_id);
   }
 
   return packet::OK;
@@ -380,7 +398,9 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
     ecsManager.destroyEntity(entity);
     client.removeProjectileEntity(packet.projectile_id);
   } else {
-    TraceLog(LOG_WARNING, "[PROJECTILE DESTROY] projectile entity not found: %u", packet.projectile_id);
+    TraceLog(LOG_WARNING,
+             "[PROJECTILE DESTROY] projectile entity not found: %u",
+             packet.projectile_id);
   }
 
   return packet::OK;

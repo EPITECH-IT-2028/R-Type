@@ -11,6 +11,7 @@
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ScoreComponent.hpp"
+#include "ShootComponent.hpp"
 
 /**
  * @brief Processes collisions among managed entities by checking all unique
@@ -112,14 +113,30 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       }
 
       queue::ProjectileDestroyEvent projDestroyEvent;
-      projDestroyEvent.projectile_id =
-          _ecsManager.getComponent<ProjectileComponent>(projectileEntity)
-              .projectile_id;
+      projDestroyEvent.projectile_id = projectile.projectile_id;
       projDestroyEvent.x =
           _ecsManager.getComponent<PositionComponent>(projectileEntity).x;
       projDestroyEvent.y =
           _ecsManager.getComponent<PositionComponent>(projectileEntity).y;
       _eventQueue->addRequest(projDestroyEvent);
+
+      if (projectile.type == ProjectileType::ENEMY_BASIC) {
+        for (auto entity : _ecsManager.getAllEntities()) {
+          if (_ecsManager.hasComponent<ecs::EnemyComponent>(entity) &&
+              _ecsManager.hasComponent<ecs::ShootComponent>(entity)) {
+            auto &enemyComp =
+                _ecsManager.getComponent<ecs::EnemyComponent>(entity);
+            auto &shootComp =
+                _ecsManager.getComponent<ecs::ShootComponent>(entity);
+            if (enemyComp.enemy_id == projectile.owner_id &&
+                shootComp.active_projectile_id == projectile.projectile_id) {
+              shootComp.has_active_projectile = false;
+              shootComp.active_projectile_id = 0;
+              break;
+            }
+          }
+        }
+      }
     }
 
     _ecsManager.destroyEntity(projectileEntity);
@@ -133,7 +150,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
     auto &playerHealth =
         _ecsManager.getComponent<HealthComponent>(playerEntity);
 
-    bool isPlayerProjectile = (projectile.type != ProjectileType::ENEMY_BASIC);
+    bool isPlayerProjectile = (projectile.type == ProjectileType::PLAYER_BASIC);
+
     if (isPlayerProjectile) {
       return;
     }
@@ -253,8 +271,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
  * @brief Determines whether the axis-aligned bounding boxes of two entities
  * overlap.
  *
- * Checks that both entities have a ColliderComponent and PositionComponent; if
- * either entity is missing these components the function returns `false`.
+ * Checks that both entities have a ColliderComponent and PositionComponent;
+ * if either entity is missing these components the function returns `false`.
  * Otherwise computes each entity's AABB using position + collider center ±
  * halfSize and reports whether the boxes intersect on both the x and y axes.
  *
@@ -262,7 +280,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
  * ColliderComponent).
  * @param b Second entity to test for overlap (must have PositionComponent and
  * ColliderComponent).
- * @return true if the entities' AABBs intersect on both axes, false otherwise.
+ * @return true if the entities' AABBs intersect on both axes, false
+ * otherwise.
  */
 bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
                                            const Entity &b) const {

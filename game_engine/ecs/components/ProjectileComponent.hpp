@@ -17,7 +17,7 @@ namespace ecs {
       bool is_enemy_projectile = false;
       float speed = 0.0f;
       std::uint32_t sequence_number = 0;
-      std::uint32_t damage = 30;
+      std::uint32_t damage;
   };
 
 }  // namespace ecs

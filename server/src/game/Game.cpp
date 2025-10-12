@@ -270,8 +270,7 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {spawnX, spawnY});
   _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
-  _ecsManager.addComponent<ecs::VelocityComponent>(entity,
-                                                   {ENEMY_SPEED, 0.0f});
+  _ecsManager.addComponent<ecs::VelocityComponent>(entity, {ENEMY_SPEED, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
@@ -340,8 +339,9 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
     _ecsManager.addComponent<ecs::PositionComponent>(entity, {x, y});
     _ecsManager.addComponent<ecs::SpeedComponent>(entity, {10.0f});
     _ecsManager.addComponent<ecs::ProjectileComponent>(
-        entity, {projectile_id, type, owner_id, false, 0, 30});
-    _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
+        entity, {projectile_id, type, owner_id, false,
+                 (type == ProjectileType::ENEMY_BASIC), 10, 0, 100});
+    _ecsManager.addComponent<ecs::VelocityComponent>(entity, {vx, vy});
     _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
     projectile = std::make_shared<Projectile>(projectile_id, owner_id, entity,
                                               _ecsManager);
