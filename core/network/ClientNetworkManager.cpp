@@ -81,52 +81,55 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
   }
 
   try {
-    if (_socket.available() == 0) {
-      return;
-    }
+    while (true) {
+      asio::ip::udp::endpoint sender_endpoint;
+      asio::error_code ec;
 
-    asio::ip::udp::endpoint sender_endpoint;
-    asio::error_code ec;
-    
-    std::size_t length = _socket.receive_from(
-        asio::buffer(_recv_buffer), sender_endpoint, 0, ec);
+      std::size_t length = _socket.receive_from(asio::buffer(_recv_buffer),
+                                                sender_endpoint, 0, ec);
 
-    if (!ec && sender_endpoint != _server_endpoint) {
-      std::cerr << "Received packet from unknown sender: "
-                << sender_endpoint.address().to_string() << ":"
-                << sender_endpoint.port() << std::endl;
-      return;
-    }
-    
-    if (ec && ec != asio::error::would_block) {
-      std::cerr << "Receive error: " << ec.message() << std::endl;
-      return;
-    }
+      if (ec == asio::error::would_block) {
+        break;
+      }
 
-    if (length > 0) {
-      const char *data = _recv_buffer.data();
-      std::size_t size = length;
-
-      if (size < sizeof(PacketHeader)) {
-        std::cerr << "Received packet too small to contain header." << std::endl;
+      if (ec) {
+        std::cerr << "Receive error: " << ec.message() << std::endl;
         return;
       }
 
-      PacketHeader header;
-      std::memcpy(&header, data, sizeof(PacketHeader));
-      PacketType packet_type = static_cast<PacketType>(header.type);
+      if (sender_endpoint != _server_endpoint) {
+        std::cerr << "Received packet from unknown sender: "
+                  << sender_endpoint.address().to_string() << ":"
+                  << sender_endpoint.port() << std::endl;
+        continue;
+      }
 
-      auto handler = _packetFactory.createHandler(packet_type);
-      if (handler) {
-        int result = handler->handlePacket(client, data, size);
-        if (result != 0) {
-          std::cerr << "Error handling packet of type "
-                    << static_cast<int>(packet_type) << ": " << result
+      if (length > 0) {
+        const char *data = _recv_buffer.data();
+        std::size_t size = length;
+
+        if (size < sizeof(PacketHeader)) {
+          std::cerr << "Received packet too small to contain header."
                     << std::endl;
+          continue;
         }
-      } else {
-        std::cerr << "No handler for packet type "
-                  << static_cast<int>(packet_type) << std::endl;
+
+        PacketHeader header;
+        std::memcpy(&header, data, sizeof(PacketHeader));
+        PacketType packet_type = static_cast<PacketType>(header.type);
+
+        auto handler = _packetFactory.createHandler(packet_type);
+        if (handler) {
+          int result = handler->handlePacket(client, data, size);
+          if (result != 0) {
+            std::cerr << "Error handling packet of type "
+                      << static_cast<int>(packet_type) << ": " << result
+                      << std::endl;
+          }
+        } else {
+          std::cerr << "No handler for packet type "
+                    << static_cast<int>(packet_type) << std::endl;
+        }
       }
     }
   } catch (std::exception &e) {
