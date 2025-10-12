@@ -18,7 +18,9 @@ namespace broadcast {
           const Packet &packet, Pred pred) {
         for (const auto &client : clients) {
           if (client && client->_connected && pred(*client)) {
-            packet::PacketSender::sendPacket(networkManager, packet);
+            networkManager.sendToClient(client->_player_id,
+                                        reinterpret_cast<const char *>(&packet),
+                                        sizeof(packet));
           }
         }
       }
