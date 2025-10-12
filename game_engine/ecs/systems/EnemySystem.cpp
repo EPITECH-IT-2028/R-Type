@@ -3,6 +3,7 @@
 #include <limits>
 #include "EnemyComponent.hpp"
 #include "Game.hpp"
+#include "Macro.hpp"
 #include "PositionComponent.hpp"
 #include "ShootComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -73,7 +74,18 @@ void ecs::EnemySystem::shootAtPlayer(float deltaTime, const Entity &entity) {
       float distance = std::sqrt(dx * dx + dy * dy);
 
       if (distance > 0) {
-        float speed = 10.0f;
+        if (shooting.has_active_projectile) {
+          auto existingProjectile =
+              _game->getProjectile(shooting.active_projectile_id);
+          if (existingProjectile != nullptr) {
+            return;
+          } else {
+            shooting.has_active_projectile = false;
+            shooting.active_projectile_id = 0;
+          }
+        }
+
+        float speed = PROJECTILE_SPEED;
         float vx = (dx / distance) * speed;
         float vy = (dy / distance) * speed;
 
@@ -83,14 +95,10 @@ void ecs::EnemySystem::shootAtPlayer(float deltaTime, const Entity &entity) {
             position.x, position.y, vx, vy);
 
         if (projectile) {
-          auto &projVelocity =
-              _ecsManager->getComponent<ecs::VelocityComponent>(
-                  projectile->getEntityId());
-          projVelocity.vx = vx;
-          projVelocity.vy = vy;
+          shooting.active_projectile_id = projectileId;
+          shooting.has_active_projectile = true;
         }
       }
-
       shooting.shoot_timer = 0.0f;
     }
   }
