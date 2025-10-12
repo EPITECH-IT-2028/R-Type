@@ -3,7 +3,10 @@
 #include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "LocalPlayerTagComponent.hpp"
+#include "PositionComponent.hpp"
 #include "raylib.h"
+#include "Client.hpp"
 
 namespace ecs {
   /**
@@ -15,6 +18,8 @@ namespace ecs {
    * - When UP (and not DOWN) is pressed, ensures animation plays forward (positive frameTime) from the neutral frame.
    * - When DOWN (and not UP) is pressed, ensures animation plays backward (negative frameTime) from the neutral frame.
    * - When neither or both vertical keys are pressed, stops the animation and resets to the neutral frame with non-negative frameTime.
+   *
+   * Also handles shooting input: when the space bar is pressed, calls the client's sendShoot method with the local player's position.
    *
    * @param deltaTime Time elapsed since the last update in seconds (provided by caller; not used by this implementation).
    */
@@ -55,6 +60,12 @@ namespace ecs {
 
       velocity.vx = dirX * speed.speed;
       velocity.vy = dirY * speed.speed;
+
+      if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
+        auto &position = _ecsManager.getComponent<PositionComponent>(entity);
+        _client->sendShoot(position.x, position.y);
+        TraceLog(LOG_INFO, "[INPUT SYSTEM] Space pressed - shooting from position (%f, %f)", position.x, position.y);
+      }
     }
   }
 }  // namespace ecs
