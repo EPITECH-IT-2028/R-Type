@@ -1,0 +1,89 @@
+\doxysection{Parser Class Reference}
+\hypertarget{class_parser}{}\label{class_parser}\index{Parser@{Parser}}
+
+
+{\ttfamily \#include $<$Parser.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_parser_ad823c6d880bb66f0ac5f5a9c5b982442}{Parser}} (std\+::string properties\+Path)
+\item 
+\mbox{\hyperlink{class_parser_a95734193a58a199b4c6d820a6a730c42}{\texorpdfstring{$\sim$}{\string~}\+Parser}} ()=default
+\item 
+void \mbox{\hyperlink{class_parser_a1b99781b2af867794343f9400590e032}{parse\+Properties}} ()
+\item 
+bool \mbox{\hyperlink{class_parser_add22c0cee1bcc586d017194e5ca30de9}{is\+Valid\+Ip}} (const std\+::string \&ip) const
+\item 
+std\+::string \mbox{\hyperlink{class_parser_a94a668fb87e8064cfea2187d19dd0bc5}{trim\+String}} (const std\+::string \&str) const
+\item 
+std\+::uint16\+\_\+t \mbox{\hyperlink{class_parser_a880a4cce678bc0522ec83d35b1e4aa68}{get\+Port}} () const
+\item 
+std\+::uint16\+\_\+t \mbox{\hyperlink{class_parser_a99f3474a5b98f887b0ceb053cf81087d}{get\+Max\+Clients}} () const
+\item 
+std\+::string \mbox{\hyperlink{class_parser_a5625e357a51cece1fb069d9faf498f17}{get\+Host}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_parser_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_parser_ad823c6d880bb66f0ac5f5a9c5b982442}\index{Parser@{Parser}!Parser@{Parser}}
+\index{Parser@{Parser}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{Parser()}{Parser()}}
+{\footnotesize\ttfamily \label{class_parser_ad823c6d880bb66f0ac5f5a9c5b982442} 
+Parser\+::\+Parser (\begin{DoxyParamCaption}\item[{std\+::string}]{properties\+Path}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_parser_a95734193a58a199b4c6d820a6a730c42}\index{Parser@{Parser}!````~Parser@{\texorpdfstring{$\sim$}{\string~}Parser}}
+\index{````~Parser@{\texorpdfstring{$\sim$}{\string~}Parser}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Parser()}{\string~Parser()}}
+{\footnotesize\ttfamily \label{class_parser_a95734193a58a199b4c6d820a6a730c42} 
+Parser\+::\texorpdfstring{$\sim$}{\string~}\+Parser (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_parser_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_parser_a5625e357a51cece1fb069d9faf498f17}\index{Parser@{Parser}!getHost@{getHost}}
+\index{getHost@{getHost}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{getHost()}{getHost()}}
+{\footnotesize\ttfamily \label{class_parser_a5625e357a51cece1fb069d9faf498f17} 
+std\+::string Parser\+::get\+Host (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_parser_a99f3474a5b98f887b0ceb053cf81087d}\index{Parser@{Parser}!getMaxClients@{getMaxClients}}
+\index{getMaxClients@{getMaxClients}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{getMaxClients()}{getMaxClients()}}
+{\footnotesize\ttfamily \label{class_parser_a99f3474a5b98f887b0ceb053cf81087d} 
+std\+::uint16\+\_\+t Parser\+::get\+Max\+Clients (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_parser_a880a4cce678bc0522ec83d35b1e4aa68}\index{Parser@{Parser}!getPort@{getPort}}
+\index{getPort@{getPort}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{getPort()}{getPort()}}
+{\footnotesize\ttfamily \label{class_parser_a880a4cce678bc0522ec83d35b1e4aa68} 
+std\+::uint16\+\_\+t Parser\+::get\+Port (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{class_parser_add22c0cee1bcc586d017194e5ca30de9}\index{Parser@{Parser}!isValidIp@{isValidIp}}
+\index{isValidIp@{isValidIp}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{isValidIp()}{isValidIp()}}
+{\footnotesize\ttfamily \label{class_parser_add22c0cee1bcc586d017194e5ca30de9} 
+bool Parser\+::is\+Valid\+Ip (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{ip}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_parser_a1b99781b2af867794343f9400590e032}\index{Parser@{Parser}!parseProperties@{parseProperties}}
+\index{parseProperties@{parseProperties}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{parseProperties()}{parseProperties()}}
+{\footnotesize\ttfamily \label{class_parser_a1b99781b2af867794343f9400590e032} 
+void Parser\+::parse\+Properties (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_parser_a94a668fb87e8064cfea2187d19dd0bc5}\index{Parser@{Parser}!trimString@{trimString}}
+\index{trimString@{trimString}!Parser@{Parser}}
+\doxysubsubsection{\texorpdfstring{trimString()}{trimString()}}
+{\footnotesize\ttfamily \label{class_parser_a94a668fb87e8064cfea2187d19dd0bc5} 
+std\+::string Parser\+::trim\+String (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str}{}\end{DoxyParamCaption}) const}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+core/\mbox{\hyperlink{_parser_8hpp}{Parser.\+hpp}}\item 
+core/\mbox{\hyperlink{_parser_8cpp}{Parser.\+cpp}}\end{DoxyCompactItemize}

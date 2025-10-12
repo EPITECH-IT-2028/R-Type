@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['damage_0',['damage',['../struct_player_hit_packet.html#a1d28ec394205c65c99acfbe8904cdf48',1,'PlayerHitPacket::damage'],['../struct_projectile_spawn_packet.html#a62568e4dd6e47264634f5a7962784ed3',1,'ProjectileSpawnPacket::damage'],['../struct_enemy_hit_packet.html#ab13ad9980c4a672ed6f3e4dddc355c2f',1,'EnemyHitPacket::damage'],['../structecs_1_1_projectile_component.html#a926f7d2ff4492cd45d710b640101612b',1,'ecs::ProjectileComponent::damage'],['../structqueue_1_1_enemy_hit_event.html#a929cfcb7a01d426913fb8f9bfd62837b',1,'queue::EnemyHitEvent::damage'],['../structqueue_1_1_projectile_spawn_event.html#ae01d95400752e4df92cc26a011c34c99',1,'queue::ProjectileSpawnEvent::damage'],['../structqueue_1_1_player_hit_event.html#ab4d96f13e5007fc0bb583e4cbcf64a2b',1,'queue::PlayerHitEvent::damage']]],
+  ['data_20structures_1',['Data Structures',['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md151',1,'🏗️ Architecture and Data Structures'],['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md153',1,'Network Data Structures']]],
+  ['data_20types_2',['6. Data Types',['../md_docs_2server__protocol.html#autotoc_md49',1,'']]],
+  ['death_5fx_3',['death_x',['../struct_enemy_death_packet.html#a0c9c50509c79b924895c9ed28cbbda02',1,'EnemyDeathPacket']]],
+  ['death_5fy_4',['death_y',['../struct_enemy_death_packet.html#a0d80e07707d7a3dd7b116d30bb24567d',1,'EnemyDeathPacket']]],
+  ['debug_20builds_5',['Debug Builds',['../md__r_e_a_d_m_e___b_u_i_l_d.html#autotoc_md136',1,'']]],
+  ['default_6',['No arguments (default)',['../md__r_e_a_d_m_e___b_u_i_l_d.html#autotoc_md125',1,'']]],
+  ['default_5fscale_5fx_7',['DEFAULT_SCALE_X',['../namespacerender_manager_1_1_projectile_sprite.html#ae21058eaa46074ba9469b2ceebd9e1c5',1,'renderManager::ProjectileSprite']]],
+  ['default_5fscale_5fy_8',['DEFAULT_SCALE_Y',['../namespacerender_manager_1_1_projectile_sprite.html#a8f7101c816b32e67b3b13a06ca5e67e1',1,'renderManager::ProjectileSprite']]],
+  ['defined_3a_9',['Asset Paths Defined:',['../md_docs_2wiki_2_asset_management.html#autotoc_md67',1,'']]],
+  ['dependencies_10',['Dependencies',['../md__r_e_a_d_m_e.html#autotoc_md117',1,'📦 Dependencies'],['../md__r_e_a_d_m_e___b_u_i_l_d.html#autotoc_md134',1,'Dependencies']]],
+  ['design_20patterns_11',['Design Patterns',['../md__r_e_a_d_m_e.html#autotoc_md116',1,'']]],
+  ['destroyenemy_12',['destroyEnemy',['../classgame_1_1_game.html#a4168a75844307bec3ed099299108ec0d',1,'game::Game']]],
+  ['destroyenemyentity_13',['destroyEnemyEntity',['../classclient_1_1_client.html#aaf4c6b7763a8fd14ebe37158032d2bc3',1,'client::Client']]],
+  ['destroyentity_14',['destroyEntity',['../classecs_1_1_e_c_s_manager.html#a03336ef45fad04555e559f84835310fc',1,'ecs::ECSManager::destroyEntity()'],['../classecs_1_1_entity_manager.html#a5164e3928016d3adc5480339a76ed667',1,'ecs::EntityManager::destroyEntity()']]],
+  ['destroyplayer_15',['destroyPlayer',['../classgame_1_1_game.html#a36369cf4aa9b45c7a916a23a723b3013',1,'game::Game']]],
+  ['destroyplayerentity_16',['destroyPlayerEntity',['../classclient_1_1_client.html#a9b074bd7c8877a4982d30eaef478325f',1,'client::Client']]],
+  ['destroyprojectile_17',['destroyProjectile',['../classgame_1_1_game.html#acf25c4de36893557e77e76d12135bdc5',1,'game::Game']]],
+  ['details_18',['Technical Details',['../md_docs_2wiki_2_home.html#autotoc_md96',1,'']]],
+  ['development_20guide_19',['🧩 ECS Development Guide',['../md_docs_2server__how__to.html',1,'']]],
+  ['directories_20explained_20',['Main Directories Explained',['../md_docs_2wiki_2_project_structure.html#autotoc_md107',1,'']]],
+  ['disconnect_21',['disconnect',['../classclient_1_1_client.html#ae997526e6f0744926746e0840d64284e',1,'client::Client::disconnect()'],['../classnetwork_1_1_client_network_manager.html#a9c6320afb892087e890f21f355bdf5bf',1,'network::ClientNetworkManager::disconnect()']]],
+  ['drawtext_22',['drawText',['../classrender_manager_1_1_renderer.html#af9a452c63de764a93c30f59fbaa3666f',1,'renderManager::Renderer']]]
+];

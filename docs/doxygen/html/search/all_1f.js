@@ -1,0 +1,12 @@
+var searchData=
+[
+  ['vec2_0',['Vec2',['../structecs_1_1_vec2.html',1,'ecs']]],
+  ['velocity_5fx_1',['velocity_x',['../struct_enemy_spawn_packet.html#a28a0fad0a83c05aa6eb84958c5d6dd55',1,'EnemySpawnPacket::velocity_x'],['../struct_enemy_move_packet.html#ae9faaea858798c37bb36db02540562c1',1,'EnemyMovePacket::velocity_x'],['../struct_projectile_spawn_packet.html#a835f1992a335634f54ccfa7a263f2a4a',1,'ProjectileSpawnPacket::velocity_x']]],
+  ['velocity_5fy_2',['velocity_y',['../struct_enemy_spawn_packet.html#a1da15529da73928c06a6ac799dc7ff6a',1,'EnemySpawnPacket::velocity_y'],['../struct_enemy_move_packet.html#ae3b42fe4626004effaf66bb8f71149e9',1,'EnemyMovePacket::velocity_y'],['../struct_projectile_spawn_packet.html#aca4badaf48ac8a711a51b5d1bb802e31',1,'ProjectileSpawnPacket::velocity_y']]],
+  ['velocitycomponent_3',['VelocityComponent',['../structecs_1_1_velocity_component.html',1,'ecs']]],
+  ['velocitycomponent_2ehpp_4',['VelocityComponent.hpp',['../_velocity_component_8hpp.html',1,'']]],
+  ['vs_20alternatives_5',['vs Alternatives',['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md148',1,'ASIO vs Alternatives'],['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md142',1,'C++20 vs Alternatives'],['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md145',1,'Raylib vs Alternatives']]],
+  ['vs_20tcp_6',['Protocol Choice: UDP vs TCP',['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md149',1,'']]],
+  ['vx_7',['vx',['../structecs_1_1_velocity_component.html#acd53b19b68185c1dd07c9dd3c9e6e903',1,'ecs::VelocityComponent::vx'],['../structqueue_1_1_enemy_spawn_event.html#ab650471ac12fdf4545ad36c2090f9e9b',1,'queue::EnemySpawnEvent::vx'],['../structqueue_1_1_enemy_move_event.html#a4bc1c7aee19bed7733ff3f43bccbcff4',1,'queue::EnemyMoveEvent::vx'],['../structqueue_1_1_projectile_spawn_event.html#a3a58949dfebb87d33aa397702ff0f361',1,'queue::ProjectileSpawnEvent::vx']]],
+  ['vy_8',['vy',['../structecs_1_1_velocity_component.html#a87c80252d3641eb71b5a80ba365b31fd',1,'ecs::VelocityComponent::vy'],['../structqueue_1_1_enemy_spawn_event.html#a2e484f5d8017cd027660605cd19fad33',1,'queue::EnemySpawnEvent::vy'],['../structqueue_1_1_enemy_move_event.html#a47414f96f095bf9caeff45b836ba2b8b',1,'queue::EnemyMoveEvent::vy'],['../structqueue_1_1_projectile_spawn_event.html#a5304100bcd2c6b8b1bc86574dcf639f1',1,'queue::ProjectileSpawnEvent::vy']]]
+];

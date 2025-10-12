@@ -1,0 +1,26 @@
+\doxysection{IPacket.\+hpp}
+\hypertarget{server_2src_2packets_2_i_packet_8hpp_source}{}\label{server_2src_2packets_2_i_packet_8hpp_source}\index{server/src/packets/IPacket.hpp@{server/src/packets/IPacket.hpp}}
+\mbox{\hyperlink{server_2src_2packets_2_i_packet_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceserver}{server}}\ \{}
+\DoxyCodeLine{00006\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classserver_1_1_server}{Server}};}
+\DoxyCodeLine{00007\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structserver_1_1_client}{Client}};}
+\DoxyCodeLine{00008\ \}\ \ \textcolor{comment}{//\ namespace\ server}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{class\ }IPacket\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classpacket_1_1_i_packet_a36d3b7ff905210b6b1f58083ebc8e78a}{\string~IPacket}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_i_packet_a05038f5c80eaf2b2b1b9e12f45193d7a}{handlePacket}}(\mbox{\hyperlink{classserver_1_1_server}{server::Server}}\ \&\mbox{\hyperlink{namespaceserver}{server}},\ \mbox{\hyperlink{structserver_1_1_client}{server::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,\ std::size\_t\ size)\ =\ 0;}
+\DoxyCodeLine{00018\ \ \ \};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \}\ \ \textcolor{comment}{//\ namespace\ packet}}
+
+\end{DoxyCode}

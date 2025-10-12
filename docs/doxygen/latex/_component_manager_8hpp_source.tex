@@ -1,0 +1,92 @@
+\doxysection{Component\+Manager.\+hpp}
+\hypertarget{_component_manager_8hpp_source}{}\label{_component_manager_8hpp_source}\index{game\_engine/ecs/ComponentManager.hpp@{game\_engine/ecs/ComponentManager.hpp}}
+\mbox{\hyperlink{_component_manager_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <typeindex>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_component_8hpp}{Component.hpp}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{using\ }\mbox{\hyperlink{_component_manager_8hpp_a22da2f2e1a665b27fd146bb514ae3b59}{ComponentType}}\ =\ std::uint8\_t;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_component_manager_aba9b1d96d21b0d36ae1c83a1c321dc5f}{ComponentManager}}\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_component_manager_aba9b1d96d21b0d36ae1c83a1c321dc5f}{ComponentManager}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_component_manager_a3ad2253271afc28b4d81b51cd87f4f6b}{\string~ComponentManager}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_manager_afd30b9a57c14dc34cbdc5137a4d66ba5}{registerComponent}}()\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ std::type\_index\ ti(\textcolor{keyword}{typeid}(T));}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_componentTypes.find(ti)\ !=\ \_componentTypes.end())\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ register\ component:\ Component\ type\ already\ registered."{}});}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_nextComponentType\ >=\ \mbox{\hyperlink{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69}{MAX\_COMPONENTS}})\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ register\ component:\ Maximum\ number\ of\ components\ "{}}}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}reached."{}});}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \_componentTypes[ti]\ =\ \_nextComponentType;}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \_componentArrays[\_nextComponentType]\ =\ std::make\_shared<Component<T>>();}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \_nextComponentType++;}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \mbox{\hyperlink{_component_manager_8hpp_a22da2f2e1a665b27fd146bb514ae3b59}{ComponentType}}\ \mbox{\hyperlink{classecs_1_1_component_manager_a064bef841749d693e57fec6321d34d4b}{getComponentType}}()\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ std::type\_index\ ti(\textcolor{keyword}{typeid}(T));}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_componentTypes[ti];}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_manager_a1a65d523672828c4e6ae454078ba5e40}{addComponent}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId,\ T\ component)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ getComponentArray<T>()-\/>insertData(entityId,\ component);}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_manager_af76a52cfeed13f96217cacee0ae18654}{removeComponent}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ getComponentArray<T>()-\/>removeData(entityId);}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ T\ \&\mbox{\hyperlink{classecs_1_1_component_manager_a9daf2346274858dce9fe089061f05d38}{getComponent}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getComponentArray<T>()-\/>getData(entityId);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classecs_1_1_component_manager_a7b9838af5117fc3ca16b2374da887c14}{hasComponent}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getComponentArray<T>()-\/>hasData(entityId);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_manager_afe5edcabf5eb17dd9517bca449705cd3}{entityDestroyed}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&pair\ :\ \_componentArrays)\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ pair.second-\/>entityDestroyed(entityId);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ std::unordered\_map<std::type\_index,\ ComponentType>\ \_componentTypes;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ std::unordered\_map<ComponentType,\ std::shared\_ptr<IComponentArray>>}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \_componentArrays;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \mbox{\hyperlink{_component_manager_8hpp_a22da2f2e1a665b27fd146bb514ae3b59}{ComponentType}}\ \_nextComponentType\ =\ 0;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ std::shared\_ptr<Component<T>>\ getComponentArray()\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ std::type\_index\ ti(\textcolor{keyword}{typeid}(T));}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_componentArrays.find(\_componentTypes[ti])\ ==}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \_componentArrays.end())\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ component\ array:\ Component\ type\ not\ registered."{}});}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::static\_pointer\_cast<Component<T>>(}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \_componentArrays[\_componentTypes[ti]]);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \};}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

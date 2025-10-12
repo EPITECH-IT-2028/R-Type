@@ -1,0 +1,41 @@
+\doxysection{Packet\+Factory.\+hpp}
+\hypertarget{server_2src_2packets_2_packet_factory_8hpp_source}{}\label{server_2src_2packets_2_packet_factory_8hpp_source}\index{server/src/packets/PacketFactory.hpp@{server/src/packets/PacketFactory.hpp}}
+\mbox{\hyperlink{server_2src_2packets_2_packet_factory_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{server_2src_2packets_2_a_packet_8hpp}{APacket.hpp}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{server_2src_2packets_2_packet_handler_8hpp}{PacketHandler.hpp}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_packet_handler_factory}{PacketHandlerFactory}}\ \{}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory_a6a9e7787d2abb3ab3929da0a7e633c8e}{PacketHandlerFactory}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory_ac19a49c412acaa94b9ace148ccc70702}{\string~PacketHandlerFactory}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ std::unique\_ptr<APacket>\ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory_a4a9ee56e50dabb3287f15b4f67733111}{createHandler}}(\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}}\ packetType);}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}},\ std::function<std::unique\_ptr<APacket>()>>}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \ \ \_handlers\ =\ \{\{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4}{PacketType::Message}},}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<MessageHandler>();\ \}\},}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf}{PacketType::PlayerInfo}},}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PlayerInfoHandler>();\ \}\},}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a52f5e0bc3859bc5f5e25130b6c7e8881}{PacketType::Position}},}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PositionHandler>();\ \}\},}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e}{PacketType::Heartbeat}},}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<HeartbeatPlayerHandler>();\ \}\},}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}{PacketType::PlayerDisconnected}},}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PlayerDisconnectedHandler>();\ \}\},}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab8c261cbfda10bf4a28e8e34ed4358c5}{PacketType::PlayerShoot}},}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PlayerShootHandler>();\ \}\}\};}
+\DoxyCodeLine{00033\ \ \ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \}\ \ \textcolor{comment}{//\ namespace\ packet}}
+
+\end{DoxyCode}

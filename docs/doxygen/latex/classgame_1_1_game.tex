@@ -1,0 +1,245 @@
+\doxysection{game\+::Game Class Reference}
+\hypertarget{classgame_1_1_game}{}\label{classgame_1_1_game}\index{game::Game@{game::Game}}
+
+
+{\ttfamily \#include $<$Game.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41}{Game}} ()
+\item 
+\mbox{\hyperlink{classgame_1_1_game_a9fd96a37b55d908071105879d015df8c}{\texorpdfstring{$\sim$}{\string~}\+Game}} ()
+\begin{DoxyCompactList}\small\item\em Stops the game loop and cleans up the game thread. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classgame_1_1_game_ae6b767b9e115989af62b4b236efcbc04}{start}} ()
+\item 
+void \mbox{\hyperlink{classgame_1_1_game_a0db7f0f387723cf677e5d084cea5a7b4}{stop}} ()
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_player}{Player}} $>$ \mbox{\hyperlink{classgame_1_1_game_a0ebc16bc429b7e075a8d8925f912834e}{create\+Player}} (std\+::uint32\+\_\+t player\+\_\+id, const std\+::string \&name)
+\begin{DoxyCompactList}\small\item\em Create and register a new player entity with its initial components. \end{DoxyCompactList}\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_projectile}{game\+::\+Projectile}} $>$ \mbox{\hyperlink{classgame_1_1_game_a11a22476638d0eb12d920b3af44cc755}{create\+Projectile}} (std\+::uint32\+\_\+t projectile\+\_\+id, std\+::uint32\+\_\+t owner\+\_\+id, \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} type, float x, float y, float vx, float vy)
+\begin{DoxyCompactList}\small\item\em Create and register a new projectile entity, store it in the game\textquotesingle{}s projectile registry, and emit a spawn event. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classgame_1_1_game_a36369cf4aa9b45c7a916a23a723b3013}{destroy\+Player}} (int player\+\_\+id)
+\item 
+void \mbox{\hyperlink{classgame_1_1_game_acf25c4de36893557e77e76d12135bdc5}{destroy\+Projectile}} (std\+::uint32\+\_\+t projectile\+\_\+id)
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_player}{Player}} $>$ \mbox{\hyperlink{classgame_1_1_game_a3d53185172a1242797e975fbbd0fe120}{get\+Player}} (int player\+\_\+id)
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_projectile}{Projectile}} $>$ \mbox{\hyperlink{classgame_1_1_game_aff6843b2c36554ae2134ecc8486e1995}{get\+Projectile}} (std\+::uint32\+\_\+t projectile\+\_\+id)
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_player}{Player}} $>$ $>$ \mbox{\hyperlink{classgame_1_1_game_a4ffd1799d02e54a47a430e2e74afd933}{get\+All\+Players}} () const
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_enemy}{Enemy}} $>$ \mbox{\hyperlink{classgame_1_1_game_ac0ad3f4a3a019f48e9b8b7b77b4a965f}{create\+Enemy}} (int enemy\+\_\+id, const \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Create a new enemy entity, attach its gameplay components, and register it with the game. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classgame_1_1_game_a4168a75844307bec3ed099299108ec0d}{destroy\+Enemy}} (int enemy\+\_\+id)
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_enemy}{Enemy}} $>$ \mbox{\hyperlink{classgame_1_1_game_aa6ec38f815adf750a9059a6ad647aad1}{get\+Enemy}} (int enemy\+\_\+id)
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_enemy}{Enemy}} $>$ $>$ \mbox{\hyperlink{classgame_1_1_game_ac66bec1545c35383ea25907982529029}{get\+All\+Enemies}} () const
+\item 
+\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs\+::\+ECSManager}} \& \mbox{\hyperlink{classgame_1_1_game_a236b4d4fd4f3478be7b6d6e04dc17472}{get\+ECSManager}} ()
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classecs_1_1_enemy_system}{ecs\+::\+Enemy\+System}} $>$ \mbox{\hyperlink{classgame_1_1_game_ac6ac23981f1b6202c924f6ef0bddc055}{get\+Enemy\+System}} ()
+\item 
+\mbox{\hyperlink{classqueue_1_1_event_queue}{queue\+::\+Event\+Queue}} \& \mbox{\hyperlink{classgame_1_1_game_a9753bae87d96209b420b144fe93ee7d4}{get\+Event\+Queue}} ()
+\item 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_projectile}{Projectile}} $>$ $>$ \mbox{\hyperlink{classgame_1_1_game_a9bb26f32e3145bb3b5d45311e7f11ecb}{get\+All\+Projectiles}} () const
+\item 
+std\+::uint64\+\_\+t \mbox{\hyperlink{classgame_1_1_game_a676cee622beeedbd140c837ad6b2a056}{get\+Next\+Projectile\+Id}} () noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classgame_1_1_game_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41}\index{game::Game@{game::Game}!Game@{Game}}
+\index{Game@{Game}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{Game()}{Game()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41} 
+game\+::\+Game\+::\+Game (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_a9fd96a37b55d908071105879d015df8c}\index{game::Game@{game::Game}!````~Game@{\texorpdfstring{$\sim$}{\string~}Game}}
+\index{````~Game@{\texorpdfstring{$\sim$}{\string~}Game}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Game()}{\string~Game()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a9fd96a37b55d908071105879d015df8c} 
+game\+::\+Game\+::\texorpdfstring{$\sim$}{\string~}\+Game (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Stops the game loop and cleans up the game thread. 
+
+Ensures the running flag is cleared so the main loop stops, then joins the internal game thread if it is joinable to guarantee the thread has finished before destruction. 
+
+\label{doc-func-members}
+\Hypertarget{classgame_1_1_game_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classgame_1_1_game_ac0ad3f4a3a019f48e9b8b7b77b4a965f}\index{game::Game@{game::Game}!createEnemy@{createEnemy}}
+\index{createEnemy@{createEnemy}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{createEnemy()}{createEnemy()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_ac0ad3f4a3a019f48e9b8b7b77b4a965f} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_enemy}{game\+::\+Enemy}} $>$ game\+::\+Game\+::create\+Enemy (\begin{DoxyParamCaption}\item[{int}]{enemy\+\_\+id}{, }\item[{const \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}}}]{type}{}\end{DoxyParamCaption})}
+
+
+
+Create a new enemy entity, attach its gameplay components, and register it with the game. 
+
+This constructs an ECS entity for the enemy, attaches position, health, velocity, shooting, collider and enemy identity components, stores the resulting \doxylink{classgame_1_1_enemy}{Enemy} instance in the game\textquotesingle{}s enemy registry, and returns a shared pointer to that \doxylink{classgame_1_1_enemy}{Enemy}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em enemy\+\_\+id} & Unique identifier assigned to the new enemy. \\
+\hline
+{\em type} & \doxylink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type} enum value describing the enemy\textquotesingle{}s behavior/type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::shared\+\_\+ptr$<$\+Enemy$>$ Shared pointer to the created \doxylink{classgame_1_1_enemy}{Enemy}; the \doxylink{classgame_1_1_enemy}{Enemy} is also stored in the game\textquotesingle{}s internal enemy map. 
+\end{DoxyReturn}
+\Hypertarget{classgame_1_1_game_a0ebc16bc429b7e075a8d8925f912834e}\index{game::Game@{game::Game}!createPlayer@{createPlayer}}
+\index{createPlayer@{createPlayer}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{createPlayer()}{createPlayer()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a0ebc16bc429b7e075a8d8925f912834e} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_player}{game\+::\+Player}} $>$ game\+::\+Game\+::create\+Player (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{player\+\_\+id}{, }\item[{const std\+::string \&}]{name}{}\end{DoxyParamCaption})}
+
+
+
+Create and register a new player entity with its initial components. 
+
+Creates an ECS entity for the player, attaches initial components (Position, Health, Speed, \doxylink{classgame_1_1_player}{Player}, Velocity, Shoot, Collider, and Score), stores the resulting \doxylink{classgame_1_1_player}{Player} in the game\textquotesingle{}s player map, and returns it.
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & Unique identifier for the player. \\
+\hline
+{\em name} & Display name for the player. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::shared\+\_\+ptr$<$game\+::\+Player$>$ Shared pointer to the created \doxylink{classgame_1_1_player}{Player} instance stored in the game. 
+\end{DoxyReturn}
+\Hypertarget{classgame_1_1_game_a11a22476638d0eb12d920b3af44cc755}\index{game::Game@{game::Game}!createProjectile@{createProjectile}}
+\index{createProjectile@{createProjectile}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{createProjectile()}{createProjectile()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a11a22476638d0eb12d920b3af44cc755} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_projectile}{game\+::\+Projectile}} $>$ game\+::\+Game\+::create\+Projectile (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{projectile\+\_\+id}{, }\item[{std\+::uint32\+\_\+t}]{owner\+\_\+id}{, }\item[{\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}}}]{type}{, }\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{float}]{vx}{, }\item[{float}]{vy}{}\end{DoxyParamCaption})}
+
+
+
+Create and register a new projectile entity, store it in the game\textquotesingle{}s projectile registry, and emit a spawn event. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em projectile\+\_\+id} & Unique identifier for the projectile. \\
+\hline
+{\em owner\+\_\+id} & Identifier of the entity that owns or fired the projectile. \\
+\hline
+{\em type} & \doxylink{classgame_1_1_projectile}{Projectile} type. \\
+\hline
+{\em x} & Initial X position of the projectile. \\
+\hline
+{\em y} & Initial Y position of the projectile. \\
+\hline
+{\em vx} & Initial X velocity of the projectile. \\
+\hline
+{\em vy} & Initial Y velocity of the projectile. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::shared\+\_\+ptr$<$game\+::\+Projectile$>$ Shared pointer to the created \doxylink{classgame_1_1_projectile}{Projectile}. 
+\end{DoxyReturn}
+\Hypertarget{classgame_1_1_game_a4168a75844307bec3ed099299108ec0d}\index{game::Game@{game::Game}!destroyEnemy@{destroyEnemy}}
+\index{destroyEnemy@{destroyEnemy}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{destroyEnemy()}{destroyEnemy()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a4168a75844307bec3ed099299108ec0d} 
+void game\+::\+Game\+::destroy\+Enemy (\begin{DoxyParamCaption}\item[{int}]{enemy\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_a36369cf4aa9b45c7a916a23a723b3013}\index{game::Game@{game::Game}!destroyPlayer@{destroyPlayer}}
+\index{destroyPlayer@{destroyPlayer}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{destroyPlayer()}{destroyPlayer()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a36369cf4aa9b45c7a916a23a723b3013} 
+void game\+::\+Game\+::destroy\+Player (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_acf25c4de36893557e77e76d12135bdc5}\index{game::Game@{game::Game}!destroyProjectile@{destroyProjectile}}
+\index{destroyProjectile@{destroyProjectile}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{destroyProjectile()}{destroyProjectile()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_acf25c4de36893557e77e76d12135bdc5} 
+void game\+::\+Game\+::destroy\+Projectile (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{projectile\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_ac66bec1545c35383ea25907982529029}\index{game::Game@{game::Game}!getAllEnemies@{getAllEnemies}}
+\index{getAllEnemies@{getAllEnemies}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getAllEnemies()}{getAllEnemies()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_ac66bec1545c35383ea25907982529029} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_enemy}{game\+::\+Enemy}} $>$ $>$ game\+::\+Game\+::get\+All\+Enemies (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_game_a4ffd1799d02e54a47a430e2e74afd933}\index{game::Game@{game::Game}!getAllPlayers@{getAllPlayers}}
+\index{getAllPlayers@{getAllPlayers}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getAllPlayers()}{getAllPlayers()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a4ffd1799d02e54a47a430e2e74afd933} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_player}{game\+::\+Player}} $>$ $>$ game\+::\+Game\+::get\+All\+Players (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_game_a9bb26f32e3145bb3b5d45311e7f11ecb}\index{game::Game@{game::Game}!getAllProjectiles@{getAllProjectiles}}
+\index{getAllProjectiles@{getAllProjectiles}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getAllProjectiles()}{getAllProjectiles()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a9bb26f32e3145bb3b5d45311e7f11ecb} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_projectile}{game\+::\+Projectile}} $>$ $>$ game\+::\+Game\+::get\+All\+Projectiles (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_game_a236b4d4fd4f3478be7b6d6e04dc17472}\index{game::Game@{game::Game}!getECSManager@{getECSManager}}
+\index{getECSManager@{getECSManager}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getECSManager()}{getECSManager()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a236b4d4fd4f3478be7b6d6e04dc17472} 
+\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs\+::\+ECSManager}} \& game\+::\+Game\+::get\+ECSManager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_game_aa6ec38f815adf750a9059a6ad647aad1}\index{game::Game@{game::Game}!getEnemy@{getEnemy}}
+\index{getEnemy@{getEnemy}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getEnemy()}{getEnemy()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_aa6ec38f815adf750a9059a6ad647aad1} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_enemy}{game\+::\+Enemy}} $>$ game\+::\+Game\+::get\+Enemy (\begin{DoxyParamCaption}\item[{int}]{enemy\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_ac6ac23981f1b6202c924f6ef0bddc055}\index{game::Game@{game::Game}!getEnemySystem@{getEnemySystem}}
+\index{getEnemySystem@{getEnemySystem}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getEnemySystem()}{getEnemySystem()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_ac6ac23981f1b6202c924f6ef0bddc055} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classecs_1_1_enemy_system}{ecs\+::\+Enemy\+System}} $>$ game\+::\+Game\+::get\+Enemy\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_game_a9753bae87d96209b420b144fe93ee7d4}\index{game::Game@{game::Game}!getEventQueue@{getEventQueue}}
+\index{getEventQueue@{getEventQueue}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getEventQueue()}{getEventQueue()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a9753bae87d96209b420b144fe93ee7d4} 
+\mbox{\hyperlink{classqueue_1_1_event_queue}{queue\+::\+Event\+Queue}} \& game\+::\+Game\+::get\+Event\+Queue (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_game_a676cee622beeedbd140c837ad6b2a056}\index{game::Game@{game::Game}!getNextProjectileId@{getNextProjectileId}}
+\index{getNextProjectileId@{getNextProjectileId}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getNextProjectileId()}{getNextProjectileId()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a676cee622beeedbd140c837ad6b2a056} 
+std\+::uint64\+\_\+t game\+::\+Game\+::get\+Next\+Projectile\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{classgame_1_1_game_a3d53185172a1242797e975fbbd0fe120}\index{game::Game@{game::Game}!getPlayer@{getPlayer}}
+\index{getPlayer@{getPlayer}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getPlayer()}{getPlayer()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a3d53185172a1242797e975fbbd0fe120} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_player}{game\+::\+Player}} $>$ game\+::\+Game\+::get\+Player (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_aff6843b2c36554ae2134ecc8486e1995}\index{game::Game@{game::Game}!getProjectile@{getProjectile}}
+\index{getProjectile@{getProjectile}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{getProjectile()}{getProjectile()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_aff6843b2c36554ae2134ecc8486e1995} 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classgame_1_1_projectile}{game\+::\+Projectile}} $>$ game\+::\+Game\+::get\+Projectile (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{projectile\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_ae6b767b9e115989af62b4b236efcbc04}\index{game::Game@{game::Game}!start@{start}}
+\index{start@{start}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{start()}{start()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_ae6b767b9e115989af62b4b236efcbc04} 
+void game\+::\+Game\+::start (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_game_a0db7f0f387723cf677e5d084cea5a7b4}\index{game::Game@{game::Game}!stop@{stop}}
+\index{stop@{stop}!game::Game@{game::Game}}
+\doxysubsubsection{\texorpdfstring{stop()}{stop()}}
+{\footnotesize\ttfamily \label{classgame_1_1_game_a0db7f0f387723cf677e5d084cea5a7b4} 
+void game\+::\+Game\+::stop (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/src/game/\mbox{\hyperlink{_game_8hpp}{Game.\+hpp}}\item 
+server/src/game/\mbox{\hyperlink{_game_8cpp}{Game.\+cpp}}\end{DoxyCompactItemize}

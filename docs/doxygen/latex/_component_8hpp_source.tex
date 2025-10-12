@@ -1,0 +1,80 @@
+\doxysection{Component.\+hpp}
+\hypertarget{_component_8hpp_source}{}\label{_component_8hpp_source}\index{game\_engine/ecs/Component.hpp@{game\_engine/ecs/Component.hpp}}
+\mbox{\hyperlink{_component_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_entity_manager_8hpp}{EntityManager.hpp}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_i_component_array}{IComponentArray}}\ \{}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classecs_1_1_i_component_array_a545718692c898d7b4bc31af496efb90e}{\string~IComponentArray}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_i_component_array_ad47c7ac0442af67cebe726ff2f52fe5b}{entityDestroyed}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ =\ 0;}
+\DoxyCodeLine{00015\ \ \ \};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00018\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_component}{Component}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classecs_1_1_i_component_array}{IComponentArray}}\ \{}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_ae5e62c7fac1d30aa7b9cb9115f10385a}{insertData}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId,\ T\ component)\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_entityToIndexMap.find(entityId)\ !=\ \_entityToIndexMap.end())\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ insert\ component:\ Entity\ already\ has\ this\ component."{}});}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \_entityToIndexMap[entityId]\ =\ \_index;}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \_indexToEntityMap[\_index]\ =\ entityId;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \_componentArray[\_index]\ =\ component;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \_index++;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_aa0bf269bb64b02e4f7892602aaa4cdc3}{removeData}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_entityToIndexMap.find(entityId)\ ==\ \_entityToIndexMap.end())\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ remove\ component:\ Entity\ does\ not\ have\ this\ component."{}});}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ removedIndex\ =\ \_entityToIndexMap[entityId];}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ lastIndex\ =\ \_index\ -\/\ 1;}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \_componentArray[removedIndex]\ =\ \_componentArray[lastIndex];}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ lastEntity\ =\ \_indexToEntityMap[lastIndex];}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \_entityToIndexMap[lastEntity]\ =\ removedIndex;}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \_indexToEntityMap[removedIndex]\ =\ lastEntity;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \_entityToIndexMap.erase(entityId);}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \_indexToEntityMap.erase(lastIndex);\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ -\/-\/\_index;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ T\ \&\mbox{\hyperlink{classecs_1_1_component_ad0b76360a5f0a1350c8413386609ab5b}{getData}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_entityToIndexMap.find(entityId)\ ==\ \_entityToIndexMap.end())\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Cannot\ get\ component:\ Entity\ does\ not\ have\ this\ component."{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_componentArray[\_entityToIndexMap[entityId]];}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classecs_1_1_component_ab37186513957b2e8e925e717304b4dee}{hasData}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_entityToIndexMap.find(entityId)\ !=\ \_entityToIndexMap.end();}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_component_a279c7f3529601388646bcc2a2d985efa}{entityDestroyed}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_entityToIndexMap.find(entityId)\ !=\ \_entityToIndexMap.end())\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_component_aa0bf269bb64b02e4f7892602aaa4cdc3}{removeData}}(entityId);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ std::array<T,\ MAX\_ENTITIES>\ \_componentArray;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ std::unordered\_map<Entity,\ size\_t>\ \_entityToIndexMap;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ std::unordered\_map<size\_t,\ Entity>\ \_indexToEntityMap;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \_index\ =\ 0;}
+\DoxyCodeLine{00072\ \ \ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \}}
+
+\end{DoxyCode}

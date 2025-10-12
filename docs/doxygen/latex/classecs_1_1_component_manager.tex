@@ -1,0 +1,102 @@
+\doxysection{ecs\+::Component\+Manager Class Reference}
+\hypertarget{classecs_1_1_component_manager}{}\label{classecs_1_1_component_manager}\index{ecs::ComponentManager@{ecs::ComponentManager}}
+
+
+{\ttfamily \#include $<$Component\+Manager.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classecs_1_1_component_manager_aba9b1d96d21b0d36ae1c83a1c321dc5f}{Component\+Manager}} ()=default
+\item 
+\mbox{\hyperlink{classecs_1_1_component_manager_a3ad2253271afc28b4d81b51cd87f4f6b}{\texorpdfstring{$\sim$}{\string~}\+Component\+Manager}} ()=default
+\item 
+{\footnotesize template$<$typename T$>$ }\\void \mbox{\hyperlink{classecs_1_1_component_manager_afd30b9a57c14dc34cbdc5137a4d66ba5}{register\+Component}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\\mbox{\hyperlink{_component_manager_8hpp_a22da2f2e1a665b27fd146bb514ae3b59}{Component\+Type}} \mbox{\hyperlink{classecs_1_1_component_manager_a064bef841749d693e57fec6321d34d4b}{get\+Component\+Type}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\void \mbox{\hyperlink{classecs_1_1_component_manager_a1a65d523672828c4e6ae454078ba5e40}{add\+Component}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id, T component)
+\item 
+{\footnotesize template$<$typename T$>$ }\\void \mbox{\hyperlink{classecs_1_1_component_manager_af76a52cfeed13f96217cacee0ae18654}{remove\+Component}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\item 
+{\footnotesize template$<$typename T$>$ }\\T \& \mbox{\hyperlink{classecs_1_1_component_manager_a9daf2346274858dce9fe089061f05d38}{get\+Component}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\item 
+{\footnotesize template$<$typename T$>$ }\\bool \mbox{\hyperlink{classecs_1_1_component_manager_a7b9838af5117fc3ca16b2374da887c14}{has\+Component}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\item 
+void \mbox{\hyperlink{classecs_1_1_component_manager_afe5edcabf5eb17dd9517bca449705cd3}{entity\+Destroyed}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classecs_1_1_component_manager_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classecs_1_1_component_manager_aba9b1d96d21b0d36ae1c83a1c321dc5f}\index{ecs::ComponentManager@{ecs::ComponentManager}!ComponentManager@{ComponentManager}}
+\index{ComponentManager@{ComponentManager}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{ComponentManager()}{ComponentManager()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_aba9b1d96d21b0d36ae1c83a1c321dc5f} 
+ecs\+::\+Component\+Manager\+::\+Component\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{classecs_1_1_component_manager_a3ad2253271afc28b4d81b51cd87f4f6b}\index{ecs::ComponentManager@{ecs::ComponentManager}!````~ComponentManager@{\texorpdfstring{$\sim$}{\string~}ComponentManager}}
+\index{````~ComponentManager@{\texorpdfstring{$\sim$}{\string~}ComponentManager}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}ComponentManager()}{\string~ComponentManager()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_a3ad2253271afc28b4d81b51cd87f4f6b} 
+ecs\+::\+Component\+Manager\+::\texorpdfstring{$\sim$}{\string~}\+Component\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_component_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_component_manager_a1a65d523672828c4e6ae454078ba5e40}\index{ecs::ComponentManager@{ecs::ComponentManager}!addComponent@{addComponent}}
+\index{addComponent@{addComponent}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{addComponent()}{addComponent()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_a1a65d523672828c4e6ae454078ba5e40} 
+template$<$typename T$>$ \\
+void ecs\+::\+Component\+Manager\+::add\+Component (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{, }\item[{T}]{component}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_manager_afe5edcabf5eb17dd9517bca449705cd3}\index{ecs::ComponentManager@{ecs::ComponentManager}!entityDestroyed@{entityDestroyed}}
+\index{entityDestroyed@{entityDestroyed}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{entityDestroyed()}{entityDestroyed()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_afe5edcabf5eb17dd9517bca449705cd3} 
+void ecs\+::\+Component\+Manager\+::entity\+Destroyed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_manager_a9daf2346274858dce9fe089061f05d38}\index{ecs::ComponentManager@{ecs::ComponentManager}!getComponent@{getComponent}}
+\index{getComponent@{getComponent}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{getComponent()}{getComponent()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_a9daf2346274858dce9fe089061f05d38} 
+template$<$typename T$>$ \\
+T \& ecs\+::\+Component\+Manager\+::get\+Component (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_manager_a064bef841749d693e57fec6321d34d4b}\index{ecs::ComponentManager@{ecs::ComponentManager}!getComponentType@{getComponentType}}
+\index{getComponentType@{getComponentType}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{getComponentType()}{getComponentType()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_a064bef841749d693e57fec6321d34d4b} 
+template$<$typename T$>$ \\
+\mbox{\hyperlink{_component_manager_8hpp_a22da2f2e1a665b27fd146bb514ae3b59}{Component\+Type}} ecs\+::\+Component\+Manager\+::get\+Component\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_manager_a7b9838af5117fc3ca16b2374da887c14}\index{ecs::ComponentManager@{ecs::ComponentManager}!hasComponent@{hasComponent}}
+\index{hasComponent@{hasComponent}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{hasComponent()}{hasComponent()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_a7b9838af5117fc3ca16b2374da887c14} 
+template$<$typename T$>$ \\
+bool ecs\+::\+Component\+Manager\+::has\+Component (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_manager_afd30b9a57c14dc34cbdc5137a4d66ba5}\index{ecs::ComponentManager@{ecs::ComponentManager}!registerComponent@{registerComponent}}
+\index{registerComponent@{registerComponent}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{registerComponent()}{registerComponent()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_afd30b9a57c14dc34cbdc5137a4d66ba5} 
+template$<$typename T$>$ \\
+void ecs\+::\+Component\+Manager\+::register\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_component_manager_af76a52cfeed13f96217cacee0ae18654}\index{ecs::ComponentManager@{ecs::ComponentManager}!removeComponent@{removeComponent}}
+\index{removeComponent@{removeComponent}!ecs::ComponentManager@{ecs::ComponentManager}}
+\doxysubsubsection{\texorpdfstring{removeComponent()}{removeComponent()}}
+{\footnotesize\ttfamily \label{classecs_1_1_component_manager_af76a52cfeed13f96217cacee0ae18654} 
+template$<$typename T$>$ \\
+void ecs\+::\+Component\+Manager\+::remove\+Component (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/\mbox{\hyperlink{_component_manager_8hpp}{Component\+Manager.\+hpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,91 @@
+\doxysection{Enemy\+Death\+Packet Struct Reference}
+\hypertarget{struct_enemy_death_packet}{}\label{struct_enemy_death_packet}\index{EnemyDeathPacket@{EnemyDeathPacket}}
+
+
+Describes an enemy death event sent from server to client.  
+
+
+
+
+{\ttfamily \#include $<$Packet.\+hpp$>$}
+
+
+
+Collaboration diagram for Enemy\+Death\+Packet\+:
+% FIG 0
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} \mbox{\hyperlink{struct_enemy_death_packet_a7b76a4562aa79b3940de0ae4c4db0684}{header}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{struct_enemy_death_packet_a7beff42a8a291d14f8145fde9fb21b90}{enemy\+\_\+id}}
+\item 
+float \mbox{\hyperlink{struct_enemy_death_packet_a0c9c50509c79b924895c9ed28cbbda02}{death\+\_\+x}}
+\item 
+float \mbox{\hyperlink{struct_enemy_death_packet_a0d80e07707d7a3dd7b116d30bb24567d}{death\+\_\+y}}
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{struct_enemy_death_packet_a3c260178434ce88f23f84e8f65196a29}{player\+\_\+id}}
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{struct_enemy_death_packet_a89947c85867b0a6ef17ac1b47e3b8d37}{score}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Describes an enemy death event sent from server to client. 
+
+Starts with a \doxylink{struct_packet_header}{Packet\+Header} identifying the packet type and payload size.
+
+Fields\+:
+\begin{DoxyItemize}
+\item header\+: \doxylink{struct_packet_header}{Packet\+Header} present in all packets.
+\item enemy\+\_\+id\+: Server-\/assigned identifier for the enemy that died.
+\item death\+\_\+x\+: X coordinate of the death location in world space.
+\item death\+\_\+y\+: Y coordinate of the death location in world space.
+\item player\+\_\+id\+: Identifier of the player credited for the kill.
+\item score\+: Score awarded for the kill. 
+\end{DoxyItemize}
+
+\label{doc-variable-members}
+\Hypertarget{struct_enemy_death_packet_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_enemy_death_packet_a0c9c50509c79b924895c9ed28cbbda02}\index{EnemyDeathPacket@{EnemyDeathPacket}!death\_x@{death\_x}}
+\index{death\_x@{death\_x}!EnemyDeathPacket@{EnemyDeathPacket}}
+\doxysubsubsection{\texorpdfstring{death\_x}{death\_x}}
+{\footnotesize\ttfamily \label{struct_enemy_death_packet_a0c9c50509c79b924895c9ed28cbbda02} 
+float Enemy\+Death\+Packet\+::death\+\_\+x}
+
+\Hypertarget{struct_enemy_death_packet_a0d80e07707d7a3dd7b116d30bb24567d}\index{EnemyDeathPacket@{EnemyDeathPacket}!death\_y@{death\_y}}
+\index{death\_y@{death\_y}!EnemyDeathPacket@{EnemyDeathPacket}}
+\doxysubsubsection{\texorpdfstring{death\_y}{death\_y}}
+{\footnotesize\ttfamily \label{struct_enemy_death_packet_a0d80e07707d7a3dd7b116d30bb24567d} 
+float Enemy\+Death\+Packet\+::death\+\_\+y}
+
+\Hypertarget{struct_enemy_death_packet_a7beff42a8a291d14f8145fde9fb21b90}\index{EnemyDeathPacket@{EnemyDeathPacket}!enemy\_id@{enemy\_id}}
+\index{enemy\_id@{enemy\_id}!EnemyDeathPacket@{EnemyDeathPacket}}
+\doxysubsubsection{\texorpdfstring{enemy\_id}{enemy\_id}}
+{\footnotesize\ttfamily \label{struct_enemy_death_packet_a7beff42a8a291d14f8145fde9fb21b90} 
+uint32\+\_\+t Enemy\+Death\+Packet\+::enemy\+\_\+id}
+
+\Hypertarget{struct_enemy_death_packet_a7b76a4562aa79b3940de0ae4c4db0684}\index{EnemyDeathPacket@{EnemyDeathPacket}!header@{header}}
+\index{header@{header}!EnemyDeathPacket@{EnemyDeathPacket}}
+\doxysubsubsection{\texorpdfstring{header}{header}}
+{\footnotesize\ttfamily \label{struct_enemy_death_packet_a7b76a4562aa79b3940de0ae4c4db0684} 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} Enemy\+Death\+Packet\+::header}
+
+\Hypertarget{struct_enemy_death_packet_a3c260178434ce88f23f84e8f65196a29}\index{EnemyDeathPacket@{EnemyDeathPacket}!player\_id@{player\_id}}
+\index{player\_id@{player\_id}!EnemyDeathPacket@{EnemyDeathPacket}}
+\doxysubsubsection{\texorpdfstring{player\_id}{player\_id}}
+{\footnotesize\ttfamily \label{struct_enemy_death_packet_a3c260178434ce88f23f84e8f65196a29} 
+std\+::uint32\+\_\+t Enemy\+Death\+Packet\+::player\+\_\+id}
+
+\Hypertarget{struct_enemy_death_packet_a89947c85867b0a6ef17ac1b47e3b8d37}\index{EnemyDeathPacket@{EnemyDeathPacket}!score@{score}}
+\index{score@{score}!EnemyDeathPacket@{EnemyDeathPacket}}
+\doxysubsubsection{\texorpdfstring{score}{score}}
+{\footnotesize\ttfamily \label{struct_enemy_death_packet_a89947c85867b0a6ef17ac1b47e3b8d37} 
+std\+::uint32\+\_\+t Enemy\+Death\+Packet\+::score}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_8hpp}{Packet.\+hpp}}\end{DoxyCompactItemize}

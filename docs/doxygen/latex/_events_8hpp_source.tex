@@ -1,0 +1,92 @@
+\doxysection{Events.\+hpp}
+\hypertarget{_events_8hpp_source}{}\label{_events_8hpp_source}\index{server/src/queue/Events.hpp@{server/src/queue/Events.hpp}}
+\mbox{\hyperlink{_events_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <variant>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacequeue}{queue}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_enemy_spawn_event}{EnemySpawnEvent}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_af4536b5c766f75e11b3511878e64e711}{enemy\_id}};}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{EnemyType}}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_af4141df954e3782c4b9fb9c637a6e3e4}{type}};}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_ac78342529e6ed8ef8f349db6c3a1537c}{x}};}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_ae914ce84428dacb942c8b0eb5bb6f3e6}{y}};}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_ab650471ac12fdf4545ad36c2090f9e9b}{vx}};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_a2e484f5d8017cd027660605cd19fad33}{vy}};}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_ad3b402036faa1caba33add9e468d26e2}{health}};}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event_ac223e5dc723bf492f25145f999eaf71c}{max\_health}};}
+\DoxyCodeLine{00017\ \ \ \};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_enemy_destroy_event}{EnemyDestroyEvent}}\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event_a9c64fb47770fb1474c2da540657ab61a}{enemy\_id}};}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event_afbdd86b789a43e170c43ca7a6a41e26e}{x}};}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event_a52557ad318805bfae725beb51f1fdbd1}{y}};}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event_a5373e2ce278d9cccc3eb75b7025a4514}{player\_id}};}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event_a7386a3a93cf4ad84fae1bc214f490bc2}{score}};}
+\DoxyCodeLine{00025\ \ \ \};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_enemy_hit_event}{EnemyHitEvent}}\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event_a7afa0143ee83d63ccbf82945e39b9e24}{enemy\_id}};}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event_a58ccd9c7fd239a559e20fc12fe1bca8f}{x}};}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event_a87e2be6eef01a1b9b3351090e0f9b6e3}{y}};}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event_a929cfcb7a01d426913fb8f9bfd62837b}{damage}};}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event_a031ac78fe7ecbde01a055ece608415bc}{sequence\_number}};}
+\DoxyCodeLine{00033\ \ \ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_enemy_move_event}{EnemyMoveEvent}}\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event_a790263465a41d31c1f1787092e1da86d}{enemy\_id}};}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event_adda7633b1eb14068fbf40a34d9d95530}{x}};}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event_a34f77d9e7bd2b62695b8826dba73fdf8}{y}};}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event_a4bc1c7aee19bed7733ff3f43bccbcff4}{vx}};}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event_a47414f96f095bf9caeff45b836ba2b8b}{vy}};}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event_a33e0aaf2ba662c5fc7ee83b02b2c1905}{sequence\_number}};}
+\DoxyCodeLine{00042\ \ \ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_projectile_spawn_event}{ProjectileSpawnEvent}}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a7b244e130cda8d9919254a9fd862e5d1}{projectile\_id}};}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a3b329723fef07efb879fab4abb26cb68}{owner\_id}};}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a31c383e413fbab06ceb16f1e908b47f4}{x}};}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a89b05ab83e85a6260e12f2dc3ee28e4f}{y}};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a3a58949dfebb87d33aa397702ff0f361}{vx}};}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a5304100bcd2c6b8b1bc86574dcf639f1}{vy}};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a63f92e52dbfc0a5148b2837b5c132577}{speed}};}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a2672ac372dc800769447d57259ebb47d}{is\_enemy\_projectile}};}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_ae01d95400752e4df92cc26a011c34c99}{damage}};}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event_a19528a509b1034251ec9e191a3eafe17}{type}};}
+\DoxyCodeLine{00055\ \ \ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_player_hit_event}{PlayerHitEvent}}\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_player_hit_event_afff9c513ddb31308515611029307670d}{player\_id}};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_player_hit_event_a9382ddf089052b83e9cf08cd17f2a1e2}{x}};}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_player_hit_event_a6a15a2c2a8006860141db4043fa7e729}{y}};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_player_hit_event_ab4d96f13e5007fc0bb583e4cbcf64a2b}{damage}};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_player_hit_event_a92afb2df8e3265b27722ac4125293954}{sequence\_number}};}
+\DoxyCodeLine{00063\ \ \ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_player_destroy_event}{PlayerDestroyEvent}}\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structqueue_1_1_player_destroy_event_a46658e274cb9947ebe24a24f69cd31c5}{player\_id}};}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_player_destroy_event_ac3d396308d3e619a0591529eaee6fff6}{x}};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_player_destroy_event_a54adfccd93c39382f6157912ab05879e}{y}};}
+\DoxyCodeLine{00069\ \ \ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_projectile_destroy_event}{ProjectileDestroyEvent}}\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structqueue_1_1_projectile_destroy_event_a3eeed0fbd0c796885d294a0430d811e1}{projectile\_id}};}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_destroy_event_a892f703eda2217c2088a20498710a740}{x}};}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structqueue_1_1_projectile_destroy_event_a1e037b49a527d5085720ed6e4b3ad155}{y}};}
+\DoxyCodeLine{00075\ \ \ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structqueue_1_1_game_start_event}{GameStartEvent}}\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structqueue_1_1_game_start_event_afa630662c19ced2bd49f04195b290342}{game\_started}};}
+\DoxyCodeLine{00079\ \ \ \};}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \textcolor{keyword}{using\ }\mbox{\hyperlink{namespacequeue_a8d808b17c3198fbbc337f72d5847eba6}{GameEvent}}\ =}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ std::variant<\mbox{\hyperlink{structqueue_1_1_enemy_spawn_event}{EnemySpawnEvent}},\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event}{EnemyDestroyEvent}},\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event}{EnemyMoveEvent}},}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event}{ProjectileSpawnEvent}},\ \mbox{\hyperlink{structqueue_1_1_player_hit_event}{PlayerHitEvent}},\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event}{EnemyHitEvent}},}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structqueue_1_1_projectile_destroy_event}{ProjectileDestroyEvent}},\ \mbox{\hyperlink{structqueue_1_1_player_destroy_event}{PlayerDestroyEvent}},\ \mbox{\hyperlink{structqueue_1_1_game_start_event}{GameStartEvent}}>;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \}\ \ \textcolor{comment}{//\ namespace\ queue}}
+
+\end{DoxyCode}

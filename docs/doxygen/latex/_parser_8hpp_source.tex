@@ -1,0 +1,93 @@
+\doxysection{Parser.\+hpp}
+\hypertarget{_parser_8hpp_source}{}\label{_parser_8hpp_source}\index{core/Parser.hpp@{core/Parser.hpp}}
+\mbox{\hyperlink{_parser_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_params_error_8hpp}{ParamsError.hpp}}"{}}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{comment}{/*\ Macros\ for\ files\ paths\ */}}
+\DoxyCodeLine{00012\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{_parser_8hpp_a256d9150724ea0659e890f1428cfa9cf}{SERVER\_PROPERTIES}}\ =\ \textcolor{stringliteral}{"{}server/server.properties"{}};}
+\DoxyCodeLine{00013\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{_parser_8hpp_a5c993c5fe187a06fce3e6f0871972e6b}{CLIENT\_PROPERTIES}}\ =\ \textcolor{stringliteral}{"{}client/client.properties"{}};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{comment}{/*\ Macros\ for\ ports\ */}}
+\DoxyCodeLine{00016\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_parser_8hpp_ac8f92e931ea6ef2294ced1ae400fde83}{MAX\_PORT}}\ =\ 65535;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{_parser_8hpp_ae76208dab9c4818b12210f36b980ed03}{MIN\_PORT}}\ =\ 1;}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_parser_ad823c6d880bb66f0ac5f5a9c5b982442}{Parser}}\ \{}
+\DoxyCodeLine{00020\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \ \ \mbox{\hyperlink{class_parser_ad823c6d880bb66f0ac5f5a9c5b982442}{Parser}}(std::string\ propertiesPath)\ :\ \_propertiesPath(std::move(propertiesPath))\ \{\}}
+\DoxyCodeLine{00022\ \ \ \ \ \mbox{\hyperlink{class_parser_a95734193a58a199b4c6d820a6a730c42}{\string~Parser}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_parser_a1b99781b2af867794343f9400590e032}{parseProperties}}();}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{class_parser_add22c0cee1bcc586d017194e5ca30de9}{isValidIp}}(\textcolor{keyword}{const}\ std::string\ \&ip)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00027\ \ \ \ \ }
+\DoxyCodeLine{00028\ \ \ \ \ std::string\ \mbox{\hyperlink{class_parser_a94a668fb87e8064cfea2187d19dd0bc5}{trimString}}(\textcolor{keyword}{const}\ std::string\ \&str)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ std::uint16\_t\ \mbox{\hyperlink{class_parser_a880a4cce678bc0522ec83d35b1e4aa68}{getPort}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_port;}
+\DoxyCodeLine{00032\ \ \ \ \ \}}
+\DoxyCodeLine{00033\ \ \ \ \ std::uint16\_t\ \mbox{\hyperlink{class_parser_a99f3474a5b98f887b0ceb053cf81087d}{getMaxClients}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_max\_clients;}
+\DoxyCodeLine{00035\ \ \ \ \ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ std::string\ \mbox{\hyperlink{class_parser_a5625e357a51cece1fb069d9faf498f17}{getHost}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_host;}
+\DoxyCodeLine{00039\ \ \ \ \ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \_propertiesPath;}
+\DoxyCodeLine{00043\ \ \ \ \ std::uint16\_t\ \_port\ =\ 4242;}
+\DoxyCodeLine{00044\ \ \ \ \ std::string\ \_host\ =\ \textcolor{stringliteral}{"{}127.0.0.1"{}};}
+\DoxyCodeLine{00045\ \ \ \ \ std::uint16\_t\ \_max\_clients\ =\ 4;}
+\DoxyCodeLine{00046\ \ \ \ \ std::unordered\_map<std::string,\ std::function<void(\textcolor{keyword}{const}\ std::string\ \&)>>}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \_propertyParsers\ =\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}PORT"{}},}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ [\textcolor{keyword}{this}](\textcolor{keyword}{const}\ std::string\ \&port)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!port.empty())\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_port\ =\ std::stoi(port);}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::invalid\_argument\ \&e)\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(\textcolor{stringliteral}{"{}Invalid\ port\ in\ server\ properties\ file."{}});}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\ \&e)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(\textcolor{stringliteral}{"{}Port\ value\ out\ of\ range."{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(\textcolor{stringliteral}{"{}Invalid\ port\ in\ server\ properties\ file."{}});}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\},}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}IP"{}},}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ [\textcolor{keyword}{this}](\textcolor{keyword}{const}\ std::string\ \&host)\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!host.empty())\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_host\ =\ host;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(\textcolor{stringliteral}{"{}Invalid\ host\ in\ client\ properties\ file."{}});}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\},}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}MAX\_CLIENTS"{}},}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ [\textcolor{keyword}{this}](\textcolor{keyword}{const}\ std::string\ \&max\_clients)\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!max\_clients.empty())\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_max\_clients\ =\ std::stoi(max\_clients);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::invalid\_argument\ \&e)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ max\ clients\ in\ server\ properties\ file."{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::out\_of\_range\ \&e)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(\textcolor{stringliteral}{"{}Max\ clients\ value\ out\ of\ range."{}});}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ ParamsError(}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Invalid\ max\ clients\ in\ server\ properties\ file."{}});}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\},}
+\DoxyCodeLine{00086\ \ \ \ \ \};}
+\DoxyCodeLine{00087\ \};}
+
+\end{DoxyCode}

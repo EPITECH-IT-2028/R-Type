@@ -1,0 +1,45 @@
+\doxysection{Game\+End\+Packet Struct Reference}
+\hypertarget{struct_game_end_packet}{}\label{struct_game_end_packet}\index{GameEndPacket@{GameEndPacket}}
+
+
+{\ttfamily \#include $<$Packet.\+hpp$>$}
+
+
+
+Collaboration diagram for Game\+End\+Packet\+:
+% FIG 0
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} \mbox{\hyperlink{struct_game_end_packet_afee93b6c4410d96c4112e6e0c9799723}{header}}
+\begin{DoxyCompactList}\small\item\em Signals the end of the game to the client. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{struct_game_end_packet_a2ed4cd35679784d544d9bfbadda6aa18}{game\+\_\+end}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_game_end_packet_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_game_end_packet_a2ed4cd35679784d544d9bfbadda6aa18}\index{GameEndPacket@{GameEndPacket}!game\_end@{game\_end}}
+\index{game\_end@{game\_end}!GameEndPacket@{GameEndPacket}}
+\doxysubsubsection{\texorpdfstring{game\_end}{game\_end}}
+{\footnotesize\ttfamily \label{struct_game_end_packet_a2ed4cd35679784d544d9bfbadda6aa18} 
+uint8\+\_\+t Game\+End\+Packet\+::game\+\_\+end}
+
+{\ttfamily 1} if the game has ended, {\ttfamily 0} otherwise. \Hypertarget{struct_game_end_packet_afee93b6c4410d96c4112e6e0c9799723}\index{GameEndPacket@{GameEndPacket}!header@{header}}
+\index{header@{header}!GameEndPacket@{GameEndPacket}}
+\doxysubsubsection{\texorpdfstring{header}{header}}
+{\footnotesize\ttfamily \label{struct_game_end_packet_afee93b6c4410d96c4112e6e0c9799723} 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} Game\+End\+Packet\+::header}
+
+
+
+Signals the end of the game to the client. 
+
+Contains the common packet header and a flag indicating whether the game has ended.
+
+Common packet header identifying packet type and payload size. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_8hpp}{Packet.\+hpp}}\end{DoxyCompactItemize}

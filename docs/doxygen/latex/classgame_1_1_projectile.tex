@@ -1,0 +1,212 @@
+\doxysection{game\+::Projectile Class Reference}
+\hypertarget{classgame_1_1_projectile}{}\label{classgame_1_1_projectile}\index{game::Projectile@{game::Projectile}}
+
+
+{\ttfamily \#include $<$Projectile.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classgame_1_1_projectile_ac502d7fbed138ddf87140db9fd5bf8c1}{Projectile}} (std\+::uint32\+\_\+t projectile\+\_\+id, std\+::uint32\+\_\+t owner\+\_\+id, std\+::uint32\+\_\+t entity\+\_\+id, \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs\+::\+ECSManager}} \&ecs\+Manager)
+\item 
+\mbox{\hyperlink{classgame_1_1_projectile_a18e7b82eb6d066e2234c0f2daa25d179}{\texorpdfstring{$\sim$}{\string~}\+Projectile}} ()=default
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{classgame_1_1_projectile_ae4daf96324773e1090209d93de8bb4da}{get\+Projectile\+Id}} () const
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{classgame_1_1_projectile_a731b5765cc7d51f6461f1c99691e85f7}{get\+Entity\+Id}} () const
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{classgame_1_1_projectile_a892f1497ba8d2f6e9672c1f13b20957c}{get\+Owner\+Id}} () const
+\item 
+std\+::pair$<$ float, float $>$ \mbox{\hyperlink{classgame_1_1_projectile_a6cb7cbde693406469f489932574d677a}{get\+Position}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_a53f858b8c782e5868d4185e150b65155}{set\+Position}} (float x, float y)
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_abc30dc5a3b4fdec47c8502bc08811468}{move}} (float deltaX, float deltaY)
+\item 
+bool \mbox{\hyperlink{classgame_1_1_projectile_a6452c6d33411ed359232c282f1781bda}{is\+Destroyed}} () const
+\item 
+float \mbox{\hyperlink{classgame_1_1_projectile_aea3dca4d065b5af9f8dc0bf58ed9e607}{get\+Speed}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_a7338f218df0c73596152e274a22d815e}{set\+Speed}} (float speed)
+\item 
+std\+::pair$<$ float, float $>$ \mbox{\hyperlink{classgame_1_1_projectile_ad3573208b80b632db322e2a4c6649c13}{get\+Velocity}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_a40e5c209885132f09ab70b3af5beac08}{set\+Velocity}} (float vx, float vy)
+\item 
+std\+::optional$<$ uint32\+\_\+t $>$ \mbox{\hyperlink{classgame_1_1_projectile_a42a863c2a6b316a472dae2821379053c}{get\+Sequence\+Number}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_aca0a5d597971e2957dba6091abb3aa3c}{set\+Sequence\+Number}} (std\+::uint32\+\_\+t seq)
+\item 
+\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} \mbox{\hyperlink{classgame_1_1_projectile_ab5deb7476884a58da4eb173932ae6362}{get\+Type}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_a1a5071b352b86f7c61b81bfe71e427eb}{set\+Type}} (\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} type)
+\item 
+std\+::optional$<$ uint32\+\_\+t $>$ \mbox{\hyperlink{classgame_1_1_projectile_af03a6c35e0e1a88b57cfaebc7004e2ce}{get\+Damage}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_aa41b5b6b5b5702b559f32fb1da4bd74c}{set\+Damage}} (std\+::uint32\+\_\+t damage)
+\item 
+void \mbox{\hyperlink{classgame_1_1_projectile_ae48fac2b5e7abd7a7adbc42dcd1c5ad2}{update}} (float delta\+Time)
+\item 
+{\footnotesize template$<$typename T$>$ }\\T \& \mbox{\hyperlink{classgame_1_1_projectile_a1b5614843a87d62536491c058ce8e1ed}{get\+Component}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\bool \mbox{\hyperlink{classgame_1_1_projectile_ac31d9d70a517d8fe5cca5bdea0e490dd}{has\+Component}} () const
+\item 
+{\footnotesize template$<$typename T$>$ }\\const T \& \mbox{\hyperlink{classgame_1_1_projectile_a77e5f1cd16e8415e3a949ca8dd164e35}{get\+Component}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classgame_1_1_projectile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classgame_1_1_projectile_ac502d7fbed138ddf87140db9fd5bf8c1}\index{game::Projectile@{game::Projectile}!Projectile@{Projectile}}
+\index{Projectile@{Projectile}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{Projectile()}{Projectile()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_ac502d7fbed138ddf87140db9fd5bf8c1} 
+game\+::\+Projectile\+::\+Projectile (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{projectile\+\_\+id}{, }\item[{std\+::uint32\+\_\+t}]{owner\+\_\+id}{, }\item[{std\+::uint32\+\_\+t}]{entity\+\_\+id}{, }\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs\+::\+ECSManager}} \&}]{ecs\+Manager}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_a18e7b82eb6d066e2234c0f2daa25d179}\index{game::Projectile@{game::Projectile}!````~Projectile@{\texorpdfstring{$\sim$}{\string~}Projectile}}
+\index{````~Projectile@{\texorpdfstring{$\sim$}{\string~}Projectile}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Projectile()}{\string~Projectile()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a18e7b82eb6d066e2234c0f2daa25d179} 
+game\+::\+Projectile\+::\texorpdfstring{$\sim$}{\string~}\+Projectile (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classgame_1_1_projectile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classgame_1_1_projectile_a1b5614843a87d62536491c058ce8e1ed}\index{game::Projectile@{game::Projectile}!getComponent@{getComponent}}
+\index{getComponent@{getComponent}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getComponent()}{getComponent()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a1b5614843a87d62536491c058ce8e1ed} 
+template$<$typename T$>$ \\
+T \& game\+::\+Projectile\+::get\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_projectile_a77e5f1cd16e8415e3a949ca8dd164e35}\index{game::Projectile@{game::Projectile}!getComponent@{getComponent}}
+\index{getComponent@{getComponent}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getComponent()}{getComponent()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a77e5f1cd16e8415e3a949ca8dd164e35} 
+template$<$typename T$>$ \\
+const T \& game\+::\+Projectile\+::get\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_projectile_af03a6c35e0e1a88b57cfaebc7004e2ce}\index{game::Projectile@{game::Projectile}!getDamage@{getDamage}}
+\index{getDamage@{getDamage}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getDamage()}{getDamage()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_af03a6c35e0e1a88b57cfaebc7004e2ce} 
+std\+::optional$<$ uint32\+\_\+t $>$ game\+::\+Projectile\+::get\+Damage (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_a731b5765cc7d51f6461f1c99691e85f7}\index{game::Projectile@{game::Projectile}!getEntityId@{getEntityId}}
+\index{getEntityId@{getEntityId}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getEntityId()}{getEntityId()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a731b5765cc7d51f6461f1c99691e85f7} 
+std\+::uint32\+\_\+t game\+::\+Projectile\+::get\+Entity\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_projectile_a892f1497ba8d2f6e9672c1f13b20957c}\index{game::Projectile@{game::Projectile}!getOwnerId@{getOwnerId}}
+\index{getOwnerId@{getOwnerId}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getOwnerId()}{getOwnerId()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a892f1497ba8d2f6e9672c1f13b20957c} 
+std\+::uint32\+\_\+t game\+::\+Projectile\+::get\+Owner\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_projectile_a6cb7cbde693406469f489932574d677a}\index{game::Projectile@{game::Projectile}!getPosition@{getPosition}}
+\index{getPosition@{getPosition}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getPosition()}{getPosition()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a6cb7cbde693406469f489932574d677a} 
+std\+::pair$<$ float, float $>$ game\+::\+Projectile\+::get\+Position (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_ae4daf96324773e1090209d93de8bb4da}\index{game::Projectile@{game::Projectile}!getProjectileId@{getProjectileId}}
+\index{getProjectileId@{getProjectileId}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getProjectileId()}{getProjectileId()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_ae4daf96324773e1090209d93de8bb4da} 
+std\+::uint32\+\_\+t game\+::\+Projectile\+::get\+Projectile\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_projectile_a42a863c2a6b316a472dae2821379053c}\index{game::Projectile@{game::Projectile}!getSequenceNumber@{getSequenceNumber}}
+\index{getSequenceNumber@{getSequenceNumber}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getSequenceNumber()}{getSequenceNumber()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a42a863c2a6b316a472dae2821379053c} 
+std\+::optional$<$ uint32\+\_\+t $>$ game\+::\+Projectile\+::get\+Sequence\+Number (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_aea3dca4d065b5af9f8dc0bf58ed9e607}\index{game::Projectile@{game::Projectile}!getSpeed@{getSpeed}}
+\index{getSpeed@{getSpeed}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getSpeed()}{getSpeed()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_aea3dca4d065b5af9f8dc0bf58ed9e607} 
+float game\+::\+Projectile\+::get\+Speed (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_ab5deb7476884a58da4eb173932ae6362}\index{game::Projectile@{game::Projectile}!getType@{getType}}
+\index{getType@{getType}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getType()}{getType()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_ab5deb7476884a58da4eb173932ae6362} 
+\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} game\+::\+Projectile\+::get\+Type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_ad3573208b80b632db322e2a4c6649c13}\index{game::Projectile@{game::Projectile}!getVelocity@{getVelocity}}
+\index{getVelocity@{getVelocity}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{getVelocity()}{getVelocity()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_ad3573208b80b632db322e2a4c6649c13} 
+std\+::pair$<$ float, float $>$ game\+::\+Projectile\+::get\+Velocity (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_ac31d9d70a517d8fe5cca5bdea0e490dd}\index{game::Projectile@{game::Projectile}!hasComponent@{hasComponent}}
+\index{hasComponent@{hasComponent}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{hasComponent()}{hasComponent()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_ac31d9d70a517d8fe5cca5bdea0e490dd} 
+template$<$typename T$>$ \\
+bool game\+::\+Projectile\+::has\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_projectile_a6452c6d33411ed359232c282f1781bda}\index{game::Projectile@{game::Projectile}!isDestroyed@{isDestroyed}}
+\index{isDestroyed@{isDestroyed}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{isDestroyed()}{isDestroyed()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a6452c6d33411ed359232c282f1781bda} 
+bool game\+::\+Projectile\+::is\+Destroyed (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_projectile_abc30dc5a3b4fdec47c8502bc08811468}\index{game::Projectile@{game::Projectile}!move@{move}}
+\index{move@{move}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{move()}{move()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_abc30dc5a3b4fdec47c8502bc08811468} 
+void game\+::\+Projectile\+::move (\begin{DoxyParamCaption}\item[{float}]{deltaX}{, }\item[{float}]{deltaY}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_aa41b5b6b5b5702b559f32fb1da4bd74c}\index{game::Projectile@{game::Projectile}!setDamage@{setDamage}}
+\index{setDamage@{setDamage}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{setDamage()}{setDamage()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_aa41b5b6b5b5702b559f32fb1da4bd74c} 
+void game\+::\+Projectile\+::set\+Damage (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{damage}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_a53f858b8c782e5868d4185e150b65155}\index{game::Projectile@{game::Projectile}!setPosition@{setPosition}}
+\index{setPosition@{setPosition}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{setPosition()}{setPosition()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a53f858b8c782e5868d4185e150b65155} 
+void game\+::\+Projectile\+::set\+Position (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_aca0a5d597971e2957dba6091abb3aa3c}\index{game::Projectile@{game::Projectile}!setSequenceNumber@{setSequenceNumber}}
+\index{setSequenceNumber@{setSequenceNumber}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{setSequenceNumber()}{setSequenceNumber()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_aca0a5d597971e2957dba6091abb3aa3c} 
+void game\+::\+Projectile\+::set\+Sequence\+Number (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{seq}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_a7338f218df0c73596152e274a22d815e}\index{game::Projectile@{game::Projectile}!setSpeed@{setSpeed}}
+\index{setSpeed@{setSpeed}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{setSpeed()}{setSpeed()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a7338f218df0c73596152e274a22d815e} 
+void game\+::\+Projectile\+::set\+Speed (\begin{DoxyParamCaption}\item[{float}]{speed}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_a1a5071b352b86f7c61b81bfe71e427eb}\index{game::Projectile@{game::Projectile}!setType@{setType}}
+\index{setType@{setType}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{setType()}{setType()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a1a5071b352b86f7c61b81bfe71e427eb} 
+void game\+::\+Projectile\+::set\+Type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}}}]{type}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_a40e5c209885132f09ab70b3af5beac08}\index{game::Projectile@{game::Projectile}!setVelocity@{setVelocity}}
+\index{setVelocity@{setVelocity}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{setVelocity()}{setVelocity()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_a40e5c209885132f09ab70b3af5beac08} 
+void game\+::\+Projectile\+::set\+Velocity (\begin{DoxyParamCaption}\item[{float}]{vx}{, }\item[{float}]{vy}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_projectile_ae48fac2b5e7abd7a7adbc42dcd1c5ad2}\index{game::Projectile@{game::Projectile}!update@{update}}
+\index{update@{update}!game::Projectile@{game::Projectile}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classgame_1_1_projectile_ae48fac2b5e7abd7a7adbc42dcd1c5ad2} 
+void game\+::\+Projectile\+::update (\begin{DoxyParamCaption}\item[{float}]{delta\+Time}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/src/projectile/\mbox{\hyperlink{_projectile_8hpp}{Projectile.\+hpp}}\item 
+server/src/projectile/\mbox{\hyperlink{_projectile_8cpp}{Projectile.\+cpp}}\end{DoxyCompactItemize}

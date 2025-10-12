@@ -1,0 +1,346 @@
+\chapter{🧩 ECS Development Guide }
+\hypertarget{md_docs_2server__how__to}{}\label{md_docs_2server__how__to}\index{🧩 ECS Development Guide@{🧩 ECS Development Guide}}
+\label{md_docs_2server__how__to_autotoc_md0}%
+\Hypertarget{md_docs_2server__how__to_autotoc_md0}%
+
+
+Our R-\/\+Type project uses a custom Entity-\/\+Component-\/\+System (ECS) architecture. This guide explains how to extend the system with new components, systems, entities, and network packets.\hypertarget{md_docs_2server__how__to_autotoc_md1}{}\doxysubsection{\texorpdfstring{🔧 Adding a New Component}{🔧 Adding a New Component}}\label{md_docs_2server__how__to_autotoc_md1}
+Components are simple data structures that hold state for entities.
+
+{\bfseries{1. Create the component header file\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ game\_engine/ecs/components/NewComponent.hpp}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{\ \ \textcolor{keyword}{struct\ }NewComponent\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Add\ your\ data\ members\ here}}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordtype}{float}\ value\ =\ 0.0f;}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordtype}{bool}\ isActive\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\ \ \};}
+\DoxyCodeLine{\}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}
+
+
+{\bfseries{2. Register the component in your initialization code\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ server/src/game/Game.cpp}}
+\DoxyCodeLine{\_ecsManager.registerComponent<ecs::NewComponent>();}
+
+\end{DoxyCode}
+
+
+{\bfseries{3. All methods for components related to a entity\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Add\ component\ to\ entity}}
+\DoxyCodeLine{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity\ =\ ecsManager.createEntity();}
+\DoxyCodeLine{ecsManager.addComponent(entity,\ NewComponent\{1.5f,\ 10,\ \textcolor{keyword}{true}\});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Get\ and\ modify\ component}}
+\DoxyCodeLine{\textcolor{keyword}{auto}\&\ component\ =\ ecsManager.getComponent<NewComponent>(entity);}
+\DoxyCodeLine{component.value\ =\ 2.0f;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Check\ if\ entity\ has\ component}}
+\DoxyCodeLine{\textcolor{keywordflow}{if}\ (ecsManager.hasComponent<NewComponent>(entity))\ \{}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ Do\ something}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Remove\ component}}
+\DoxyCodeLine{ecsManager.removeComponent<NewComponent>(entity);}
+
+\end{DoxyCode}
+\hypertarget{md_docs_2server__how__to_autotoc_md2}{}\doxysubsection{\texorpdfstring{⚙️ Adding a New System}{⚙️ Adding a New System}}\label{md_docs_2server__how__to_autotoc_md2}
+Systems contain the logic that operates on entities with specific components.
+
+{\bfseries{1. Create the system header file\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ game\_engine/ecs/systems/NewSystem.hpp}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_system_8hpp}{System.hpp}}"{}}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{\ \ \textcolor{keyword}{class\ }NewSystem\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classecs_1_1_system}{System}}\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keyword}{explicit}\ NewSystem(ECSManager\&\ ecsManager\ =\ ECSManager::getInstance())}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ :\ \_ecsManager(ecsManager)\ \{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keywordtype}{void}\ update(\textcolor{keywordtype}{float}\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\ \ \ \ \ \ ECSManager\&\ \_ecsManager;}
+\DoxyCodeLine{\ \ \ \ \ \ }
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{comment}{//\ Add\ private\ methods\ for\ system\ logic}}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keywordtype}{void}\ processEntity(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keywordtype}{float}\ deltaTime);}
+\DoxyCodeLine{\ \ \};}
+\DoxyCodeLine{\}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}
+
+
+{\bfseries{2. Implement the system logic\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ game\_engine/ecs/systems/NewSystem.cpp}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}NewSystem.hpp"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}NewComponent.hpp"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_position_component_8hpp}{PositionComponent.hpp}}"{}}\ \textcolor{comment}{//\ If\ you\ need\ other\ components}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ NewSystem::update(\textcolor{keywordtype}{float}\ deltaTime)\ \{}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \textcolor{keyword}{const}\&\ entity\ :\ \_entities)\ \{}
+\DoxyCodeLine{\ \ \ \ processEntity(entity,\ deltaTime);}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ NewSystem::processEntity(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keywordtype}{float}\ deltaTime)\ \{}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ Get\ required\ components}}
+\DoxyCodeLine{\ \ \textcolor{keyword}{auto}\&\ newComp\ =\ \_ecsManager.getComponent<NewComponent>(entity);}
+\DoxyCodeLine{\ \ \textcolor{keyword}{auto}\&\ position\ =\ \_ecsManager.getComponent<PositionComponent>(entity);}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ Implement\ your\ system\ logic\ here}}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{if}\ (newComp.isActive)\ \{}
+\DoxyCodeLine{\ \ \ \ position.x\ +=\ newComp.value\ *\ deltaTime;}
+\DoxyCodeLine{\ \ \ \ newComp.count++;}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+{\bfseries{3. Register and configure the system\+:}}
+
+{\bfseries{3.\+1. Add members to \doxylink{_game_8hpp}{Game.\+hpp}}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacegame}{game}}\ \{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classgame_1_1_game}{Game}}\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41}{Game}}();}
+\DoxyCodeLine{\ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game_a9fd96a37b55d908071105879d015df8c}{\string~Game}}();}
+\DoxyCodeLine{\ \ \ \ ...}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\ \ \ \ \ \ std::shared\_ptr<ecs::NewSystem>\ \_newSystem;}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ server/src/game/Game.cpp}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Register\ the\ system}}
+\DoxyCodeLine{\_newSystem\ =\ \_ecsManager.registerSystem<NewSystem>();}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Define\ which\ components\ this\ system\ requires}}
+\DoxyCodeLine{\mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}\ newSignature;}
+\DoxyCodeLine{newSignature.set(\_ecsManager.getComponentType<NewComponent>());}
+\DoxyCodeLine{newSignature.set(\_ecsManager.getComponentType<PositionComponent>());}
+\DoxyCodeLine{\_ecsManager.setSystemSignature<NewSystem>(newSignature);}
+
+\end{DoxyCode}
+\hypertarget{md_docs_2server__how__to_autotoc_md3}{}\doxysubsection{\texorpdfstring{🎯 Creating Game Entities}{🎯 Creating Game Entities}}\label{md_docs_2server__how__to_autotoc_md3}
+Entities are combinations of components that represent game objects.
+
+{\bfseries{Example\+: Creating a Power-\/up \doxylink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}
+
+To create a new entity that displays on map you have to add some things to the \doxylink{_game_8hpp}{Game.\+hpp}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacegame}{game}}\ \{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classgame_1_1_game}{Game}}\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game_a74cd9697144c5bb5ccf1d2cb71d56e41}{Game}}();}
+\DoxyCodeLine{\ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_game_a9fd96a37b55d908071105879d015df8c}{\string~Game}}();}
+\DoxyCodeLine{\ \ \ \ ...}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{\ \ \ \ \ \ std::shared\_ptr<ecs::PowerUpSystem>\ \_powerUpSystem;}
+\DoxyCodeLine{\ \ \ \ \ \ std::unordered\_map<std::uint32\_t,\ std::shared\_ptr<PowerUp>>\ \_powerUps;}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \_powerUpMutex}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ createPowerUp(\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ PowerUpType\ type)\ \{}
+\DoxyCodeLine{\ \ std::shared\_ptr<PowerUp>\ powerUp;\ }
+\DoxyCodeLine{\ \ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity;}
+\DoxyCodeLine{\ \ \{}
+\DoxyCodeLine{\ \ \ \ std::scoped\_lock\ ecsLock(\_ecsMutex);}
+\DoxyCodeLine{\ \ \ \ entity\ =\ \_ecsManager.createEntity();}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Add\ required\ components}}
+\DoxyCodeLine{\ \ \ \ \_ecsManager.addComponent<\mbox{\hyperlink{structecs_1_1_position_component}{ecs::PositionComponent}}>(entity,\ \mbox{\hyperlink{structecs_1_1_position_component}{ecs::PositionComponent}}\{x,\ y\});}
+\DoxyCodeLine{\ \ \ \ \_ecsManager.addComponent<\mbox{\hyperlink{structecs_1_1_velocity_component}{ecs::VelocityComponent}}>(entity,\ \mbox{\hyperlink{structecs_1_1_velocity_component}{ecs::VelocityComponent}}\{0.0f,\ -\/50.0f\});\ \textcolor{comment}{//\ Moving\ upward}}
+\DoxyCodeLine{\ \ \ \ \_ecsManager.addComponent<ecs::PowerUpComponent>(entity,\ PowerUpComponent\{type,\ 100\});\ \textcolor{comment}{//\ Custom\ component}}
+\DoxyCodeLine{\ \ \ \ \_ecsManager.addComponent<\mbox{\hyperlink{structecs_1_1_collider_component}{ecs::ColliderComponent}}>(entity,\ \mbox{\hyperlink{structecs_1_1_collider_component}{ecs::ColliderComponent}}\{20.0f,\ 20.0f\});}
+\DoxyCodeLine{\ \ \ \ powerUp\ =\ std::make\_shared<PowerUp>(type,\ x,\ y);}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\ \ \{}
+\DoxyCodeLine{\ \ \ \ std::scoped\_lock\ lk(\_powerUpMutex);}
+\DoxyCodeLine{\ \ \ \ \_powerUp[powerUp\_id]\ =\ powerUp;}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{return}\ powerUp;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+{\bfseries{Example\+: Creating an Enemy \doxylink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{std::shared\_ptr<game::Enemy>\ \mbox{\hyperlink{classgame_1_1_game_ac0ad3f4a3a019f48e9b8b7b77b4a965f}{game::Game::createEnemy}}(\textcolor{keywordtype}{int}\ enemy\_id,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{EnemyType}}\ type)\ \{}
+\DoxyCodeLine{\ \ std::scoped\_lock\ lock(\_enemyMutex);}
+\DoxyCodeLine{\ \ \textcolor{keyword}{auto}\ entity\ =\ \_ecsManager.createEntity();}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \_ecsManager.addComponent<ecs::EnemyComponent>(entity,\ \{enemy\_id,\ type\});}
+\DoxyCodeLine{\ \ \_ecsManager.addComponent<ecs::PositionComponent>(entity,\ \{800.0f,\ 50.0f\});}
+\DoxyCodeLine{\ \ \_ecsManager.addComponent<ecs::HealthComponent>(entity,\ \{100,\ 100\});}
+\DoxyCodeLine{\ \ \_ecsManager.addComponent<ecs::VelocityComponent>(entity,\ \{-\/3.0f,\ 0.0f\});}
+\DoxyCodeLine{\ \ \_ecsManager.addComponent<ecs::ShootComponent>(entity,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{0.0f,\ 3.0f,\ \textcolor{keyword}{true},\ 0.0f\});}
+\DoxyCodeLine{\ \ \_ecsManager.addComponent<ecs::ColliderComponent>(entity,\ \{10.f,\ 10.f\});}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{switch}\ (type)\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{case}\ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7aab3ed89adcb1b63e98088a4528803cbf7}{EnemyType::BASIC\_FIGHTER}}:}
+\DoxyCodeLine{\ \ \ \ \ \ \_ecsManager.addComponent<ecs::ScoreComponent>(entity,\ \{10\});}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\ \ \ \ \ \ \_ecsManager.addComponent<ecs::ScoreComponent>(entity,\ \{10\});}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \textcolor{keyword}{auto}\ enemy\ =\ std::make\_shared<Enemy>(enemy\_id,\ entity,\ \_ecsManager);}
+\DoxyCodeLine{\ \ \_enemies[enemy\_id]\ =\ enemy;}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{return}\ enemy;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md_docs_2server__how__to_autotoc_md4}{}\doxysubsection{\texorpdfstring{📡 Adding Network Packets}{📡 Adding Network Packets}}\label{md_docs_2server__how__to_autotoc_md4}
+Network packets handle communication between client and server.
+
+{\bfseries{1. Define the packet structure in \doxylink{_packet_8hpp}{core/network/\+Packet.\+hpp}\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Add\ to\ PacketType\ enum}}
+\DoxyCodeLine{\textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ ...\ existing\ types\ ...}}
+\DoxyCodeLine{\ \ NewPacketType\ =\ 0x20,\ \textcolor{comment}{//\ Use\ next\ available\ ID}}
+\DoxyCodeLine{\};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ Add\ packet\ structure}}
+\DoxyCodeLine{\textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ NewPacketStruct\ \{}
+\DoxyCodeLine{\ \ PacketHeader\ header;}
+\DoxyCodeLine{\ \ uint32\_t\ playerId;}
+\DoxyCodeLine{\ \ \textcolor{keywordtype}{float}\ someValue;}
+\DoxyCodeLine{\ \ uint8\_t\ someFlag;}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ Keep\ structures\ aligned\ and\ size-\/efficient}}
+\DoxyCodeLine{\};}
+
+\end{DoxyCode}
+
+
+{\bfseries{2. Create the packet handler\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ server/src/packets/PacketHandler.hpp}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}APacket.hpp"{}}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{\ \ ...}
+\DoxyCodeLine{\ \ \textcolor{keyword}{class\ }NewPacketHandler\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classpacket_1_1_a_packet}{APacket}}\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\ \ \ \ \ \ \textcolor{keywordtype}{int}\ handlePacket(server::Server\&\ server,\ server::Client\&\ client,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ data,\ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{\ \ \};}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ server/src/packets/PacketHandler.cpp}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}NewPacketHandler.hpp"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_server_8hpp}{Server.hpp}}"{}}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{int}\ packet::NewPacketHandler::handlePacket(\mbox{\hyperlink{classserver_1_1_server}{server::Server}}\&\ \mbox{\hyperlink{namespaceserver}{server}},\ \mbox{\hyperlink{structserver_1_1_client}{server::Client}}\&\ \mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}*\ data,\ std::size\_t\ size)\ \{}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{if}\ (size\ <\ \textcolor{keyword}{sizeof}(NewPacketStruct))\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ -\/1;\ \textcolor{comment}{//\ Invalid\ packet\ size}}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ \mbox{\hyperlink{namespacepacket}{packet}}\ =\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }NewPacketStruct*\textcolor{keyword}{>}(data);}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Validate\ packet\ data}}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespacepacket}{packet}}-\/>header.type\ !=\ PacketType::NewPacketType)\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ ...}
+\DoxyCodeLine{\ \ \ \ }
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ Success}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+{\bfseries{3. Register the packet handler\+:}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Add\ to\ server/src/packets/PacketFactory.hpp}}
+\DoxyCodeLine{\textcolor{keyword}{private}:}
+\DoxyCodeLine{\textcolor{keyword}{inline}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}},\ std::function<std::unique\_ptr<APacket>()>>}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \_handlers\ =\ \{...}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{PacketType::NewPacket,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<NewPacketHandler>();\ \}\}\};}
+
+\end{DoxyCode}
+\hypertarget{md_docs_2server__how__to_autotoc_md5}{}\doxysubsection{\texorpdfstring{📋 Best Practices}{📋 Best Practices}}\label{md_docs_2server__how__to_autotoc_md5}
+{\bfseries{Components\+:}}
+\begin{DoxyItemize}
+\item Keep components simple data containers (no logic)
+\item Use descriptive names (e.\+g., {\ttfamily Health\+Component}, not {\ttfamily HC})
+\item Group related data together
+\item Consider memory layout and alignment
+\end{DoxyItemize}
+
+{\bfseries{Systems\+:}}
+\begin{DoxyItemize}
+\item One responsibility per system
+\item Process entities in batches when possible
+\item Handle edge cases (empty entity sets, missing components)
+\item Consider system update order dependencies
+\end{DoxyItemize}
+
+{\bfseries{Entities\+:}}
+\begin{DoxyItemize}
+\item Use factory functions for complex entities
+\item Document required component combinations
+\item Clean up entities when no longer needed
+\item Use entity IDs for cross-\/system communication
+\end{DoxyItemize}
+
+{\bfseries{Packets\+:}}
+\begin{DoxyItemize}
+\item Keep packet structures small and efficient
+\item Validate all input data
+\item Use proper alignment for network data
+\item Handle endianness for cross-\/platform compatibility
+\item Include packet versioning for protocol evolution
+\end{DoxyItemize}
+
+{\bfseries{Performance Tips\+:}}
+\begin{DoxyItemize}
+\item Cache component lookups in tight loops
+\item Use {\ttfamily has\+Component()} before {\ttfamily get\+Component()} when uncertain
+\item Minimize entity creation/destruction during gameplay
+\item Profile system update performance regularly 
+\end{DoxyItemize}

@@ -1,0 +1,49 @@
+\doxysection{queue Namespace Reference}
+\hypertarget{namespacequeue}{}\label{namespacequeue}\index{queue@{queue}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event}{Enemy\+Destroy\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_enemy_hit_event}{Enemy\+Hit\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_enemy_move_event}{Enemy\+Move\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_enemy_spawn_event}{Enemy\+Spawn\+Event}}
+\item 
+class \mbox{\hyperlink{classqueue_1_1_event_queue}{Event\+Queue}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_game_start_event}{Game\+Start\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_player_destroy_event}{Player\+Destroy\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_player_hit_event}{Player\+Hit\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_projectile_destroy_event}{Projectile\+Destroy\+Event}}
+\item 
+struct \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event}{Projectile\+Spawn\+Event}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{namespacequeue_a8d808b17c3198fbbc337f72d5847eba6}{Game\+Event}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{namespacequeue_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{namespacequeue_a8d808b17c3198fbbc337f72d5847eba6}\index{queue@{queue}!GameEvent@{GameEvent}}
+\index{GameEvent@{GameEvent}!queue@{queue}}
+\doxysubsubsection{\texorpdfstring{GameEvent}{GameEvent}}
+{\footnotesize\ttfamily \label{namespacequeue_a8d808b17c3198fbbc337f72d5847eba6} 
+using \mbox{\hyperlink{namespacequeue_a8d808b17c3198fbbc337f72d5847eba6}{queue\+::\+Game\+Event}}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ std::variant<\mbox{\hyperlink{structqueue_1_1_enemy_spawn_event}{EnemySpawnEvent}},\ \mbox{\hyperlink{structqueue_1_1_enemy_destroy_event}{EnemyDestroyEvent}},\ \mbox{\hyperlink{structqueue_1_1_enemy_move_event}{EnemyMoveEvent}},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structqueue_1_1_projectile_spawn_event}{ProjectileSpawnEvent}},\ \mbox{\hyperlink{structqueue_1_1_player_hit_event}{PlayerHitEvent}},\ \mbox{\hyperlink{structqueue_1_1_enemy_hit_event}{EnemyHitEvent}},}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structqueue_1_1_projectile_destroy_event}{ProjectileDestroyEvent}},\ \mbox{\hyperlink{structqueue_1_1_player_destroy_event}{PlayerDestroyEvent}},\ \mbox{\hyperlink{structqueue_1_1_game_start_event}{GameStartEvent}}>}
+
+\end{DoxyCode}

@@ -1,0 +1,137 @@
+\chapter{Project Structure }
+\hypertarget{md_docs_2wiki_2_project_structure}{}\label{md_docs_2wiki_2_project_structure}\index{Project Structure@{Project Structure}}
+\label{md_docs_2wiki_2_project_structure_autotoc_md106}%
+\Hypertarget{md_docs_2wiki_2_project_structure_autotoc_md106}%
+
+
+This page details the overall directory and file structure of the R-\/\+Type project, explaining the purpose of each major component.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{R-\/Type/}
+\DoxyCodeLine{├───.github/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ GitHub\ Actions\ workflows\ for\ CI/CD}
+\DoxyCodeLine{├───.venv/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Python\ virtual\ environment\ (likely\ for\ Conan\ or\ other\ tooling)}
+\DoxyCodeLine{├───.venv-\/docker/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Docker-\/related\ Python\ virtual\ environment}
+\DoxyCodeLine{├───client/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Client-\/side\ application\ source\ code\ and\ assets}
+\DoxyCodeLine{│\ \ \ ├───AssetManager.cpp/.hpp\ \#\ Manages\ game\ assets\ (sprites,\ textures)}
+\DoxyCodeLine{│\ \ \ ├───Client.cpp/.hpp\ \ \ \ \ \ \ \#\ Main\ client\ application\ logic}
+\DoxyCodeLine{│\ \ \ ├───client.properties\ \ \ \ \ \#\ Configuration\ file\ for\ the\ client}
+\DoxyCodeLine{│\ \ \ ├───CMakeLists.txt\ \ \ \ \ \ \ \ \#\ CMake\ build\ script\ for\ the\ client}
+\DoxyCodeLine{│\ \ \ ├───EmbedAssets.cpp\ \ \ \ \ \ \ \#\ Utility\ to\ embed\ assets\ into\ the\ executable}
+\DoxyCodeLine{│\ \ \ ├───EmbeddedAssets.cpp/.hpp\ \#\ Embedded\ asset\ data}
+\DoxyCodeLine{│\ \ \ ├───main.cpp\ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Client\ entry\ point}
+\DoxyCodeLine{│\ \ \ ├───ProjectileSpriteConfig.hpp\ \#\ Configuration\ for\ projectile\ sprites}
+\DoxyCodeLine{│\ \ \ ├───RenderManager.cpp/.hpp\ \#\ Handles\ all\ rendering\ operations}
+\DoxyCodeLine{│\ \ \ └───packets/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Client-\/side\ packet\ handling}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───APacket.hpp\ \ \ \ \ \ \ \#\ Abstract\ base\ class\ for\ packets}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───IPacket.hpp\ \ \ \ \ \ \ \#\ Interface\ for\ packets}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───PacketFactory.cpp/.hpp\ \#\ Factory\ for\ creating\ packets}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───PacketHandler.cpp/.hpp\ \#\ Handles\ incoming\ and\ outgoing\ packets}
+\DoxyCodeLine{│\ \ \ └───resources/\ \ \ \ \ \ \ \ \ \ \ \ \#\ Game\ assets\ (images,\ spritesheets)}
+\DoxyCodeLine{├───core/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Core\ shared\ utilities\ and\ networking\ components}
+\DoxyCodeLine{│\ \ \ ├───Parser.cpp/.hpp\ \ \ \ \ \ \ \#\ Utility\ for\ parsing\ (e.g.,\ configuration\ files)}
+\DoxyCodeLine{│\ \ \ ├───errors/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Custom\ error\ classes}
+\DoxyCodeLine{│\ \ \ │\ \ \ └───ParamsError.hpp\ \ \ \#\ Error\ for\ invalid\ parameters}
+\DoxyCodeLine{│\ \ \ └───network/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Core\ networking\ components}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───BaseNetworkManager.hpp\ \#\ Base\ class\ for\ network\ managers}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───ClientNetworkManager.cpp/.hpp\ \#\ Client-\/specific\ network\ management}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───Packet.hpp\ \ \ \ \ \ \ \ \#\ Defines\ the\ structure\ of\ network\ packets}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───PacketBuilder.hpp\ \#\ Utility\ for\ building\ packets}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───PacketSender.hpp\ \ \#\ Handles\ sending\ packets}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───ServerNetworkManager.cpp/.hpp\ \#\ Server-\/specific\ network\ management}
+\DoxyCodeLine{│\ \ \ └───utils/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ General\ utility\ functions/macros}
+\DoxyCodeLine{│\ \ \ \ \ \ \ └───Macro.hpp\ \ \ \ \ \ \ \ \ \#\ Common\ macros}
+\DoxyCodeLine{├───docs/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Project\ documentation}
+\DoxyCodeLine{│\ \ \ ├───server\_how\_to.md\ \ \ \ \ \ \#\ Guide\ for\ setting\ up\ the\ server}
+\DoxyCodeLine{│\ \ \ ├───server\_protocol.md\ \ \ \ \#\ Server\ communication\ protocol\ specification}
+\DoxyCodeLine{│\ \ \ └───wiki/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ GitHub\ Wiki\ markdown\ files\ (this\ directory)}
+\DoxyCodeLine{├───game\_engine/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Core\ Entity-\/Component-\/System\ (ECS)\ implementation}
+\DoxyCodeLine{│\ \ \ └───ecs/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ ECS\ framework}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───Component.hpp\ \ \ \ \ \#\ Base\ class\ for\ components}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───ComponentManager.hpp\ \#\ Manages\ components}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───ECSManager.hpp\ \ \ \ \#\ Main\ ECS\ manager}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───EntityManager.cpp/.hpp\ \#\ Manages\ entities}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───System.hpp\ \ \ \ \ \ \ \ \#\ Base\ class\ for\ systems}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───SystemManager.hpp\ \#\ Manages\ systems}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───components/\ \ \ \ \ \ \ \#\ Specific\ component\ implementations}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───ColliderComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───EnemyComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───HealthComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───PlayerComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───PositionComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───ProjectileComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───RenderComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───ScaleComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───ScoreComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───ShootComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───SpeedComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───SpriteAnimationComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───SpriteComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ └───VelocityComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───systems/\ \ \ \ \ \ \ \ \ \ \#\ Specific\ system\ implementations}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───BackgroundSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───BoundarySystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───CollisionSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───EnemySystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───InputSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───MovementSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───ProjectileSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───RenderSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───SpriteAnimationSystem.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ └───tags/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Tag\ components\ (components\ without\ data)}
+\DoxyCodeLine{│\ \ \ \ \ \ \ \ \ \ \ ├───BackgroundTagComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ \ \ \ \ ├───LocalPlayerTagComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ \ \ \ \ └───PlayerTagComponent.hpp}
+\DoxyCodeLine{├───server/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Server-\/side\ application\ source\ code}
+\DoxyCodeLine{│\ \ \ ├───CMakeLists.txt\ \ \ \ \ \ \ \ \#\ CMake\ build\ script\ for\ the\ server}
+\DoxyCodeLine{│\ \ \ ├───server.properties\ \ \ \ \ \#\ Configuration\ file\ for\ the\ server}
+\DoxyCodeLine{│\ \ \ └───src/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Server\ source\ files}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───Broadcast.hpp\ \ \ \ \ \#\ Utility\ for\ broadcasting\ messages}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───Help.cpp/.hpp\ \ \ \ \ \#\ Help\ command\ implementation}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───main.cpp\ \ \ \ \ \ \ \ \ \ \#\ Server\ entry\ point}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───Server.cpp/.hpp\ \ \ \#\ Main\ server\ application\ logic}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───enemy/\ \ \ \ \ \ \ \ \ \ \ \ \#\ Enemy-\/related\ logic}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───Enemy.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───game/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Game\ logic\ and\ state\ management}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───Game.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───packets/\ \ \ \ \ \ \ \ \ \ \#\ Server-\/side\ packet\ handling\ (similar\ to\ client)}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───APacket.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───IPacket.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───PacketFactory.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───PacketHandler.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───player/\ \ \ \ \ \ \ \ \ \ \ \#\ Player-\/related\ logic}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───Player.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├───projectile/\ \ \ \ \ \ \ \#\ Projectile-\/related\ logic}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├───Projectile.cpp/.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ └───queue/\ \ \ \ \ \ \ \ \ \ \ \ \#\ Event\ queue\ for\ server}
+\DoxyCodeLine{│\ \ \ \ \ \ \ \ \ \ \ ├───Events.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ \ \ \ \ └───Queue.hpp}
+\DoxyCodeLine{│\ \ \ └───tests/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Server\ unit\ tests}
+\DoxyCodeLine{├───.gitignore\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Git\ ignore\ rules}
+\DoxyCodeLine{├───build.sh\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Build\ script}
+\DoxyCodeLine{├───CMakeLists.txt\ \ \ \ \ \ \ \ \ \ \ \ \#\ Main\ CMake\ project\ file}
+\DoxyCodeLine{├───conanfile\_server.txt\ \ \ \ \ \ \#\ Conan\ dependencies\ for\ the\ server}
+\DoxyCodeLine{├───conanfile.txt\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Main\ Conan\ dependencies}
+\DoxyCodeLine{├───README\_BUILD.md\ \ \ \ \ \ \ \ \ \ \ \#\ Build\ instructions}
+\DoxyCodeLine{├───README.md\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Main\ project\ README}
+\DoxyCodeLine{└───TECHNICAL\_COMPARATIVE\_STUDY.md\ \#\ Technical\ study\ document}
+
+\end{DoxyCode}
+\hypertarget{md_docs_2wiki_2_project_structure_autotoc_md107}{}\doxysection{\texorpdfstring{Main Directories Explained}{Main Directories Explained}}\label{md_docs_2wiki_2_project_structure_autotoc_md107}
+
+\begin{DoxyItemize}
+\item {\bfseries{{\ttfamily .github/}}}\+: Contains Git\+Hub Actions workflows for continuous integration and deployment.
+\item {\bfseries{{\ttfamily client/}}}\+: Houses all the code and resources specific to the R-\/\+Type client application. This includes rendering logic, asset management, client-\/side networking, and the main client application entry point.
+\item {\bfseries{{\ttfamily core/}}}\+: This directory contains shared code that is utilized by both the client and the server. It includes common utilities, error handling, and the foundational networking components.
+\item {\bfseries{{\ttfamily docs/}}}\+: Stores project documentation, including detailed server setup guides, network protocol specifications, and the Git\+Hub Wiki markdown files.
+\item {\bfseries{{\ttfamily game\+\_\+engine/}}}\+: This is where the core Entity-\/\+Component-\/\+System (ECS) framework is implemented. It defines the base classes and managers for entities, components, and systems, along with specific implementations for various game mechanics.
+\item {\bfseries{{\ttfamily server/}}}\+: Contains all the code and logic for the R-\/\+Type game server. This includes game state management, server-\/side networking, and specific game entities like enemies, players, and projectiles.
+\item {\bfseries{{\ttfamily .venv/} \& {\ttfamily .venv-\/docker/}}}\+: These directories typically contain Python virtual environments, likely used for managing development tools, Conan, or Docker-\/related scripting.
+\item {\bfseries{Root Files}}\+:
+\begin{DoxyItemize}
+\item {\ttfamily build.\+sh}\+: A shell script to automate the build process.
+\item {\ttfamily CMake\+Lists.\+txt}\+: The primary CMake configuration file for the entire project.
+\item {\ttfamily conanfile.\+txt} \& {\ttfamily conanfile\+\_\+server.\+txt}\+: Conan recipe files specifying project dependencies.
+\item {\ttfamily \doxylink{_r_e_a_d_m_e_8md}{README.\+md}}, {\ttfamily \doxylink{_r_e_a_d_m_e___b_u_i_l_d_8md}{README\+\_\+\+BUILD.\+md}}, {\ttfamily \doxylink{_t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_8md}{TECHNICAL\+\_\+\+COMPARATIVE\+\_\+\+STUDY.\+md}}\+: Project documentation and build instructions. 
+\end{DoxyItemize}
+\end{DoxyItemize}
