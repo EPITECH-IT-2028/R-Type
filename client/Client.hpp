@@ -105,6 +105,11 @@ namespace client {
       }
 
       void disconnect() {
+        if (_player_id == static_cast<std::uint32_t>(-1)) {
+          _networkManager.disconnect();
+          _running.store(false, std::memory_order_release);
+          return;
+        }
         PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(_player_id);
         send(packet);
         _networkManager.disconnect();
