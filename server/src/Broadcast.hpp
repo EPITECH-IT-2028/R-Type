@@ -1,11 +1,11 @@
 #pragma once
 
 #include <asio.hpp>
-#include "ServerNetworkManager.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
 #include "Server.hpp"
+#include "ServerNetworkManager.hpp"
 
 namespace broadcast {
 
@@ -18,7 +18,9 @@ namespace broadcast {
           const Packet &packet, Pred pred) {
         for (const auto &client : clients) {
           if (client && client->_connected && pred(*client)) {
-            packet::PacketSender::sendPacket(networkManager, packet);
+            networkManager.sendToClient(client->_player_id,
+                                        reinterpret_cast<const char *>(&packet),
+                                        sizeof(packet));
           }
         }
       }
@@ -51,7 +53,9 @@ namespace broadcast {
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), pos.first, pos.second, speed, health);
-            packet::PacketSender::sendPacket(networkManager, existPlayerPacket);
+            networkManager.sendToClient(
+                newPlayerID, reinterpret_cast<const char *>(&existPlayerPacket),
+                sizeof(existPlayerPacket));
           }
         }
       }
