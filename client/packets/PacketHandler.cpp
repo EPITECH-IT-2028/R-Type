@@ -153,7 +153,8 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
-static std::optional<Entity> findProjectileEntityById(ecs::ECSManager &ecsManager, uint32_t projectileId) {
+static Entity findProjectileEntityById(ecs::ECSManager &ecsManager, uint32_t projectileId) {
+  for (auto entity : ecsManager.getAllEntities()) {
     if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
       auto &pc = ecsManager.getComponent<ecs::ProjectileComponent>(entity);
       if (pc.projectile_id == projectileId) {
@@ -161,7 +162,7 @@ static std::optional<Entity> findProjectileEntityById(ecs::ECSManager &ecsManage
       }
     }
   }
-  return std::nullopt;
+  return static_cast<Entity>(-1);
 }
 
 int packet::ProjectileHitHandler::handlePacket(client::Client &client,
