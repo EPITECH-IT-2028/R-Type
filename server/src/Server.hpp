@@ -89,7 +89,7 @@ namespace server {
       packet::PacketHandlerFactory _factory;
 
       uint16_t screen_width = 800;
-      uint16_t screen_height = 600;
+      uint16_t screen_height = 1200;
 
       game::Game _game;
 
