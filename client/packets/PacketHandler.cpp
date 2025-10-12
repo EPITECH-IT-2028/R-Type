@@ -4,6 +4,7 @@
 #include "RenderComponent.hpp"
 #include "raylib.h"
 #include "ECSManager.hpp"
+#include "EntityManager.hpp"
 #include "PositionComponent.hpp"
 #include "RenderManager.hpp"
 #include "SpriteComponent.hpp"
@@ -128,7 +129,7 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
-static ecs::Entity findProjectileEntityById(ecs::ECSManager &ecsManager, uint32_t projectileId) {
+static Entity findProjectileEntityById(ecs::ECSManager &ecsManager, uint32_t projectileId) {
   for (auto entity : ecsManager.getAllEntities()) {
     if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
       auto &pc = ecsManager.getComponent<ecs::ProjectileComponent>(entity);
@@ -137,7 +138,7 @@ static ecs::Entity findProjectileEntityById(ecs::ECSManager &ecsManager, uint32_
       }
     }
   }
-  return static_cast<ecs::Entity>(-1);
+  return static_cast<Entity>(-1);
 }
 
 int packet::ProjectileHitHandler::handlePacket(client::Client &client,
@@ -159,13 +160,13 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
 
   auto &ecsManager = ecs::ECSManager::getInstance();
   auto entity = findProjectileEntityById(ecsManager, packet.projectile_id);
-  if (entity != static_cast<ecs::Entity>(-1)) {
+  if (entity != static_cast<Entity>(-1)) {
     if (ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
       auto &pc = ecsManager.getComponent<ecs::ProjectileComponent>(entity);
       pc.is_destroy = true;
     }
   } else {
-    TraceLog(LOG_WARN, "[PROJECTILE HIT] projectile entity not found: %u", packet.projectile_id);
+    TraceLog(LOG_WARNING, "[PROJECTILE HIT] projectile entity not found: %u", packet.projectile_id);
   }
 
   return packet::OK;
@@ -189,10 +190,10 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
 
   auto &ecsManager = ecs::ECSManager::getInstance();
   auto entity = findProjectileEntityById(ecsManager, packet.projectile_id);
-  if (entity != static_cast<ecs::Entity>(-1)) {
+  if (entity != static_cast<Entity>(-1)) {
     ecsManager.destroyEntity(entity);
   } else {
-    TraceLog(LOG_WARN, "[PROJECTILE DESTROY] projectile entity not found: %u", packet.projectile_id);
+    TraceLog(LOG_WARNING, "[PROJECTILE DESTROY] projectile entity not found: %u", packet.projectile_id);
   }
 
   return packet::OK;
