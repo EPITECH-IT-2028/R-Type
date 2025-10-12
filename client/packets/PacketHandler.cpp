@@ -277,20 +277,7 @@ int packet::PlayerShootHandler::handlePacket(client::Client &client,
 
   PlayerShootPacket packet;
   std::memcpy(&packet, data, sizeof(PlayerShootPacket));
-
-  TraceLog(LOG_INFO, "[PLAYER SHOOT] at (%f, %f) with type %d", packet.x,
-           packet.y, static_cast<int>(packet.projectile_type));
-
-  auto &ecsManager = ecs::ECSManager::getInstance();
-  auto projectileEntity = ecsManager.createEntity();
-
-  ecsManager.addComponent<ecs::ProjectileComponent>(projectileEntity, {0, packet.projectile_type, 0, false, packet.sequence_number});
-  ecsManager.addComponent<ecs::PositionComponent>(projectileEntity, {packet.x, packet.y});
-  ecsManager.addComponent<ecs::VelocityComponent>(projectileEntity, {10.0f, 0.0f});
-  ecsManager.addComponent<ecs::RenderComponent>(projectileEntity, {renderManager::PLAYER_PATH});
-  ecsManager.addComponent<ecs::SpriteComponent>(projectileEntity, {0.0f, 0.0f, 10.0f, 10.0f});
-  ecsManager.addComponent<ecs::ScaleComponent>(projectileEntity, {1.0f, 1.0f});
-
+  client.handlePlayerShoot(packet);
   return packet::OK;
 }
 
@@ -305,28 +292,7 @@ int packet::PlayerHitHandler::handlePacket(client::Client &client,
 
   PlayerHitPacket packet;
   std::memcpy(&packet, data, sizeof(PlayerHitPacket));
-
-  TraceLog(LOG_INFO, "[PLAYER HIT] Player ID: %u, Damage: %u, at (%f, %f)",
-           packet.player_id, packet.damage, packet.x, packet.y);
-
-  auto &ecsManager = ecs::ECSManager::getInstance();
-  for (auto entity : ecsManager.getAllEntities()) {
-    if (ecsManager.hasComponent<ecs::PlayerComponent>(entity)) {
-      auto &playerComponent = ecsManager.getComponent<ecs::PlayerComponent>(entity);
-      if (playerComponent.player_id == packet.player_id) {
-        if (ecsManager.hasComponent<ecs::HealthComponent>(entity)) {
-          auto &healthComponent = ecsManager.getComponent<ecs::HealthComponent>(entity);
-          healthComponent.health -= packet.damage;
-          if (healthComponent.health <= 0) {
-            TraceLog(LOG_INFO, "Player with ID %u has been defeated.",
-                     packet.player_id);
-          }
-        }
-        break;
-      }
-    }
-  }
-
+  client.handlePlayerHit(packet);
   return packet::OK;
 }
 
@@ -341,27 +307,6 @@ int packet::EnemyHitHandler::handlePacket(client::Client &client,
 
   EnemyHitPacket packet;
   std::memcpy(&packet, data, sizeof(EnemyHitPacket));
-
-  TraceLog(LOG_INFO, "[ENEMY HIT] Enemy ID: %u, Damage: %f, at (%f, %f)",
-           packet.enemy_id, packet.damage, packet.hit_x, packet.hit_y);
-
-  auto &ecsManager = ecs::ECSManager::getInstance();
-  for (auto entity : ecsManager.getAllEntities()) {
-    if (ecsManager.hasComponent<ecs::EnemyComponent>(entity)) {
-      auto &enemyComponent = ecsManager.getComponent<ecs::EnemyComponent>(entity);
-      if (enemyComponent.enemy_id == packet.enemy_id) {
-        if (ecsManager.hasComponent<ecs::HealthComponent>(entity)) {
-          auto &healthComponent = ecsManager.getComponent<ecs::HealthComponent>(entity);
-          healthComponent.health -= packet.damage;
-          if (healthComponent.health <= 0) {
-            ecsManager.destroyEntity(entity);
-            TraceLog(LOG_INFO, "Enemy with ID %u destroyed.", packet.enemy_id);
-          }
-        }
-        break;
-      }
-    }
-  }
-
+  client.handleEnemyHit(packet);
   return packet::OK;
 }

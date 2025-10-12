@@ -160,6 +160,10 @@ namespace client {
       void createPlayerEntity(NewPlayerPacket packet);
       void createEnemyEntity(EnemySpawnPacket packet);
 
+      void handlePlayerShoot(const PlayerShootPacket &packet);
+      void handleEnemyHit(const EnemyHitPacket &packet);
+      void handlePlayerHit(const PlayerHitPacket &packet);
+
       uint32_t getPlayerId() const {
         return _player_id;
       }
