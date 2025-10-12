@@ -263,8 +263,9 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   std::scoped_lock lock(_enemyMutex);
   auto entity = _ecsManager.createEntity();
 
-  float spawnY = static_cast<float>(rand() % ENNEMY_WINDOW_HEIGHT + 25);
-  float spawnX = ENNEMY_WINDOW_WIDTH;
+  float spawnY =
+      static_cast<float>(rand() % ENEMY_WINDOW_HEIGHT + ENEMY_SPAWN_OFFSET);
+  float spawnX = ENEMY_WINDOW_WIDTH;
 
   _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
   _ecsManager.addComponent<ecs::PositionComponent>(entity, {spawnX, spawnY});

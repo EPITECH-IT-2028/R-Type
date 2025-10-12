@@ -19,6 +19,8 @@ constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
 
-constexpr int ENNEMY_WINDOW_HEIGHT = 1000.0f;
+constexpr int ENEMY_WINDOW_HEIGHT = 700;
 
-constexpr float ENNEMY_WINDOW_WIDTH = 800.0f;
+constexpr float ENEMY_WINDOW_WIDTH = 1220.0f;
+
+constexpr int ENEMY_SPAWN_OFFSET = 25;
