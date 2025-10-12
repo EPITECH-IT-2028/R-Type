@@ -65,6 +65,15 @@ int main(int argc, char **argv) {
       success = false;
     }
   }
+  {
+    std::string enemyPath = resourcesDir + "/enemies.gif";
+    std::string outputPath = outputDir + "/enemies_data.h";
+
+    if (!asset::AssetManager::exportImageAsCode(enemyPath, outputPath)) {
+      std::cerr << "[ERROR] Failed to export enemies.gif" << std::endl;
+      success = false;
+    }
+  }
 
   if (success) {
     std::cout << "=== Completed ===" << std::endl;

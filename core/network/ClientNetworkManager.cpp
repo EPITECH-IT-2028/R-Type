@@ -57,6 +57,8 @@ void ClientNetworkManager::connect() {
       _socket.open(_server_endpoint.protocol());
     }
 
+    _socket.non_blocking(true);
+
     _running.store(true, std::memory_order_release);
     std::cout << "Connected to " << _host << ":" << _port << std::endl;
   } catch (std::exception &e) {
@@ -74,46 +76,31 @@ void ClientNetworkManager::disconnect() {
 }
 
 void ClientNetworkManager::receivePackets(client::Client &client) {
-  while (!_running.load(std::memory_order_acquire)) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  if (!_running.load(std::memory_order_acquire)) {
+    return;
   }
 
-  while (_running.load(std::memory_order_acquire)) {
-    try {
+  try {
+    while (true) {
       asio::ip::udp::endpoint sender_endpoint;
-      std::size_t length = 0;
       asio::error_code ec;
 
-      asio::steady_timer timer(_io_context);
-      bool received = false;
+      std::size_t length = _socket.receive_from(asio::buffer(_recv_buffer),
+                                                sender_endpoint, 0, ec);
 
-      _socket.async_receive_from(
-          asio::buffer(_recv_buffer), sender_endpoint,
-          [&](const asio::error_code &error, std::size_t bytes_recvd) {
-            ec = error;
-            length = bytes_recvd;
-            received = true;
-            timer.cancel();
-          });
-
-      timer.expires_after(_timeout);
-      timer.async_wait([&](const asio::error_code &error) {
-        if (!error && !received) {
-          _socket.cancel();
-        }
-      });
-
-      _io_context.restart();
-      _io_context.run();
-
-      if (!received)
-        continue;
-
-      if (ec == asio::error::operation_aborted) {
-        continue;
+      if (ec == asio::error::would_block) {
+        break;
       }
+
       if (ec) {
         std::cerr << "Receive error: " << ec.message() << std::endl;
+        return;
+      }
+
+      if (sender_endpoint != _server_endpoint) {
+        std::cerr << "Received packet from unknown sender: "
+                  << sender_endpoint.address().to_string() << ":"
+                  << sender_endpoint.port() << std::endl;
         continue;
       }
 
@@ -144,8 +131,8 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
                     << static_cast<int>(packet_type) << std::endl;
         }
       }
-    } catch (std::exception &e) {
-      std::cerr << "Receive error: " << e.what() << std::endl;
     }
+  } catch (std::exception &e) {
+    std::cerr << "Receive error: " << e.what() << std::endl;
   }
 }

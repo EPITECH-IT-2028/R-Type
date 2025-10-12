@@ -11,13 +11,31 @@ namespace packet {
                        std::size_t size) override;
   };
 
-  class MoveHandler : public IPacket {
+  class NewPlayerHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
 
-  class EnemySpawnHandler : public IPacket {
+  class PlayerDeathHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class PlayerDisconnectedHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class PlayerMoveHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class PositionHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
@@ -28,14 +46,32 @@ namespace packet {
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
-
+  
   class ProjectileHitHandler : public IPacket {
+    public:
+    int handlePacket(client::Client &client, const char *data,
+      std::size_t size) override;
+    };
+    
+    class ProjectileDestroyHandler : public IPacket {
+      public:
+      int handlePacket(client::Client &client, const char *data,
+        std::size_t size) override;
+  };
+
+  class EnemySpawnHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
 
-  class ProjectileDestroyHandler : public IPacket {
+  class EnemyMoveHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+  
+  class EnemyDeathHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;

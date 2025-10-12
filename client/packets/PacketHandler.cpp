@@ -1,7 +1,6 @@
 #include "PacketHandler.hpp"
 #include <cstring>
 #include "Packet.hpp"
-#include "RenderComponent.hpp"
 #include "raylib.h"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
@@ -12,7 +11,9 @@
 #include "EnemyComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "RenderComponent.hpp"
 #include "ProjectileSpriteConfig.hpp"
+#include "Client.hpp"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -31,8 +32,106 @@ int packet::MessageHandler::handlePacket(client::Client &client,
   return 0;
 }
 
-int packet::MoveHandler::handlePacket(client::Client &client,
-                                      const char *data, std::size_t size) {
+int packet::NewPlayerHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  if (size < sizeof(NewPlayerPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(NewPlayerPacket));
+    return packet::KO;
+  }
+
+  NewPlayerPacket packet;
+  std::memcpy(&packet, data, sizeof(NewPlayerPacket));
+
+  TraceLog(LOG_INFO,
+           "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
+           packet.player_id, packet.x, packet.y, packet.speed);
+
+  client.createPlayerEntity(packet);
+  return packet::OK;
+}
+
+int packet::PlayerDeathHandler::handlePacket(
+    client::Client &client, const char *data, std::size_t size) {
+  if (size < sizeof(PlayerDeathPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(PlayerDeathPacket));
+    return packet::KO;
+  }
+
+  PlayerDeathPacket packet;
+  std::memcpy(&packet, data, sizeof(PlayerDeathPacket));
+
+  TraceLog(LOG_INFO, "[PLAYER DEATH] Player ID: %u died at (%f, %f)",
+           packet.player_id, packet.x, packet.y);
+
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto playerEntity = client.getPlayerEntity(packet.player_id);
+    if (playerEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[PLAYER DISCONNECTED] Player ID: %u not found",
+               packet.player_id);
+      return packet::KO;
+    }
+    ecsManager.destroyEntity(playerEntity);
+    client.destroyPlayerEntity(packet.player_id);
+
+    if (client.getPlayerId() == packet.player_id) {
+      TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Our player ID %u disconnected",
+               packet.player_id);
+      client.disconnect();
+    }
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[PLAYER DISCONNECTED] Failed to remove player %u: %s",
+             packet.player_id, e.what());
+    return packet::KO;
+  }
+  return packet::OK;
+}
+
+int packet::PlayerDisconnectedHandler::handlePacket(
+    client::Client &client, const char *data, std::size_t size) {
+  if (size < sizeof(PlayerDisconnectPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(PlayerDisconnectPacket));
+    return packet::KO;
+  }
+
+  PlayerDisconnectPacket packet;
+  std::memcpy(&packet, data, sizeof(PlayerDisconnectPacket));
+
+  TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Player ID: %u disconnected",
+           packet.player_id);
+
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto playerEntity = client.getPlayerEntity(packet.player_id);
+    if (playerEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[PLAYER DISCONNECTED] Player ID: %u not found",
+               packet.player_id);
+      return packet::KO;
+    }
+    ecsManager.destroyEntity(playerEntity);
+    client.destroyPlayerEntity(packet.player_id);
+
+    if (client.getPlayerId() == packet.player_id) {
+      TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Our player ID %u disconnected",
+               packet.player_id);
+      client.disconnect();
+    }
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[PLAYER DISCONNECTED] Failed to remove player %u: %s",
+             packet.player_id, e.what());
+    return packet::KO;
+  }
+  return packet::OK;
+}
+
+int packet::PlayerMoveHandler::handlePacket(client::Client &client,
+                                            const char *data, std::size_t size) {
   if (size < sizeof(MovePacket)) {
     TraceLog(LOG_ERROR,
              "Packet too small: got %zu bytes, expected at least %zu bytes.",
@@ -42,25 +141,40 @@ int packet::MoveHandler::handlePacket(client::Client &client,
 
   MovePacket packet;
   std::memcpy(&packet, data, sizeof(MovePacket));
-
-  TraceLog(LOG_INFO, "[MOVE] Player ID: %u moved to (%f, %f)", packet.player_id,
-           packet.x, packet.y);
-
-  auto &ecsManager = ecs::ECSManager::getInstance();
-
+  
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
-    auto &position = ecsManager.getComponent<ecs::PositionComponent>(packet.player_id);
+    auto playerEntity = client.getPlayerEntity(packet.player_id);
+    if (playerEntity == client::KO) {
+      // TraceLog(LOG_WARNING, "[PLAYER MOVE] Player ID: %u not found", packet.player_id);
+      return packet::OK;
+    }
+
+    if (client.getPlayerId() == packet.player_id) {
+      uint32_t lastSeqNum = client.getSequenceNumber();
+      if (packet.sequence_number <= lastSeqNum) {
+        TraceLog(LOG_DEBUG, "[PLAYER MOVE] Ignoring old packet: seq %u <= last seq %u",
+          packet.sequence_number, lastSeqNum);
+          return packet::OK;
+      }
+    }
+
+    auto &position = ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
     position.x = packet.x;
     position.y = packet.y;
-    
-    TraceLog(LOG_DEBUG, "[MOVE] Player ID %u position updated to (%f, %f)", 
-             packet.player_id, packet.x, packet.y);
+
+    if (client.getPlayerId() == packet.player_id) {
+      client.updateSequenceNumber(packet.sequence_number);
+    }
+
+    TraceLog(LOG_DEBUG, "[PLAYER MOVE] Updated player %u position to (%f, %f) with seq %u",
+             packet.player_id, packet.x, packet.y, packet.sequence_number);
+
   } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[MOVE] Failed to update player %u: %s", 
+    TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s", 
              packet.player_id, e.what());
     return packet::KO;
   }
-
   return packet::OK;
 }
 
@@ -81,15 +195,70 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
            packet.enemy_id, static_cast<int>(packet.enemy_type), packet.x,
            packet.y);
 
-  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
-  auto enemyEntity = ecsManager.createEntity();
+  client.createEnemyEntity(packet);
+  return packet::OK;
+}
 
-  ecsManager.addComponent<ecs::EnemyComponent>(enemyEntity, {static_cast<int>(packet.enemy_id), packet.enemy_type});
-  ecsManager.addComponent<ecs::PositionComponent>(enemyEntity, {packet.x, packet.y});
-  ecsManager.addComponent<ecs::RenderComponent>(
-      enemyEntity, {renderManager::PLAYER_PATH});
-  ecsManager.addComponent<ecs::SpriteComponent>(enemyEntity, {0.0f, 0.0f, 33.0f, 17.0f});
-  ecsManager.addComponent<ecs::ScaleComponent>(enemyEntity, {2.0f, 2.0f});
+int packet::EnemyMoveHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  if (size < sizeof(EnemyMovePacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(EnemyMovePacket));
+    return packet::KO;
+  }
+
+  EnemyMovePacket packet;
+  std::memcpy(&packet, data, sizeof(EnemyMovePacket));
+  
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
+    if (enemyEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[ENEMY MOVE] Enemy ID: %u not found", packet.enemy_id);
+      return packet::KO;
+    }
+    auto &position = ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
+    position.x = packet.x;
+    position.y = packet.y;
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to update enemy %u: %s", 
+             packet.enemy_id, e.what());
+    return packet::KO;
+  }
+  return packet::OK;
+}
+
+int packet::EnemyDeathHandler::handlePacket(client::Client &client,
+                                            const char *data,
+                                            std::size_t size) {
+  if (size < sizeof(EnemyDeathPacket)) {
+    TraceLog(LOG_ERROR,
+             "Packet too small: got %zu bytes, expected at least %zu bytes.",
+             size, sizeof(EnemyDeathPacket));
+    return packet::KO;
+  }
+
+  EnemyDeathPacket packet;
+  std::memcpy(&packet, data, sizeof(EnemyDeathPacket));
+
+  TraceLog(LOG_INFO, "[ENEMY DEATH] Enemy ID: %u has been destroyed",
+           packet.enemy_id);
+  
+  ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
+  try {
+    auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
+    if (enemyEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[ENEMY DEATH] Enemy ID: %u not found", packet.enemy_id);
+      return packet::KO;
+    }
+    ecsManager.destroyEntity(enemyEntity);
+    client.destroyEnemyEntity(packet.enemy_id);
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to destroy enemy %u: %s", 
+             packet.enemy_id, e.what());
+    return packet::KO;
+  }
   return packet::OK;
 }
 

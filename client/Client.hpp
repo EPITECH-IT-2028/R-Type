@@ -1,6 +1,10 @@
 #pragma once
 
+#include "EntityManager.hpp"
+#include "Packet.hpp"
 #include <cstdint>
+#include <sys/stat.h>
+#include <unordered_map>
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -27,6 +31,7 @@
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
 #include "PacketSender.hpp"
+#include "PacketBuilder.hpp"
 
 #define TIMEOUT_MS 100
 
@@ -51,6 +56,17 @@ namespace client {
           0.05f;  ///< Time per animation frame (seconds)
   };
 
+struct EnemySpriteConfig {
+    static constexpr float RECT_X = 0.0f;        ///< X coordinate in sprite sheet
+    static constexpr float RECT_Y = 0.0f;        ///< Y coordinate in sprite sheet
+    static constexpr float RECT_WIDTH = 33.0f;   ///< Width of enemy sprite (1 frame)
+    static constexpr float RECT_HEIGHT = 32.0f;  ///< Height of enemy sprite
+    static constexpr int SCALE = 1;              ///< Scale factor for rendering
+    static constexpr int TOTAL_COLUMNS = 6;      ///< 6 frames horizontally
+    static constexpr int TOTAL_ROWS = 1;         ///< 1 row
+    static constexpr float FRAME_TIME = 0.1f;    ///< Time per frame (slower animation)
+};
+
   /**
    * Frame indices for player animation.
    * These map directly to specific sprite-sheet frames and
@@ -61,6 +77,12 @@ namespace client {
     NEUTRAL = 2,       ///< Neutral frame index
     END = 4            ///< End frame index (e.g., tilt/extreme)
   };
+
+  enum class EnemySpriteFrameIndex {
+  SELECTED_ROW = 0,  ///< Row for basic movement/idle
+  NEUTRAL = 0,       ///< Starting frame
+  END = 2            ///< Last frame (3 frames: 0-2)
+};
 }  // namespace client
 
 namespace client {
@@ -77,10 +99,19 @@ namespace client {
       void startReceive() {
         _networkManager.receivePackets(*this);
       }
+
       void connect() {
         _networkManager.connect();
       }
+
       void disconnect() {
+        if (_player_id == static_cast<std::uint32_t>(-1)) {
+          _networkManager.disconnect();
+          _running.store(false, std::memory_order_release);
+          return;
+        }
+        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(_player_id);
+        send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
       }
@@ -102,6 +133,47 @@ namespace client {
         }
       }
 
+      uint32_t getEnemyEntity(uint32_t enemy_id) const {
+        auto it = _enemyEntities.find(enemy_id);
+        if (it != _enemyEntities.end()) {
+          return it->second;
+        }
+        return KO;
+      }
+
+      uint32_t getPlayerEntity(uint32_t player_id) const {
+        auto it = _playerEntities.find(player_id);
+        if (it != _playerEntities.end()) {
+          return it->second;
+        }
+        return KO;
+      }
+
+      void destroyPlayerEntity(uint32_t playerId) {
+        _playerEntities.erase(playerId);
+      }
+
+      void destroyEnemyEntity(uint32_t enemyId) {
+        _enemyEntities.erase(enemyId);
+      }
+
+      void createPlayerEntity(NewPlayerPacket packet);
+      void createEnemyEntity(EnemySpawnPacket packet);
+
+      uint32_t getPlayerId() const {
+        return _player_id;
+      }
+
+      uint32_t getSequenceNumber() const {
+        return _sequence_number.load(std::memory_order_acquire);
+      }
+
+      void updateSequenceNumber(uint32_t seq) {
+        _sequence_number.store(seq, std::memory_order_release);
+      }
+
+      void sendPosition();
+
     private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<uint32_t> _sequence_number;
@@ -109,13 +181,15 @@ namespace client {
       network::ClientNetworkManager _networkManager;
       std::atomic<uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
+      std::unordered_map<uint32_t, Entity> _playerEntities;
+      std::unordered_map<uint32_t, Entity> _enemyEntities;
+      std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
 
       void registerComponent();
       void registerSystem();
       void signSystem();
 
       void createBackgroundEntities();
-      void createPlayerEntity();
 
       ecs::ECSManager &_ecsManager;
   };

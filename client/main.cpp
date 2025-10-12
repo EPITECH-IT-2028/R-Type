@@ -2,14 +2,34 @@
 #include <thread>
 #include "Client.hpp"
 #include "EmbeddedAssets.hpp"
+#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Parser.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
 
 void gameLoop(client::Client &client) {
-  while (client.isConnected())
+  auto lastHeartbeat = std::chrono::steady_clock::now();
+  auto lastPosSend = std::chrono::steady_clock::now();
+  const auto heartbeatInterval = std::chrono::seconds(1);
+  const auto posInterval = std::chrono::milliseconds(50);
+
+  while (client.isConnected()) {
     client.startReceive();
+
+    auto now = std::chrono::steady_clock::now();
+    if (now - lastHeartbeat >= heartbeatInterval) {
+      HeartbeatPlayerPacket heartbeat = PacketBuilder::makeHeartbeatPlayer(client.getPlayerId());
+      client.send(heartbeat);
+      lastHeartbeat = now;
+      TraceLog(LOG_INFO, "[HEARTBEAT] Sent to server");
+    }
+
+    if (now - lastPosSend >= posInterval) {
+      client.sendPosition();
+      lastPosSend = now;
+    }
+  }
 }
 
 int main(void) {
@@ -34,6 +54,9 @@ int main(void) {
 
   MessagePacket welcomeMsg = PacketBuilder::makeMessage("Hello Server!");
   client.send(welcomeMsg);
+
+  PlayerInfoPacket infoPacket = PacketBuilder::makePlayerInfo("Player1");
+  client.send(infoPacket);
 
   std::thread networkThread(gameLoop, std::ref(client));
 

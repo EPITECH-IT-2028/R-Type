@@ -10,6 +10,7 @@ namespace renderManager {
   constexpr const char *BG_PATH = "embedded://background";
   constexpr const char *PLAYER_PATH = "embedded://players";
   constexpr const char *PROJECTILE_PATH = "embedded://projectiles";
+  constexpr const char *ENEMY_PATH = "embedded://enemy";
 }  // namespace renderManager
 
 namespace renderManager {
