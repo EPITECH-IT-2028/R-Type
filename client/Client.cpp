@@ -220,7 +220,7 @@ namespace client {
     anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
     anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
     anim.endFrame = static_cast<int>(PlayerSpriteFrameIndex::END);
-    anim.selectedRow = static_cast<int>(packet.player_id);
+    anim.selectedRow = packet.player_id % PlayerSpriteConfig::TOTAL_ROWS;
     anim.isPlaying = false;
     anim.frameTime = PlayerSpriteConfig::FRAME_TIME;
     anim.loop = false;
