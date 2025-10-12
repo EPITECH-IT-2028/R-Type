@@ -1,8 +1,8 @@
 #include <iostream>
 #include <thread>
 #include "Client.hpp"
-#include "Packet.hpp"
 #include "EmbeddedAssets.hpp"
+#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Parser.hpp"
 #include "RenderManager.hpp"
