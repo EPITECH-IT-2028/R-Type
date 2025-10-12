@@ -1,8 +1,8 @@
 #include "EmbeddedAssets.hpp"
 #include "AssetManager.hpp"
-
 #include "background_data.h"
 #include "players_data.h"
+#include "projectiles_data.h"
 
 namespace asset {
   void initEmbeddedAssets() {
