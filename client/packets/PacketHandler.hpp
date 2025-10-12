@@ -41,6 +41,24 @@ namespace packet {
                        std::size_t size) override;
   };
 
+  class ProjectileSpawnHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+  
+  class ProjectileHitHandler : public IPacket {
+    public:
+    int handlePacket(client::Client &client, const char *data,
+      std::size_t size) override;
+    };
+    
+    class ProjectileDestroyHandler : public IPacket {
+      public:
+      int handlePacket(client::Client &client, const char *data,
+        std::size_t size) override;
+  };
+
   class EnemySpawnHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
@@ -52,7 +70,7 @@ namespace packet {
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
-
+  
   class EnemyDeathHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
