@@ -6,6 +6,7 @@
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "PlayerTagComponent.hpp"
+#include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
@@ -209,14 +210,18 @@ namespace client {
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
-    if (_playerId == -1) {
-      _playerId = packet.player_id;
-      TraceLog(LOG_INFO, "Assigned player ID: %u", _playerId);
+    if (_player_id == -1) {
+      _player_id = packet.player_id;
+      TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
     }
     _playerEntities[packet.player_id] = player;
   }
 
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
+    if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
+      TraceLog(LOG_WARNING, "[ENEMY SPAWN] Enemy ID: %u already exists", packet.enemy_id);
+      return;
+    }
     auto enemy = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(enemy, {packet.x, packet.y});
     _ecsManager.addComponent<ecs::VelocityComponent>(enemy, {0.0f, 0.0f});
@@ -244,14 +249,14 @@ namespace client {
   }
 
 void Client::sendPosition() {
-  if (_playerId == static_cast<uint32_t>(-1)) {
+  if (_player_id == static_cast<uint32_t>(-1)) {
     // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
     return;
   }
 
-  auto it = _playerEntities.find(_playerId);
+  auto it = _playerEntities.find(_player_id);
   if (it == _playerEntities.end()) {
-    TraceLog(LOG_WARNING, "[SEND POSITION] Player entity not found for ID: %u", _playerId);
+    TraceLog(LOG_WARNING, "[SEND POSITION] Player entity not found for ID: %u", _player_id);
     return;
   }
   Entity playerEntity = it->second;
