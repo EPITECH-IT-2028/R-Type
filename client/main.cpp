@@ -2,10 +2,11 @@
 #include <thread>
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "EmbeddedAssets.hpp"
 #include "PacketBuilder.hpp"
+#include "Parser.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
-#include "Parser.hpp"
 
 void gameLoop(client::Client &client) {
   auto lastHeartbeat = std::chrono::steady_clock::now();
@@ -40,6 +41,7 @@ int main(void) {
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   client::Client client(parser.getHost(), parser.getPort());
+  asset::initEmbeddedAssets();
   client.initializeECS();
   client.connect();
 

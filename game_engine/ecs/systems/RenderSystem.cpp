@@ -4,6 +4,7 @@
 #include "RenderComponent.hpp"
 #include "ScaleComponent.hpp"
 #include "SpriteComponent.hpp"
+#include "AssetManager.hpp"
 #include "raylib.h"
 
 /**
@@ -42,7 +43,7 @@ void ecs::RenderSystem::update(float deltaTime) {
       continue;
 
     if (_textureCache.find(path) == _textureCache.end()) {
-      Texture2D newTexture = LoadTexture(path.c_str());
+      Texture2D newTexture = asset::AssetManager::loadTexture(path);
       if (newTexture.id == 0) {
         TraceLog(LOG_WARNING, "RenderSystem::update: échec du chargement de %s",
                  path.c_str());
