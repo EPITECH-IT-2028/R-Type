@@ -162,10 +162,6 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       auto &playerComponent =
           _ecsManager.getComponent<PlayerComponent>(playerEntity);
 
-      std::cout << "Player " << playerComponent.player_id << " hit for "
-                << projectile.damage
-                << " damage. Remaining health: " << playerHealth.health
-                << std::endl;
       if (playerHealth.health <= 0) {
         playerHealth.health = 0;
         queue::PlayerDestroyEvent playerDestroyEvent;
