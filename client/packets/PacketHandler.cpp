@@ -12,6 +12,7 @@
 #include "EnemyComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "ProjectileSpriteConfig.hpp"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
@@ -105,9 +106,10 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
   ProjectileSpawnPacket packet;
   std::memcpy(&packet, data, sizeof(ProjectileSpawnPacket));
 
-  TraceLog(LOG_INFO, "[PROJECTILE SPAWN] id=%u owner=%u type=%d pos=(%f,%f)",
+  TraceLog(LOG_INFO, "[PROJECTILE SPAWN] id=%u owner=%u type=%d pos=(%f,%f) enemy=%u speed=%f",
            packet.projectile_id, packet.owner_id,
-           static_cast<int>(packet.projectile_type), packet.x, packet.y);
+           static_cast<int>(packet.projectile_type), packet.x, packet.y,
+           packet.is_enemy_projectile, packet.speed);
 
   auto &ecsManager = ecs::ECSManager::getInstance();
   auto entityProjectile = ecsManager.createEntity();
@@ -118,14 +120,36 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
   projComp.owner_id = packet.owner_id;
   projComp.damage = packet.damage;
   projComp.is_destroy = false;
+  projComp.is_enemy_projectile = static_cast<bool>(packet.is_enemy_projectile);
+  projComp.speed = packet.speed;
   ecsManager.addComponent<ecs::ProjectileComponent>(entityProjectile, projComp);
 
   ecsManager.addComponent<ecs::PositionComponent>(entityProjectile, {packet.x, packet.y});
   ecsManager.addComponent<ecs::VelocityComponent>(entityProjectile, {packet.velocity_x, packet.velocity_y});
   ecsManager.addComponent<ecs::RenderComponent>(
       entityProjectile, {renderManager::PROJECTILE_PATH});
-  ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {130.0f, 0.0f, 16.0f, 16.0f});
-  ecsManager.addComponent<ecs::ScaleComponent>(entityProjectile, {2.0f, 2.0f});
+  
+  if (packet.is_enemy_projectile) {
+    ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {
+      renderManager::ProjectileSprite::ENEMY_BASIC_X,
+      renderManager::ProjectileSprite::ENEMY_BASIC_Y,
+      renderManager::ProjectileSprite::ENEMY_BASIC_WIDTH,
+      renderManager::ProjectileSprite::ENEMY_BASIC_HEIGHT
+    });
+  } else {
+    ecsManager.addComponent<ecs::SpriteComponent>(entityProjectile, {
+      renderManager::ProjectileSprite::PLAYER_BASIC_X,
+      renderManager::ProjectileSprite::PLAYER_BASIC_Y,
+      renderManager::ProjectileSprite::PLAYER_BASIC_WIDTH,
+      renderManager::ProjectileSprite::PLAYER_BASIC_HEIGHT
+    });
+  }
+  
+  ecsManager.addComponent<ecs::ScaleComponent>(entityProjectile, {
+    renderManager::ProjectileSprite::DEFAULT_SCALE_X,
+    renderManager::ProjectileSprite::DEFAULT_SCALE_Y
+  });
+  
   return packet::OK;
 }
 
