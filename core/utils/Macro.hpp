@@ -30,3 +30,8 @@ constexpr float ENEMY_WINDOW_WIDTH = 1220.0f;
 constexpr int ENEMY_SPAWN_OFFSET = 25;
 
 constexpr float PROJECTILE_SPEED = 100.0f;
+
+constexpr int WINDOW_HEIGHT = 750;
+constexpr int WINDOW_WIDTH = 1200;
+
+constexpr int MARGIN_WINDOW = 30;

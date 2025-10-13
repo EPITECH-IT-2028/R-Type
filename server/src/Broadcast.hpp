@@ -3,7 +3,6 @@
 #include <asio.hpp>
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
-#include "PacketSender.hpp"
 #include "Server.hpp"
 #include "ServerNetworkManager.hpp"
 

@@ -1,5 +1,7 @@
 #include "ProjectileSystem.hpp"
+#include <iostream>
 #include "ECSManager.hpp"
+#include "Macro.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -30,15 +32,21 @@ void ecs::ProjectileSystem::moveBasics(const Entity &entity, float dt) {
   auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
   position.x += velocity.vx * dt;
   position.y += velocity.vy * dt;
+  if (isOutOfBounds(entity, WINDOW_WIDTH, WINDOW_HEIGHT)) {
+    std::cout << "Projectile out of bounds, destroying entity " << entity
+              << std::endl;
+    // _ecsManager.destroyEntity(entity);
+  }
 }
 
-bool ecs::ProjectileSystem::isOutOfBounds(const Entity &entity, float screenWidth, float screenHeight) {
+bool ecs::ProjectileSystem::isOutOfBounds(const Entity &entity, int screenWidth,
+                                          int screenHeight) {
   if (!_ecsManager.hasComponent<PositionComponent>(entity)) {
     return false;
   }
   auto &position = _ecsManager.getComponent<PositionComponent>(entity);
-  
-  const float margin = 100.0f;
+
+  const int margin = MARGIN_WINDOW;
   return (position.x < -margin || position.x > screenWidth + margin ||
           position.y < -margin || position.y > screenHeight + margin);
 }
