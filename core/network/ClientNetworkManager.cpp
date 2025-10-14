@@ -33,9 +33,15 @@ void ClientNetworkManager::startReceive(
 }
 
 void ClientNetworkManager::send(const char *data, std::size_t size) {
+  auto buffer = std::make_shared<std::vector<std::uint8_t>>(data, data + size);
+  send(buffer);
+}
+
+void ClientNetworkManager::send(
+    std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   _socket.async_send_to(
-      asio::buffer(data, size), _server_endpoint,
-      [](const asio::error_code &ec, std::size_t) {
+      asio::buffer(*buffer), _server_endpoint,
+      [buffer](const asio::error_code &ec, std::size_t) {
         if (ec) {
           std::cerr << "[WARNING] Send failed: " << ec.message() << std::endl;
         }

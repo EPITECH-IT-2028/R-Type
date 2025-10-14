@@ -21,13 +21,19 @@ void ServerNetworkManager::unregisterClient(int id) {
 
 void ServerNetworkManager::sendToClient(int id, const char *data,
                                         std::size_t size) {
+  auto buffer = std::make_shared<std::vector<std::uint8_t>>(data, data + size);
+  sendToClient(id, buffer);
+}
+
+void ServerNetworkManager::sendToClient(
+    int id, std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   auto it = _clientEndpoints.find(id);
   if (it == _clientEndpoints.end())
     return;
   const auto &endpoint = it->second;
   _socket.async_send_to(
-      asio::buffer(data, size), endpoint,
-      [](const asio::error_code &error, std::size_t) {
+      asio::buffer(*buffer), endpoint,
+      [buffer](const asio::error_code &error, std::size_t) {  // Capturer buffer
         if (error)
           std::cerr << "[ERROR] Send failed: " << error.message() << std::endl;
       });
@@ -39,9 +45,16 @@ void ServerNetworkManager::run() {
 }
 
 void ServerNetworkManager::sendToAll(const char *data, std::size_t size) {
+  auto buffer = std::make_shared<std::vector<std::uint8_t>>(data, data + size);
+  sendToAll(buffer);
+}
+
+void ServerNetworkManager::sendToAll(
+    std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   for (const auto &[id, endpoint] : _clientEndpoints) {
-    _socket.async_send_to(asio::buffer(data, size), endpoint,
-                          [](const asio::error_code &error, std::size_t) {
+    _socket.async_send_to(asio::buffer(*buffer), endpoint,
+                          [buffer](const asio::error_code &error,
+                                   std::size_t) {  // Capturer buffer
                             if (error)
                               std::cerr << "[ERROR] Broadcast failed: "
                                         << error.message() << std::endl;
@@ -51,6 +64,11 @@ void ServerNetworkManager::sendToAll(const char *data, std::size_t size) {
 
 void ServerNetworkManager::send(const char *data, std::size_t size) {
   sendToAll(data, size);
+}
+
+void ServerNetworkManager::send(
+    std::shared_ptr<std::vector<std::uint8_t>> buffer) {
+  sendToAll(buffer);
 }
 
 void ServerNetworkManager::checkSignals() {
