@@ -76,7 +76,8 @@ namespace server {
       void processGameEvents();
       void handleGameEvent(const queue::GameEvent &event);
 
-      int findOrCreateClient();
+      int findExistingClient();
+      void handlePlayerInfoPacket(const char *data, std::size_t size);
       void handleClientData(std::size_t client_idx, const char *data,
                             std::size_t size);
 
