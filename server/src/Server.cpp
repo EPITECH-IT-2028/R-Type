@@ -77,7 +77,7 @@ void server::Server::handleTimeout() {
       continue;
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(
         now - client->_last_heartbeat);
-    if (duration.count() > 10) {
+    if (duration.count() > HEARTBEAT_INTERVAL_SERVER) {
       const int pid = client->_player_id;
       std::cout << "[WORLD] Player " << pid << " timed out due to inactivity."
                 << std::endl;

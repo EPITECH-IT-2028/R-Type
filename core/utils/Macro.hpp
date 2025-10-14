@@ -15,6 +15,10 @@ constexpr int COLLISION_DAMAGE = 20;
 
 constexpr float CONVERT_MS_TO_S = 1000.0f;
 
+constexpr int HEARTBEAT_INTERVAL_SERVER = 30;
+
+constexpr int HEARTBEAT_INTERVAL_CLIENT = 15;
+
 constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
