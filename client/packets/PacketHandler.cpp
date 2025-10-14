@@ -27,8 +27,8 @@ int packet::MessageHandler::handlePacket(client::Client &client,
   }
 
   const MessagePacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", sizeof(packet.message),
-           packet.message);
+  size_t len = strnlen(packet.message, sizeof(packet.message));
+  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
   return 0;
 }
 
