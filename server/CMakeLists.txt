@@ -34,7 +34,7 @@ add_executable(${PROJECT_NAME}
 )
 
 add_compile_options(-W -Wall -Wextra)
-target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads Bitsery::bitsery)
+target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads bitsery::bitsery)
 target_include_directories(${PROJECT_NAME} PRIVATE
   src/
   src/errors/

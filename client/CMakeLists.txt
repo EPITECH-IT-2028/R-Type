@@ -36,7 +36,7 @@ add_dependencies(${PROJECT_NAME} generate_embedded_assets)
 
 add_compile_options(-W -Wall -Wextra)
 
-target_link_libraries(${PROJECT_NAME} raylib asio::asio Threads::Threads Bitsery::bitsery)
+target_link_libraries(${PROJECT_NAME} raylib asio::asio Threads::Threads bitsery::bitsery)
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/client/
   ${CMAKE_SOURCE_DIR}/client/packets/
