@@ -8,14 +8,15 @@ namespace ecs {
     public:
       explicit ProjectileSystem(
           ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {}
+          : _ecsManager(ecsManager) {
+      }
 
       void setECSManager(ECSManager *ecsManager) {
         _ecsManagerPtr = ecsManager;
       }
+
       void update(float dt) override;
       void moveBasics(const Entity &entity, float dt);
-      bool isOutOfBounds(const Entity &entity, float screenWidth, float screenHeight);
 
     private:
       ECSManager &_ecsManager;

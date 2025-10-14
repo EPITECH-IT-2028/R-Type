@@ -31,14 +31,3 @@ void ecs::ProjectileSystem::moveBasics(const Entity &entity, float dt) {
   position.x += velocity.vx * dt;
   position.y += velocity.vy * dt;
 }
-
-bool ecs::ProjectileSystem::isOutOfBounds(const Entity &entity, float screenWidth, float screenHeight) {
-  if (!_ecsManager.hasComponent<PositionComponent>(entity)) {
-    return false;
-  }
-  auto &position = _ecsManager.getComponent<PositionComponent>(entity);
-  
-  const float margin = 100.0f;
-  return (position.x < -margin || position.x > screenWidth + margin ||
-          position.y < -margin || position.y > screenHeight + margin);
-}

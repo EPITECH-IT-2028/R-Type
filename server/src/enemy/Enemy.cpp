@@ -4,6 +4,7 @@
 #include "EnemyComponent.hpp"
 #include "HealthComponent.hpp"
 #include "PositionComponent.hpp"
+#include "ScoreComponent.hpp"
 #include "VelocityComponent.hpp"
 
 std::pair<float, float> game::Enemy::getPosition() const {
@@ -89,6 +90,13 @@ void game::Enemy::setVelocity(float vx, float vy) {
     vel.vx = vx;
     vel.vy = vy;
   }
+}
+
+std::uint32_t game::Enemy::getScore() const {
+  if (hasComponent<ecs::ScoreComponent>()) {
+    return getComponent<ecs::ScoreComponent>().score;
+  }
+  return 0;
 }
 
 void game::Enemy::update(float deltaTime) {

@@ -10,6 +10,10 @@
 
 void ecs::EnemySystem::update(float deltaTime) {
   for (auto entity : _entities) {
+    if (!_ecsManager->hasComponent<EnemyComponent>(entity)) {
+      continue;
+    }
+
     auto &enemy = _ecsManager->getComponent<EnemyComponent>(entity);
 
     switch (enemy.type) {

@@ -3,7 +3,6 @@
 #include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "VelocityComponent.hpp"
-#include "LocalPlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "raylib.h"
 #include "Client.hpp"

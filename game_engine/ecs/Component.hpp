@@ -2,9 +2,10 @@
 
 #include <array>
 #include <cstddef>
+#include <iostream>
+#include <stdexcept>
 #include <unordered_map>
 #include "EntityManager.hpp"
-#include <stdexcept>
 
 namespace ecs {
 
@@ -42,7 +43,7 @@ namespace ecs {
         _indexToEntityMap[removedIndex] = lastEntity;
 
         _entityToIndexMap.erase(entityId);
-        _indexToEntityMap.erase(lastIndex); 
+        _indexToEntityMap.erase(lastIndex);
         --_index;
       }
 
@@ -71,4 +72,4 @@ namespace ecs {
       size_t _index = 0;
   };
 
-}
+}  // namespace ecs

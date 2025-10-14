@@ -1,6 +1,7 @@
 #include "CollisionSystem.hpp"
 #include <iostream>
 #include <memory>
+#include <set>
 #include "ColliderComponent.hpp"
 #include "ECSManager.hpp"
 #include "EnemyComponent.hpp"
@@ -10,11 +11,12 @@
 #include "HealthComponent.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
+#include "Player.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
+#include "Projectile.hpp"
 #include "ProjectileComponent.hpp"
 #include "ScoreComponent.hpp"
-#include "ShootComponent.hpp"
 
 /**
  * @brief Processes collisions among managed entities by checking all unique
@@ -26,11 +28,41 @@
  */
 void ecs::CollisionSystem::update(float dt) {
   std::vector<Entity> entities(_entities.begin(), _entities.end());
+  std::set<Entity> destroyedEntities;
 
   for (size_t i = 0; i < entities.size(); ++i) {
+    if (destroyedEntities.find(entities[i]) != destroyedEntities.end()) {
+      continue;
+    }
+
+    if (isOutOfBounds(entities[i]) == true) {
+      destroyedEntities.insert(entities[i]);
+      continue;
+    }
+
     for (size_t j = i + 1; j < entities.size(); ++j) {
-      if (overlapAABBAABB(entities[i], entities[j])) {
+      if (destroyedEntities.find(entities[j]) != destroyedEntities.end()) {
+        continue;
+      }
+
+      if (isOutOfBounds(entities[j]) == true) {
+        _ecsManager.destroyEntity(entities[j]);
+        destroyedEntities.insert(entities[j]);
+        continue;
+      }
+
+      if (_entities.find(entities[i]) != _entities.end() &&
+          _entities.find(entities[j]) != _entities.end() &&
+          overlapAABBAABB(entities[i], entities[j])) {
         handleCollision(entities[i], entities[j]);
+
+        if (_entities.find(entities[i]) == _entities.end()) {
+          destroyedEntities.insert(entities[i]);
+          break;
+        }
+        if (_entities.find(entities[j]) == _entities.end()) {
+          destroyedEntities.insert(entities[j]);
+        }
       }
     }
   }
@@ -74,19 +106,49 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
 
   if ((entity1IsProjectile && entity2IsEnemy) ||
       (entity2IsProjectile && entity1IsEnemy)) {
-    handleEnemyProjectileCollision(entity1IsProjectile ? entity1 : entity2,
-                                   entity2IsEnemy ? entity1 : entity2);
+    std::shared_ptr<game::Enemy> enemy;
+    std::shared_ptr<game::Projectile> projectile;
+
+    if (entity1IsEnemy && _ecsManager.hasComponent<EnemyComponent>(entity1) &&
+        entity2IsProjectile &&
+        _ecsManager.hasComponent<ProjectileComponent>(entity2)) {
+      enemy = _game->getEnemy(
+          _ecsManager.getComponent<EnemyComponent>(entity1).enemy_id);
+      projectile = _game->getProjectile(
+          _ecsManager.getComponent<ProjectileComponent>(entity2).projectile_id);
+    } else {
+      enemy = _game->getEnemy(
+          _ecsManager.getComponent<EnemyComponent>(entity2).enemy_id);
+      projectile = _game->getProjectile(
+          _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
+    }
+
+    handleEnemyProjectileCollision(projectile, enemy);
   } else if ((entity1IsProjectile && entity2IsPlayer) ||
              (entity2IsProjectile && entity1IsPlayer)) {
     std::shared_ptr<game::Player> player;
-    if (entity1IsPlayer)
+    std::shared_ptr<game::Projectile> projectile;
+
+    if (entity1IsPlayer && _ecsManager.hasComponent<PlayerComponent>(entity1)) {
       player = _game->getPlayer(
           _ecsManager.getComponent<PlayerComponent>(entity1).player_id);
-    if (entity2IsPlayer)
+    }
+    if (entity2IsProjectile &&
+        _ecsManager.hasComponent<ProjectileComponent>(entity2)) {
+      projectile = _game->getProjectile(
+          _ecsManager.getComponent<ProjectileComponent>(entity2).projectile_id);
+    }
+    if (entity2IsPlayer && _ecsManager.hasComponent<PlayerComponent>(entity2)) {
       player = _game->getPlayer(
           _ecsManager.getComponent<PlayerComponent>(entity2).player_id);
-    handlePlayerProjectileCollision(entity1IsProjectile ? entity1 : entity2,
-                                    player);
+    }
+    if (entity1IsProjectile &&
+        _ecsManager.hasComponent<ProjectileComponent>(entity1)) {
+      projectile = _game->getProjectile(
+          _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
+    }
+
+    handlePlayerProjectileCollision(projectile, player);
   } else if ((entity1IsPlayer && entity2IsEnemy) ||
              (entity2IsPlayer && entity1IsEnemy)) {
     handlePlayerEnemyCollision(entity1IsEnemy ? entity1 : entity2,
@@ -138,52 +200,70 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 }
 
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
-    const Entity &projectileEntity, std::shared_ptr<game::Player> player) {
-  auto &projectile =
-      _ecsManager.getComponent<ProjectileComponent>(projectileEntity);
-
-  bool isPlayerProjectile = (projectile.type == ProjectileType::PLAYER_BASIC);
+    std::shared_ptr<game::Projectile> projectile,
+    std::shared_ptr<game::Player> player) {
+  if (!projectile || !player) {
+    return;
+  }
+  if (!_ecsManager.hasComponent<ProjectileComponent>(
+          projectile->getEntityId())) {
+    return;
+  }
+  bool isPlayerProjectile =
+      (projectile->getType() == ProjectileType::PLAYER_BASIC);
 
   if (isPlayerProjectile) {
     return;
   }
 
   if (_eventQueue) {
-    if (player->getHealth() <= 0) {
-      player->setHealth(player->getHealth().value() - projectile.damage);
+    player->setHealth(player->getHealth().value() -
+                      projectile->getDamage().value());
+    if (player->getHealth().value() - projectile->getDamage().value() <= 0) {
       queue::PlayerDestroyEvent playerDestroyEvent;
       playerDestroyEvent.player_id = player->getPlayerId();
       playerDestroyEvent.x = player->getPosition().first;
       playerDestroyEvent.y = player->getPosition().second;
       _eventQueue->addRequest(playerDestroyEvent);
-      _ecsManager.destroyEntity(player->getEntityId());
+      _game->destroyPlayer(player->getPlayerId());
     } else {
       queue::PlayerHitEvent playerHitEvent;
       playerHitEvent.player_id = player->getPlayerId();
       playerHitEvent.x = player->getPosition().first;
       playerHitEvent.y = player->getPosition().second;
-      playerHitEvent.damage = projectile.damage;
+      playerHitEvent.damage = projectile->getDamage().value();
       playerHitEvent.sequence_number = 0;
       _eventQueue->addRequest(playerHitEvent);
     }
 
     queue::ProjectileDestroyEvent projDestroyEvent;
-    projDestroyEvent.projectile_id = projectileEntity;
-    projDestroyEvent.x =
-        _ecsManager.getComponent<PositionComponent>(projectileEntity).x;
-    projDestroyEvent.y =
-        _ecsManager.getComponent<PositionComponent>(projectileEntity).y;
-    _eventQueue->addRequest(projDestroyEvent);
+    try {
+      projDestroyEvent.projectile_id = projectile->getProjectileId();
+      projDestroyEvent.x = projectile->getPosition().first;
+      projDestroyEvent.y = projectile->getPosition().second;
+      _eventQueue->addRequest(projDestroyEvent);
+    } catch (const std::runtime_error &e) {
+      std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
+                << std::endl;
+    }
   }
 
-  _ecsManager.destroyEntity(projectileEntity);
+  _game->destroyProjectile(projectile->getProjectileId());
 }
 
 void ecs::CollisionSystem::handlePlayerEnemyCollision(
     const Entity &enemyEntity, const Entity &playerEntity) {
+  if (!_ecsManager.hasComponent<HealthComponent>(playerEntity) ||
+      !_ecsManager.hasComponent<HealthComponent>(enemyEntity) ||
+      !_ecsManager.hasComponent<PlayerComponent>(playerEntity) ||
+      !_ecsManager.hasComponent<EnemyComponent>(enemyEntity) ||
+      !_ecsManager.hasComponent<PositionComponent>(playerEntity) ||
+      !_ecsManager.hasComponent<PositionComponent>(enemyEntity)) {
+    return;
+  }
+
   auto &playerHealth = _ecsManager.getComponent<HealthComponent>(playerEntity);
   auto &enemyHealth = _ecsManager.getComponent<HealthComponent>(enemyEntity);
-  auto &player = _ecsManager.getComponent<HealthComponent>(enemyEntity);
 
   const int collisionDamage = COLLISION_DAMAGE;
 
@@ -205,7 +285,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
       playerDestroyEvent.y =
           _ecsManager.getComponent<PositionComponent>(playerEntity).y;
       _eventQueue->addRequest(playerDestroyEvent);
-      _ecsManager.destroyEntity(playerEntity);
+      _game->destroyPlayer(playerComponent.player_id);
     } else {
       queue::PlayerHitEvent playerHitEvent;
       playerHitEvent.player_id = playerComponent.player_id;
@@ -230,7 +310,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
       enemyDestroyEvent.score =
           _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
       _eventQueue->addRequest(enemyDestroyEvent);
-      _ecsManager.destroyEntity(enemyEntity);
+      _game->destroyEnemy(enemyComponent.enemy_id);
       incrementPlayerScore(
           _ecsManager.getComponent<PlayerComponent>(playerEntity).player_id,
           enemyDestroyEvent.score);
@@ -249,73 +329,46 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
 }
 
 void ecs::CollisionSystem::handleEnemyProjectileCollision(
-    const Entity &projectileEntity, const Entity &enemyEntity) {
-  auto &projectile =
-      _ecsManager.getComponent<ProjectileComponent>(projectileEntity);
-  auto &enemyHealth = _ecsManager.getComponent<HealthComponent>(enemyEntity);
-
-  bool isEnemyProjectile = (projectile.type == ProjectileType::ENEMY_BASIC);
-  if (isEnemyProjectile) {
+    std::shared_ptr<game::Projectile> projectile,
+    std::shared_ptr<game::Enemy> enemy) {
+  if (!projectile || !enemy) {
     return;
   }
 
-  enemyHealth.health -= projectile.damage;
+  if (projectile->getType() == ProjectileType::ENEMY_BASIC) {
+    return;
+  }
 
   if (_eventQueue) {
-    if (enemyHealth.health <= 0) {
-      enemyHealth.health = 0;
+    enemy->setHealth(enemy->getHealth().value() -
+                     projectile->getDamage().value());
+    if (enemy->getHealth().value() <= 0) {
       queue::EnemyDestroyEvent enemyDestroyEvent;
-      enemyDestroyEvent.enemy_id =
-          _ecsManager.getComponent<EnemyComponent>(enemyEntity).enemy_id;
-      enemyDestroyEvent.x =
-          _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
-      enemyDestroyEvent.y =
-          _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
-      enemyDestroyEvent.player_id = projectile.owner_id;
-      enemyDestroyEvent.score =
-          _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
+      enemyDestroyEvent.enemy_id = enemy->getEnemyId();
+      enemyDestroyEvent.x = enemy->getPosition().first;
+      enemyDestroyEvent.y = enemy->getPosition().second;
+      enemyDestroyEvent.player_id = projectile->getOwnerId();
+      enemyDestroyEvent.score = enemy->getScore();
       _eventQueue->addRequest(enemyDestroyEvent);
-      _ecsManager.destroyEntity(enemyEntity);
-      incrementPlayerScore(projectile.owner_id, enemyDestroyEvent.score);
+      _game->destroyEnemy(enemy->getEnemyId());
+      incrementPlayerScore(projectile->getOwnerId(), enemyDestroyEvent.score);
     } else {
       queue::EnemyHitEvent hitEvent;
-      hitEvent.enemy_id =
-          _ecsManager.getComponent<EnemyComponent>(enemyEntity).enemy_id;
-      hitEvent.x = _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
-      hitEvent.y = _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
-      hitEvent.damage = projectile.damage;
+      hitEvent.enemy_id = enemy->getEnemyId();
+      hitEvent.x = enemy->getPosition().first;
+      hitEvent.y = enemy->getPosition().second;
+      hitEvent.damage = projectile->getDamage().value();
       hitEvent.sequence_number = 0;
       _eventQueue->addRequest(hitEvent);
     }
 
     queue::ProjectileDestroyEvent projDestroyEvent;
-    projDestroyEvent.projectile_id = projectile.projectile_id;
-    projDestroyEvent.x =
-        _ecsManager.getComponent<PositionComponent>(projectileEntity).x;
-    projDestroyEvent.y =
-        _ecsManager.getComponent<PositionComponent>(projectileEntity).y;
+    projDestroyEvent.projectile_id = projectile->getProjectileId();
+    projDestroyEvent.x = projectile->getPosition().first;
+    projDestroyEvent.y = projectile->getPosition().second;
     _eventQueue->addRequest(projDestroyEvent);
-
-    if (projectile.type == ProjectileType::ENEMY_BASIC) {
-      for (auto entity : _ecsManager.getAllEntities()) {
-        if (_ecsManager.hasComponent<ecs::EnemyComponent>(entity) &&
-            _ecsManager.hasComponent<ecs::ShootComponent>(entity)) {
-          auto &enemyComp =
-              _ecsManager.getComponent<ecs::EnemyComponent>(entity);
-          auto &shootComp =
-              _ecsManager.getComponent<ecs::ShootComponent>(entity);
-          if (enemyComp.enemy_id == projectile.owner_id &&
-              shootComp.active_projectile_id == projectile.projectile_id) {
-            shootComp.has_active_projectile = false;
-            shootComp.active_projectile_id = 0;
-            break;
-          }
-        }
-      }
-    }
   }
-
-  _ecsManager.destroyEntity(projectileEntity);
+  _game->destroyProjectile(projectile->getProjectileId());
 }
 
 /**
@@ -345,4 +398,29 @@ void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
   }
   std::cerr << "Warning: Could not find player with ID " << owner_id
             << " to increment score." << std::endl;
+}
+
+bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
+  if (!_ecsManager.hasComponent<PositionComponent>(entity) ||
+      !_ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
+    return false;
+  }
+  auto &position = _ecsManager.getComponent<PositionComponent>(entity);
+  auto &projectile = _ecsManager.getComponent<ProjectileComponent>(entity);
+  const float margin = 100.0f;
+
+  bool isOutOfBounds = (position.x < -margin || position.x > 1200 + margin ||
+                        position.y < -margin || position.y > 750 + margin);
+
+  if (!isOutOfBounds)
+    return false;
+
+  queue::ProjectileDestroyEvent projectileDestroyEvent;
+  projectileDestroyEvent.projectile_id = projectile.projectile_id;
+  projectileDestroyEvent.x = position.x;
+  projectileDestroyEvent.y = position.y;
+  _eventQueue->addRequest(projectileDestroyEvent);
+
+  _ecsManager.destroyEntity(entity);
+  return true;
 }
