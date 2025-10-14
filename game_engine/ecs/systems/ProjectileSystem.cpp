@@ -1,5 +1,4 @@
 #include "ProjectileSystem.hpp"
-#include <iostream>
 #include "ECSManager.hpp"
 #include "Macro.hpp"
 #include "PositionComponent.hpp"

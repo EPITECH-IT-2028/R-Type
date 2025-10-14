@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include <chrono>
+#include <cstddef>
 #include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
@@ -276,7 +277,7 @@ void server::Server::handlePlayerInfoPacket(const char *data,
  * returns KO.
  * @return int Index of the existing client, or KO if not found.
  */
-int server::Server::findExistingClient() {
+size_t server::Server::findExistingClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
   for (size_t i = 0; i < _clients.size(); ++i) {
