@@ -210,9 +210,7 @@ void server::Server::handleReceive(const char *data,
     return;
   }
 
-  serialization::Buffer buffer(
-      reinterpret_cast<const uint8_t *>(data),
-      reinterpret_cast<const uint8_t *>(data) + bytes_transferred);
+  serialization::Buffer buffer(data, data + bytes_transferred);
 
   auto headerOpt =
       serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
@@ -246,10 +244,6 @@ void server::Server::handleReceive(const char *data,
  */
 void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
-  if (size < sizeof(PlayerInfoPacket)) {
-    std::cerr << "[WARNING] Invalid PlayerInfo packet size" << std::endl;
-    return;
-  }
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
   for (size_t i = 0; i < _clients.size(); ++i) {
@@ -331,7 +325,7 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
     return;
   }
 
-  PacketHeader &header = headerOpt.value();
+  PacketHeader header = headerOpt.value();
 
   auto handler = _factory.createHandler(header.type);
   if (handler) {

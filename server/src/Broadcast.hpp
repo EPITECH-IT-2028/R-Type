@@ -16,13 +16,12 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
-        auto buffer = serialization::BitserySerializer::serialize(packet);
+        auto buffer = std::make_shared<std::vector<uint8_t>>(
+            serialization::BitserySerializer::serialize(packet));
 
         for (const auto &client : clients) {
           if (client && client->_connected && pred(*client)) {
-            networkManager.sendToClient(
-                client->_player_id,
-                reinterpret_cast<const char *>(buffer.data()), buffer.size());
+            networkManager.sendToClient(client->_player_id, buffer);
           }
         }
       }
@@ -56,11 +55,10 @@ namespace broadcast {
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), pos.first, pos.second, speed, health);
 
-            auto buffer =
-                serialization::BitserySerializer::serialize(existPlayerPacket);
-            networkManager.sendToClient(
-                newPlayerID, reinterpret_cast<const char *>(buffer.data()),
-                buffer.size());
+            auto buffer = std::make_shared<std::vector<uint8_t>>(
+                serialization::BitserySerializer::serialize(existPlayerPacket));
+
+            networkManager.sendToClient(newPlayerID, buffer);
           }
         }
       }

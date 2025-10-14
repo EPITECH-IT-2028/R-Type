@@ -126,8 +126,6 @@ int packet::PositionHandler::handlePacket(server::Server &server,
     }
   }
 
-  std::cout << "[DEBUG] Player " << client._player_id << " moved to ("
-            << packet.x << ", " << packet.y << ")" << std::endl;
   player->setPosition(packet.x, packet.y);
   player->setSequenceNumber(packet.sequence_number);
   client._last_position_update = now;
@@ -144,10 +142,6 @@ int packet::PositionHandler::handlePacket(server::Server &server,
 int packet::HeartbeatPlayerHandler::handlePacket(
     [[maybe_unused]] server::Server &server, server::Client &client,
     const char *data, std::size_t size) {
-  if (size < sizeof(HeartbeatPlayerPacket)) {
-    return KO;
-  }
-
   serialization::Buffer buffer(data, data + size);
   auto deserializedPacket =
       serialization::BitserySerializer::deserialize<HeartbeatPlayerPacket>(
@@ -171,10 +165,6 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
                                              const char *data,
                                              std::size_t size) {
-  if (size < sizeof(PlayerShootPacket)) {
-    return KO;
-  }
-
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
@@ -227,10 +217,6 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
                                                     const char *data,
                                                     std::size_t size) {
-  if (size < sizeof(PlayerDisconnectPacket)) {
-    return KO;
-  }
-
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =

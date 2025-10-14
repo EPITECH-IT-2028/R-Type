@@ -14,6 +14,7 @@ namespace serialization {
         Buffer buffer;
         auto writtenSize =
             bitsery::quickSerialization<OutputAdapter>(buffer, packet);
+        buffer.resize(writtenSize);
         return buffer;
       }
 

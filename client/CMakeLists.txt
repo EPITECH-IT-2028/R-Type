@@ -1,7 +1,7 @@
 find_package(raylib REQUIRED)
 find_package(asio REQUIRED)
 find_package(Threads REQUIRED)
-find_package(Bitsery REQUIRED)
+find_package(Bitsery REQUIRED CONFIG)
 
 set(PROJECT_NAME r_type_client)
 

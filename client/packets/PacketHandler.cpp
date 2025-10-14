@@ -17,8 +17,7 @@
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
@@ -35,8 +34,7 @@ int packet::MessageHandler::handlePacket(client::Client &client,
 
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<NewPlayerPacket>(buffer);
@@ -58,8 +56,7 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
 int packet::PlayerDeathHandler::handlePacket(client::Client &client,
                                              const char *data,
                                              std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<PlayerDeathPacket>(buffer);
@@ -101,8 +98,7 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
 int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
                                                     const char *data,
                                                     std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<PlayerDisconnectPacket>(
@@ -145,8 +141,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
 int packet::PlayerMoveHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<MovePacket>(buffer);
@@ -192,8 +187,7 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 int packet::EnemySpawnHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<EnemySpawnPacket>(buffer);
@@ -213,8 +207,7 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
 
 int packet::EnemyMoveHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<EnemyMovePacket>(buffer);
@@ -249,8 +242,7 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
 int packet::EnemyDeathHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<EnemyDeathPacket>(buffer);
@@ -286,8 +278,7 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
 int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
                                                  const char *data,
                                                  std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<ProjectileSpawnPacket>(
@@ -362,8 +353,7 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
 int packet::ProjectileHitHandler::handlePacket(client::Client &client,
                                                const char *data,
                                                std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<ProjectileHitPacket>(
@@ -399,8 +389,7 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
 int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
                                                    const char *data,
                                                    std::size_t size) {
-  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
-                               reinterpret_cast<const uint8_t *>(data) + size);
+  serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
       serialization::BitserySerializer::deserialize<ProjectileDestroyPacket>(
