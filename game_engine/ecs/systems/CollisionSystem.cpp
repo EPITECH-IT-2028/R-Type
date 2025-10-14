@@ -151,8 +151,22 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
     handlePlayerProjectileCollision(projectile, player);
   } else if ((entity1IsPlayer && entity2IsEnemy) ||
              (entity2IsPlayer && entity1IsEnemy)) {
-    handlePlayerEnemyCollision(entity1IsEnemy ? entity1 : entity2,
-                               entity1IsPlayer ? entity1 : entity2);
+    std::shared_ptr<game::Enemy> enemy;
+    std::shared_ptr<game::Player> player;
+
+    if (entity1IsEnemy && _ecsManager.hasComponent<EnemyComponent>(entity1) &&
+        entity2IsPlayer && _ecsManager.hasComponent<PlayerComponent>(entity2)) {
+      enemy = _game->getEnemy(
+          _ecsManager.getComponent<EnemyComponent>(entity1).enemy_id);
+      player = _game->getPlayer(
+          _ecsManager.getComponent<PlayerComponent>(entity2).player_id);
+    } else {
+      enemy = _game->getEnemy(
+          _ecsManager.getComponent<EnemyComponent>(entity2).enemy_id);
+      player = _game->getPlayer(
+          _ecsManager.getComponent<PlayerComponent>(entity1).player_id);
+    }
+    handlePlayerEnemyCollision(enemy, player);
   }
 }
 

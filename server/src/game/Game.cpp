@@ -182,7 +182,10 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {0.0f, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
-  _ecsManager.addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+  ecs::ColliderComponent collider;
+  collider.center = {25.f, 25.f};
+  collider.halfSize = {25.f, 25.f};
+  _ecsManager.addComponent<ecs::ColliderComponent>(entity, collider);
   _ecsManager.addComponent<ecs::ScoreComponent>(entity, {0});
 
   auto player = std::make_shared<Player>(player_id, entity, _ecsManager);
@@ -274,8 +277,8 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
   ecs::ColliderComponent collider;
-  collider.center = {10.f, 10.f};
-  collider.halfSize = {10.f, 10.f};
+  collider.center = {25.f, 25.f};
+  collider.halfSize = {25.f, 25.f};
   _ecsManager.addComponent<ecs::ColliderComponent>(entity, collider);
   switch (type) {
     case EnemyType::BASIC_FIGHTER:
