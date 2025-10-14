@@ -2,13 +2,13 @@
 #include <iostream>
 #include <memory>
 #include <set>
+#include <unordered_set>
 #include "ColliderComponent.hpp"
 #include "ECSManager.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "Events.hpp"
 #include "Game.hpp"
-#include "HealthComponent.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "Player.hpp"
@@ -19,17 +19,20 @@
 #include "ScoreComponent.hpp"
 
 /**
- * @brief Iterates managed entities and detects/handles axis-aligned bounding-box collisions between all unique pairs.
+ * @brief Iterates managed entities and detects/handles axis-aligned
+ * bounding-box collisions between all unique pairs.
  *
- * During iteration, entities found out of bounds are destroyed and skipped. Each unordered pair is checked once; entities
- * removed during processing are tracked to avoid further checks. When two existing entities' AABBs overlap, `handleCollision`
- * is invoked; if either entity is removed as a result, it is marked destroyed and further comparisons are adjusted accordingly.
+ * During iteration, entities found out of bounds are destroyed and skipped.
+ * Each unordered pair is checked once; entities removed during processing are
+ * tracked to avoid further checks. When two existing entities' AABBs overlap,
+ * `handleCollision` is invoked; if either entity is removed as a result, it is
+ * marked destroyed and further comparisons are adjusted accordingly.
  *
  * @param dt Elapsed time since the previous update in seconds.
  */
 void ecs::CollisionSystem::update(float dt) {
   std::vector<Entity> entities(_entities.begin(), _entities.end());
-  std::set<Entity> destroyedEntities;
+  std::unordered_set<Entity> destroyedEntities;
 
   for (size_t i = 0; i < entities.size(); ++i) {
     if (destroyedEntities.find(entities[i]) != destroyedEntities.end()) {
@@ -47,7 +50,6 @@ void ecs::CollisionSystem::update(float dt) {
       }
 
       if (isOutOfBounds(entities[j]) == true) {
-        _ecsManager.destroyEntity(entities[j]);
         destroyedEntities.insert(entities[j]);
         continue;
       }
@@ -70,11 +72,12 @@ void ecs::CollisionSystem::update(float dt) {
 }
 
 /**
- * @brief Resolve a collision between two entities and apply the appropriate game effects.
+ * @brief Resolve a collision between two entities and apply the appropriate
+ * game effects.
  *
- * Determines each entity's role (projectile, player, enemy) and processes supported
- * collision cases, applying damage, queuing relevant events, and destroying entities
- * when required.
+ * Determines each entity's role (projectile, player, enemy) and processes
+ * supported collision cases, applying damage, queuing relevant events, and
+ * destroying entities when required.
  *
  * Supported cases:
  * - Projectile vs Enemy
@@ -205,14 +208,17 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 }
 
 /**
- * @brief Process a collision between a projectile and a player, apply damage, emit events, and destroy involved entities.
+ * @brief Process a collision between a projectile and a player, apply damage,
+ * emit events, and destroy involved entities.
  *
- * If the projectile is an enemy-owned projectile, subtract its damage from the player's health, enqueue either
- * a PlayerHitEvent or PlayerDestroyEvent as appropriate, enqueue a ProjectileDestroyEvent for the projectile,
- * and ensure the projectile is destroyed. If the projectile or player is null, or the projectile is a player-owned
- * projectile, no action is taken.
+ * If the projectile is an enemy-owned projectile, subtract its damage from the
+ * player's health, enqueue either a PlayerHitEvent or PlayerDestroyEvent as
+ * appropriate, enqueue a ProjectileDestroyEvent for the projectile, and ensure
+ * the projectile is destroyed. If the projectile or player is null, or the
+ * projectile is a player-owned projectile, no action is taken.
  *
- * @param projectile Shared pointer to the projectile involved in the collision; must have a corresponding ProjectileComponent.
+ * @param projectile Shared pointer to the projectile involved in the collision;
+ * must have a corresponding ProjectileComponent.
  * @param player Shared pointer to the player struck by the projectile.
  */
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
@@ -289,7 +295,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     player->setHealth(player->getHealth().value() - COLLISION_DAMAGE);
     enemy->setHealth(enemy->getHealth().value() - COLLISION_DAMAGE);
 
-    if (enemy->getHealth() <= 0) {
+    if (enemy->getHealth().value() <= 0) {
       queue::EnemyDestroyEvent enemyDestroyEvent;
       enemyDestroyEvent.enemy_id = enemy->getEnemyId();
       enemyDestroyEvent.x = enemy->getPosition().first;
@@ -330,11 +336,14 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
 /**
  * @brief Resolve a collision between a projectile and an enemy.
  *
- * Applies the projectile's damage to the enemy (no action if pointers are null or projectile is of type ENEMY_BASIC),
- * enqueues enemy hit or destroy events when an event queue is present, increments the owning player's score on enemy death,
- * enqueues a projectile-destroy event when an event queue is present, and always destroys the projectile in the game state.
+ * Applies the projectile's damage to the enemy (no action if pointers are null
+ * or projectile is of type ENEMY_BASIC), enqueues enemy hit or destroy events
+ * when an event queue is present, increments the owning player's score on enemy
+ * death, enqueues a projectile-destroy event when an event queue is present,
+ * and always destroys the projectile in the game state.
  *
- * @param projectile Projectile that collided with the enemy; ignored if null or if its type is ENEMY_BASIC.
+ * @param projectile Projectile that collided with the enemy; ignored if null or
+ * if its type is ENEMY_BASIC.
  * @param enemy Enemy hit by the projectile; ignored if null.
  */
 void ecs::CollisionSystem::handleEnemyProjectileCollision(
@@ -410,14 +419,18 @@ void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
 }
 
 /**
- * @brief Checks whether a projectile entity lies outside the play area (with margin) and handles cleanup.
+ * @brief Checks whether a projectile entity lies outside the play area (with
+ * margin) and handles cleanup.
  *
- * If the entity has both a PositionComponent and a ProjectileComponent and its position is outside
- * the window bounds plus a fixed margin, enqueues a ProjectileDestroyEvent for that projectile
- * and destroys the entity via the ECS manager.
+ * If the entity has both a PositionComponent and a ProjectileComponent and its
+ * position is outside the window bounds plus a fixed margin, enqueues a
+ * ProjectileDestroyEvent for that projectile and destroys the entity via the
+ * ECS manager.
  *
- * @param entity The entity to check; expected to have PositionComponent and ProjectileComponent.
- * @return true if the entity was out of bounds and was destroyed, false otherwise.
+ * @param entity The entity to check; expected to have PositionComponent and
+ * ProjectileComponent.
+ * @return true if the entity was out of bounds and was destroyed, false
+ * otherwise.
  */
 bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
   if (!_ecsManager.hasComponent<PositionComponent>(entity) ||
@@ -434,12 +447,13 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
 
   if (!isOutOfBounds)
     return false;
-
-  queue::ProjectileDestroyEvent projectileDestroyEvent;
-  projectileDestroyEvent.projectile_id = projectile.projectile_id;
-  projectileDestroyEvent.x = position.x;
-  projectileDestroyEvent.y = position.y;
-  _eventQueue->addRequest(projectileDestroyEvent);
+  if (_eventQueue) {
+    queue::ProjectileDestroyEvent projectileDestroyEvent;
+    projectileDestroyEvent.projectile_id = projectile.projectile_id;
+    projectileDestroyEvent.x = position.x;
+    projectileDestroyEvent.y = position.y;
+    _eventQueue->addRequest(projectileDestroyEvent);
+  }
 
   _ecsManager.destroyEntity(entity);
   return true;
