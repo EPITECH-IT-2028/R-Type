@@ -2,6 +2,7 @@
 
 #include <asio.hpp>
 #include "BaseNetworkManager.hpp"
+#include "Serializer.hpp"
 
 namespace packet {
 
@@ -10,11 +11,10 @@ namespace packet {
       template <typename T>
       static void sendPacket(network::BaseNetworkManager &networkManager,
                              const T &packet) {
-        auto buffer = std::make_shared<std::vector<uint8_t>>(sizeof(T));
-        std::memcpy(buffer->data(), &packet, sizeof(T));
+        auto buffer = serialization::BitserySerializer::serialize(packet);
 
-        networkManager.send(reinterpret_cast<const char *>(buffer->data()),
-                            buffer->size());
+        networkManager.send(reinterpret_cast<const char *>(buffer.data()),
+                            buffer.size());
       }
   };
 }  // namespace packet

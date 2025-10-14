@@ -3,6 +3,7 @@
 #include <asio.hpp>
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
+#include "Serializer.hpp"
 #include "Server.hpp"
 #include "ServerNetworkManager.hpp"
 
@@ -15,11 +16,13 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
+        auto buffer = serialization::BitserySerializer::serialize(packet);
+
         for (const auto &client : clients) {
           if (client && client->_connected && pred(*client)) {
-            networkManager.sendToClient(client->_player_id,
-                                        reinterpret_cast<const char *>(&packet),
-                                        sizeof(packet));
+            networkManager.sendToClient(
+                client->_player_id,
+                reinterpret_cast<const char *>(buffer.data()), buffer.size());
           }
         }
       }
@@ -52,9 +55,12 @@ namespace broadcast {
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), pos.first, pos.second, speed, health);
+
+            auto buffer =
+                serialization::BitserySerializer::serialize(existPlayerPacket);
             networkManager.sendToClient(
-                newPlayerID, reinterpret_cast<const char *>(&existPlayerPacket),
-                sizeof(existPlayerPacket));
+                newPlayerID, reinterpret_cast<const char *>(buffer.data()),
+                buffer.size());
           }
         }
       }
