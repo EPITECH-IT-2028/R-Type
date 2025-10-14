@@ -1,75 +1,633 @@
-var searchData=
-[
-  ['ecs_0',['ECS',['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md152',1,'Entity-Component-System (ECS)'],['../md_docs_2wiki_2_game_engine_e_c_s.html',1,'Game Engine (ECS)']]],
-  ['ecs_1',['ecs',['../namespaceecs.html',1,'']]],
-  ['ecs_20development_20guide_2',['🧩 ECS Development Guide',['../md_docs_2server__how__to.html',1,'']]],
-  ['ecsmanager_3',['ECSManager',['../md_docs_2wiki_2_game_engine_e_c_s.html#autotoc_md79',1,'<span class="tt">ECSManager</span>'],['../classecs_1_1_e_c_s_manager.html',1,'ecs::ECSManager'],['../classecs_1_1_e_c_s_manager.html#ab5307ba0eefa1699d62dfd2b241f4a7e',1,'ecs::ECSManager::ECSManager()'],['../classecs_1_1_e_c_s_manager.html#a730989e73dcef670ff6f45e6430a9739',1,'ecs::ECSManager::ECSManager(const ECSManager &amp;)=delete'],['../classecs_1_1_e_c_s_manager.html#a90e292da12e77c1cb0c82c99ccd24d4b',1,'ecs::ECSManager::ECSManager(ECSManager &amp;&amp;)=delete']]],
-  ['ecsmanager_2ehpp_4',['ECSManager.hpp',['../_e_c_s_manager_8hpp.html',1,'']]],
-  ['embedassets_2ecpp_5',['EmbedAssets.cpp',['../_embed_assets_8cpp.html',1,'']]],
-  ['embeddedassets_2ecpp_6',['EmbeddedAssets.cpp',['../_embedded_assets_8cpp.html',1,'']]],
-  ['embeddedassets_2ehpp_7',['EmbeddedAssets.hpp',['../_embedded_assets_8hpp.html',1,'']]],
-  ['end_8',['END',['../namespaceclient.html#a656845c885c89b865c1a22b1a8ea126eab1a326c06d88bf042f73d70f50197905',1,'client::END'],['../namespaceclient.html#ae67200518de7d87d42b0e15b6b59370fab1a326c06d88bf042f73d70f50197905',1,'client::END']]],
-  ['enddrawing_9',['endDrawing',['../classrender_manager_1_1_renderer.html#a57b03d4577ed2428ea0d411c82363ff2',1,'renderManager::Renderer']]],
-  ['endframe_10',['endFrame',['../structecs_1_1_sprite_animation_component.html#aecbe33a2b09ec9d09b4f74c6af69c24f',1,'ecs::SpriteAnimationComponent']]],
-  ['enemy_11',['Enemy',['../classgame_1_1_enemy.html',1,'game::Enemy'],['../classgame_1_1_enemy.html#a9b7c52407d07db1f2910848609771858',1,'game::Enemy::Enemy()']]],
-  ['enemy_2ecpp_12',['Enemy.cpp',['../_enemy_8cpp.html',1,'']]],
-  ['enemy_2ehpp_13',['Enemy.hpp',['../_enemy_8hpp.html',1,'']]],
-  ['enemy_5fbasic_14',['ENEMY_BASIC',['../_packet_8hpp.html#a686d5ee1bf643b2759989d35915ab32ba4d42895150dec75f199d31ade6ff3f49',1,'Packet.hpp']]],
-  ['enemy_5fbasic_5fheight_15',['ENEMY_BASIC_HEIGHT',['../namespacerender_manager_1_1_projectile_sprite.html#a7868da161d58a6ac87e4b84324058f8d',1,'renderManager::ProjectileSprite']]],
-  ['enemy_5fbasic_5fwidth_16',['ENEMY_BASIC_WIDTH',['../namespacerender_manager_1_1_projectile_sprite.html#a91f0ded136cbd6c18e454b6c859b92bd',1,'renderManager::ProjectileSprite']]],
-  ['enemy_5fbasic_5fx_17',['ENEMY_BASIC_X',['../namespacerender_manager_1_1_projectile_sprite.html#a3214305d206ade9ad73dab754f820ed4',1,'renderManager::ProjectileSprite']]],
-  ['enemy_5fbasic_5fy_18',['ENEMY_BASIC_Y',['../namespacerender_manager_1_1_projectile_sprite.html#ab60c0243fb2b5a277c07fe24263d8205',1,'renderManager::ProjectileSprite']]],
-  ['enemy_5fid_19',['enemy_id',['../struct_enemy_spawn_packet.html#aadd07299619e94ad977a3bde99e4cc03',1,'EnemySpawnPacket::enemy_id'],['../struct_enemy_move_packet.html#a37aa79e9627cfd6111632dbbc44949e5',1,'EnemyMovePacket::enemy_id'],['../struct_enemy_death_packet.html#a7beff42a8a291d14f8145fde9fb21b90',1,'EnemyDeathPacket::enemy_id'],['../struct_enemy_hit_packet.html#ad62974ff2b2c76c4f38074d2df66c4ab',1,'EnemyHitPacket::enemy_id'],['../structecs_1_1_enemy_component.html#ab0b752e7dee01f75cec17ec2b100aa2f',1,'ecs::EnemyComponent::enemy_id'],['../structqueue_1_1_enemy_spawn_event.html#af4536b5c766f75e11b3511878e64e711',1,'queue::EnemySpawnEvent::enemy_id'],['../structqueue_1_1_enemy_destroy_event.html#a9c64fb47770fb1474c2da540657ab61a',1,'queue::EnemyDestroyEvent::enemy_id'],['../structqueue_1_1_enemy_hit_event.html#a7afa0143ee83d63ccbf82945e39b9e24',1,'queue::EnemyHitEvent::enemy_id'],['../structqueue_1_1_enemy_move_event.html#a790263465a41d31c1f1787092e1da86d',1,'queue::EnemyMoveEvent::enemy_id']]],
-  ['enemy_5fpath_20',['ENEMY_PATH',['../namespacerender_manager.html#ae6ac34b69c2ce6e9a3172c4d59e3663f',1,'renderManager']]],
-  ['enemy_5fspawn_5foffset_21',['ENEMY_SPAWN_OFFSET',['../_macro_8hpp.html#abc283b1547b162d251f5d3c25722825b',1,'Macro.hpp']]],
-  ['enemy_5fspeed_22',['ENEMY_SPEED',['../_macro_8hpp.html#a2dbbbad23dc751464c2e356eb45cc0c3',1,'Macro.hpp']]],
-  ['enemy_5ftype_23',['enemy_type',['../struct_enemy_spawn_packet.html#a701c7b42e4c56458473e75074c6675e7',1,'EnemySpawnPacket']]],
-  ['enemy_5fwindow_5fheight_24',['ENEMY_WINDOW_HEIGHT',['../_macro_8hpp.html#a37b472f9393d959c1b620d38d6237892',1,'Macro.hpp']]],
-  ['enemy_5fwindow_5fwidth_25',['ENEMY_WINDOW_WIDTH',['../_macro_8hpp.html#af523dd58bbd361300dd9b155ccb227ab',1,'Macro.hpp']]],
-  ['enemycomponent_26',['EnemyComponent',['../structecs_1_1_enemy_component.html',1,'ecs']]],
-  ['enemycomponent_2ehpp_27',['EnemyComponent.hpp',['../_enemy_component_8hpp.html',1,'']]],
-  ['enemydeath_28',['EnemyDeath',['../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c',1,'Packet.hpp']]],
-  ['enemydeath_200x08_29',['EnemyDeath (0x08)',['../md_docs_2server__protocol.html#autotoc_md40',1,'']]],
-  ['enemydeathhandler_30',['EnemyDeathHandler',['../classpacket_1_1_enemy_death_handler.html',1,'packet']]],
-  ['enemydeathpacket_31',['EnemyDeathPacket',['../struct_enemy_death_packet.html',1,'']]],
-  ['enemydestroyevent_32',['EnemyDestroyEvent',['../structqueue_1_1_enemy_destroy_event.html',1,'queue']]],
-  ['enemyhit_33',['EnemyHit',['../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6',1,'Packet.hpp']]],
-  ['enemyhit_200x11_34',['EnemyHit (0x11)',['../md_docs_2server__protocol.html#autotoc_md41',1,'']]],
-  ['enemyhitevent_35',['EnemyHitEvent',['../structqueue_1_1_enemy_hit_event.html',1,'queue']]],
-  ['enemyhitpacket_36',['EnemyHitPacket',['../struct_enemy_hit_packet.html',1,'']]],
-  ['enemymove_37',['EnemyMove',['../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4',1,'Packet.hpp']]],
-  ['enemymove_200x07_38',['EnemyMove (0x07)',['../md_docs_2server__protocol.html#autotoc_md39',1,'']]],
-  ['enemymoveevent_39',['EnemyMoveEvent',['../structqueue_1_1_enemy_move_event.html',1,'queue']]],
-  ['enemymovehandler_40',['EnemyMoveHandler',['../classpacket_1_1_enemy_move_handler.html',1,'packet']]],
-  ['enemymovepacket_41',['EnemyMovePacket',['../struct_enemy_move_packet.html',1,'']]],
-  ['enemyspawn_42',['EnemySpawn',['../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b',1,'Packet.hpp']]],
-  ['enemyspawn_200x06_43',['EnemySpawn (0x06)',['../md_docs_2server__protocol.html#autotoc_md38',1,'']]],
-  ['enemyspawnevent_44',['EnemySpawnEvent',['../structqueue_1_1_enemy_spawn_event.html',1,'queue']]],
-  ['enemyspawnhandler_45',['EnemySpawnHandler',['../classpacket_1_1_enemy_spawn_handler.html',1,'packet']]],
-  ['enemyspawnpacket_46',['EnemySpawnPacket',['../struct_enemy_spawn_packet.html',1,'']]],
-  ['enemyspriteconfig_47',['EnemySpriteConfig',['../structclient_1_1_enemy_sprite_config.html',1,'client']]],
-  ['enemyspriteframeindex_48',['EnemySpriteFrameIndex',['../namespaceclient.html#ae67200518de7d87d42b0e15b6b59370f',1,'client']]],
-  ['enemysystem_49',['EnemySystem',['../classecs_1_1_enemy_system.html',1,'ecs::EnemySystem'],['../classecs_1_1_enemy_system.html#a69f3f1381a87fe856eb65d52962307b6',1,'ecs::EnemySystem::EnemySystem()']]],
-  ['enemysystem_2ecpp_50',['EnemySystem.cpp',['../_enemy_system_8cpp.html',1,'']]],
-  ['enemysystem_2ehpp_51',['EnemySystem.hpp',['../_enemy_system_8hpp.html',1,'']]],
-  ['enemytype_52',['EnemyType',['../_packet_8hpp.html#a8e5148839b6f99970d3343f906623d7a',1,'Packet.hpp']]],
-  ['engine_20ecs_53',['Game Engine (ECS)',['../md_docs_2wiki_2_game_engine_e_c_s.html',1,'']]],
-  ['engine_20that_20roars_20🚀_54',['R-Type - A Game Engine That Roars! 🚀',['../md__r_e_a_d_m_e.html',1,'']]],
-  ['entities_55',['🎯 Creating Game Entities',['../md_docs_2server__how__to.html#autotoc_md3',1,'']]],
-  ['entity_56',['Entity',['../_entity_manager_8hpp.html#a9a522438c9f5d73ebe6349edc3313d5e',1,'EntityManager.hpp']]],
-  ['entity_20component_20system_20ecs_57',['Entity-Component-System (ECS)',['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md152',1,'']]],
-  ['entitydestroyed_58',['entityDestroyed',['../classecs_1_1_i_component_array.html#ad47c7ac0442af67cebe726ff2f52fe5b',1,'ecs::IComponentArray::entityDestroyed()'],['../classecs_1_1_component.html#a279c7f3529601388646bcc2a2d985efa',1,'ecs::Component::entityDestroyed()'],['../classecs_1_1_component_manager.html#afe5edcabf5eb17dd9517bca449705cd3',1,'ecs::ComponentManager::entityDestroyed()'],['../classecs_1_1_system_manager.html#ae2abf3bd633b0acd7f6d4ca00f3241e3',1,'ecs::SystemManager::entityDestroyed()']]],
-  ['entitymanager_59',['EntityManager',['../md_docs_2wiki_2_game_engine_e_c_s.html#autotoc_md80',1,'<span class="tt">EntityManager</span>'],['../classecs_1_1_entity_manager.html',1,'ecs::EntityManager'],['../classecs_1_1_entity_manager.html#acba3847d62f7cd79e22d5ffa490c1f53',1,'ecs::EntityManager::EntityManager()']]],
-  ['entitymanager_2ecpp_60',['EntityManager.cpp',['../_entity_manager_8cpp.html',1,'']]],
-  ['entitymanager_2ehpp_61',['EntityManager.hpp',['../_entity_manager_8hpp.html',1,'']]],
-  ['entitysignaturechanged_62',['entitySignatureChanged',['../classecs_1_1_system_manager.html#ad345bcb888518e7fc2040a0019f55142',1,'ecs::SystemManager']]],
-  ['enumeration_63',['PacketType Enumeration',['../md_docs_2server__protocol.html#autotoc_md25',1,'']]],
-  ['eventqueue_64',['EventQueue',['../classqueue_1_1_event_queue.html',1,'queue::EventQueue'],['../classqueue_1_1_event_queue.html#a3fd25b2c0f09d651244b18b74f3652ff',1,'queue::EventQueue::EventQueue()']]],
-  ['events_2ehpp_65',['Events.hpp',['../_events_8hpp.html',1,'']]],
-  ['example_66',['Communication Flow Example',['../md_docs_2wiki_2_networking.html#autotoc_md105',1,'']]],
-  ['example_20exchange_67',['8. Example Exchange',['../md_docs_2server__protocol.html#autotoc_md53',1,'']]],
-  ['exchange_68',['8. Example Exchange',['../md_docs_2server__protocol.html#autotoc_md53',1,'']]],
-  ['executive_20summary_69',['📋 Executive Summary',['../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md139',1,'']]],
-  ['explained_70',['Main Directories Explained',['../md_docs_2wiki_2_project_structure.html#autotoc_md107',1,'']]],
-  ['exportimageascode_71',['exportImageAsCode',['../classasset_1_1_asset_manager.html#a9b6b803a715b8f103f08d5460192c4f6',1,'asset::AssetManager']]]
+var searchData = [
+  [
+    "ecs_0",
+    [
+      "ECS",
+      [
+        "../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md152",
+        1,
+        "Entity-Component-System (ECS)",
+      ],
+      ["../md_docs_2wiki_2_game_engine_e_c_s.html", 1, "Game Engine (ECS)"],
+    ],
+  ],
+  ["ecs_1", ["ecs", ["../namespaceecs.html", 1, ""]]],
+  [
+    "ecs_20development_20guide_2",
+    ["🧩 ECS Development Guide", ["../md_docs_2server__how__to.html", 1, ""]],
+  ],
+  [
+    "ecsmanager_3",
+    [
+      "ECSManager",
+      [
+        "../md_docs_2wiki_2_game_engine_e_c_s.html#autotoc_md79",
+        1,
+        '<span class="tt">ECSManager</span>',
+      ],
+      ["../classecs_1_1_e_c_s_manager.html", 1, "ecs::ECSManager"],
+      [
+        "../classecs_1_1_e_c_s_manager.html#ab5307ba0eefa1699d62dfd2b241f4a7e",
+        1,
+        "ecs::ECSManager::ECSManager()",
+      ],
+      [
+        "../classecs_1_1_e_c_s_manager.html#a730989e73dcef670ff6f45e6430a9739",
+        1,
+        "ecs::ECSManager::ECSManager(const ECSManager &amp;)=delete",
+      ],
+      [
+        "../classecs_1_1_e_c_s_manager.html#a90e292da12e77c1cb0c82c99ccd24d4b",
+        1,
+        "ecs::ECSManager::ECSManager(ECSManager &amp;&amp;)=delete",
+      ],
+    ],
+  ],
+  [
+    "ecsmanager_2ehpp_4",
+    ["ECSManager.hpp", ["../_e_c_s_manager_8hpp.html", 1, ""]],
+  ],
+  [
+    "embedassets_2ecpp_5",
+    ["EmbedAssets.cpp", ["../_embed_assets_8cpp.html", 1, ""]],
+  ],
+  [
+    "embeddedassets_2ecpp_6",
+    ["EmbeddedAssets.cpp", ["../_embedded_assets_8cpp.html", 1, ""]],
+  ],
+  [
+    "embeddedassets_2ehpp_7",
+    ["EmbeddedAssets.hpp", ["../_embedded_assets_8hpp.html", 1, ""]],
+  ],
+  [
+    "end_8",
+    [
+      "END",
+      [
+        "../namespaceclient.html#a656845c885c89b865c1a22b1a8ea126eab1a326c06d88bf042f73d70f50197905",
+        1,
+        "client::END",
+      ],
+      [
+        "../namespaceclient.html#ae67200518de7d87d42b0e15b6b59370fab1a326c06d88bf042f73d70f50197905",
+        1,
+        "client::END",
+      ],
+    ],
+  ],
+  [
+    "enddrawing_9",
+    [
+      "endDrawing",
+      [
+        "../classrender_manager_1_1_renderer.html#a57b03d4577ed2428ea0d411c82363ff2",
+        1,
+        "renderManager::Renderer",
+      ],
+    ],
+  ],
+  [
+    "endframe_10",
+    [
+      "endFrame",
+      [
+        "../structecs_1_1_sprite_animation_component.html#aecbe33a2b09ec9d09b4f74c6af69c24f",
+        1,
+        "ecs::SpriteAnimationComponent",
+      ],
+    ],
+  ],
+  [
+    "enemy_11",
+    [
+      "Enemy",
+      ["../classgame_1_1_enemy.html", 1, "game::Enemy"],
+      [
+        "../classgame_1_1_enemy.html#a9b7c52407d07db1f2910848609771858",
+        1,
+        "game::Enemy::Enemy()",
+      ],
+    ],
+  ],
+  ["enemy_2ecpp_12", ["Enemy.cpp", ["../_enemy_8cpp.html", 1, ""]]],
+  ["enemy_2ehpp_13", ["Enemy.hpp", ["../_enemy_8hpp.html", 1, ""]]],
+  [
+    "enemy_5fbasic_14",
+    [
+      "ENEMY_BASIC",
+      [
+        "../_packet_8hpp.html#a686d5ee1bf643b2759989d35915ab32ba4d42895150dec75f199d31ade6ff3f49",
+        1,
+        "Packet.hpp",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fbasic_5fheight_15",
+    [
+      "ENEMY_BASIC_HEIGHT",
+      [
+        "../namespacerender_manager_1_1_projectile_sprite.html#a7868da161d58a6ac87e4b84324058f8d",
+        1,
+        "renderManager::ProjectileSprite",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fbasic_5fwidth_16",
+    [
+      "ENEMY_BASIC_WIDTH",
+      [
+        "../namespacerender_manager_1_1_projectile_sprite.html#a91f0ded136cbd6c18e454b6c859b92bd",
+        1,
+        "renderManager::ProjectileSprite",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fbasic_5fx_17",
+    [
+      "ENEMY_BASIC_X",
+      [
+        "../namespacerender_manager_1_1_projectile_sprite.html#a3214305d206ade9ad73dab754f820ed4",
+        1,
+        "renderManager::ProjectileSprite",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fbasic_5fy_18",
+    [
+      "ENEMY_BASIC_Y",
+      [
+        "../namespacerender_manager_1_1_projectile_sprite.html#ab60c0243fb2b5a277c07fe24263d8205",
+        1,
+        "renderManager::ProjectileSprite",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fid_19",
+    [
+      "enemy_id",
+      [
+        "../struct_enemy_spawn_packet.html#aadd07299619e94ad977a3bde99e4cc03",
+        1,
+        "EnemySpawnPacket::enemy_id",
+      ],
+      [
+        "../struct_enemy_move_packet.html#a37aa79e9627cfd6111632dbbc44949e5",
+        1,
+        "EnemyMovePacket::enemy_id",
+      ],
+      [
+        "../struct_enemy_death_packet.html#a7beff42a8a291d14f8145fde9fb21b90",
+        1,
+        "EnemyDeathPacket::enemy_id",
+      ],
+      [
+        "../struct_enemy_hit_packet.html#ad62974ff2b2c76c4f38074d2df66c4ab",
+        1,
+        "EnemyHitPacket::enemy_id",
+      ],
+      [
+        "../structecs_1_1_enemy_component.html#ab0b752e7dee01f75cec17ec2b100aa2f",
+        1,
+        "ecs::EnemyComponent::enemy_id",
+      ],
+      [
+        "../structqueue_1_1_enemy_spawn_event.html#af4536b5c766f75e11b3511878e64e711",
+        1,
+        "queue::EnemySpawnEvent::enemy_id",
+      ],
+      [
+        "../structqueue_1_1_enemy_destroy_event.html#a9c64fb47770fb1474c2da540657ab61a",
+        1,
+        "queue::EnemyDestroyEvent::enemy_id",
+      ],
+      [
+        "../structqueue_1_1_enemy_hit_event.html#a7afa0143ee83d63ccbf82945e39b9e24",
+        1,
+        "queue::EnemyHitEvent::enemy_id",
+      ],
+      [
+        "../structqueue_1_1_enemy_move_event.html#a790263465a41d31c1f1787092e1da86d",
+        1,
+        "queue::EnemyMoveEvent::enemy_id",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fpath_20",
+    [
+      "ENEMY_PATH",
+      [
+        "../namespacerender_manager.html#ae6ac34b69c2ce6e9a3172c4d59e3663f",
+        1,
+        "renderManager",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fspawn_5foffset_21",
+    [
+      "ENEMY_SPAWN_OFFSET",
+      ["../_macro_8hpp.html#abc283b1547b162d251f5d3c25722825b", 1, "Macro.hpp"],
+    ],
+  ],
+  [
+    "enemy_5fspeed_22",
+    [
+      "ENEMY_SPEED",
+      ["../_macro_8hpp.html#a2dbbbad23dc751464c2e356eb45cc0c3", 1, "Macro.hpp"],
+    ],
+  ],
+  [
+    "enemy_5ftype_23",
+    [
+      "enemy_type",
+      [
+        "../struct_enemy_spawn_packet.html#a701c7b42e4c56458473e75074c6675e7",
+        1,
+        "EnemySpawnPacket",
+      ],
+    ],
+  ],
+  [
+    "enemy_5fwindow_5fheight_24",
+    [
+      "ENEMY_SPAWN_Y",
+      ["../_macro_8hpp.html#a37b472f9393d959c1b620d38d6237892", 1, "Macro.hpp"],
+    ],
+  ],
+  [
+    "enemy_5fwindow_5fwidth_25",
+    [
+      "ENEMY_SPAWN_X",
+      ["../_macro_8hpp.html#af523dd58bbd361300dd9b155ccb227ab", 1, "Macro.hpp"],
+    ],
+  ],
+  [
+    "enemycomponent_26",
+    ["EnemyComponent", ["../structecs_1_1_enemy_component.html", 1, "ecs"]],
+  ],
+  [
+    "enemycomponent_2ehpp_27",
+    ["EnemyComponent.hpp", ["../_enemy_component_8hpp.html", 1, ""]],
+  ],
+  [
+    "enemydeath_28",
+    [
+      "EnemyDeath",
+      [
+        "../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c",
+        1,
+        "Packet.hpp",
+      ],
+    ],
+  ],
+  [
+    "enemydeath_200x08_29",
+    [
+      "EnemyDeath (0x08)",
+      ["../md_docs_2server__protocol.html#autotoc_md40", 1, ""],
+    ],
+  ],
+  [
+    "enemydeathhandler_30",
+    [
+      "EnemyDeathHandler",
+      ["../classpacket_1_1_enemy_death_handler.html", 1, "packet"],
+    ],
+  ],
+  [
+    "enemydeathpacket_31",
+    ["EnemyDeathPacket", ["../struct_enemy_death_packet.html", 1, ""]],
+  ],
+  [
+    "enemydestroyevent_32",
+    [
+      "EnemyDestroyEvent",
+      ["../structqueue_1_1_enemy_destroy_event.html", 1, "queue"],
+    ],
+  ],
+  [
+    "enemyhit_33",
+    [
+      "EnemyHit",
+      [
+        "../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6",
+        1,
+        "Packet.hpp",
+      ],
+    ],
+  ],
+  [
+    "enemyhit_200x11_34",
+    [
+      "EnemyHit (0x11)",
+      ["../md_docs_2server__protocol.html#autotoc_md41", 1, ""],
+    ],
+  ],
+  [
+    "enemyhitevent_35",
+    ["EnemyHitEvent", ["../structqueue_1_1_enemy_hit_event.html", 1, "queue"]],
+  ],
+  [
+    "enemyhitpacket_36",
+    ["EnemyHitPacket", ["../struct_enemy_hit_packet.html", 1, ""]],
+  ],
+  [
+    "enemymove_37",
+    [
+      "EnemyMove",
+      [
+        "../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4",
+        1,
+        "Packet.hpp",
+      ],
+    ],
+  ],
+  [
+    "enemymove_200x07_38",
+    [
+      "EnemyMove (0x07)",
+      ["../md_docs_2server__protocol.html#autotoc_md39", 1, ""],
+    ],
+  ],
+  [
+    "enemymoveevent_39",
+    [
+      "EnemyMoveEvent",
+      ["../structqueue_1_1_enemy_move_event.html", 1, "queue"],
+    ],
+  ],
+  [
+    "enemymovehandler_40",
+    [
+      "EnemyMoveHandler",
+      ["../classpacket_1_1_enemy_move_handler.html", 1, "packet"],
+    ],
+  ],
+  [
+    "enemymovepacket_41",
+    ["EnemyMovePacket", ["../struct_enemy_move_packet.html", 1, ""]],
+  ],
+  [
+    "enemyspawn_42",
+    [
+      "EnemySpawn",
+      [
+        "../_packet_8hpp.html#a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b",
+        1,
+        "Packet.hpp",
+      ],
+    ],
+  ],
+  [
+    "enemyspawn_200x06_43",
+    [
+      "EnemySpawn (0x06)",
+      ["../md_docs_2server__protocol.html#autotoc_md38", 1, ""],
+    ],
+  ],
+  [
+    "enemyspawnevent_44",
+    [
+      "EnemySpawnEvent",
+      ["../structqueue_1_1_enemy_spawn_event.html", 1, "queue"],
+    ],
+  ],
+  [
+    "enemyspawnhandler_45",
+    [
+      "EnemySpawnHandler",
+      ["../classpacket_1_1_enemy_spawn_handler.html", 1, "packet"],
+    ],
+  ],
+  [
+    "enemyspawnpacket_46",
+    ["EnemySpawnPacket", ["../struct_enemy_spawn_packet.html", 1, ""]],
+  ],
+  [
+    "enemyspriteconfig_47",
+    [
+      "EnemySpriteConfig",
+      ["../structclient_1_1_enemy_sprite_config.html", 1, "client"],
+    ],
+  ],
+  [
+    "enemyspriteframeindex_48",
+    [
+      "EnemySpriteFrameIndex",
+      [
+        "../namespaceclient.html#ae67200518de7d87d42b0e15b6b59370f",
+        1,
+        "client",
+      ],
+    ],
+  ],
+  [
+    "enemysystem_49",
+    [
+      "EnemySystem",
+      ["../classecs_1_1_enemy_system.html", 1, "ecs::EnemySystem"],
+      [
+        "../classecs_1_1_enemy_system.html#a69f3f1381a87fe856eb65d52962307b6",
+        1,
+        "ecs::EnemySystem::EnemySystem()",
+      ],
+    ],
+  ],
+  [
+    "enemysystem_2ecpp_50",
+    ["EnemySystem.cpp", ["../_enemy_system_8cpp.html", 1, ""]],
+  ],
+  [
+    "enemysystem_2ehpp_51",
+    ["EnemySystem.hpp", ["../_enemy_system_8hpp.html", 1, ""]],
+  ],
+  [
+    "enemytype_52",
+    [
+      "EnemyType",
+      [
+        "../_packet_8hpp.html#a8e5148839b6f99970d3343f906623d7a",
+        1,
+        "Packet.hpp",
+      ],
+    ],
+  ],
+  [
+    "engine_20ecs_53",
+    ["Game Engine (ECS)", ["../md_docs_2wiki_2_game_engine_e_c_s.html", 1, ""]],
+  ],
+  [
+    "engine_20that_20roars_20🚀_54",
+    [
+      "R-Type - A Game Engine That Roars! 🚀",
+      ["../md__r_e_a_d_m_e.html", 1, ""],
+    ],
+  ],
+  [
+    "entities_55",
+    [
+      "🎯 Creating Game Entities",
+      ["../md_docs_2server__how__to.html#autotoc_md3", 1, ""],
+    ],
+  ],
+  [
+    "entity_56",
+    [
+      "Entity",
+      [
+        "../_entity_manager_8hpp.html#a9a522438c9f5d73ebe6349edc3313d5e",
+        1,
+        "EntityManager.hpp",
+      ],
+    ],
+  ],
+  [
+    "entity_20component_20system_20ecs_57",
+    [
+      "Entity-Component-System (ECS)",
+      [
+        "../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md152",
+        1,
+        "",
+      ],
+    ],
+  ],
+  [
+    "entitydestroyed_58",
+    [
+      "entityDestroyed",
+      [
+        "../classecs_1_1_i_component_array.html#ad47c7ac0442af67cebe726ff2f52fe5b",
+        1,
+        "ecs::IComponentArray::entityDestroyed()",
+      ],
+      [
+        "../classecs_1_1_component.html#a279c7f3529601388646bcc2a2d985efa",
+        1,
+        "ecs::Component::entityDestroyed()",
+      ],
+      [
+        "../classecs_1_1_component_manager.html#afe5edcabf5eb17dd9517bca449705cd3",
+        1,
+        "ecs::ComponentManager::entityDestroyed()",
+      ],
+      [
+        "../classecs_1_1_system_manager.html#ae2abf3bd633b0acd7f6d4ca00f3241e3",
+        1,
+        "ecs::SystemManager::entityDestroyed()",
+      ],
+    ],
+  ],
+  [
+    "entitymanager_59",
+    [
+      "EntityManager",
+      [
+        "../md_docs_2wiki_2_game_engine_e_c_s.html#autotoc_md80",
+        1,
+        '<span class="tt">EntityManager</span>',
+      ],
+      ["../classecs_1_1_entity_manager.html", 1, "ecs::EntityManager"],
+      [
+        "../classecs_1_1_entity_manager.html#acba3847d62f7cd79e22d5ffa490c1f53",
+        1,
+        "ecs::EntityManager::EntityManager()",
+      ],
+    ],
+  ],
+  [
+    "entitymanager_2ecpp_60",
+    ["EntityManager.cpp", ["../_entity_manager_8cpp.html", 1, ""]],
+  ],
+  [
+    "entitymanager_2ehpp_61",
+    ["EntityManager.hpp", ["../_entity_manager_8hpp.html", 1, ""]],
+  ],
+  [
+    "entitysignaturechanged_62",
+    [
+      "entitySignatureChanged",
+      [
+        "../classecs_1_1_system_manager.html#ad345bcb888518e7fc2040a0019f55142",
+        1,
+        "ecs::SystemManager",
+      ],
+    ],
+  ],
+  [
+    "enumeration_63",
+    [
+      "PacketType Enumeration",
+      ["../md_docs_2server__protocol.html#autotoc_md25", 1, ""],
+    ],
+  ],
+  [
+    "eventqueue_64",
+    [
+      "EventQueue",
+      ["../classqueue_1_1_event_queue.html", 1, "queue::EventQueue"],
+      [
+        "../classqueue_1_1_event_queue.html#a3fd25b2c0f09d651244b18b74f3652ff",
+        1,
+        "queue::EventQueue::EventQueue()",
+      ],
+    ],
+  ],
+  ["events_2ehpp_65", ["Events.hpp", ["../_events_8hpp.html", 1, ""]]],
+  [
+    "example_66",
+    [
+      "Communication Flow Example",
+      ["../md_docs_2wiki_2_networking.html#autotoc_md105", 1, ""],
+    ],
+  ],
+  [
+    "example_20exchange_67",
+    [
+      "8. Example Exchange",
+      ["../md_docs_2server__protocol.html#autotoc_md53", 1, ""],
+    ],
+  ],
+  [
+    "exchange_68",
+    [
+      "8. Example Exchange",
+      ["../md_docs_2server__protocol.html#autotoc_md53", 1, ""],
+    ],
+  ],
+  [
+    "executive_20summary_69",
+    [
+      "📋 Executive Summary",
+      [
+        "../md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y.html#autotoc_md139",
+        1,
+        "",
+      ],
+    ],
+  ],
+  [
+    "explained_70",
+    [
+      "Main Directories Explained",
+      ["../md_docs_2wiki_2_project_structure.html#autotoc_md107", 1, ""],
+    ],
+  ],
+  [
+    "exportimageascode_71",
+    [
+      "exportImageAsCode",
+      [
+        "../classasset_1_1_asset_manager.html#a9b6b803a715b8f103f08d5460192c4f6",
+        1,
+        "asset::AssetManager",
+      ],
+    ],
+  ],
 ];
