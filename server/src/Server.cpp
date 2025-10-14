@@ -1,5 +1,6 @@
 #include "Server.hpp"
 #include <chrono>
+#include <cstddef>
 #include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
@@ -189,8 +190,17 @@ void server::Server::startReceive() {
   });
 }
 
-/*
- * Handle completion of a receive operation.
+/**
+ * @brief Handle incoming data from clients.
+ *
+ * Parses the packet header to determine the packet type and delegates to the
+ * appropriate handler function. If the packet is a PlayerInfo packet, it calls
+ * `handlePlayerInfoPacket` to manage new player connections. For other packet
+ * types, it attempts to find the existing client based on the sender's
+ * endpoint and processes the data accordingly.
+ *
+ * @param data Pointer to the received data buffer.
+ * @param bytes_transferred Number of bytes received in the buffer.
  */
 void server::Server::handleReceive(const char *data,
                                    std::size_t bytes_transferred) {
@@ -200,32 +210,42 @@ void server::Server::handleReceive(const char *data,
     return;
   }
 
-  int client_idx = findOrCreateClient();
-  if (client_idx == KO) {
-    std::cerr << "[WARNING] Max clients reached. Refused connection."
-              << std::endl;
+  PacketHeader header{};
+  std::memcpy(&header, data, sizeof(PacketHeader));
+
+  if (header.type == PacketType::PlayerInfo) {
+    handlePlayerInfoPacket(data, bytes_transferred);
     return;
-  } else {
-    handleClientData(client_idx, data, bytes_transferred);
   }
+
+  int client_idx = findExistingClient();
+  if (client_idx == KO)
+    return;
+  handleClientData(client_idx, data, bytes_transferred);
 }
 
 /**
- * Find an existing client by endpoint or create a new one if space allows.
- * Returns the index of the client in the _clients vector, or -1 if no space
- * is available.
+ * @brief Handle a PlayerInfo packet from a client attempting to connect.
+ *
+ * Validates the packet size, checks if the client is already connected,
+ * and if not, assigns a new player ID and registers the client.
+ * If the server is at max capacity, it refuses the connection.
+ * @param data Pointer to the received data buffer.
+ * @param size Size of the received data buffer.
  */
-int server::Server::findOrCreateClient() {
+void server::Server::handlePlayerInfoPacket(const char *data,
+                                            std::size_t size) {
+  if (size < sizeof(PlayerInfoPacket)) {
+    std::cerr << "[WARNING] Invalid PlayerInfo packet size" << std::endl;
+    return;
+  }
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (_clients[i] && _clients[i]->_connected &&
         _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
             current_endpoint) {
-      _clients[i]->_connected = true;
-      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
-      _player_count++;
-      return static_cast<int>(i);
+      return;
     }
   }
 
@@ -236,12 +256,35 @@ int server::Server::findOrCreateClient() {
       _clients[i]->_connected = true;
       _player_count++;
       _networkManager.registerClient(id, current_endpoint);
+      std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
+      auto handler = _factory.createHandler(PacketType::PlayerInfo);
+      if (handler) {
+        handler->handlePacket(*this, *_clients[i], data, size);
+      }
+      return;
+    }
+  }
 
-      std::cout << "[WORLD] New player connected with ID " << id << std::endl;
+  std::cerr << "[WARNING] Max clients reached. Refused connection from "
+            << current_endpoint.address().to_string() << std::endl;
+}
 
-      auto msg = PacketBuilder::makeMessage("Welcome to the server!");
-      _networkManager.sendToClient(id, reinterpret_cast<const char *>(&msg),
-                                   sizeof(msg));
+/**
+ * @brief Find an existing client based on the sender's endpoint.
+ * Compares the remote endpoint of the incoming packet with the stored endpoints
+ * of connected clients. If a match is found, updates the client's last
+ * heartbeat timestamp and returns the client's index. If no match is found,
+ * returns KO.
+ * @return int Index of the existing client, or KO if not found.
+ */
+size_t server::Server::findExistingClient() {
+  auto current_endpoint = _networkManager.getRemoteEndpoint();
+
+  for (size_t i = 0; i < _clients.size(); ++i) {
+    if (_clients[i] && _clients[i]->_connected &&
+        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
+            current_endpoint) {
+      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
       return static_cast<int>(i);
     }
   }

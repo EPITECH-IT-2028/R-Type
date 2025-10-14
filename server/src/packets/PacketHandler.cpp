@@ -6,6 +6,7 @@
 #include "Broadcast.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
+#include "PacketSender.hpp"
 #include "Server.hpp"
 
 int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,

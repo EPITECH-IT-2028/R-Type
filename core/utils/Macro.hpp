@@ -23,10 +23,15 @@ constexpr float PLAYER_SPEED = 400.0f;
 
 constexpr float ENEMY_SPEED = -80.0f;
 
-constexpr int ENEMY_WINDOW_HEIGHT = 700;
+constexpr int ENEMY_SPAWN_Y = 700;
 
-constexpr float ENEMY_WINDOW_WIDTH = 1220.0f;
+constexpr float ENEMY_SPAWN_X = 1220.0f;
 
 constexpr int ENEMY_SPAWN_OFFSET = 25;
 
 constexpr float PROJECTILE_SPEED = 100.0f;
+
+constexpr int WINDOW_HEIGHT = 750;
+constexpr int WINDOW_WIDTH = 1200;
+
+constexpr int MARGIN_WINDOW = 30;
