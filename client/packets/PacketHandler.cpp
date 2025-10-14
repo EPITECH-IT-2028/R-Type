@@ -66,7 +66,7 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  PlayerDeathPacket &packet = packetOpt.value();
+  const PlayerDeathPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[PLAYER DEATH] Player ID: %u died at (%f, %f)",
            packet.player_id, packet.x, packet.y);
@@ -109,7 +109,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  PlayerDisconnectPacket &packet = packetOpt.value();
+  const PlayerDisconnectPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Player ID: %u disconnected",
            packet.player_id);
@@ -217,7 +217,7 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  EnemyMovePacket &packet = packetOpt.value();
+  const EnemyMovePacket &packet = packetOpt.value();
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
@@ -252,7 +252,7 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  EnemyDeathPacket &packet = packetOpt.value();
+  const EnemyDeathPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[ENEMY DEATH] Enemy ID: %u has been destroyed",
            packet.enemy_id);
@@ -289,7 +289,7 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  ProjectileSpawnPacket packet = packetOpt.value();
+  const ProjectileSpawnPacket packet = packetOpt.value();
 
   if (client.getProjectileEntity(packet.projectile_id) !=
       static_cast<Entity>(-1)) {
@@ -364,7 +364,7 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  ProjectileHitPacket &packet = packetOpt.value();
+  const ProjectileHitPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO,
            "[PROJECTILE HIT] projectile=%u target=%u is_player=%u at=(%f,%f)",
@@ -400,7 +400,7 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-  ProjectileDestroyPacket &packet = packetOpt.value();
+  const ProjectileDestroyPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[PROJECTILE DESTROY] projectile=%u at=(%f,%f)",
            packet.projectile_id, packet.x, packet.y);
