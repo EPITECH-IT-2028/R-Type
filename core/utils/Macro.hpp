@@ -23,9 +23,9 @@ constexpr float PLAYER_SPEED = 400.0f;
 
 constexpr float ENEMY_SPEED = -80.0f;
 
-constexpr int ENEMY_WINDOW_Y = 700;
+constexpr int ENEMY_SPAWN_Y = 700;
 
-constexpr float ENNEMY_SPAWN_X = 1220.0f;
+constexpr float ENEMY_SPAWN_X = 1220.0f;
 
 constexpr int ENEMY_SPAWN_OFFSET = 25;
 

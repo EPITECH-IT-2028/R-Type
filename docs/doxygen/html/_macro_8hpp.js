@@ -16,16 +16,8 @@ var _macro_8hpp = [
     null,
   ],
   ["ENEMY_SPEED", "_macro_8hpp.html#a2dbbbad23dc751464c2e356eb45cc0c3", null],
-  [
-    "ENEMY_WINDOW_Y",
-    "_macro_8hpp.html#a37b472f9393d959c1b620d38d6237892",
-    null,
-  ],
-  [
-    "ENNEMY_SPAWN_X",
-    "_macro_8hpp.html#af523dd58bbd361300dd9b155ccb227ab",
-    null,
-  ],
+  ["ENEMY_SPAWN_Y", "_macro_8hpp.html#a37b472f9393d959c1b620d38d6237892", null],
+  ["ENEMY_SPAWN_X", "_macro_8hpp.html#af523dd58bbd361300dd9b155ccb227ab", null],
   ["FPS", "_macro_8hpp.html#a7ad15bc7fba6abed935a389e599bb175", null],
   ["KO", "_macro_8hpp.html#aefa5a09d48653b7d0eb80bc70151be15", null],
   ["OK", "_macro_8hpp.html#a93a6cff6e7a14b08c6d67db498648ba9", null],

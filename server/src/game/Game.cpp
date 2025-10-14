@@ -264,11 +264,12 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   uint32_t entity;
   switch (type) {
     case EnemyType::BASIC_FIGHTER: {
+      std::scoped_lock ecsLock(_ecsMutex);
       entity = _ecsManager.createEntity();
 
       float spawnY =
-          static_cast<float>(rand() % ENEMY_WINDOW_Y + ENEMY_SPAWN_OFFSET);
-      float spawnX = ENNEMY_SPAWN_X;
+          static_cast<float>(rand() % ENEMY_SPAWN_Y + ENEMY_SPAWN_OFFSET);
+      float spawnX = ENEMY_SPAWN_X;
 
       _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
       _ecsManager.addComponent<ecs::PositionComponent>(entity,

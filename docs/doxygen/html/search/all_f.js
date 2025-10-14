@@ -256,14 +256,14 @@ var searchData = [
   [
     "enemy_5fwindow_5fheight_24",
     [
-      "ENEMY_WINDOW_Y",
+      "ENEMY_SPAWN_Y",
       ["../_macro_8hpp.html#a37b472f9393d959c1b620d38d6237892", 1, "Macro.hpp"],
     ],
   ],
   [
     "enemy_5fwindow_5fwidth_25",
     [
-      "ENNEMY_SPAWN_X",
+      "ENEMY_SPAWN_X",
       ["../_macro_8hpp.html#af523dd58bbd361300dd9b155ccb227ab", 1, "Macro.hpp"],
     ],
   ],
