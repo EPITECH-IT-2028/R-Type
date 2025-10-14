@@ -29,6 +29,16 @@ namespace ecs {
         _index++;
       }
 
+      /**
+       * @brief Remove the component for an entity and keep component storage dense.
+       *
+       * Deletes the component associated with the given entity, replaces the removed
+       * slot with the last stored component to maintain a contiguous array, updates
+       * internal entity/index mappings accordingly, and decrements the component count.
+       *
+       * @param entityId The entity whose component should be removed.
+       * @throws std::runtime_error if the entity does not have this component.
+       */
       void removeData(Entity entityId) {
         if (_entityToIndexMap.find(entityId) == _entityToIndexMap.end()) {
           throw std::runtime_error(

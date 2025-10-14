@@ -7,6 +7,11 @@
 #include "ScoreComponent.hpp"
 #include "VelocityComponent.hpp"
 
+/**
+ * @brief Retrieve the enemy's position as an (x, y) pair.
+ *
+ * @return std::pair<float, float> containing the x and y coordinates; returns (0.0f, 0.0f) if the PositionComponent is not present.
+ */
 std::pair<float, float> game::Enemy::getPosition() const {
   if (hasComponent<ecs::PositionComponent>()) {
     const auto &pos = getComponent<ecs::PositionComponent>();
@@ -84,6 +89,14 @@ std::pair<float, float> game::Enemy::getVelocity() const {
   return {0.0f, 0.0f};
 }
 
+/**
+ * @brief Sets the enemy's velocity if a VelocityComponent is present.
+ *
+ * Updates the component's horizontal and vertical velocity components when available; does nothing if the component is absent.
+ *
+ * @param vx Horizontal velocity.
+ * @param vy Vertical velocity.
+ */
 void game::Enemy::setVelocity(float vx, float vy) {
   if (hasComponent<ecs::VelocityComponent>()) {
     auto &vel = getComponent<ecs::VelocityComponent>();
@@ -92,6 +105,11 @@ void game::Enemy::setVelocity(float vx, float vy) {
   }
 }
 
+/**
+ * @brief Retrieves the enemy's score from its ScoreComponent.
+ *
+ * @return std::uint32_t The score stored in the ScoreComponent, or 0 if the component is not present.
+ */
 std::uint32_t game::Enemy::getScore() const {
   if (hasComponent<ecs::ScoreComponent>()) {
     return getComponent<ecs::ScoreComponent>().score;
@@ -99,6 +117,14 @@ std::uint32_t game::Enemy::getScore() const {
   return 0;
 }
 
+/**
+ * @brief Updates the enemy's position by integrating its velocity over a time step.
+ *
+ * If both PositionComponent and VelocityComponent are present, advances the position by
+ * vx * deltaTime and vy * deltaTime. If either component is missing, no action is performed.
+ *
+ * @param deltaTime Time step in seconds used to scale velocity when updating position.
+ */
 void game::Enemy::update(float deltaTime) {
   if (hasComponent<ecs::PositionComponent>() &&
       hasComponent<ecs::VelocityComponent>()) {

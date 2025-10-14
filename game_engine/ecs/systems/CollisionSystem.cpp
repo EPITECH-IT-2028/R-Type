@@ -19,12 +19,13 @@
 #include "ScoreComponent.hpp"
 
 /**
- * @brief Processes collisions among managed entities by checking all unique
- * pairs for AABB overlap and invoking collision handling when overlaps are
- * detected.
+ * @brief Iterates managed entities and detects/handles axis-aligned bounding-box collisions between all unique pairs.
  *
- * @param dt Elapsed time since the previous update in seconds (currently
- * unused).
+ * During iteration, entities found out of bounds are destroyed and skipped. Each unordered pair is checked once; entities
+ * removed during processing are tracked to avoid further checks. When two existing entities' AABBs overlap, `handleCollision`
+ * is invoked; if either entity is removed as a result, it is marked destroyed and further comparisons are adjusted accordingly.
+ *
+ * @param dt Elapsed time since the previous update in seconds.
  */
 void ecs::CollisionSystem::update(float dt) {
   std::vector<Entity> entities(_entities.begin(), _entities.end());
@@ -69,26 +70,16 @@ void ecs::CollisionSystem::update(float dt) {
 }
 
 /**
- * @brief Resolve a collision between two entities and apply game effects.
+ * @brief Resolve a collision between two entities and apply the appropriate game effects.
  *
- * @details Determines the roles of the two entities (projectile, player, enemy)
- * and processes one of the supported collision cases:
- * - Projectile vs Enemy: applies projectile damage to the enemy, enqueues an
- *   EnemyHitEvent or EnemyDestroyEvent as appropriate, enqueues a
- *   ProjectileDestroyEvent, and destroys the projectile (and the enemy if
- *   destroyed).
- * - Projectile vs Player: applies projectile damage to the player, enqueues a
- *   PlayerHitEvent or PlayerDestroyEvent as appropriate, enqueues a
- *   ProjectileDestroyEvent, and destroys the projectile (and the player if
- *   destroyed).
- * - Player vs Enemy: applies a fixed collision damage to both entities,
- * enqueues PlayerHit/PlayerDestroy and EnemyHit/EnemyDestroy events as
- * appropriate, and destroys entities whose health reaches zero.
+ * Determines each entity's role (projectile, player, enemy) and processes supported
+ * collision cases, applying damage, queuing relevant events, and destroying entities
+ * when required.
  *
- * If an event queue is available, the corresponding events are enqueued before
- * entities are destroyed. The function ignores projectile collisions that do
- * not match the expected projectile type for the target (e.g., enemy
- * projectiles hitting enemies or player projectiles hitting players).
+ * Supported cases:
+ * - Projectile vs Enemy
+ * - Projectile vs Player
+ * - Player vs Enemy
  *
  * @param entity1 The first colliding entity.
  * @param entity2 The second colliding entity.
@@ -213,6 +204,17 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
   return (axMin <= bxMax && axMax >= bxMin && ayMin <= byMax && ayMax >= byMin);
 }
 
+/**
+ * @brief Process a collision between a projectile and a player, apply damage, emit events, and destroy involved entities.
+ *
+ * If the projectile is an enemy-owned projectile, subtract its damage from the player's health, enqueue either
+ * a PlayerHitEvent or PlayerDestroyEvent as appropriate, enqueue a ProjectileDestroyEvent for the projectile,
+ * and ensure the projectile is destroyed. If the projectile or player is null, or the projectile is a player-owned
+ * projectile, no action is taken.
+ *
+ * @param projectile Shared pointer to the projectile involved in the collision; must have a corresponding ProjectileComponent.
+ * @param player Shared pointer to the player struck by the projectile.
+ */
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
     std::shared_ptr<game::Projectile> projectile,
     std::shared_ptr<game::Player> player) {
@@ -265,6 +267,20 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
   _game->destroyProjectile(projectile->getProjectileId());
 }
 
+/**
+ * @brief Resolve a collision between a player and an enemy.
+ *
+ * Applies fixed collision damage to both the enemy and the player, enqueues
+ * hit or destroy events for each as appropriate, destroys entities whose
+ * health reaches zero, and awards the enemy's score to the player when the
+ * enemy is destroyed.
+ *
+ * If the system's event queue is not set, no damage, events, destruction,
+ * or score updates are performed.
+ *
+ * @param enemy The enemy involved in the collision.
+ * @param player The player involved in the collision.
+ */
 void ecs::CollisionSystem::handlePlayerEnemyCollision(
     std::shared_ptr<game::Enemy> enemy, std::shared_ptr<game::Player> player) {
   const int collisionDamage = COLLISION_DAMAGE;
@@ -311,6 +327,16 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
   }
 }
 
+/**
+ * @brief Resolve a collision between a projectile and an enemy.
+ *
+ * Applies the projectile's damage to the enemy (no action if pointers are null or projectile is of type ENEMY_BASIC),
+ * enqueues enemy hit or destroy events when an event queue is present, increments the owning player's score on enemy death,
+ * enqueues a projectile-destroy event when an event queue is present, and always destroys the projectile in the game state.
+ *
+ * @param projectile Projectile that collided with the enemy; ignored if null or if its type is ENEMY_BASIC.
+ * @param enemy Enemy hit by the projectile; ignored if null.
+ */
 void ecs::CollisionSystem::handleEnemyProjectileCollision(
     std::shared_ptr<game::Projectile> projectile,
     std::shared_ptr<game::Enemy> enemy) {
@@ -383,6 +409,16 @@ void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
             << " to increment score." << std::endl;
 }
 
+/**
+ * @brief Checks whether a projectile entity lies outside the play area (with margin) and handles cleanup.
+ *
+ * If the entity has both a PositionComponent and a ProjectileComponent and its position is outside
+ * the window bounds plus a fixed margin, enqueues a ProjectileDestroyEvent for that projectile
+ * and destroys the entity via the ECS manager.
+ *
+ * @param entity The entity to check; expected to have PositionComponent and ProjectileComponent.
+ * @return true if the entity was out of bounds and was destroyed, false otherwise.
+ */
 bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
   if (!_ecsManager.hasComponent<PositionComponent>(entity) ||
       !_ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {

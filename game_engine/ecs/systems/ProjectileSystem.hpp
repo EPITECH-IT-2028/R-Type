@@ -11,6 +11,14 @@ namespace ecs {
           : _ecsManager(ecsManager) {
       }
 
+      /**
+       * @brief Sets the optional ECSManager pointer used by this system.
+       *
+       * Assigns the internal pointer that this system will use for ECS operations; passing
+       * `nullptr` clears the pointer.
+       *
+       * @param ecsManager Pointer to an ECSManager instance, or `nullptr` to unset.
+       */
       void setECSManager(ECSManager *ecsManager) {
         _ecsManagerPtr = ecsManager;
       }
