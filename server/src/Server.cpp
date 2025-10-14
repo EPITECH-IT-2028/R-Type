@@ -234,13 +234,15 @@ void server::Server::handleReceive(const char *data,
 }
 
 /**
- * @brief Handle a PlayerInfo packet from a client attempting to connect.
+ * @brief Handle an incoming PlayerInfo packet and register a new client connection if possible.
  *
- * Validates the packet size, checks if the client is already connected,
- * and if not, assigns a new player ID and registers the client.
- * If the server is at max capacity, it refuses the connection.
- * @param data Pointer to the received data buffer.
- * @param size Size of the received data buffer.
+ * If the sender is already registered, the function returns without action.
+ * If an empty client slot exists, a new player ID is assigned, the client is marked connected,
+ * the remote endpoint is registered, and the packet is dispatched to the PlayerInfo handler.
+ * If no slot is available, the connection is refused and a warning is logged.
+ *
+ * @param data Pointer to the received packet buffer.
+ * @param size Size of the received packet buffer in bytes.
  */
 void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
@@ -296,8 +298,18 @@ size_t server::Server::findExistingClient() {
   return KO;
 }
 
-/*
- * Process data received from a client.
+/**
+ * @brief Handle and dispatch a packet received from a connected client.
+ *
+ * Validates the provided client index and packet size, attempts to deserialize
+ * the packet header, and forwards the raw packet to the appropriate packet
+ * handler produced by the factory. Logs a warning if the client is invalid,
+ * the packet is too small, header deserialization fails, or no handler exists
+ * for the header's packet type.
+ *
+ * @param client_idx Index of the client within the server's client array.
+ * @param data Pointer to the received packet bytes.
+ * @param size Length in bytes of the received packet buffer.
  */
 void server::Server::handleClientData(std::size_t client_idx, const char *data,
                                       std::size_t size) {

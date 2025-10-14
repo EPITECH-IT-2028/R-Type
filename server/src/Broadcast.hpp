@@ -12,6 +12,18 @@ namespace broadcast {
   struct Broadcast {
     public:
       template <typename Packet, typename Pred>
+      /**
+       * @brief Serialize a packet and send it to a filtered subset of clients.
+       *
+       * Serializes the provided packet into a byte buffer and sends that buffer to each
+       * client in `clients` that is non-null, currently connected, and for which `pred`
+       * returns true.
+       *
+       * @param networkManager ServerNetworkManager used to send the serialized buffer.
+       * @param clients Vector of shared pointers to server::Client to consider as recipients.
+       * @param packet Packet to serialize and broadcast.
+       * @param pred Predicate called with a client reference; the packet is sent only if `pred(client)` evaluates to true.
+       */
       static void broadcastTo(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
@@ -35,10 +47,17 @@ namespace broadcast {
                     [](const auto &) { return true; });
       }
 
-      /*
-       * Send existing players to the newly connected client.
-       * This allows the new client to be aware of all players already in the
-       * game.
+      /**
+       * @brief Sends information about all currently connected players to a newly connected client.
+       *
+       * For each player in the game that exists, is connected, and is not the new player,
+       * constructs a NewPlayer packet (using the player's position, speed, and health),
+       * defaults health to 0 when absent, serializes the packet, and sends it to the client
+       * identified by newPlayerID.
+       *
+       * @param networkManager Manager used to send serialized packets to clients.
+       * @param game Source of current game state and player information.
+       * @param newPlayerID ID of the client that should receive the existing-player updates.
        */
       static void broadcastExistingPlayers(
           network::ServerNetworkManager &networkManager, game::Game &game,
