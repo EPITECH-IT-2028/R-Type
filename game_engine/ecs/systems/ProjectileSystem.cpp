@@ -32,11 +32,6 @@ void ecs::ProjectileSystem::moveBasics(const Entity &entity, float dt) {
   auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
   position.x += velocity.vx * dt;
   position.y += velocity.vy * dt;
-  if (isOutOfBounds(entity, WINDOW_WIDTH, WINDOW_HEIGHT)) {
-    std::cout << "Projectile out of bounds, destroying entity " << entity
-              << std::endl;
-    // _ecsManager.destroyEntity(entity);
-  }
 }
 
 bool ecs::ProjectileSystem::isOutOfBounds(const Entity &entity, int screenWidth,
