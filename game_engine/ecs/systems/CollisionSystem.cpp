@@ -392,8 +392,9 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
   auto &projectile = _ecsManager.getComponent<ProjectileComponent>(entity);
   const float margin = 100.0f;
 
-  bool isOutOfBounds = (position.x < -margin || position.x > 1200 + margin ||
-                        position.y < -margin || position.y > 750 + margin);
+  bool isOutOfBounds =
+      (position.x < -margin || position.x > WINDOW_WIDTH + margin ||
+       position.y < -margin || position.y > WINDOW_HEIGHT + margin);
 
   if (!isOutOfBounds)
     return false;
