@@ -62,8 +62,8 @@ namespace ecs {
 
       bool isOutOfBounds(const Entity &entity);
 
-      void handlePlayerEnemyCollision(const Entity &enemyEntity,
-                                      const Entity &playerEntity);
+      void handlePlayerEnemyCollision(std::shared_ptr<game::Enemy> enemy,
+                                      std::shared_ptr<game::Player> player);
       void handlePlayerProjectileCollision(
           std::shared_ptr<game::Projectile> projectile,
           std::shared_ptr<game::Player> player);

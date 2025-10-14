@@ -219,7 +219,7 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
   if (_eventQueue) {
     player->setHealth(player->getHealth().value() -
                       projectile->getDamage().value());
-    if (player->getHealth().value() - projectile->getDamage().value() <= 0) {
+    if (player->getHealth().value() <= 0) {
       queue::PlayerDestroyEvent playerDestroyEvent;
       playerDestroyEvent.player_id = player->getPlayerId();
       playerDestroyEvent.x = player->getPosition().first;
@@ -252,78 +252,47 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
 }
 
 void ecs::CollisionSystem::handlePlayerEnemyCollision(
-    const Entity &enemyEntity, const Entity &playerEntity) {
-  if (!_ecsManager.hasComponent<HealthComponent>(playerEntity) ||
-      !_ecsManager.hasComponent<HealthComponent>(enemyEntity) ||
-      !_ecsManager.hasComponent<PlayerComponent>(playerEntity) ||
-      !_ecsManager.hasComponent<EnemyComponent>(enemyEntity) ||
-      !_ecsManager.hasComponent<PositionComponent>(playerEntity) ||
-      !_ecsManager.hasComponent<PositionComponent>(enemyEntity)) {
-    return;
-  }
-
-  auto &playerHealth = _ecsManager.getComponent<HealthComponent>(playerEntity);
-  auto &enemyHealth = _ecsManager.getComponent<HealthComponent>(enemyEntity);
-
+    std::shared_ptr<game::Enemy> enemy, std::shared_ptr<game::Player> player) {
   const int collisionDamage = COLLISION_DAMAGE;
 
-  playerHealth.health -= collisionDamage;
-  enemyHealth.health -= collisionDamage;
-
   if (_eventQueue) {
-    auto &playerComponent =
-        _ecsManager.getComponent<PlayerComponent>(playerEntity);
-    auto &enemyComponent =
-        _ecsManager.getComponent<EnemyComponent>(enemyEntity);
+    player->setHealth(player->getHealth().value() - COLLISION_DAMAGE);
+    enemy->setHealth(enemy->getHealth().value() - COLLISION_DAMAGE);
 
-    if (playerHealth.health <= 0) {
-      playerHealth.health = 0;
-      queue::PlayerDestroyEvent playerDestroyEvent;
-      playerDestroyEvent.player_id = playerComponent.player_id;
-      playerDestroyEvent.x =
-          _ecsManager.getComponent<PositionComponent>(playerEntity).x;
-      playerDestroyEvent.y =
-          _ecsManager.getComponent<PositionComponent>(playerEntity).y;
-      _eventQueue->addRequest(playerDestroyEvent);
-      _game->destroyPlayer(playerComponent.player_id);
-    } else {
-      queue::PlayerHitEvent playerHitEvent;
-      playerHitEvent.player_id = playerComponent.player_id;
-      playerHitEvent.x =
-          _ecsManager.getComponent<PositionComponent>(playerEntity).x;
-      playerHitEvent.y =
-          _ecsManager.getComponent<PositionComponent>(playerEntity).y;
-      playerHitEvent.damage = collisionDamage;
-      playerHitEvent.sequence_number = 0;
-      _eventQueue->addRequest(playerHitEvent);
-    }
-
-    if (enemyHealth.health <= 0) {
-      enemyHealth.health = 0;
+    if (enemy->getHealth() <= 0) {
       queue::EnemyDestroyEvent enemyDestroyEvent;
-      enemyDestroyEvent.enemy_id = enemyComponent.enemy_id;
-      enemyDestroyEvent.x =
-          _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
-      enemyDestroyEvent.y =
-          _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
-      enemyDestroyEvent.player_id = playerComponent.player_id;
-      enemyDestroyEvent.score =
-          _ecsManager.getComponent<ScoreComponent>(enemyEntity).score;
+      enemyDestroyEvent.enemy_id = enemy->getEnemyId();
+      enemyDestroyEvent.x = enemy->getPosition().first;
+      enemyDestroyEvent.y = enemy->getPosition().second;
+      enemyDestroyEvent.player_id = player->getPlayerId();
+      enemyDestroyEvent.score = enemy->getScore();
       _eventQueue->addRequest(enemyDestroyEvent);
-      _game->destroyEnemy(enemyComponent.enemy_id);
-      incrementPlayerScore(
-          _ecsManager.getComponent<PlayerComponent>(playerEntity).player_id,
-          enemyDestroyEvent.score);
+      _game->destroyEnemy(enemy->getEnemyId());
+      incrementPlayerScore(player->getPlayerId(), enemyDestroyEvent.score);
     } else {
       queue::EnemyHitEvent enemyHitEvent;
-      enemyHitEvent.enemy_id = enemyComponent.enemy_id;
-      enemyHitEvent.x =
-          _ecsManager.getComponent<PositionComponent>(enemyEntity).x;
-      enemyHitEvent.y =
-          _ecsManager.getComponent<PositionComponent>(enemyEntity).y;
+      enemyHitEvent.enemy_id = enemy->getEnemyId();
+      enemyHitEvent.x = enemy->getPosition().first;
+      enemyHitEvent.y = enemy->getPosition().second;
       enemyHitEvent.damage = collisionDamage;
       enemyHitEvent.sequence_number = 0;
       _eventQueue->addRequest(enemyHitEvent);
+    }
+    if (player->getHealth().value() <= 0) {
+      queue::PlayerDestroyEvent playerDestroyEvent;
+      playerDestroyEvent.player_id = player->getPlayerId();
+      playerDestroyEvent.x = player->getPosition().first;
+      playerDestroyEvent.y = player->getPosition().second;
+      _eventQueue->addRequest(playerDestroyEvent);
+      _game->destroyPlayer(player->getPlayerId());
+    } else {
+      queue::PlayerHitEvent playerHitEvent;
+      playerHitEvent.player_id = player->getPlayerId();
+      playerHitEvent.x = player->getPosition().first;
+      playerHitEvent.y = player->getPosition().second;
+      playerHitEvent.damage = collisionDamage;
+      playerHitEvent.sequence_number = 0;
+      _eventQueue->addRequest(playerHitEvent);
     }
   }
 }
