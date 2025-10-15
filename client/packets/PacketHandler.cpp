@@ -78,11 +78,6 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
     ecsManager.destroyEntity(playerEntity);
     client.destroyPlayerEntity(packet.player_id);
 
-    if (client.getPlayerId() == packet.player_id) {
-      TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Our player ID %u disconnected",
-               packet.player_id);
-      client.disconnect();
-    }
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER DISCONNECTED] Failed to remove player %u: %s",
              packet.player_id, e.what());
