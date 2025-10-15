@@ -34,6 +34,13 @@ enum class ProjectileType : uint8_t {
   ENEMY_BASIC = 0x02
 };
 
+enum class MovementInputType : uint8_t {
+  UP = 0x01,
+  DOWN = 0x02,
+  LEFT = 0x03,
+  RIGHT = 0x04
+};
+
 #define ALIGNED alignas(4)
 
 /* both client and server packets */
@@ -54,8 +61,7 @@ struct ALIGNED MovePacket {
     PacketHeader header;
     uint32_t player_id;
     uint32_t sequence_number;
-    float x;
-    float y;
+    MovementInputType input;
 };
 
 /* Server to client packets */
