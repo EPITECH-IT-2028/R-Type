@@ -6,28 +6,29 @@
 namespace ecs {
   class ProjectileSystem : public System {
     public:
-      explicit ProjectileSystem(
-          ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {
+      ProjectileSystem() : _ecsManagerPtr(nullptr) {
       }
 
+      ~ProjectileSystem() override = default;
+
       /**
-       * @brief Sets the optional ECSManager pointer used by this system.
+       * @brief Sets the ECSManager instance that this system will use.
        *
-       * Assigns the internal pointer that this system will use for ECS operations; passing
-       * `nullptr` clears the pointer.
-       *
-       * @param ecsManager Pointer to an ECSManager instance, or `nullptr` to unset.
+       * @param ecsManager Pointer to the ECSManager to associate with this
+       * system.
        */
       void setECSManager(ECSManager *ecsManager) {
         _ecsManagerPtr = ecsManager;
+      }
+
+      ECSManager *getECSManager() {
+        return _ecsManagerPtr;
       }
 
       void update(float dt) override;
       void moveBasics(const Entity &entity, float dt);
 
     private:
-      ECSManager &_ecsManager;
-      ECSManager *_ecsManagerPtr = nullptr;
+      ECSManager *_ecsManagerPtr;
   };
 }  // namespace ecs

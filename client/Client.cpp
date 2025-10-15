@@ -3,10 +3,12 @@
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
+#include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
-#include "PlayerTagComponent.hpp"
 #include "LocalPlayerTagComponent.hpp"
+#include "Packet.hpp"
+#include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "RenderComponent.hpp"
@@ -21,8 +23,6 @@
 #include "systems/MovementSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
 #include "systems/RenderSystem.hpp"
-#include "EnemyComponent.hpp"
-#include "Packet.hpp"
 
 namespace client {
   Client::Client(const std::string &host, const std::uint16_t &port)
@@ -81,7 +81,8 @@ namespace client {
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
-    _ecsManager.registerSystem<ecs::ProjectileSystem>();
+    auto projectileSystem = _ecsManager.registerSystem<ecs::ProjectileSystem>();
+    projectileSystem->setECSManager(&_ecsManager);
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
@@ -124,8 +125,10 @@ namespace client {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
@@ -138,7 +141,8 @@ namespace client {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
     }
     {
@@ -160,7 +164,8 @@ namespace client {
    * referencing the background texture, and background tag components.
    */
   void Client::createBackgroundEntities() {
-    Image backgroundImage = asset::AssetManager::loadImage(renderManager::BG_PATH);
+    Image backgroundImage =
+        asset::AssetManager::loadImage(renderManager::BG_PATH);
     float screenHeight = GetScreenHeight();
     float aspectRatio = 1.0f;
     float scaledWidth = screenHeight;
@@ -203,7 +208,8 @@ namespace client {
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
-    _ecsManager.addComponent<ecs::PositionComponent>(player, {packet.x, packet.y});
+    _ecsManager.addComponent<ecs::PositionComponent>(player,
+                                                     {packet.x, packet.y});
     _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
     _ecsManager.addComponent<ecs::SpeedComponent>(player, {packet.speed});
     _ecsManager.addComponent<ecs::RenderComponent>(
@@ -237,14 +243,16 @@ namespace client {
 
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
     if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
-      TraceLog(LOG_WARNING, "[ENEMY SPAWN] Enemy ID: %u already exists", packet.enemy_id);
+      TraceLog(LOG_WARNING, "[ENEMY SPAWN] Enemy ID: %u already exists",
+               packet.enemy_id);
       return;
     }
     auto enemy = _ecsManager.createEntity();
-    _ecsManager.addComponent<ecs::PositionComponent>(enemy, {packet.x, packet.y});
+    _ecsManager.addComponent<ecs::PositionComponent>(enemy,
+                                                     {packet.x, packet.y});
     _ecsManager.addComponent<ecs::VelocityComponent>(enemy, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::RenderComponent>(
-        enemy, {renderManager::ENEMY_PATH});
+    _ecsManager.addComponent<ecs::RenderComponent>(enemy,
+                                                   {renderManager::ENEMY_PATH});
     ecs::SpriteComponent sprite;
     sprite.sourceRect = {EnemySpriteConfig::RECT_X, EnemySpriteConfig::RECT_Y,
                          EnemySpriteConfig::RECT_WIDTH,
@@ -285,49 +293,51 @@ namespace client {
     _projectileEntities.erase(projectileId);
   }
 
-void Client::sendPosition() {
-  if (_player_id == static_cast<uint32_t>(-1)) {
-    // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
-    return;
+  void Client::sendPosition() {
+    if (_player_id == static_cast<uint32_t>(-1)) {
+      // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
+      return;
+    }
+
+    auto it = _playerEntities.find(_player_id);
+    if (it == _playerEntities.end()) {
+      TraceLog(LOG_WARNING,
+               "[SEND POSITION] Player entity not found for ID: %u",
+               _player_id);
+      return;
+    }
+    Entity playerEntity = it->second;
+
+    try {
+      auto &position =
+          _ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+
+      PositionPacket packet = PacketBuilder::makePosition(
+          position.x, position.y,
+          _sequence_number.load(std::memory_order_acquire));
+
+      send(packet);
+
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
+    }
   }
 
-  auto it = _playerEntities.find(_player_id);
-  if (it == _playerEntities.end()) {
-    TraceLog(LOG_WARNING, "[SEND POSITION] Player entity not found for ID: %u", _player_id);
-    return;
-  }
-  Entity playerEntity = it->second;
+  void Client::sendShoot(float x, float y) {
+    if (_player_id == static_cast<uint32_t>(-1)) {
+      // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
+      return;
+    }
 
-  try {
-    auto &position = _ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
-    
-    PositionPacket packet = PacketBuilder::makePosition(
-        position.x,
-        position.y,
-        _sequence_number.load(std::memory_order_acquire));
-    
-    send(packet);
-    
-  } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
-  }
-}
+    try {
+      PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
+          x, y, ProjectileType::PLAYER_BASIC,
+          _sequence_number.load(std::memory_order_acquire));
 
-void Client::sendShoot(float x, float y) {
-  if (_player_id == static_cast<uint32_t>(-1)) {
-    // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
-    return;
-  }
+      send(packet);
 
-  try {
-    PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
-        x, y, ProjectileType::PLAYER_BASIC,
-        _sequence_number.load(std::memory_order_acquire));
-    
-    send(packet);
-    
-  } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
+    }
   }
-}
 }  // namespace client

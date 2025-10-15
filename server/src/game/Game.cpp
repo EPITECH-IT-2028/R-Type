@@ -97,6 +97,7 @@ void game::Game::initECS() {
     _collisionSystem = _ecsManager->registerSystem<ecs::CollisionSystem>();
     _collisionSystem->setGame(this);
     _collisionSystem->setEventQueue(&_eventQueue);
+    _collisionSystem->setECSManager(_ecsManager.get());
 
     _projectileSystem = _ecsManager->registerSystem<ecs::ProjectileSystem>();
     _projectileSystem->setECSManager(_ecsManager.get());
@@ -166,6 +167,7 @@ void game::Game::stop() {
  * frame rate.
  */
 void game::Game::gameLoop() {
+  std::this_thread::sleep_for(std::chrono::seconds(3));
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
@@ -173,21 +175,15 @@ void game::Game::gameLoop() {
   auto lastTime = std::chrono::high_resolution_clock::now();
 
   while (_running) {
-    std::cout << "Game loop iteration" << std::endl;
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> deltaTime = now - lastTime;
     lastTime = now;
 
-    std::cout << "Delta time: " << deltaTime.count() << " seconds" << std::endl;
     _enemySystem->update(deltaTime.count());
-    std::cout << "Enemy system updated" << std::endl;
     _projectileSystem->update(deltaTime.count());
-    std::cout << "Projectile system updated" << std::endl;
     _collisionSystem->update(deltaTime.count());
-    std::cout << "Collision system updated" << std::endl;
 
     spawnEnemy(deltaTime.count());
-    std::cout << "Enemy spawn checked" << std::endl;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
   }
