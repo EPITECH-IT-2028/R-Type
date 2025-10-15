@@ -6,7 +6,6 @@
 #include "Broadcast.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
-#include "PacketSender.hpp"
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
 
@@ -27,7 +26,9 @@ int packet::MessageHandler::handlePacket(server::Server &server,
   const MessagePacket &packet = deserializedPacket.value();
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet.message << std::endl;
-  broadcast::Broadcast::broadcastMessage(server.getNetworkManager(), server.getClients(), packet);
+
+  broadcast::Broadcast::broadcastMessage(server.getNetworkManager(),
+                                         server.getClients(), packet);
   return OK;
 }
 
