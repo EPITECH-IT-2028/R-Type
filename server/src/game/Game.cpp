@@ -263,24 +263,25 @@ void game::Game::spawnEnemy(float deltaTime) {
  */
 std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
-  std::scoped_lock enemyLock(_enemyMutex);
-  std::scoped_lock ecsLock(_ecsMutex);
-
-  auto entity = _ecsManager.createEntity();
-
-  float spawnY =
-      static_cast<float>(rand() % ENEMY_SPAWN_Y + ENEMY_SPAWN_OFFSET);
-  float spawnX = ENEMY_SPAWN_X;
-
-  _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
-  _ecsManager.addComponent<ecs::PositionComponent>(entity, {spawnX, spawnY});
-  _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
-  _ecsManager.addComponent<ecs::VelocityComponent>(entity, {ENEMY_SPEED, 0.0f});
-  _ecsManager.addComponent<ecs::ShootComponent>(entity,
-                                                {0.0f, 3.0f, true, 0.0f});
-
+  std::scoped_lock lock(_enemyMutex);
+  uint32_t entity;
   switch (type) {
     case EnemyType::BASIC_FIGHTER: {
+      std::scoped_lock ecsLock(_ecsMutex);
+      entity = _ecsManager.createEntity();
+
+      float spawnY =
+          static_cast<float>(rand() % ENEMY_SPAWN_Y + ENEMY_SPAWN_OFFSET);
+      float spawnX = ENEMY_SPAWN_X;
+
+      _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
+      _ecsManager.addComponent<ecs::PositionComponent>(entity,
+                                                       {spawnX, spawnY});
+      _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
+      _ecsManager.addComponent<ecs::VelocityComponent>(entity,
+                                                       {ENEMY_SPEED, 0.0f});
+      _ecsManager.addComponent<ecs::ShootComponent>(entity,
+                                                    {0.0f, 3.0f, true, 0.0f});
       ecs::ColliderComponent collider;
       collider.center = {25.f, 25.f};
       collider.halfSize = {25.f, 30.f};
