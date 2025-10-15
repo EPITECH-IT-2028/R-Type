@@ -10,7 +10,7 @@
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
 
-int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
+int packet::MessageHandler::handlePacket(server::Server &server,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -27,6 +27,7 @@ int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
   const MessagePacket &packet = deserializedPacket.value();
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet.message << std::endl;
+  broadcast::Broadcast::broadcastMessage(server.getNetworkManager(), server.getClients(), packet);
   return OK;
 }
 
