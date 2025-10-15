@@ -17,18 +17,19 @@ int packet::MessageHandler::handlePacket(server::Server &server,
   auto deserializedPacket =
       serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
 
-  if (!deserializedPacket) {
+  if (!deserializedPacket || !deserializedPacket.has_value()) {
     std::cerr << "[ERROR] Failed to deserialize MessagePacket from client "
               << client._player_id << std::endl;
     return KO;
   }
-
   const MessagePacket &packet = deserializedPacket.value();
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet.message << std::endl;
+  MessagePacket validatedPacket = packet;
+  validatedPacket.player_id = static_cast<uint32_t>(client._player_id);
 
   broadcast::Broadcast::broadcastMessage(server.getNetworkManager(),
-                                         server.getClients(), packet);
+                                         server.getClients(), validatedPacket);
   return OK;
 }
 
