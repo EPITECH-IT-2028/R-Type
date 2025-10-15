@@ -10,12 +10,23 @@ namespace network {
 
   class BaseNetworkManager {
     public:
+      /**
+       * @brief Constructs the BaseNetworkManager and opens a UDPv4 socket bound to the specified port.
+       *
+       * @param port Port number to bind the UDP socket to.
+       */
       explicit BaseNetworkManager(std::uint16_t port)
           : _socket(_io_context,
                     asio::ip::udp::endpoint(asio::ip::udp::v4(), port)) {
       }
 
-      virtual ~BaseNetworkManager() = default;
+      /**
+ * @brief Virtual destructor to allow proper cleanup through base pointers.
+ *
+ * Ensures derived classes are destroyed correctly when deleted via a
+ * BaseNetworkManager pointer.
+ */
+virtual ~BaseNetworkManager() = default;
 
       virtual void startReceive(
           const std::function<void(const char*, std::size_t)>& callback) = 0;

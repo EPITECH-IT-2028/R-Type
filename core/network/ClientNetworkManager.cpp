@@ -17,6 +17,15 @@ ClientNetworkManager::ClientNetworkManager(const std::string &host,
   _running.store(false, std::memory_order_release);
 }
 
+/**
+ * @brief Begins continuous reception of UDP datagrams and dispatches each received packet to the provided callback.
+ *
+ * Starts an asynchronous receive loop that invokes the callback with a pointer to the received bytes and the number
+ * of bytes for each successful receive operation. The callback is called only when a receive completes without error
+ * and transfers more than zero bytes. Reception is automatically reposted while the manager's running flag remains true.
+ *
+ * @param callback Function called for each received packet. It receives a pointer to the packet data and the length in bytes.
+ */
 void ClientNetworkManager::startReceive(
     const std::function<void(const char *, std::size_t)> &callback) {
   _socket.async_receive_from(asio::buffer(_recv_buffer), _remote_endpoint,
@@ -32,11 +41,26 @@ void ClientNetworkManager::startReceive(
                              });
 }
 
+/**
+ * @brief Creates a shared byte buffer from raw data and sends it to the configured server.
+ *
+ * @param data Pointer to the first byte of the data to send.
+ * @param size Number of bytes to send starting at `data`.
+ */
 void ClientNetworkManager::send(const char *data, std::size_t size) {
   auto buffer = std::make_shared<std::vector<std::uint8_t>>(data, data + size);
   send(buffer);
 }
 
+/**
+ * @brief Asynchronously sends the given byte buffer to the configured server endpoint.
+ *
+ * The function initiates a non-blocking UDP send operation and keeps the provided
+ * shared buffer alive until the send completes. If the send fails, a warning message
+ * is written to stderr.
+ *
+ * @param buffer Shared pointer to the byte vector containing the data to send.
+ */
 void ClientNetworkManager::send(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   _socket.async_send_to(
@@ -81,6 +105,16 @@ void ClientNetworkManager::disconnect() {
   std::cout << "Disconnected from server." << std::endl;
 }
 
+/**
+ * @brief Receives UDP packets from the configured server and dispatches them to packet handlers.
+ *
+ * Continuously reads available datagrams from the socket until no more data is immediately available.
+ * For each packet originating from the configured server endpoint, attempts to deserialize a PacketHeader
+ * and uses its type to select and invoke a packet handler. Ignores packets from unknown senders and
+ * stops processing when the socket would block. Any invoked handler may modify the provided client.
+ *
+ * @param client Client instance passed to packet handlers for processing and state updates.
+ */
 void ClientNetworkManager::receivePackets(client::Client &client) {
   if (!_running.load(std::memory_order_acquire)) {
     return;

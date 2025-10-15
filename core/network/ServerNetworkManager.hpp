@@ -45,10 +45,22 @@ namespace network {
         return;
       };
 
+      /**
+       * @brief Retrieve the UDP endpoint associated with a player ID.
+       *
+       * @param player_id Player identifier used to look up the client's UDP endpoint.
+       * @return asio::ip::udp::endpoint The UDP endpoint for the given player ID.
+       * @throws std::out_of_range If no endpoint is registered for `player_id`.
+       */
       asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
         return _clientEndpoints.at(player_id);
       }
 
+      /**
+       * @brief Get a copy of the server's remote UDP endpoint.
+       *
+       * @return asio::ip::udp::endpoint The stored remote UDP endpoint.
+       */
       asio::ip::udp::endpoint getRemoteEndpoint() {
         return _remote_endpoint;
       }

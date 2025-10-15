@@ -287,19 +287,22 @@ struct ALIGNED EnemyHitPacket {
 };
 
 /**
- * @brief Informs clients that a player has died and where the death occurred.
+ * @brief Packet sent to notify clients that a player has died and where it occurred.
  *
- * @details Carries the player identifier and the world coordinates of the death
- * location.
+ * @details Contains the identifier of the deceased player and the world-space
+ * coordinates of the death location.
+ *
+ * @var PacketHeader PlayerDeathPacket::header
+ * Common packet header identifying type and payload size.
  *
  * @var std::uint32_t PlayerDeathPacket::player_id
- * ID of the player who died.
+ * Identifier of the player who died.
  *
  * @var float PlayerDeathPacket::x
- * X coordinate of the death location.
+ * X coordinate of the death location in world space.
  *
  * @var float PlayerDeathPacket::y
- * Y coordinate of the death location.
+ * Y coordinate of the death location in world space.
  */
 struct ALIGNED PlayerDeathPacket {
     PacketHeader header;
