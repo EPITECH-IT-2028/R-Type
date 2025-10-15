@@ -252,9 +252,6 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 
   server.clearClientSlot(client._player_id);
 
-  auto disconnectMsg = PacketBuilder::makeMessage(
-      "Player " + std::to_string(client._player_id) + " has disconnected.");
-  packet::PacketSender::sendPacket(server.getNetworkManager(), disconnectMsg);
   auto disconnectPacket =
       PacketBuilder::makePlayerDisconnect(client._player_id);
   broadcast::Broadcast::broadcastPlayerDisconnect(
