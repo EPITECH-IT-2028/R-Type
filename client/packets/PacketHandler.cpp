@@ -10,39 +10,41 @@
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
+#include "Serializer.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
-  if (size < sizeof(MessagePacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(MessagePacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[MESSAGE] Failed to deserialize packet");
     return packet::KO;
   }
 
-  MessagePacket packet;
-  std::memcpy(&packet, data, sizeof(MessagePacket));
-
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", sizeof(packet.message),
-           packet.message);
+  const MessagePacket &packet = packetOpt.value();
+  size_t len = strnlen(packet.message, sizeof(packet.message));
+  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
   return 0;
 }
 
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
-  if (size < sizeof(NewPlayerPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(NewPlayerPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<NewPlayerPacket>(buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[NEW PLAYER] Failed to deserialize packet");
     return packet::KO;
   }
 
-  NewPlayerPacket packet;
-  std::memcpy(&packet, data, sizeof(NewPlayerPacket));
-
+  const NewPlayerPacket &packet = packetOpt.value();
   TraceLog(LOG_INFO,
            "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
            packet.player_id, packet.x, packet.y, packet.speed);
@@ -54,15 +56,17 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
 int packet::PlayerDeathHandler::handlePacket(client::Client &client,
                                              const char *data,
                                              std::size_t size) {
-  if (size < sizeof(PlayerDeathPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(PlayerDeathPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<PlayerDeathPacket>(buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PLAYER DEATH] Failed to deserialize packet");
     return packet::KO;
   }
 
-  PlayerDeathPacket packet;
-  std::memcpy(&packet, data, sizeof(PlayerDeathPacket));
+  const PlayerDeathPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[PLAYER DEATH] Player ID: %u died at (%f, %f)",
            packet.player_id, packet.x, packet.y);
@@ -94,15 +98,18 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
 int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
                                                     const char *data,
                                                     std::size_t size) {
-  if (size < sizeof(PlayerDisconnectPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(PlayerDisconnectPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<PlayerDisconnectPacket>(
+          buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PLAYER DISCONNECTED] Failed to deserialize packet");
     return packet::KO;
   }
 
-  PlayerDisconnectPacket packet;
-  std::memcpy(&packet, data, sizeof(PlayerDisconnectPacket));
+  const PlayerDisconnectPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Player ID: %u disconnected",
            packet.player_id);
@@ -134,31 +141,28 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
 int packet::PlayerMoveHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
-  if (size < sizeof(MovePacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(MovePacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<MovePacket>(buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to deserialize packet");
     return packet::KO;
   }
 
-  MovePacket packet;
-  std::memcpy(&packet, data, sizeof(MovePacket));
+  const MovePacket &packet = packetOpt.value();
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto playerEntity = client.getPlayerEntity(packet.player_id);
     if (playerEntity == client::KO) {
-      // TraceLog(LOG_WARNING, "[PLAYER MOVE] Player ID: %u not found",
-      // packet.player_id);
       return packet::OK;
     }
 
     if (client.getPlayerId() == packet.player_id) {
       uint32_t lastSeqNum = client.getSequenceNumber();
       if (packet.sequence_number <= lastSeqNum) {
-        TraceLog(LOG_DEBUG,
-                 "[PLAYER MOVE] Ignoring old packet: seq %u <= last seq %u",
-                 packet.sequence_number, lastSeqNum);
         return packet::OK;
       }
     }
@@ -172,10 +176,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       client.updateSequenceNumber(packet.sequence_number);
     }
 
-    TraceLog(LOG_DEBUG,
-             "[PLAYER MOVE] Updated player %u position to (%f, %f) with seq %u",
-             packet.player_id, packet.x, packet.y, packet.sequence_number);
-
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s",
              packet.player_id, e.what());
@@ -187,16 +187,16 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 int packet::EnemySpawnHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
-  if (size < sizeof(EnemySpawnPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(EnemySpawnPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<EnemySpawnPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[ENEMY SPAWN] Failed to deserialize packet");
     return packet::KO;
   }
 
-  EnemySpawnPacket packet;
-  std::memcpy(&packet, data, sizeof(EnemySpawnPacket));
-
+  const EnemySpawnPacket &packet = packetOpt.value();
   TraceLog(
       LOG_INFO, "[ENEMY SPAWN] Enemy ID: %u of type %d spawned at (%f, %f)",
       packet.enemy_id, static_cast<int>(packet.enemy_type), packet.x, packet.y);
@@ -207,15 +207,17 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
 
 int packet::EnemyMoveHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
-  if (size < sizeof(EnemyMovePacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(EnemyMovePacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<EnemyMovePacket>(buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to deserialize packet");
     return packet::KO;
   }
 
-  EnemyMovePacket packet;
-  std::memcpy(&packet, data, sizeof(EnemyMovePacket));
+  const EnemyMovePacket &packet = packetOpt.value();
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
@@ -240,15 +242,17 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
 int packet::EnemyDeathHandler::handlePacket(client::Client &client,
                                             const char *data,
                                             std::size_t size) {
-  if (size < sizeof(EnemyDeathPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(EnemyDeathPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<EnemyDeathPacket>(buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to deserialize packet");
     return packet::KO;
   }
 
-  EnemyDeathPacket packet;
-  std::memcpy(&packet, data, sizeof(EnemyDeathPacket));
+  const EnemyDeathPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[ENEMY DEATH] Enemy ID: %u has been destroyed",
            packet.enemy_id);
@@ -274,15 +278,18 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
 int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
                                                  const char *data,
                                                  std::size_t size) {
-  if (size < sizeof(ProjectileSpawnPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(ProjectileSpawnPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<ProjectileSpawnPacket>(
+          buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PROJECTILE SPAWN] Failed to deserialize packet");
     return packet::KO;
   }
 
-  ProjectileSpawnPacket packet;
-  std::memcpy(&packet, data, sizeof(ProjectileSpawnPacket));
+  const ProjectileSpawnPacket packet = packetOpt.value();
 
   if (client.getProjectileEntity(packet.projectile_id) !=
       static_cast<Entity>(-1)) {
@@ -346,15 +353,18 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
 int packet::ProjectileHitHandler::handlePacket(client::Client &client,
                                                const char *data,
                                                std::size_t size) {
-  if (size < sizeof(ProjectileHitPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(ProjectileHitPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<ProjectileHitPacket>(
+          buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PROJECTILE HIT] Failed to deserialize packet");
     return packet::KO;
   }
 
-  ProjectileHitPacket packet;
-  std::memcpy(&packet, data, sizeof(ProjectileHitPacket));
+  const ProjectileHitPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO,
            "[PROJECTILE HIT] projectile=%u target=%u is_player=%u at=(%f,%f)",
@@ -379,15 +389,18 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
 int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
                                                    const char *data,
                                                    std::size_t size) {
-  if (size < sizeof(ProjectileDestroyPacket)) {
-    TraceLog(LOG_ERROR,
-             "Packet too small: got %zu bytes, expected at least %zu bytes.",
-             size, sizeof(ProjectileDestroyPacket));
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<ProjectileDestroyPacket>(
+          buffer);
+
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PROJECTILE DESTROY] Failed to deserialize packet");
     return packet::KO;
   }
 
-  ProjectileDestroyPacket packet;
-  std::memcpy(&packet, data, sizeof(ProjectileDestroyPacket));
+  const ProjectileDestroyPacket &packet = packetOpt.value();
 
   TraceLog(LOG_INFO, "[PROJECTILE DESTROY] projectile=%u at=(%f,%f)",
            packet.projectile_id, packet.x, packet.y);

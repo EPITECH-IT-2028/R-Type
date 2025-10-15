@@ -33,9 +33,15 @@ void ClientNetworkManager::startReceive(
 }
 
 void ClientNetworkManager::send(const char *data, std::size_t size) {
+  auto buffer = std::make_shared<std::vector<std::uint8_t>>(data, data + size);
+  send(buffer);
+}
+
+void ClientNetworkManager::send(
+    std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   _socket.async_send_to(
-      asio::buffer(data, size), _server_endpoint,
-      [](const asio::error_code &ec, std::size_t) {
+      asio::buffer(*buffer), _server_endpoint,
+      [buffer](const asio::error_code &ec, std::size_t) {
         if (ec) {
           std::cerr << "[WARNING] Send failed: " << ec.message() << std::endl;
         }
@@ -105,22 +111,26 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
       }
 
       if (length > 0) {
-        const char *data = _recv_buffer.data();
-        std::size_t size = length;
+        serialization::Buffer buffer(
+            reinterpret_cast<const uint8_t *>(_recv_buffer.data()),
+            reinterpret_cast<const uint8_t *>(_recv_buffer.data()) + length);
 
-        if (size < sizeof(PacketHeader)) {
-          std::cerr << "Received packet too small to contain header."
+        auto headerOpt =
+            serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
+
+        if (!headerOpt) {
+          std::cerr << "[ERROR] Failed to deserialize packet header"
                     << std::endl;
           continue;
         }
 
-        PacketHeader header;
-        std::memcpy(&header, data, sizeof(PacketHeader));
-        PacketType packet_type = static_cast<PacketType>(header.type);
+        PacketHeader header = headerOpt.value();
+        PacketType packet_type = header.type;
 
         auto handler = _packetFactory.createHandler(packet_type);
         if (handler) {
-          int result = handler->handlePacket(client, data, size);
+          int result =
+              handler->handlePacket(client, _recv_buffer.data(), length);
           if (result != 0) {
             std::cerr << "Error handling packet of type "
                       << static_cast<int>(packet_type) << ": " << result

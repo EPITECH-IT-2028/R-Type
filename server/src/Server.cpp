@@ -210,8 +210,17 @@ void server::Server::handleReceive(const char *data,
     return;
   }
 
-  PacketHeader header{};
-  std::memcpy(&header, data, sizeof(PacketHeader));
+  serialization::Buffer buffer(data, data + bytes_transferred);
+
+  auto headerOpt =
+      serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
+
+  if (!headerOpt) {
+    std::cerr << "[WARNING] Failed to deserialize packet header" << std::endl;
+    return;
+  }
+
+  PacketHeader header = headerOpt.value();
 
   if (header.type == PacketType::PlayerInfo) {
     handlePlayerInfoPacket(data, bytes_transferred);
@@ -235,10 +244,6 @@ void server::Server::handleReceive(const char *data,
  */
 void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
-  if (size < sizeof(PlayerInfoPacket)) {
-    std::cerr << "[WARNING] Invalid PlayerInfo packet size" << std::endl;
-    return;
-  }
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
   for (size_t i = 0; i < _clients.size(); ++i) {
@@ -302,17 +307,29 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   }
 
   auto client = _clients[client_idx];
-  PacketHeader header{};
-  std::memcpy(&header, data, sizeof(PacketHeader));
-  if (size < header.size || header.size < sizeof(PacketHeader)) {
-    std::cerr << "[WARNING] Invalid packet size from client "
+
+  if (size < sizeof(PacketHeader)) {
+    std::cerr << "[WARNING] Packet too small from client "
               << _clients[client_idx]->_player_id << std::endl;
     return;
   }
 
+  serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
+                               reinterpret_cast<const uint8_t *>(data) + size);
+
+  auto headerOpt =
+      serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
+  if (!headerOpt) {
+    std::cerr << "[WARNING] Failed to deserialize packet header from client "
+              << _clients[client_idx]->_player_id << std::endl;
+    return;
+  }
+
+  PacketHeader header = headerOpt.value();
+
   auto handler = _factory.createHandler(header.type);
   if (handler) {
-    handler->handlePacket(*this, *client, data, header.size);
+    handler->handlePacket(*this, *client, data, size);
   } else {
     std::cerr << "[WARNING] Unknown packet type "
               << static_cast<int>(header.type) << " from client "
