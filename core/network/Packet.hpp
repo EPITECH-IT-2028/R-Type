@@ -47,7 +47,7 @@ struct ALIGNED MessagePacket {
     PacketHeader header;
     uint32_t timestamp;
     char message[256];
-    std::uint32_t player_id;
+    uint32_t player_id;
 };
 
 /* Server to client packets */
