@@ -1,7 +1,6 @@
 #include "CollisionSystem.hpp"
 #include <iostream>
 #include <memory>
-#include <set>
 #include <unordered_set>
 #include "ColliderComponent.hpp"
 #include "ECSManager.hpp"
@@ -34,6 +33,8 @@ void ecs::CollisionSystem::update(float dt) {
   std::vector<Entity> entities(_entities.begin(), _entities.end());
   std::unordered_set<Entity> destroyedEntities;
 
+  if (!_game || !_eventQueue)
+    return;
   for (size_t i = 0; i < entities.size(); ++i) {
     if (destroyedEntities.find(entities[i]) != destroyedEntities.end()) {
       continue;
@@ -116,7 +117,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       projectile = _game->getProjectile(
           _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
     }
-
+    if (!enemy || !projectile)
+      return;
     handleEnemyProjectileCollision(projectile, enemy);
   } else if ((entity1IsProjectile && entity2IsPlayer) ||
              (entity2IsProjectile && entity1IsPlayer)) {
@@ -141,7 +143,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       projectile = _game->getProjectile(
           _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
     }
-
+    if (!player || !projectile)
+      return;
     handlePlayerProjectileCollision(projectile, player);
   } else if ((entity1IsPlayer && entity2IsEnemy) ||
              (entity2IsPlayer && entity1IsEnemy)) {
@@ -160,6 +163,8 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       player = _game->getPlayer(
           _ecsManager.getComponent<PlayerComponent>(entity1).player_id);
     }
+    if (!enemy || !player)
+      return;
     handlePlayerEnemyCollision(enemy, player);
   }
 }
@@ -233,41 +238,41 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
   }
   bool isPlayerProjectile =
       (projectile->getType() == ProjectileType::PLAYER_BASIC);
-
   if (isPlayerProjectile) {
     return;
   }
+  if (!player->getHealth().has_value() ||
+      !projectile->getDamage().has_value()) {
+    return;
+  }
+  player->setHealth(player->getHealth().value() -
+                    projectile->getDamage().value());
+  if (player->getHealth().value() <= 0) {
+    queue::PlayerDestroyEvent playerDestroyEvent;
+    playerDestroyEvent.player_id = player->getPlayerId();
+    playerDestroyEvent.x = player->getPosition().first;
+    playerDestroyEvent.y = player->getPosition().second;
+    _eventQueue->addRequest(playerDestroyEvent);
+    _game->destroyPlayer(player->getPlayerId());
+  } else {
+    queue::PlayerHitEvent playerHitEvent;
+    playerHitEvent.player_id = player->getPlayerId();
+    playerHitEvent.x = player->getPosition().first;
+    playerHitEvent.y = player->getPosition().second;
+    playerHitEvent.damage = projectile->getDamage().value();
+    playerHitEvent.sequence_number = 0;
+    _eventQueue->addRequest(playerHitEvent);
+  }
 
-  if (_eventQueue) {
-    player->setHealth(player->getHealth().value() -
-                      projectile->getDamage().value());
-    if (player->getHealth().value() <= 0) {
-      queue::PlayerDestroyEvent playerDestroyEvent;
-      playerDestroyEvent.player_id = player->getPlayerId();
-      playerDestroyEvent.x = player->getPosition().first;
-      playerDestroyEvent.y = player->getPosition().second;
-      _eventQueue->addRequest(playerDestroyEvent);
-      _game->destroyPlayer(player->getPlayerId());
-    } else {
-      queue::PlayerHitEvent playerHitEvent;
-      playerHitEvent.player_id = player->getPlayerId();
-      playerHitEvent.x = player->getPosition().first;
-      playerHitEvent.y = player->getPosition().second;
-      playerHitEvent.damage = projectile->getDamage().value();
-      playerHitEvent.sequence_number = 0;
-      _eventQueue->addRequest(playerHitEvent);
-    }
-
-    queue::ProjectileDestroyEvent projDestroyEvent;
-    try {
-      projDestroyEvent.projectile_id = projectile->getProjectileId();
-      projDestroyEvent.x = projectile->getPosition().first;
-      projDestroyEvent.y = projectile->getPosition().second;
-      _eventQueue->addRequest(projDestroyEvent);
-    } catch (const std::runtime_error &e) {
-      std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
-                << std::endl;
-    }
+  queue::ProjectileDestroyEvent projDestroyEvent;
+  try {
+    projDestroyEvent.projectile_id = projectile->getProjectileId();
+    projDestroyEvent.x = projectile->getPosition().first;
+    projDestroyEvent.y = projectile->getPosition().second;
+    _eventQueue->addRequest(projDestroyEvent);
+  } catch (const std::runtime_error &e) {
+    std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
+              << std::endl;
   }
 
   _game->destroyProjectile(projectile->getProjectileId());
@@ -291,45 +296,46 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     std::shared_ptr<game::Enemy> enemy, std::shared_ptr<game::Player> player) {
   const int collisionDamage = COLLISION_DAMAGE;
 
-  if (_eventQueue) {
-    player->setHealth(player->getHealth().value() - COLLISION_DAMAGE);
-    enemy->setHealth(enemy->getHealth().value() - COLLISION_DAMAGE);
+  if (!player->getHealth().has_value() || !enemy->getHealth().has_value()) {
+    return;
+  }
+  player->setHealth(player->getHealth().value() - COLLISION_DAMAGE);
+  enemy->setHealth(enemy->getHealth().value() - COLLISION_DAMAGE);
 
-    if (enemy->getHealth().value() <= 0) {
-      queue::EnemyDestroyEvent enemyDestroyEvent;
-      enemyDestroyEvent.enemy_id = enemy->getEnemyId();
-      enemyDestroyEvent.x = enemy->getPosition().first;
-      enemyDestroyEvent.y = enemy->getPosition().second;
-      enemyDestroyEvent.player_id = player->getPlayerId();
-      enemyDestroyEvent.score = enemy->getScore();
-      _eventQueue->addRequest(enemyDestroyEvent);
-      _game->destroyEnemy(enemy->getEnemyId());
-      incrementPlayerScore(player->getPlayerId(), enemyDestroyEvent.score);
-    } else {
-      queue::EnemyHitEvent enemyHitEvent;
-      enemyHitEvent.enemy_id = enemy->getEnemyId();
-      enemyHitEvent.x = enemy->getPosition().first;
-      enemyHitEvent.y = enemy->getPosition().second;
-      enemyHitEvent.damage = collisionDamage;
-      enemyHitEvent.sequence_number = 0;
-      _eventQueue->addRequest(enemyHitEvent);
-    }
-    if (player->getHealth().value() <= 0) {
-      queue::PlayerDestroyEvent playerDestroyEvent;
-      playerDestroyEvent.player_id = player->getPlayerId();
-      playerDestroyEvent.x = player->getPosition().first;
-      playerDestroyEvent.y = player->getPosition().second;
-      _eventQueue->addRequest(playerDestroyEvent);
-      _game->destroyPlayer(player->getPlayerId());
-    } else {
-      queue::PlayerHitEvent playerHitEvent;
-      playerHitEvent.player_id = player->getPlayerId();
-      playerHitEvent.x = player->getPosition().first;
-      playerHitEvent.y = player->getPosition().second;
-      playerHitEvent.damage = collisionDamage;
-      playerHitEvent.sequence_number = 0;
-      _eventQueue->addRequest(playerHitEvent);
-    }
+  if (enemy->getHealth().value() <= 0) {
+    queue::EnemyDestroyEvent enemyDestroyEvent;
+    enemyDestroyEvent.enemy_id = enemy->getEnemyId();
+    enemyDestroyEvent.x = enemy->getPosition().first;
+    enemyDestroyEvent.y = enemy->getPosition().second;
+    enemyDestroyEvent.player_id = player->getPlayerId();
+    enemyDestroyEvent.score = enemy->getScore();
+    _eventQueue->addRequest(enemyDestroyEvent);
+    _game->destroyEnemy(enemy->getEnemyId());
+    incrementPlayerScore(player->getPlayerId(), enemyDestroyEvent.score);
+  } else {
+    queue::EnemyHitEvent enemyHitEvent;
+    enemyHitEvent.enemy_id = enemy->getEnemyId();
+    enemyHitEvent.x = enemy->getPosition().first;
+    enemyHitEvent.y = enemy->getPosition().second;
+    enemyHitEvent.damage = collisionDamage;
+    enemyHitEvent.sequence_number = 0;
+    _eventQueue->addRequest(enemyHitEvent);
+  }
+  if (player->getHealth().value() <= 0) {
+    queue::PlayerDestroyEvent playerDestroyEvent;
+    playerDestroyEvent.player_id = player->getPlayerId();
+    playerDestroyEvent.x = player->getPosition().first;
+    playerDestroyEvent.y = player->getPosition().second;
+    _eventQueue->addRequest(playerDestroyEvent);
+    _game->destroyPlayer(player->getPlayerId());
+  } else {
+    queue::PlayerHitEvent playerHitEvent;
+    playerHitEvent.player_id = player->getPlayerId();
+    playerHitEvent.x = player->getPosition().first;
+    playerHitEvent.y = player->getPosition().second;
+    playerHitEvent.damage = collisionDamage;
+    playerHitEvent.sequence_number = 0;
+    _eventQueue->addRequest(playerHitEvent);
   }
 }
 
@@ -352,40 +358,39 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
   if (!projectile || !enemy) {
     return;
   }
-
   if (projectile->getType() == ProjectileType::ENEMY_BASIC) {
     return;
   }
-
-  if (_eventQueue) {
-    enemy->setHealth(enemy->getHealth().value() -
-                     projectile->getDamage().value());
-    if (enemy->getHealth().value() <= 0) {
-      queue::EnemyDestroyEvent enemyDestroyEvent;
-      enemyDestroyEvent.enemy_id = enemy->getEnemyId();
-      enemyDestroyEvent.x = enemy->getPosition().first;
-      enemyDestroyEvent.y = enemy->getPosition().second;
-      enemyDestroyEvent.player_id = projectile->getOwnerId();
-      enemyDestroyEvent.score = enemy->getScore();
-      _eventQueue->addRequest(enemyDestroyEvent);
-      _game->destroyEnemy(enemy->getEnemyId());
-      incrementPlayerScore(projectile->getOwnerId(), enemyDestroyEvent.score);
-    } else {
-      queue::EnemyHitEvent hitEvent;
-      hitEvent.enemy_id = enemy->getEnemyId();
-      hitEvent.x = enemy->getPosition().first;
-      hitEvent.y = enemy->getPosition().second;
-      hitEvent.damage = projectile->getDamage().value();
-      hitEvent.sequence_number = 0;
-      _eventQueue->addRequest(hitEvent);
-    }
-
-    queue::ProjectileDestroyEvent projDestroyEvent;
-    projDestroyEvent.projectile_id = projectile->getProjectileId();
-    projDestroyEvent.x = projectile->getPosition().first;
-    projDestroyEvent.y = projectile->getPosition().second;
-    _eventQueue->addRequest(projDestroyEvent);
+  if (!enemy->getHealth().has_value() || !projectile->getDamage().has_value()) {
+    return;
   }
+  enemy->setHealth(enemy->getHealth().value() -
+                   projectile->getDamage().value());
+  if (enemy->getHealth().value() <= 0) {
+    queue::EnemyDestroyEvent enemyDestroyEvent;
+    enemyDestroyEvent.enemy_id = enemy->getEnemyId();
+    enemyDestroyEvent.x = enemy->getPosition().first;
+    enemyDestroyEvent.y = enemy->getPosition().second;
+    enemyDestroyEvent.player_id = projectile->getOwnerId();
+    enemyDestroyEvent.score = enemy->getScore();
+    _eventQueue->addRequest(enemyDestroyEvent);
+    _game->destroyEnemy(enemy->getEnemyId());
+    incrementPlayerScore(projectile->getOwnerId(), enemyDestroyEvent.score);
+  } else {
+    queue::EnemyHitEvent hitEvent;
+    hitEvent.enemy_id = enemy->getEnemyId();
+    hitEvent.x = enemy->getPosition().first;
+    hitEvent.y = enemy->getPosition().second;
+    hitEvent.damage = projectile->getDamage().value();
+    hitEvent.sequence_number = 0;
+    _eventQueue->addRequest(hitEvent);
+  }
+
+  queue::ProjectileDestroyEvent projDestroyEvent;
+  projDestroyEvent.projectile_id = projectile->getProjectileId();
+  projDestroyEvent.x = projectile->getPosition().first;
+  projDestroyEvent.y = projectile->getPosition().second;
+  _eventQueue->addRequest(projDestroyEvent);
   _game->destroyProjectile(projectile->getProjectileId());
 }
 
