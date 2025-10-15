@@ -99,14 +99,12 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
   bool entity1IsPlayer = _ecsManager.hasComponent<PlayerComponent>(entity1);
   bool entity2IsPlayer = _ecsManager.hasComponent<PlayerComponent>(entity2);
 
+  std::shared_ptr<game::Enemy> enemy;
+  std::shared_ptr<game::Projectile> projectile;
+  std::shared_ptr<game::Player> player;
   if ((entity1IsProjectile && entity2IsEnemy) ||
       (entity2IsProjectile && entity1IsEnemy)) {
-    std::shared_ptr<game::Enemy> enemy;
-    std::shared_ptr<game::Projectile> projectile;
-
-    if (entity1IsEnemy && _ecsManager.hasComponent<EnemyComponent>(entity1) &&
-        entity2IsProjectile &&
-        _ecsManager.hasComponent<ProjectileComponent>(entity2)) {
+    if (entity1IsEnemy && entity2IsProjectile) {
       enemy = _game->getEnemy(
           _ecsManager.getComponent<EnemyComponent>(entity1).enemy_id);
       projectile = _game->getProjectile(
@@ -122,24 +120,14 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
     handleEnemyProjectileCollision(projectile, enemy);
   } else if ((entity1IsProjectile && entity2IsPlayer) ||
              (entity2IsProjectile && entity1IsPlayer)) {
-    std::shared_ptr<game::Player> player;
-    std::shared_ptr<game::Projectile> projectile;
-
-    if (entity1IsPlayer && _ecsManager.hasComponent<PlayerComponent>(entity1)) {
+    if (entity1IsPlayer && entity2IsProjectile) {
       player = _game->getPlayer(
           _ecsManager.getComponent<PlayerComponent>(entity1).player_id);
-    }
-    if (entity2IsProjectile &&
-        _ecsManager.hasComponent<ProjectileComponent>(entity2)) {
       projectile = _game->getProjectile(
           _ecsManager.getComponent<ProjectileComponent>(entity2).projectile_id);
-    }
-    if (entity2IsPlayer && _ecsManager.hasComponent<PlayerComponent>(entity2)) {
+    } else {
       player = _game->getPlayer(
           _ecsManager.getComponent<PlayerComponent>(entity2).player_id);
-    }
-    if (entity1IsProjectile &&
-        _ecsManager.hasComponent<ProjectileComponent>(entity1)) {
       projectile = _game->getProjectile(
           _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
     }
@@ -148,11 +136,7 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
     handlePlayerProjectileCollision(projectile, player);
   } else if ((entity1IsPlayer && entity2IsEnemy) ||
              (entity2IsPlayer && entity1IsEnemy)) {
-    std::shared_ptr<game::Enemy> enemy;
-    std::shared_ptr<game::Player> player;
-
-    if (entity1IsEnemy && _ecsManager.hasComponent<EnemyComponent>(entity1) &&
-        entity2IsPlayer && _ecsManager.hasComponent<PlayerComponent>(entity2)) {
+    if (entity1IsEnemy && entity2IsPlayer) {
       enemy = _game->getEnemy(
           _ecsManager.getComponent<EnemyComponent>(entity1).enemy_id);
       player = _game->getPlayer(

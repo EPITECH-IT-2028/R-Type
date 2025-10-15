@@ -158,15 +158,17 @@ void game::Game::gameLoop() {
 }
 
 /**
- * @brief Create a new player entity, attach initial components, and register the player.
+ * @brief Create a new player entity, attach initial components, and register
+ * the player.
  *
- * Creates an ECS entity for the player, attaches Position, Health, Speed, Player,
- * Velocity, Shoot, Collider, and Score components, stores the resulting Player
- * instance in the game's player registry, and returns it.
+ * Creates an ECS entity for the player, attaches Position, Health, Speed,
+ * Player, Velocity, Shoot, Collider, and Score components, stores the resulting
+ * Player instance in the game's player registry, and returns it.
  *
  * @param player_id Unique identifier for the player.
  * @param name Player display name.
- * @return std::shared_ptr<game::Player> Shared pointer to the created Player stored in the game.
+ * @return std::shared_ptr<game::Player> Shared pointer to the created Player
+ * stored in the game.
  */
 std::shared_ptr<game::Player> game::Game::createPlayer(
     std::uint32_t player_id, const std::string &name) {
@@ -254,13 +256,16 @@ void game::Game::spawnEnemy(float deltaTime) {
  * registry, and returns a shared pointer to that Enemy.
  *
  * @param enemy_id Unique identifier assigned to the new enemy.
- * @param type EnemyType value that determines the enemy's configuration and behavior.
- * @return std::shared_ptr<Enemy> Shared pointer to the created Enemy, or `nullptr`
- * if the provided EnemyType is unsupported.
+ * @param type EnemyType value that determines the enemy's configuration and
+ * behavior.
+ * @return std::shared_ptr<Enemy> Shared pointer to the created Enemy, or
+ * `nullptr` if the provided EnemyType is unsupported.
  */
 std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
-  std::scoped_lock lock(_enemyMutex);
+  std::scoped_lock enemyLock(_enemyMutex);
+  std::scoped_lock ecsLock(_ecsMutex);
+
   auto entity = _ecsManager.createEntity();
 
   float spawnY =
@@ -273,30 +278,12 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   _ecsManager.addComponent<ecs::VelocityComponent>(entity, {ENEMY_SPEED, 0.0f});
   _ecsManager.addComponent<ecs::ShootComponent>(entity,
                                                 {0.0f, 3.0f, true, 0.0f});
-  ecs::ColliderComponent collider;
-  collider.center = {25.f, 25.f};
-  collider.halfSize = {25.f, 25.f};
-  _ecsManager.addComponent<ecs::ColliderComponent>(entity, collider);
+
   switch (type) {
     case EnemyType::BASIC_FIGHTER: {
-      std::scoped_lock ecsLock(_ecsMutex);
-      entity = _ecsManager.createEntity();
-
-      float spawnY =
-          static_cast<float>(rand() % ENEMY_SPAWN_Y + ENEMY_SPAWN_OFFSET);
-      float spawnX = ENEMY_SPAWN_X;
-
-      _ecsManager.addComponent<ecs::EnemyComponent>(entity, {enemy_id, type});
-      _ecsManager.addComponent<ecs::PositionComponent>(entity,
-                                                       {spawnX, spawnY});
-      _ecsManager.addComponent<ecs::HealthComponent>(entity, {100, 100});
-      _ecsManager.addComponent<ecs::VelocityComponent>(entity,
-                                                       {ENEMY_SPEED, 0.0f});
-      _ecsManager.addComponent<ecs::ShootComponent>(entity,
-                                                    {0.0f, 3.0f, true, 0.0f});
       ecs::ColliderComponent collider;
-      collider.center = {10.f, 10.f};
-      collider.halfSize = {20.f, 50.f};
+      collider.center = {25.f, 25.f};
+      collider.halfSize = {25.f, 30.f};
       _ecsManager.addComponent<ecs::ColliderComponent>(entity, collider);
       _ecsManager.addComponent<ecs::ScoreComponent>(entity, {10});
       break;
