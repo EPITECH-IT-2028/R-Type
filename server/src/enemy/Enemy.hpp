@@ -27,6 +27,7 @@ namespace game {
       void move(float deltaX, float deltaY);
       std::optional<int> getHealth() const;
       std::optional<int> getMaxHealth() const;
+      std::uint32_t getScore() const;
       void setHealth(int health);
       void takeDamage(int damage);
       void heal(int amount);
