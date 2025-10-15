@@ -49,7 +49,7 @@ namespace game {
       std::vector<std::shared_ptr<Enemy>> getAllEnemies() const;
 
       ecs::ECSManager &getECSManager() {
-        return _ecsManager;
+        return *_ecsManager;
       }
 
       std::shared_ptr<ecs::EnemySystem> getEnemySystem() {
@@ -65,6 +65,8 @@ namespace game {
       std::uint64_t getNextProjectileId() noexcept {
         return _nextProjectileId++;
       }
+
+      void clearAllEntities();
 
     private:
       void gameLoop();
@@ -88,7 +90,7 @@ namespace game {
       int _nextEnemyId = 0;
       std::atomic<std::uint64_t> _nextProjectileId{0};
 
-      ecs::ECSManager &_ecsManager;
+      std::unique_ptr<ecs::ECSManager> _ecsManager;
       mutable std::mutex _ecsMutex;
       mutable std::mutex _playerMutex;
       mutable std::mutex _enemyMutex;

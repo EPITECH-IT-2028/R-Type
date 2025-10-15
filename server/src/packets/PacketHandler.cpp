@@ -4,9 +4,10 @@
 #include <cstdint>
 #include <iostream>
 #include "Broadcast.hpp"
+#include "GameManager.hpp"
+#include "GameRoom.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
-#include "PacketSender.hpp"
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
 
@@ -53,7 +54,14 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   nameBuf[sizeof(packet.name)] = '\0';
   std::string name(nameBuf);
 
-  auto player = server.getGame().createPlayer(client._player_id, name);
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room) {
+    std::cerr << "[ERROR] Client " << client._player_id << " is not in any room"
+              << std::endl;
+    return KO;
+  }
+
+  auto player = room->getGame().createPlayer(client._player_id, name);
   client._entity_id = player->getEntityId();
   std::pair<float, float> pos = player->getPosition();
   float speed = player->getSpeed();
@@ -71,15 +79,23 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
       reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
 
+  auto roomClients = room->getClients();
+
   // Broadcast existing players to the new client
-  broadcast::Broadcast::broadcastExistingPlayers(
-      server.getNetworkManager(), server.getGame(), client._player_id);
+  broadcast::Broadcast::broadcastExistingPlayersToRoom(
+      server.getNetworkManager(), room->getGame(), client._player_id,
+      roomClients);
 
   // Broadcast new player to all other clients
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, pos.first, pos.second, speed, health);
-  broadcast::Broadcast::broadcastAncientPlayer(
-      server.getNetworkManager(), server.getClients(), newPlayerPacket);
+  broadcast::Broadcast::broadcastAncientPlayerToRoom(
+      server.getNetworkManager(), roomClients, newPlayerPacket);
+
+  if (roomClients.size() >= 2 &&
+      room->getState() == game::RoomStatus::WAITING) {
+    room->start();
+  }
 
   return OK;
 }
@@ -97,7 +113,11 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   }
   const PositionPacket &packet = deserializedPacket.value();
 
-  auto player = server.getGame().getPlayer(client._player_id);
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room)
+    return KO;
+
+  auto player = room->getGame().getPlayer(client._player_id);
   if (!player) {
     return KO;
   }
@@ -134,8 +154,10 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   auto movePacket = PacketBuilder::makeMove(
       client._player_id, player->getSequenceNumber().value_or(0), pos.first,
       pos.second);
-  broadcast::Broadcast::broadcastPlayerMove(server.getNetworkManager(),
-                                            server.getClients(), movePacket);
+
+  auto roomClients = room->getClients();
+  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
+                                                  roomClients, movePacket);
   return OK;
 }
 
@@ -178,7 +200,12 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 
   const PlayerShootPacket &packet = deserializedPacket.value();
 
-  auto player = server.getGame().getPlayer(client._player_id);
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room) {
+    return KO;
+  }
+
+  auto player = room->getGame().getPlayer(client._player_id);
   if (!player) {
     return KO;
   }
@@ -189,7 +216,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   float vx = speed;
   float vy = 0.0f;
 
-  std::uint32_t projectileId = server.getGame().getNextProjectileId();
+  std::uint32_t projectileId = room->getGame().getNextProjectileId();
 
   auto projectileType = packet.projectile_type;
 
@@ -197,7 +224,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
     projectileType = ProjectileType::PLAYER_BASIC;
   }
 
-  auto projectile = server.getGame().createProjectile(
+  auto projectile = room->getGame().createProjectile(
       projectileId, client._player_id, projectileType, pos.first, pos.second,
       vx, vy);
 
@@ -207,8 +234,10 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 
   auto playerShotPacket = PacketBuilder::makePlayerShoot(
       pos.first, pos.second, projectileType, packet.sequence_number);
-  broadcast::Broadcast::broadcastPlayerShoot(
-      server.getNetworkManager(), server.getClients(), playerShotPacket);
+
+  auto roomClients = room->getClients();
+  broadcast::Broadcast::broadcastPlayerShootToRoom(
+      server.getNetworkManager(), roomClients, playerShotPacket);
 
   return OK;
 }
@@ -244,19 +273,25 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
     server.setPlayerCount(server.getPlayerCount() - 1);
   }
 
-  auto player = server.getGame().getPlayer(client._player_id);
-  if (player) {
-    server.getGame().destroyPlayer(client._player_id);
+  if (client._room_id != -1) {
+    auto room = server.getGameManager().getRoom(client._room_id);
+    if (room) {
+      auto player = room->getGame().getPlayer(client._player_id);
+      if (player) {
+        room->getGame().destroyPlayer(client._player_id);
+      }
+
+      auto roomClients = room->getClients();
+      auto disconnectMsg = PacketBuilder::makeMessage(
+          "Player " + std::to_string(client._player_id) + " has disconnected.");
+      broadcast::Broadcast::broadcastToRoom(server.getNetworkManager(),
+                                            roomClients, disconnectMsg);
+      auto disconnectPacket =
+          PacketBuilder::makePlayerDisconnect(client._player_id);
+      broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
+          server.getNetworkManager(), roomClients, disconnectPacket);
+    }
   }
-
   server.clearClientSlot(client._player_id);
-
-  auto disconnectMsg = PacketBuilder::makeMessage(
-      "Player " + std::to_string(client._player_id) + " has disconnected.");
-  packet::PacketSender::sendPacket(server.getNetworkManager(), disconnectMsg);
-  auto disconnectPacket =
-      PacketBuilder::makePlayerDisconnect(client._player_id);
-  broadcast::Broadcast::broadcastPlayerDisconnect(
-      server.getNetworkManager(), server.getClients(), disconnectPacket);
   return OK;
 }

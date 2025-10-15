@@ -1,6 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <memory>
+#include <ostream>
 #include <stdexcept>
 #include <typeindex>
 #include <unordered_map>
@@ -36,6 +38,12 @@ namespace ecs {
       ComponentType getComponentType() {
         std::type_index ti(typeid(T));
         return _componentTypes[ti];
+      }
+
+      template <typename T>
+      bool isComponentRegistered() {
+        std::type_index ti(typeid(T));
+        return _componentTypes.find(ti) != _componentTypes.end();
       }
 
       template <typename T>
