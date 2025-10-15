@@ -16,12 +16,16 @@ namespace network {
       void startReceive(const std::function<void(const char *, std::size_t)>
                             &callback) override;
       void send(const char *data, std::size_t size) override;
+      void send(std::shared_ptr<std::vector<std::uint8_t>> buffer) override;
 
       void registerClient(int id, const asio::ip::udp::endpoint &endpoint);
       void unregisterClient(int id);
 
       void sendToClient(int id, const char *data, std::size_t size);
+      void sendToClient(int id,
+                        std::shared_ptr<std::vector<std::uint8_t>> buffer);
       void sendToAll(const char *data, std::size_t size);
+      void sendToAll(std::shared_ptr<std::vector<std::uint8_t>> buffer);
 
       void scheduleEventProcessing(std::chrono::milliseconds interval,
                                    const std::function<void()> &callback);
@@ -44,11 +48,10 @@ namespace network {
       asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
         return _clientEndpoints.at(player_id);
       }
-      
+
       asio::ip::udp::endpoint getRemoteEndpoint() {
-    return _remote_endpoint;
-  }
-  
+        return _remote_endpoint;
+      }
 
     private:
       asio::ip::udp::endpoint _remote_endpoint;

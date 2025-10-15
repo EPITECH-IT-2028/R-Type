@@ -1,6 +1,10 @@
 #pragma once
 
+#include <memory>
 #include "ECSManager.hpp"
+#include "Enemy.hpp"
+#include "Player.hpp"
+#include "Projectile.hpp"
 #include "Queue.hpp"
 #include "System.hpp"
 
@@ -54,8 +58,18 @@ namespace ecs {
 
       void handleCollision(const Entity &entity1, const Entity &entity2);
 
-      void incrementPlayerScore(std::uint32_t owner_id,
-                                         std::uint32_t value);
+      void incrementPlayerScore(std::uint32_t owner_id, std::uint32_t value);
+
+      bool isOutOfBounds(const Entity &entity);
+
+      void handlePlayerEnemyCollision(std::shared_ptr<game::Enemy> enemy,
+                                      std::shared_ptr<game::Player> player);
+      void handlePlayerProjectileCollision(
+          std::shared_ptr<game::Projectile> projectile,
+          std::shared_ptr<game::Player> player);
+      void handleEnemyProjectileCollision(
+          std::shared_ptr<game::Projectile> projectile,
+          std::shared_ptr<game::Enemy> enemy);
 
     private:
       ECSManager &_ecsManager;

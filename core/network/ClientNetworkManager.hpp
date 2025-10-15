@@ -20,6 +20,7 @@ namespace network {
       void processReceivedPackets(client::Client &client);
 
       void send(const char *data, std::size_t size) override;
+      void send(std::shared_ptr<std::vector<std::uint8_t>> buffer) override;
       void run() override {};
       void stop() override {};
       void connect();
