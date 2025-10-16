@@ -37,9 +37,6 @@ game::Game::Game()
  */
 game::Game::~Game() {
   stop();
-  if (_gameThread.joinable()) {
-    _gameThread.join();
-  }
 
   if (_enemySystem) {
     _enemySystem->setECSManager(nullptr);

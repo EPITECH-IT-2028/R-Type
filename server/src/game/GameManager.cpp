@@ -6,6 +6,7 @@
 #include <mutex>
 #include <vector>
 #include "GameRoom.hpp"
+#include "Macro.hpp"
 
 game::GameManager::GameManager(int maxPlayers)
     : _maxPlayers(maxPlayers), _nextRoomId(1) {
@@ -112,7 +113,7 @@ void game::GameManager::leaveRoom(std::shared_ptr<server::Client> client) {
   std::shared_ptr<GameRoom> roomToStop;
   {
     std::scoped_lock lock(_roomMutex);
-    if (client->_room_id == -1)
+    if (client->_room_id == NO_ROOM)
       return;
 
     auto it = _rooms.find(client->_room_id);

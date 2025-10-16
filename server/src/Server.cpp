@@ -15,7 +15,7 @@ server::Client::Client(int id) : _player_id(id) {
   _connected = true;
   _last_heartbeat = std::chrono::steady_clock::now();
   _last_position_update = std::chrono::steady_clock::now();
-  _room_id = -1;
+  _room_id = NO_ROOM;
 }
 
 server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
@@ -100,7 +100,7 @@ void server::Server::handleTimeout() {
       if (_player_count > 0)
         --_player_count;
 
-      if (roomId != -1) {
+      if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
         if (room) {
           room->getGame().destroyPlayer(pid);
@@ -133,7 +133,7 @@ void server::Server::handleTimeout() {
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      uint32_t roomId) {
-  if (roomId == -1) {
+  if (roomId == NO_ROOM) {
     return;
   }
   auto room = _gameManager->getRoom(roomId);
