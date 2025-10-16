@@ -1,6 +1,7 @@
 #include "Server.hpp"
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
@@ -17,15 +18,17 @@ server::Client::Client(int id) : _player_id(id) {
   _room_id = -1;
 }
 
-server::Server::Server(std::uint16_t port, std::uint16_t max_clients)
+server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
+                       std::uint8_t max_clients_per_room)
     : _networkManager(port),
       _max_clients(max_clients),
+      _max_clients_per_room(max_clients_per_room),
       _port(port),
       _player_count(0),
       _projectile_count(0),
       _next_player_id(0) {
-  _gameManager = std::make_shared<game::GameManager>(max_clients);
-  _clients.resize(100);  // TODO : configurable max clients for the server
+  _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
+  _clients.resize(_max_clients);
 }
 
 void server::Server::start() {

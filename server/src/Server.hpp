@@ -31,7 +31,8 @@ namespace server {
 
   class Server {
     public:
-      Server(std::uint16_t port, std::uint16_t max_clients);
+      Server(std::uint16_t port, std::uint8_t max_clients,
+             std::uint8_t max_clients_per_room);
       ~Server() = default;
 
       void start();
@@ -100,7 +101,8 @@ namespace server {
 
       std::shared_ptr<game::GameManager> _gameManager;
 
-      std::uint16_t _max_clients;
+      std::uint8_t _max_clients;
+      std::uint8_t _max_clients_per_room = 4;
       std::uint16_t _port;
       int _player_count;
       int _next_player_id;
