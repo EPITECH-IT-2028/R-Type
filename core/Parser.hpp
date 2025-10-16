@@ -48,7 +48,7 @@ class Parser {
     const std::string _propertiesPath;
     std::uint16_t _port = 4242;
     std::string _host = "127.0.0.1";
-    std::uint8_t _max_clients;
+    std::uint8_t _max_clients = 100;
     std::uint8_t _max_clients_per_room = 4;
 
     std::unordered_map<std::string, std::function<void(const std::string &)>>
@@ -95,7 +95,12 @@ class Parser {
              [this](const std::string &max_clients_per_room) {
                if (!max_clients_per_room.empty()) {
                  try {
-                   _max_clients_per_room = std::stoi(max_clients_per_room);
+                   int value = std::stoi(max_clients_per_room);
+                   if (value < 0) {
+                     throw ParamsError(
+                         "Clients per room must be non-negative.");
+                   }
+                   _max_clients_per_room = static_cast<std::uint8_t>(value);
                  } catch (const std::invalid_argument &e) {
                    throw ParamsError(
                        "Invalid clients per room in server properties file.");

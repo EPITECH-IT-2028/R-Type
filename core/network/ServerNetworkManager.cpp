@@ -33,7 +33,7 @@ void ServerNetworkManager::sendToClient(
   const auto &endpoint = it->second;
   _socket.async_send_to(
       asio::buffer(*buffer), endpoint,
-      [buffer](const asio::error_code &error, std::size_t) {  // Capturer buffer
+      [buffer](const asio::error_code &error, std::size_t) {
         if (error)
           std::cerr << "[ERROR] Send failed: " << error.message() << std::endl;
       });
@@ -53,8 +53,7 @@ void ServerNetworkManager::sendToAll(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   for (const auto &[id, endpoint] : _clientEndpoints) {
     _socket.async_send_to(asio::buffer(*buffer), endpoint,
-                          [buffer](const asio::error_code &error,
-                                   std::size_t) {  // Capturer buffer
+                          [buffer](const asio::error_code &error, std::size_t) {
                             if (error)
                               std::cerr << "[ERROR] Broadcast failed: "
                                         << error.message() << std::endl;

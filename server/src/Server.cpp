@@ -138,8 +138,11 @@ void server::Server::handleTimeout() {
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      int roomId) {
-  auto room = _gameManager->getRoom(roomId);
   if (roomId == -1) {
+    return;
+  }
+  auto room = _gameManager->getRoom(roomId);
+  if (!room) {
     return;
   }
 
@@ -404,7 +407,7 @@ std::shared_ptr<server::Client> server::Server::getClient(
 void server::Server::clearClientSlot(int player_id) {
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
-      if (client->_room_id != 1)
+      if (client->_room_id != -1)
         _gameManager->leaveRoom(client);
       client.reset();
       return;

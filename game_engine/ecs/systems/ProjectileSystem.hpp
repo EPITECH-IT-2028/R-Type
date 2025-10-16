@@ -21,7 +21,7 @@ namespace ecs {
         _ecsManagerPtr = ecsManager;
       }
 
-      ECSManager *getECSManager() {
+      ECSManager *getECSManager() const {
         return _ecsManagerPtr;
       }
 

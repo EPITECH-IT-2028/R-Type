@@ -5,11 +5,10 @@
 #include "VelocityComponent.hpp"
 
 void ecs::ProjectileSystem::update(float dt) {
-  ECSManager *_ecsManager = getECSManager();
-
   for (const auto &entity : _entities) {
-    if (_ecsManager->hasComponent<ProjectileComponent>(entity)) {
-      auto &projectile = _ecsManager->getComponent<ProjectileComponent>(entity);
+    if (_ecsManagerPtr->hasComponent<ProjectileComponent>(entity)) {
+      auto &projectile =
+          _ecsManagerPtr->getComponent<ProjectileComponent>(entity);
 
       switch (projectile.type) {
         case ProjectileType::PLAYER_BASIC:
@@ -35,13 +34,12 @@ void ecs::ProjectileSystem::update(float dt) {
  * @param dt Time step in seconds used to scale the velocity.
  */
 void ecs::ProjectileSystem::moveBasics(const Entity &entity, float dt) {
-  ECSManager *_ecsManager = getECSManager();
-  if (!_ecsManager->hasComponent<PositionComponent>(entity) ||
-      !_ecsManager->hasComponent<VelocityComponent>(entity)) {
+  if (!_ecsManagerPtr->hasComponent<PositionComponent>(entity) ||
+      !_ecsManagerPtr->hasComponent<VelocityComponent>(entity)) {
     return;
   }
-  auto &position = _ecsManager->getComponent<PositionComponent>(entity);
-  auto &velocity = _ecsManager->getComponent<VelocityComponent>(entity);
+  auto &position = _ecsManagerPtr->getComponent<PositionComponent>(entity);
+  auto &velocity = _ecsManagerPtr->getComponent<VelocityComponent>(entity);
   position.x += velocity.vx * dt;
   position.y += velocity.vy * dt;
 }

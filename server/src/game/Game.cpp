@@ -47,6 +47,9 @@ game::Game::~Game() {
   if (_projectileSystem) {
     _projectileSystem->setECSManager(nullptr);
   }
+  if (_collisionSystem) {
+    _collisionSystem->setECSManager(nullptr);
+  }
 
   clearAllEntities();
 
@@ -172,6 +175,12 @@ void game::Game::gameLoop() {
   auto lastTime = std::chrono::high_resolution_clock::now();
 
   while (_running) {
+    if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
+      std::cerr << "Error: ECS Manager or Systems not initialized."
+                << std::endl;
+      _running = false;
+      break;
+    }
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> deltaTime = now - lastTime;
     lastTime = now;
@@ -340,10 +349,6 @@ void game::Game::destroyEnemy(int enemy_id) {
       enemyComp.is_alive = false;
     }
 
-    queue::EnemyDestroyEvent destroyEvent;
-    destroyEvent.enemy_id = enemy_id;
-    _eventQueue.addRequest(destroyEvent);
-
     _ecsManager->destroyEntity(entity_id);
     _enemies.erase(it);
   }
@@ -393,7 +398,10 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
         entity, {projectile_id, type, owner_id, false,
                  (type == ProjectileType::ENEMY_BASIC), 10, 0, 100});
     _ecsManager->addComponent<ecs::VelocityComponent>(entity, {vx, vy});
-    _ecsManager->addComponent<ecs::ColliderComponent>(entity, {10.f, 10.f});
+    ecs::ColliderComponent collider;
+    collider.center = {10.f, 10.f};
+    collider.halfSize = {10.f, 10.f};
+    _ecsManager->addComponent<ecs::ColliderComponent>(entity, collider);
     projectile = std::make_shared<Projectile>(projectile_id, owner_id, entity,
                                               *_ecsManager);
   }
