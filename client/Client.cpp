@@ -294,7 +294,9 @@ namespace client {
 
   void Client::sendPosition() {
     if (_player_id == static_cast<uint32_t>(-1)) {
-      // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
+      TraceLog(LOG_WARNING,
+               "[WARN] Player ID not assigned yet, cannot send "
+               "position");
       return;
     }
 
@@ -324,7 +326,9 @@ namespace client {
 
   void Client::sendShoot(float x, float y) {
     if (_player_id == static_cast<uint32_t>(-1)) {
-      // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
+      TraceLog(LOG_WARNING,
+               "[WARN] Player ID not assigned yet, cannot send "
+               "shoot");
       return;
     }
 
