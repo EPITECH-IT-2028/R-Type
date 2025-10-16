@@ -114,7 +114,6 @@ namespace game {
         _state.store(RoomStatus::FINISHED);
         if (_game) {
           _game->stop();
-          _game->clearAllEntities();
         }
       }
 

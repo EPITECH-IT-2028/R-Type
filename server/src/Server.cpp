@@ -138,8 +138,11 @@ void server::Server::handleTimeout() {
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      int roomId) {
-  auto room = _gameManager->getRoom(roomId);
   if (roomId == -1) {
+    return;
+  }
+  auto room = _gameManager->getRoom(roomId);
+  if (!room) {
     return;
   }
 
