@@ -81,8 +81,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
-    auto projectileSystem = _ecsManager.registerSystem<ecs::ProjectileSystem>();
-    projectileSystem->setECSManager(&_ecsManager);
+    _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 

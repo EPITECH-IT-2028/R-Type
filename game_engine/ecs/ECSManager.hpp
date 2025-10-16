@@ -88,7 +88,11 @@ namespace ecs {
 
       template <typename T>
       std::shared_ptr<T> registerSystem() {
-        return _systemManager->registerSystem<T>();
+        auto system = _systemManager->registerSystem<T>();
+
+        if constexpr (requires { system->setECSManager(this); })
+          system->setECSManager(this);
+        return system;
       }
 
       template <typename T>

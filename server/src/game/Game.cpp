@@ -90,17 +90,14 @@ void game::Game::initECS() {
 
   try {
     _enemySystem = _ecsManager->registerSystem<ecs::EnemySystem>();
-    _enemySystem->setECSManager(_ecsManager.get());
     _enemySystem->setGame(this);
     _enemySystem->setEventQueue(&_eventQueue);
 
     _collisionSystem = _ecsManager->registerSystem<ecs::CollisionSystem>();
     _collisionSystem->setGame(this);
     _collisionSystem->setEventQueue(&_eventQueue);
-    _collisionSystem->setECSManager(_ecsManager.get());
 
     _projectileSystem = _ecsManager->registerSystem<ecs::ProjectileSystem>();
-    _projectileSystem->setECSManager(_ecsManager.get());
 
     Signature enemySignature;
     enemySignature.set(_ecsManager->getComponentType<ecs::EnemyComponent>());
