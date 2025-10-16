@@ -41,14 +41,7 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
           const Packet &packet) {
-        auto buffer = std::make_shared<std::vector<uint8_t>>(
-            serialization::BitserySerializer::serialize(packet));
-
-        for (const auto &client : roomClients) {
-          if (client && client->_connected) {
-            networkManager.sendToClient(client->_player_id, buffer);
-          }
-        }
+        broadcastToAll(networkManager, roomClients, packet);
       }
 
       /*
@@ -88,15 +81,10 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
           const NewPlayerPacket &packet) {
-        auto buffer = std::make_shared<std::vector<uint8_t>>(
-            serialization::BitserySerializer::serialize(packet));
-
-        for (const auto &client : roomClients) {
-          if (client && client->_connected &&
-              client->_player_id != static_cast<int>(packet.player_id)) {
-            networkManager.sendToClient(client->_player_id, buffer);
-          }
-        }
+        broadcastTo(
+            networkManager, roomClients, packet,
+            [player_id = static_cast<int>(packet.player_id)](
+                const auto &client) { return client._player_id != player_id; });
       }
 
       /*
@@ -268,7 +256,7 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
           const MessagePacket &packet) {
-        broadcastToAll(networkManager, roomClients, packet);
+        broadcastToRoom(networkManager, roomClients, packet);
       };
   };
 }  // namespace broadcast

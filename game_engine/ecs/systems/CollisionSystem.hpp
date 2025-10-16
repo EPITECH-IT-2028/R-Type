@@ -75,7 +75,7 @@ namespace ecs {
           std::shared_ptr<game::Enemy> enemy);
 
     private:
-      ECSManager *_ecsManager;
+      ECSManager *_ecsManager = nullptr;
       game::Game *_game = nullptr;
       queue::EventQueue *_eventQueue = nullptr;
   };

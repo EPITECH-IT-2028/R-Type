@@ -295,6 +295,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
         room->getGame().destroyPlayer(client._player_id);
       }
 
+      room->removeClient(client._player_id);
       auto roomClients = room->getClients();
 
       auto disconnectPacket =

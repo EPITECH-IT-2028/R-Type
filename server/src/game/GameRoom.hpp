@@ -60,15 +60,18 @@ namespace game {
       }
 
       RoomStatus getState() const {
-        return _state;
+        return _state.load();
       }
 
       bool canJoin() const {
-        return _state == RoomStatus::WAITING && !isFull();
+        return _state.load() == RoomStatus::WAITING && !isFull();
       }
 
       bool addClient(std::shared_ptr<server::Client> client) {
         std::lock_guard<std::mutex> lock(_mutex);
+        if (!client || client->_connected == false) {
+          return false;
+        }
         if (_clients.size() >= _max_players) {
           return false;
         }
@@ -97,18 +100,18 @@ namespace game {
       }
 
       void start() {
-        if (_state == RoomStatus::WAITING) {
-          _state = RoomStatus::RUNNING;
+        if (_state.load() == RoomStatus::WAITING) {
+          _state.store(RoomStatus::RUNNING);
           _game->start();
         }
       }
 
       void stop() {
-        if (_state == RoomStatus::FINISHED) {
+        if (_state.load() == RoomStatus::FINISHED) {
           return;
         }
 
-        _state = RoomStatus::FINISHED;
+        _state.store(RoomStatus::FINISHED);
         if (_game) {
           _game->stop();
           _game->clearAllEntities();
@@ -116,7 +119,7 @@ namespace game {
       }
 
       bool isActive() const {
-        return _state == RoomStatus::RUNNING;
+        return _state.load() == RoomStatus::RUNNING;
       }
 
     private:

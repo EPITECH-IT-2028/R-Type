@@ -1,5 +1,6 @@
 #include "GameManager.hpp"
 #include <atomic>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -11,12 +12,11 @@ game::GameManager::GameManager(int maxPlayers)
 }
 
 game::GameManager::~GameManager() {
-  std::scoped_lock lock(_roomMutex);
   shutdownRooms();
 }
 
 std::shared_ptr<game::GameRoom> game::GameManager::createRoom(
-    const std::string &roomName = "") {
+    const std::string &roomName) {
   std::scoped_lock lock(_roomMutex);
   int roomId = _nextRoomId++;
 
@@ -52,7 +52,8 @@ std::shared_ptr<game::GameRoom> game::GameManager::findAvailableRoom() {
   return nullptr;
 }
 
-std::shared_ptr<game::GameRoom> game::GameManager::getRoom(int roomId) const {
+std::shared_ptr<game::GameRoom> game::GameManager::getRoom(
+    uint32_t roomId) const {
   std::scoped_lock lock(_roomMutex);
   auto it = _rooms.find(roomId);
   if (it != _rooms.end()) {
@@ -164,6 +165,7 @@ size_t game::GameManager::getRoomCount() const {
 }
 
 void game::GameManager::shutdownRooms() {
+  std::scoped_lock lock(_roomMutex);
   for (auto &[id, room] : _rooms) {
     room->stop();
   }
