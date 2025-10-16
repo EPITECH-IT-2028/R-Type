@@ -105,12 +105,7 @@ void server::Server::handleTimeout() {
         if (room) {
           room->getGame().destroyPlayer(pid);
           room->removeClient(pid);
-        }
-      }
 
-      if (roomId != -1) {
-        auto room = _gameManager->getRoom(roomId);
-        if (room) {
           auto roomClients = room->getClients();
 
           auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
@@ -137,7 +132,7 @@ void server::Server::handleTimeout() {
  * @param event Variant containing the specific game event to handle.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
-                                     int roomId) {
+                                     uint32_t roomId) {
   if (roomId == -1) {
     return;
   }
@@ -312,6 +307,12 @@ void server::Server::handlePlayerInfoPacket(const char *data,
             _player_count--;
             return;
           }
+        } else {
+          std::cerr << "[ERROR] Failed to create a new room for player " << id
+                    << "." << std::endl;
+          _clients[i].reset();
+          _player_count--;
+          return;
         }
       } else {
         std::cout << "[WORLD] Player " << id << " joined an existing room."

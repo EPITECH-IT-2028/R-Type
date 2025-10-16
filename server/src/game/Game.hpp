@@ -74,8 +74,6 @@ namespace game {
        * After calling this method, the game will have no entities and internal
        * ID counters for enemies and projectiles will be reset.
        *
-       * This method is thread-safe and can be called from any thread.
-       *
        * @note This does not stop the game loop; it only clears entities.
        *
        */

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include "Events.hpp"
+#include "Macro.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
 
@@ -23,7 +24,7 @@ namespace server {
 
       bool _connected = false;
       int _player_id = -1;
-      uint32_t _room_id = -1;
+      uint32_t _room_id = NO_ROOM;
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
@@ -81,7 +82,7 @@ namespace server {
 
       void scheduleEventProcessing();
       void processGameEvents();
-      void handleGameEvent(const queue::GameEvent &event, int roomId);
+      void handleGameEvent(const queue::GameEvent &event, uint32_t roomId);
 
       size_t findExistingClient();
       void handlePlayerInfoPacket(const char *data, std::size_t size);

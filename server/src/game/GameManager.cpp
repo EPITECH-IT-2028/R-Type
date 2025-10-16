@@ -32,11 +32,17 @@ std::shared_ptr<game::GameRoom> game::GameManager::createRoom(
 }
 
 bool game::GameManager::destroyRoom(int roomId) {
-  std::scoped_lock lock(_roomMutex);
-  auto it = _rooms.find(roomId);
-  if (it != _rooms.end()) {
-    it->second->stop();
-    _rooms.erase(it);
+  std::shared_ptr<GameRoom> roomToStop;
+  {
+    std::scoped_lock lock(_roomMutex);
+    auto it = _rooms.find(roomId);
+    if (it != _rooms.end()) {
+      roomToStop = it->second;
+      _rooms.erase(it);
+    }
+  }
+  if (roomToStop) {
+    roomToStop->stop();
     return true;
   }
   return false;
@@ -103,25 +109,31 @@ bool game::GameManager::joinAnyRoom(std::shared_ptr<server::Client> client) {
 }
 
 void game::GameManager::leaveRoom(std::shared_ptr<server::Client> client) {
-  std::scoped_lock lock(_roomMutex);
-  if (client->_room_id == -1)
-    return;
+  std::shared_ptr<GameRoom> roomToStop;
+  {
+    std::scoped_lock lock(_roomMutex);
+    if (client->_room_id == -1)
+      return;
 
-  auto it = _rooms.find(client->_room_id);
-  if (it != _rooms.end()) {
-    auto room = it->second;
-    room->removeClient(client->_player_id);
-    std::cout << "[ROOM] Client " << client->_player_id << " left room "
-              << room->getRoomId() << std::endl;
+    auto it = _rooms.find(client->_room_id);
+    if (it != _rooms.end()) {
+      auto room = it->second;
+      room->removeClient(client->_player_id);
+      std::cout << "[ROOM] Client " << client->_player_id << " left room "
+                << room->getRoomId() << std::endl;
 
-    if (room->isEmpty()) {
-      std::cout << "[ROOM] Room " << room->getRoomId()
-                << " is now empty, cleaning up..." << std::endl;
-      room->stop();
-      _rooms.erase(it);
-      std::cout << "[ROOM] Room " << room->getRoomId()
-                << " destroyed and cleaned." << std::endl;
+      if (room->isEmpty()) {
+        std::cout << "[ROOM] Room " << room->getRoomId()
+                  << " is now empty, cleaning up..." << std::endl;
+        roomToStop = room;
+        _rooms.erase(it);
+      }
     }
+  }
+  if (roomToStop) {
+    roomToStop->stop();
+    std::cout << "[ROOM] Room " << roomToStop->getRoomId()
+              << " destroyed and cleaned." << std::endl;
   }
   client->_room_id = -1;
 }
@@ -139,23 +151,26 @@ std::vector<std::shared_ptr<game::GameRoom>> game::GameManager::getAllRooms()
 }
 
 void game::GameManager::removeEmptyRooms() {
-  std::lock_guard<std::mutex> lock(_roomMutex);
+  std::vector<std::shared_ptr<GameRoom>> roomsToStop;
+  {
+    std::lock_guard<std::mutex> lock(_roomMutex);
+    std::vector<uint32_t> roomIdsToRemove;
 
-  std::vector<uint32_t> rooms;
-
-  for (auto &[room_id, room] : _rooms) {
-    if (room->isEmpty() && room->getState() == RoomStatus::FINISHED) {
-      rooms.push_back(room_id);
+    for (auto &[room_id, room] : _rooms) {
+      if (room->isEmpty() && room->getState() == RoomStatus::FINISHED) {
+        roomIdsToRemove.push_back(room_id);
+        roomsToStop.push_back(room);
+      }
+    }
+    for (uint32_t room_id : roomIdsToRemove) {
+      _rooms.erase(room_id);
+      std::cout << "[GAME_MANAGER] Marked room " << room_id << " for cleanup"
+                << std::endl;
     }
   }
 
-  for (uint32_t room_id : rooms) {
-    auto it = _rooms.find(room_id);
-    if (it != _rooms.end()) {
-      it->second->stop();
-      _rooms.erase(it);
-      std::cout << "[GAME_MANAGER] Cleaned up room " << room_id << std::endl;
-    }
+  for (auto &room : roomsToStop) {
+    room->stop();
   }
 }
 
@@ -165,9 +180,18 @@ size_t game::GameManager::getRoomCount() const {
 }
 
 void game::GameManager::shutdownRooms() {
-  std::scoped_lock lock(_roomMutex);
-  for (auto &[id, room] : _rooms) {
+  std::vector<std::shared_ptr<GameRoom>> roomsToStop;
+  {
+    std::scoped_lock lock(_roomMutex);
+    roomsToStop.reserve(_rooms.size());
+
+    for (auto &[id, room] : _rooms) {
+      roomsToStop.push_back(room);
+    }
+    _rooms.clear();
+  }
+
+  for (auto &room : roomsToStop) {
     room->stop();
   }
-  _rooms.clear();
 }

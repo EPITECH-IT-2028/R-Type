@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "Game.hpp"
+#include "Macro.hpp"
 #include "Server.hpp"
 
 namespace game {
@@ -84,6 +85,7 @@ namespace game {
         std::lock_guard<std::mutex> lock(_mutex);
         for (auto it = _clients.begin(); it != _clients.end(); ++it) {
           if ((*it)->_player_id == player_id) {
+            (*it)->_room_id = NO_ROOM;
             _clients.erase(it);
             break;
           }
@@ -100,7 +102,8 @@ namespace game {
       }
 
       void start() {
-        if (_state.load() == RoomStatus::WAITING) {
+        RoomStatus expected = RoomStatus::WAITING;
+        if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
           _state.store(RoomStatus::RUNNING);
           _game->start();
         }

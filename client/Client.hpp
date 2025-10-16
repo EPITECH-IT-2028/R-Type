@@ -1,10 +1,10 @@
 #pragma once
 
+#include <sys/stat.h>
+#include <cstdint>
+#include <unordered_map>
 #include "EntityManager.hpp"
 #include "Packet.hpp"
-#include <cstdint>
-#include <sys/stat.h>
-#include <unordered_map>
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -31,8 +31,8 @@
 #include <string>
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
-#include "PacketSender.hpp"
 #include "PacketBuilder.hpp"
+#include "PacketSender.hpp"
 
 #define TIMEOUT_MS 100
 
@@ -57,16 +57,18 @@ namespace client {
           0.05f;  ///< Time per animation frame (seconds)
   };
 
-struct EnemySpriteConfig {
-    static constexpr float RECT_X = 0.0f;        ///< X coordinate in sprite sheet
-    static constexpr float RECT_Y = 0.0f;        ///< Y coordinate in sprite sheet
-    static constexpr float RECT_WIDTH = 33.0f;   ///< Width of enemy sprite (1 frame)
-    static constexpr float RECT_HEIGHT = 32.0f;  ///< Height of enemy sprite
-    static constexpr int SCALE = 1;              ///< Scale factor for rendering
-    static constexpr int TOTAL_COLUMNS = 6;      ///< 6 frames horizontally
-    static constexpr int TOTAL_ROWS = 1;         ///< 1 row
-    static constexpr float FRAME_TIME = 0.1f;    ///< Time per frame (slower animation)
-};
+  struct EnemySpriteConfig {
+      static constexpr float RECT_X = 0.0f;  ///< X coordinate in sprite sheet
+      static constexpr float RECT_Y = 0.0f;  ///< Y coordinate in sprite sheet
+      static constexpr float RECT_WIDTH =
+          33.0f;  ///< Width of enemy sprite (1 frame)
+      static constexpr float RECT_HEIGHT = 32.0f;  ///< Height of enemy sprite
+      static constexpr int SCALE = 1;          ///< Scale factor for rendering
+      static constexpr int TOTAL_COLUMNS = 6;  ///< 6 frames horizontally
+      static constexpr int TOTAL_ROWS = 1;     ///< 1 row
+      static constexpr float FRAME_TIME =
+          0.1f;  ///< Time per frame (slower animation)
+  };
 
   /**
    * Frame indices for player animation.
@@ -80,10 +82,10 @@ struct EnemySpriteConfig {
   };
 
   enum class EnemySpriteFrameIndex {
-  SELECTED_ROW = 0,  ///< Row for basic movement/idle
-  NEUTRAL = 0,       ///< Starting frame
-  END = 2            ///< Last frame (3 frames: 0-2)
-};
+    SELECTED_ROW = 0,  ///< Row for basic movement/idle
+    NEUTRAL = 0,       ///< Starting frame
+    END = 2            ///< Last frame (3 frames: 0-2)
+  };
 }  // namespace client
 
 namespace client {
@@ -111,7 +113,8 @@ namespace client {
           _running.store(false, std::memory_order_release);
           return;
         }
-        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(_player_id);
+        PlayerDisconnectPacket packet =
+            PacketBuilder::makePlayerDisconnect(_player_id);
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);

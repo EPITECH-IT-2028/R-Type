@@ -5,6 +5,9 @@
 #include "VelocityComponent.hpp"
 
 void ecs::ProjectileSystem::update(float dt) {
+  if (!_ecsManagerPtr) {
+    return;
+  }
   for (const auto &entity : _entities) {
     if (_ecsManagerPtr->hasComponent<ProjectileComponent>(entity)) {
       auto &projectile =

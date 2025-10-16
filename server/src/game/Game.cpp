@@ -210,7 +210,7 @@ void game::Game::gameLoop() {
  */
 std::shared_ptr<game::Player> game::Game::createPlayer(
     std::uint32_t player_id, const std::string &name) {
-  std::scoped_lock lock(_playerMutex);
+  std::scoped_lock lock(_playerMutex, _ecsMutex);
   auto entity = _ecsManager->createEntity();
 
   _ecsManager->addComponent<ecs::PositionComponent>(entity, {10.0f, 10.0f});
@@ -456,7 +456,7 @@ std::vector<std::shared_ptr<game::Projectile>> game::Game::getAllProjectiles()
 }
 
 void game::Game::clearAllEntities() {
-  std::lock_guard<std::mutex> lock(_ecsMutex);
+  std::scoped_lock lk(_playerMutex, _enemyMutex, _projectileMutex, _ecsMutex);
 
   auto entities = _ecsManager->getAllEntities();
 
@@ -469,6 +469,6 @@ void game::Game::clearAllEntities() {
   _projectiles.clear();
 
   _nextEnemyId = 0;
-  _nextProjectileId = 0;
+  _nextProjectileId.store(0, std::memory_order_relaxed);
   _enemySpawnTimer = 0.0f;
 }
