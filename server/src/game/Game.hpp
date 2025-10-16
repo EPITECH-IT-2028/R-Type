@@ -11,6 +11,7 @@
 #include "ECSManager.hpp"
 #include "Enemy.hpp"
 #include "EnemySystem.hpp"
+#include "MovementSystem.hpp"
 #include "Player.hpp"
 #include "Projectile.hpp"
 #include "ProjectileSystem.hpp"
@@ -77,6 +78,7 @@ namespace game {
       std::shared_ptr<ecs::EnemySystem> _enemySystem;
       std::shared_ptr<ecs::ProjectileSystem> _projectileSystem;
       std::shared_ptr<ecs::CollisionSystem> _collisionSystem;
+      std::shared_ptr<ecs::MovementSystem> _movementSystem;
 
       std::unordered_map<int, std::shared_ptr<Enemy>> _enemies;
       std::unordered_map<int, std::shared_ptr<Player>> _players;

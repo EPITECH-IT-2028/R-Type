@@ -11,6 +11,7 @@
 #include "Events.hpp"
 #include "HealthComponent.hpp"
 #include "Macro.hpp"
+#include "MovementSystem.hpp"
 #include "Packet.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
@@ -66,6 +67,10 @@ void game::Game::initECS() {
 
   _projectileSystem = _ecsManager.registerSystem<ecs::ProjectileSystem>();
   _projectileSystem->setECSManager(&_ecsManager);
+
+  _movementSystem = _ecsManager.registerSystem<ecs::MovementSystem>();
+  _movementSystem->setECSManager(&_ecsManager);
+
   Signature enemySignature;
   enemySignature.set(_ecsManager.getComponentType<ecs::EnemyComponent>());
   enemySignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
@@ -93,6 +98,15 @@ void game::Game::initECS() {
   collisionSignature.set(
       _ecsManager.getComponentType<ecs::ColliderComponent>());
   _ecsManager.setSystemSignature<ecs::CollisionSystem>(collisionSignature);
+
+  Signature movementSignature;
+  movementSignature.set(_ecsManager.getComponentType<ecs::PlayerComponent>());
+  movementSignature.set(_ecsManager.getComponentType<ecs::EnemyComponent>());
+  movementSignature.set(
+      _ecsManager.getComponentType<ecs::ProjectileComponent>());
+  movementSignature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+  movementSignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+  _ecsManager.setSystemSignature<ecs::MovementSystem>(movementSignature);
 }
 
 /**

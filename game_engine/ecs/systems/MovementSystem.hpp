@@ -10,9 +10,14 @@ namespace ecs {
           ECSManager &ecsManager = ECSManager::getInstance())
           : _ecsManager(ecsManager) {}
 
+      void setECSManager(ECSManager *ecsManager) {
+        _ecsManagerPtr = ecsManager;
+      }
+
       void update(float deltaTime) override;
 
     private:
       ECSManager &_ecsManager;
+      ECSManager *_ecsManagerPtr = nullptr;
   };
 }  // namespace ecs

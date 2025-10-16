@@ -313,6 +313,22 @@ void Client::sendPosition() {
   }
 }
 
+void Client::sendInput(MovementInputType input) {
+  if (_player_id == static_cast<uint32_t>(-1)) {
+    // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
+    return;
+  }
+
+  try {
+    InputPlayerPacket packet = PacketBuilder::makeInputPlayer(input);
+    
+    send(packet);
+    
+  } catch (const std::exception &e) {
+    TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
+  }
+}
+
 void Client::sendShoot(float x, float y) {
   if (_player_id == static_cast<uint32_t>(-1)) {
     // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");

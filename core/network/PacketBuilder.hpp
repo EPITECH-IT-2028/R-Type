@@ -345,4 +345,12 @@ struct PacketBuilder {
       packet.player_id = player_id;
       return packet;
     }
+
+    static InputPlayerPacket makeInputPlayer(MovementInputType input) {
+      InputPlayerPacket packet{};
+      packet.header.type = PacketType::InputPlayer;
+      packet.header.size = sizeof(packet);
+      packet.input = input;
+      return packet;
+    }
 };

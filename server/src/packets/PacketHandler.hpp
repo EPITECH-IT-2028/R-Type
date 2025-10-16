@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 #include "APacket.hpp"
 
 namespace packet {
@@ -34,6 +35,11 @@ namespace packet {
   };
 
   class PlayerDisconnectedHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
+  class InputPlayerHandler : public APacket {
     public:
       int handlePacket(server::Server &server, server::Client &client,
                        const char *data, std::size_t size) override;

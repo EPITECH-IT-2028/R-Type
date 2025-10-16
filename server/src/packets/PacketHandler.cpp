@@ -260,3 +260,39 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
       server.getNetworkManager(), server.getClients(), disconnectPacket);
   return OK;
 }
+
+int packet::InputPlayerHandler::handlePacket(server::Server &server,
+                                             server::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<InputPlayerPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize InputPlayerPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const InputPlayerPacket &packet = deserializedPacket.value();
+
+  float dirY =
+      static_cast<float>((packet.input == MovementInputType::DOWN ? 1 : 0) -
+                         (packet.input == MovementInputType::UP ? 1 : 0));
+  float dirX =
+      static_cast<float>((packet.input == MovementInputType::RIGHT ? 1 : 0) -
+                         (packet.input == MovementInputType::LEFT ? 1 : 0));
+
+  float length = std::sqrt(dirX * dirX + dirY * dirY);
+  if (length > 0.0f) {
+    dirX /= length;
+    dirY /= length;
+  }
+  auto player = server.getGame().getPlayer(client._player_id);
+  float vx = dirX * player->getSpeed();
+  float vy = dirY * player->getSpeed();
+  player->setVelocity(vx, vy);
+  return OK;
+}

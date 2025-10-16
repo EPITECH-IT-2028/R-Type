@@ -86,8 +86,8 @@ void serialize(S& s, MovePacket& packet) {
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
   s.value4b(packet.sequence_number);
-  s.template value<sizeof(float)>(packet.x);
-  s.template value<sizeof(float)>(packet.y);
+  s.template value<sizeof(int)>(packet.x);
+  s.template value<sizeof(int)>(packet.y);
 }
 
 template <typename S>
@@ -229,4 +229,11 @@ void serialize(S& s, GameEndPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.game_end);
+}
+
+template <typename S>
+void serialize(S& s, InputPlayerPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value1b(packet.input);
 }
