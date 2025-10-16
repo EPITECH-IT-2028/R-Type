@@ -55,10 +55,6 @@ int main(void) {
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  MessagePacket welcomeMsg =
-      PacketBuilder::makeMessage("Hello Server!", client.getPlayerId());
-  client.send(welcomeMsg);
-
   PlayerInfoPacket infoPacket = PacketBuilder::makePlayerInfo("Player1");
   client.send(infoPacket);
 

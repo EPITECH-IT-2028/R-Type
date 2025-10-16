@@ -17,7 +17,7 @@ int packet::MessageHandler::handlePacket(server::Server &server,
   auto deserializedPacket =
       serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
 
-  if (!deserializedPacket || !deserializedPacket.has_value()) {
+  if (!deserializedPacket) {
     std::cerr << "[ERROR] Failed to deserialize MessagePacket from client "
               << client._player_id << std::endl;
     return KO;
