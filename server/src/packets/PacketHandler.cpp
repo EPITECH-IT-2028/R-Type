@@ -6,11 +6,10 @@
 #include "Broadcast.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
-#include "PacketSender.hpp"
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
 
-int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
+int packet::MessageHandler::handlePacket(server::Server &server,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -23,10 +22,14 @@ int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
               << client._player_id << std::endl;
     return KO;
   }
-
   const MessagePacket &packet = deserializedPacket.value();
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet.message << std::endl;
+  MessagePacket validatedPacket = packet;
+  validatedPacket.player_id = static_cast<uint32_t>(client._player_id);
+
+  broadcast::Broadcast::broadcastMessage(server.getNetworkManager(),
+                                         server.getClients(), validatedPacket);
   return OK;
 }
 
@@ -251,9 +254,6 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 
   server.clearClientSlot(client._player_id);
 
-  auto disconnectMsg = PacketBuilder::makeMessage(
-      "Player " + std::to_string(client._player_id) + " has disconnected.");
-  packet::PacketSender::sendPacket(server.getNetworkManager(), disconnectMsg);
   auto disconnectPacket =
       PacketBuilder::makePlayerDisconnect(client._player_id);
   broadcast::Broadcast::broadcastPlayerDisconnect(
