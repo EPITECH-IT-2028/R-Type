@@ -11,7 +11,7 @@
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
 
-int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
+int packet::MessageHandler::handlePacket(server::Server &server,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -24,10 +24,24 @@ int packet::MessageHandler::handlePacket([[maybe_unused]] server::Server &,
               << client._player_id << std::endl;
     return KO;
   }
-
   const MessagePacket &packet = deserializedPacket.value();
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet.message << std::endl;
+
+  MessagePacket validatedPacket = packet;
+  validatedPacket.player_id = static_cast<uint32_t>(client._player_id);
+
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room) {
+    std::cerr << "[ERROR] Client " << client._player_id << " is not in any room"
+              << std::endl;
+    return KO;
+  }
+
+  auto roomClients = room->getClients();
+
+  broadcast::Broadcast::broadcastMessageToRoom(server.getNetworkManager(),
+                                               roomClients, validatedPacket);
   return OK;
 }
 
@@ -282,10 +296,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
       }
 
       auto roomClients = room->getClients();
-      auto disconnectMsg = PacketBuilder::makeMessage(
-          "Player " + std::to_string(client._player_id) + " has disconnected.");
-      broadcast::Broadcast::broadcastToRoom(server.getNetworkManager(),
-                                            roomClients, disconnectMsg);
+
       auto disconnectPacket =
           PacketBuilder::makePlayerDisconnect(client._player_id);
       broadcast::Broadcast::broadcastPlayerDisconnectToRoom(

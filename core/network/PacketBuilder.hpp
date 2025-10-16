@@ -7,13 +7,14 @@
 #include "Packet.hpp"
 
 struct PacketBuilder {
-    static MessagePacket makeMessage(const std::string &msg) {
+    static MessagePacket makeMessage(const std::string &msg, std::uint32_t player_id) {
       MessagePacket packet{};
       packet.header.type = PacketType::Message;
       packet.header.size = sizeof(packet);
       packet.timestamp = static_cast<uint32_t>(time(nullptr));
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
       packet.message[sizeof(packet.message) - 1] = '\0';
+      packet.player_id = player_id;
       return packet;
     }
 

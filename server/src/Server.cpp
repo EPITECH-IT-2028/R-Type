@@ -109,8 +109,6 @@ void server::Server::handleTimeout() {
         auto room = _gameManager->getRoom(roomId);
         if (room) {
           auto roomClients = room->getClients();
-          // broadcast::Broadcast::broadcastToRoom(_networkManager, roomClients,
-          //                                       disconnectMsg);
 
           auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
