@@ -28,6 +28,7 @@
 #include <chrono>
 #include <iostream>
 #include <mutex>
+#include <shared_mutex>
 #include <string>
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
@@ -143,6 +144,7 @@ namespace client {
       }
 
       uint32_t getPlayerEntity(uint32_t player_id) const {
+        std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
         auto it = _playerEntities.find(player_id);
         if (it != _playerEntities.end()) {
           return it->second;
@@ -151,6 +153,7 @@ namespace client {
       }
 
       void destroyPlayerEntity(uint32_t playerId) {
+        std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
         _playerEntities.erase(playerId);
       }
 
@@ -188,6 +191,7 @@ namespace client {
       std::atomic<uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
       std::unordered_map<uint32_t, Entity> _playerEntities;
+      mutable std::shared_mutex _playerEntitiesMutex;
       std::unordered_map<uint32_t, Entity> _enemyEntities;
       std::unordered_map<uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
