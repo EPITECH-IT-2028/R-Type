@@ -295,7 +295,8 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
         room->getGame().destroyPlayer(client._player_id);
       }
 
-      room->removeClient(client._player_id);
+      server.getGameManager().leaveRoom(
+          std::make_shared<server::Client>(client));
       auto roomClients = room->getClients();
 
       auto disconnectPacket =
