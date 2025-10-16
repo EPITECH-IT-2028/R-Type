@@ -136,7 +136,7 @@ void game::GameManager::leaveRoom(std::shared_ptr<server::Client> client) {
     std::cout << "[ROOM] Room " << roomToStop->getRoomId()
               << " destroyed and cleaned." << std::endl;
   }
-  client->_room_id = -1;
+  client->_room_id = NO_ROOM;
 }
 
 std::vector<std::shared_ptr<game::GameRoom>> game::GameManager::getAllRooms()

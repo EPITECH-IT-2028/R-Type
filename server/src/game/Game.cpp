@@ -141,7 +141,7 @@ void game::Game::start() {
 }
 
 void game::Game::stop() {
-  if (!_running) {
+  if (!_running || !_gameThread.joinable()) {
     return;
   }
 
