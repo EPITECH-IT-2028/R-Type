@@ -237,6 +237,7 @@ namespace client {
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
       TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
     }
+    std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
   }
 
@@ -294,18 +295,24 @@ namespace client {
 
   void Client::sendPosition() {
     if (_player_id == static_cast<uint32_t>(-1)) {
-      // TraceLog(LOG_WARNING, "[SEND POSITION] Player ID not assigned yet");
+      TraceLog(LOG_WARNING,
+               "[WARN] Player ID not assigned yet, cannot send "
+               "position");
       return;
     }
 
-    auto it = _playerEntities.find(_player_id);
-    if (it == _playerEntities.end()) {
-      TraceLog(LOG_WARNING,
-               "[SEND POSITION] Player entity not found for ID: %u",
-               _player_id);
-      return;
+    Entity playerEntity;
+    {
+      std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
+      auto it = _playerEntities.find(_player_id);
+      if (it == _playerEntities.end()) {
+        TraceLog(LOG_WARNING,
+                 "[SEND POSITION] Player entity not found for ID: %u",
+                 _player_id);
+        return;
+      }
+      playerEntity = it->second;
     }
-    Entity playerEntity = it->second;
 
     try {
       auto &position =
@@ -324,7 +331,9 @@ namespace client {
 
   void Client::sendShoot(float x, float y) {
     if (_player_id == static_cast<uint32_t>(-1)) {
-      // TraceLog(LOG_WARNING, "[SEND SHOOT] Player ID not assigned yet");
+      TraceLog(LOG_WARNING,
+               "[WARN] Player ID not assigned yet, cannot send "
+               "shoot");
       return;
     }
 
