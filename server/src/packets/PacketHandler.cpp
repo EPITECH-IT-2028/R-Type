@@ -334,9 +334,14 @@ int packet::InputPlayerHandler::handlePacket(server::Server &server,
   }
 
   const InputPlayerPacket &packet = deserializedPacket.value();
-
-  server.getInputSystem(client._room_id)
-      ->queueInput(client._entity_id, {packet.input, packet.sequence_number,
-                                       std::chrono::steady_clock::now()});
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room) {
+    return KO;
+  }
+  auto sis = room->getGame().getServerInputSystem();
+  if (!sis) {
+    return KO;
+  }
+  sis->queueInput(client._entity_id, {packet.input, packet.sequence_number});
   return OK;
 }

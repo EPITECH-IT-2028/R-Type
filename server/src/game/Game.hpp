@@ -41,7 +41,7 @@ namespace game {
 
       std::shared_ptr<Projectile> getProjectile(std::uint32_t projectile_id);
 
-      std::shared_ptr<ecs::ServerInputSystem> getServerInputSystem() {
+      std::shared_ptr<ecs::ServerInputSystem> getServerInputSystem() const {
         return _serverInputSystem;
       }
 

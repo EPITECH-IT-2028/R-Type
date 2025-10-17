@@ -48,12 +48,16 @@ game::Game::~Game() {
   if (_collisionSystem) {
     _collisionSystem->setECSManager(nullptr);
   }
+  if (_serverInputSystem) {
+    _serverInputSystem->setECSManager(nullptr);
+  }
 
   clearAllEntities();
 
   _enemySystem.reset();
   _collisionSystem.reset();
   _projectileSystem.reset();
+  _serverInputSystem.reset();
 }
 
 /**
@@ -131,7 +135,7 @@ void game::Game::initECS() {
         _ecsManager->getComponentType<ecs::ColliderComponent>());
     _ecsManager->setSystemSignature<ecs::CollisionSystem>(collisionSignature);
 
-    Signature serverInputSignature;
+    Signature serverInputSignature{};
     serverInputSignature.set(
         _ecsManager->getComponentType<ecs::VelocityComponent>());
     serverInputSignature.set(

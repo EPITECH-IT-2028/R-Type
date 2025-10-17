@@ -64,8 +64,8 @@ struct ALIGNED MovePacket {
     PacketHeader header;
     uint32_t player_id;
     uint32_t sequence_number;
-    int x;
-    int y;
+    float x;
+    float y;
 };
 
 /* Server to client packets */
@@ -319,9 +319,9 @@ struct ALIGNED PlayerDeathPacket {
 };
 
 struct ALIGNED InputPlayerPacket {
-  PacketHeader header;
-  MovementInputType input;
-  int sequence_number;
+    PacketHeader header;
+    MovementInputType input;
+    int sequence_number;
 };
 
 struct ALIGNED PositionPlayerPacket {
@@ -329,4 +329,5 @@ struct ALIGNED PositionPlayerPacket {
     uint32_t player_id;
     float x;
     float y;
+    std::uint32_t sequence_number;
 };

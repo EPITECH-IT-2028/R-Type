@@ -1,12 +1,10 @@
 #include "ServerInputSystem.hpp"
-#include <iostream>
 #include "Events.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
-#include "VelocityComponent.hpp"
 
 ecs::ServerInputSystem::ServerInputSystem() {
 }
@@ -22,8 +20,6 @@ void ecs::ServerInputSystem::update(float deltaTime) {
       processInput(entityId, input, deltaTime);
       sendPositionUpdate(entityId);
     }
-
-    _lastInputTime[entityId] = inputs.back().timestamp;
   }
   _pendingInputs.clear();
 }
@@ -42,12 +38,10 @@ void ecs::ServerInputSystem::processInput(Entity entityId,
                                           const PlayerInput &input,
                                           float deltaTime) {
   if (!_ecsManagerPtr->hasComponent<PositionComponent>(entityId) ||
-      !_ecsManagerPtr->hasComponent<VelocityComponent>(entityId) ||
       !_ecsManagerPtr->hasComponent<SpeedComponent>(entityId))
     return;
 
   auto &position = _ecsManagerPtr->getComponent<PositionComponent>(entityId);
-  auto &velocity = _ecsManagerPtr->getComponent<VelocityComponent>(entityId);
   const auto &speed = _ecsManagerPtr->getComponent<SpeedComponent>(entityId);
 
   float moveDistance = speed.speed * deltaTime;
@@ -67,14 +61,8 @@ void ecs::ServerInputSystem::processInput(Entity entityId,
       break;
   }
 
-  if (position.x < 0)
-    position.x = 0;
-  if (position.y < 0)
-    position.y = 0;
-  if (position.x > WINDOW_WIDTH)
-    position.x = WINDOW_WIDTH;
-  if (position.y > WINDOW_HEIGHT)
-    position.y = WINDOW_HEIGHT;
+  position.x = std::clamp(position.x, 0.0f, static_cast<float>(WINDOW_WIDTH));
+  position.y = std::clamp(position.y, 0.0f, static_cast<float>(WINDOW_HEIGHT));
 }
 
 void ecs::ServerInputSystem::sendPositionUpdate(Entity entityId) {

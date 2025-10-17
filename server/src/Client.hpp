@@ -9,11 +9,12 @@
 namespace server {
   struct Client {
     public:
-      Client(int id) : _player_id(id) {
-        _connected = true;
-        _last_heartbeat = std::chrono::steady_clock::now();
-        _last_position_update = std::chrono::steady_clock::now();
-        _room_id = NO_ROOM;
+      Client(int id)
+          : _player_id(id),
+            _connected(true),
+            _room_id(NO_ROOM),
+            _last_heartbeat(std::chrono::steady_clock::now()),
+            _last_position_update(std::chrono::steady_clock::now()) {
       }
       ~Client() = default;
 

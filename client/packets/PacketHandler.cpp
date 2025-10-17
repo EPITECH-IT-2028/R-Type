@@ -420,12 +420,13 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
 }
 
 int packet::PositionPlayerHandler::handlePacket(client::Client &client,
-                                                 const char *data,
-                                                 std::size_t size) {
+                                                const char *data,
+                                                std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
-      serialization::BitserySerializer::deserialize<PositionPlayerPacket>(buffer);
+      serialization::BitserySerializer::deserialize<PositionPlayerPacket>(
+          buffer);
 
   if (!packetOpt) {
     TraceLog(LOG_ERROR, "[POSITION EVENT] Failed to deserialize packet");
@@ -445,6 +446,10 @@ int packet::PositionPlayerHandler::handlePacket(client::Client &client,
         ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
     position.x = packet.x;
     position.y = packet.y;
+
+    if (client.getPlayerId() == packet.player_id) {
+      client.updateSequenceNumber(packet.sequence_number);
+    }
 
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[POSITION EVENT] Failed to update player %u: %s",
