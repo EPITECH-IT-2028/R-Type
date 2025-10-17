@@ -5,7 +5,7 @@
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
-#include <math.h>
+#include <cmath>
 
 void ecs::ServerInputSystem::update(float deltaTime) {
   if (_pendingInputs.empty() || !_eventQueue)
@@ -79,5 +79,6 @@ void ecs::ServerInputSystem::sendPositionUpdate(Entity entityId) {
   positionEvent.player_id = player.player_id;
   positionEvent.x = position.x;
   positionEvent.y = position.y;
+  positionEvent.sequence_number = 0;
   _eventQueue->addRequest(positionEvent);
 }
