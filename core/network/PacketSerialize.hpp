@@ -244,6 +244,6 @@ void serialize(S& s, PositionPlayerPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
-  s.value4b(packet.x);
-  s.value4b(packet.y);
+  s.template value<sizeof(float)>(packet.x);
+  s.template value<sizeof(float)>(packet.y);
 }
