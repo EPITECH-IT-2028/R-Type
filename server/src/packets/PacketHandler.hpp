@@ -2,6 +2,11 @@
 #include <cstddef>
 #include "APacket.hpp"
 
+namespace server {
+  class Server;
+  struct Client;
+}
+
 namespace packet {
 
   class MessageHandler : public APacket {
