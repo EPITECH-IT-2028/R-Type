@@ -6,6 +6,7 @@
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
 #include <cmath>
+#include <algorithm>
 
 void ecs::ServerInputSystem::update(float deltaTime) {
   if (_pendingInputs.empty() || !_eventQueue)
