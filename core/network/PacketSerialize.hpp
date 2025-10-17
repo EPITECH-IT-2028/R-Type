@@ -30,6 +30,7 @@ void serialize(S& s, MessagePacket& packet) {
   for (size_t i = 0; i < 256; ++i) {
     s.value1b(packet.message[i]);
   }
+  s.value4b(packet.player_id);
 }
 
 /*

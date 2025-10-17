@@ -88,12 +88,6 @@ void server::Server::handleTimeout() {
       if (auto player = _game.getPlayer(pid)) {
         _game.destroyPlayer(pid);
       }
-
-      auto disconnectMsg = PacketBuilder::makeMessage(
-          "Player " + std::to_string(pid) +
-          " has been disconnected due to inactivity.");
-      packet::PacketSender::sendPacket(_networkManager, disconnectMsg);
-
       auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
       client.reset();
       broadcast::Broadcast::broadcastPlayerDisconnect(_networkManager, _clients,
