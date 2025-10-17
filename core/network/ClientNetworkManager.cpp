@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "PacketUtils.hpp"
 
 using namespace network;
 
@@ -133,12 +134,12 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
               handler->handlePacket(client, _recv_buffer.data(), length);
           if (result != 0) {
             std::cerr << "Error handling packet of type "
-                      << static_cast<int>(packet_type) << ": " << result
+                      << packetTypeToString(packet_type) << ": " << result
                       << std::endl;
           }
         } else {
           std::cerr << "No handler for packet type "
-                    << static_cast<int>(packet_type) << std::endl;
+                    << packetTypeToString(packet_type) << std::endl;
         }
       }
     }
