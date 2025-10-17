@@ -27,7 +27,7 @@ namespace ecs {
       void update(float deltaTime) override;
 
       void queueInput(Entity entityId, const PlayerInput &input);
-      void processInput(Entity entityId, const PlayerInput &input,
+      void processInput(Entity entityId, const std::vector<PlayerInput> &input,
                         float deltaTime);
       void sendPositionUpdate(Entity entityId);
 
