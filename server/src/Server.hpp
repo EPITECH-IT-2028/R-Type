@@ -61,7 +61,9 @@ namespace server {
 
       void clearClientSlot(int player_id);
 
-      std::shared_ptr<ecs::ServerInputSystem> getInputSystem(uint32_t roomId) {
+      std::shared_ptr<ecs::ServerInputSystem> getInputSystem(uint32_t roomId) const {
+        if (!_gameManager)
+          return nullptr;
         auto room = _gameManager->getRoom(roomId);
         return room ? room->getGame().getServerInputSystem() : nullptr;
       }

@@ -439,6 +439,8 @@ int packet::PositionPlayerHandler::handlePacket(client::Client &client,
   try {
     auto playerEntity = client.getPlayerEntity(packet.player_id);
     if (playerEntity == client::KO) {
+      TraceLog(LOG_WARNING, "[POSITION EVENT] Player ID: %u not found",
+               packet.player_id);
       return packet::OK;
     }
 

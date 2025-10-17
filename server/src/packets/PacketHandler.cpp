@@ -206,7 +206,6 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   auto deserializedPacket =
       serialization::BitserySerializer::deserialize<PlayerShootPacket>(buffer);
 
-  std::cout << "Broadcasting player shoot to room" << std::endl;
   if (!deserializedPacket) {
     std::cerr << "[ERROR] Failed to deserialize PlayerShootPacket from client "
               << client._player_id << std::endl;
@@ -340,6 +339,11 @@ int packet::InputPlayerHandler::handlePacket(server::Server &server,
   }
   auto sis = room->getGame().getServerInputSystem();
   if (!sis) {
+    return KO;
+  }
+  if (client._entity_id == 0 || client._entity_id == static_cast<Entity>(-1)) {
+    std::cerr << "[ERROR] Client " << client._player_id
+              << " has invalid entity_id" << std::endl;
     return KO;
   }
   sis->queueInput(client._entity_id, {packet.input, packet.sequence_number});

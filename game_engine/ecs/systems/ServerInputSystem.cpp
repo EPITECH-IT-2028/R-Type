@@ -24,11 +24,6 @@ void ecs::ServerInputSystem::update(float deltaTime) {
 
 void ecs::ServerInputSystem::queueInput(Entity entityId,
                                         const PlayerInput &input) {
-  for (const auto &pendingInput : _pendingInputs[entityId]) {
-    if (input.input == pendingInput.input) {
-      return;
-    }
-  }
   _pendingInputs[entityId].push_back(input);
 }
 

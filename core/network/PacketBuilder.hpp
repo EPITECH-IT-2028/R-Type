@@ -356,13 +356,14 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PositionPlayerPacket makePositionPlayer(uint32_t player_id, float x, float y) {
+    static PositionPlayerPacket makePositionPlayer(uint32_t player_id, float x, float y, std::uint32_t sequence_number) {
       PositionPlayerPacket packet{};
       packet.header.type = PacketType::PositionPlayer;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.x = x;
       packet.y = y;
+      packet.sequence_number = 0;
       return packet;
     }
 };

@@ -42,6 +42,7 @@ namespace ecs {
       bool leftPressed = IsKeyDown(KEY_LEFT);
       bool rightPressed = IsKeyDown(KEY_RIGHT);
 
+      // TODO: Optimize to send input only on state change/ Add limit rate
       if (leftPressed)
         _client->sendInput(MovementInputType::LEFT);
       if (rightPressed)
