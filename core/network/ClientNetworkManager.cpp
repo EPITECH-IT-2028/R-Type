@@ -82,6 +82,16 @@ void ClientNetworkManager::disconnect() {
   std::cout << "Disconnected from server." << std::endl;
 }
 
+/**
+ * @brief Processes incoming UDP datagrams from the configured server and dispatches them to the appropriate packet handlers.
+ *
+ * Continuously reads available datagrams from the socket until no more data is available, stops when the manager is not running or when the socket would block.
+ * Packets from senders other than the configured server endpoint are ignored. For each received datagram, the function attempts to deserialize a PacketHeader,
+ * looks up a handler for the packet type, and invokes the handler with the raw packet data. Errors during receive, deserialization, missing handlers, handler
+ * failures, and exceptions are reported to standard error.
+ *
+ * @param client Reference to the client instance passed to packet handlers.
+ */
 void ClientNetworkManager::receivePackets(client::Client &client) {
   if (!_running.load(std::memory_order_acquire)) {
     return;
