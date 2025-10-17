@@ -147,9 +147,7 @@ void game::Game::stop() {
 
   _running = false;
 
-  if (_gameThread.joinable()) {
-    _gameThread.join();
-  }
+  _gameThread.join();
 
   clearAllEntities();
 }
@@ -164,7 +162,8 @@ void game::Game::stop() {
  * frame rate.
  */
 void game::Game::gameLoop() {
-  std::this_thread::sleep_for(std::chrono::seconds(3));
+  std::this_thread::sleep_for(
+      std::chrono::seconds(3));  // TODO: remove when lobby
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);

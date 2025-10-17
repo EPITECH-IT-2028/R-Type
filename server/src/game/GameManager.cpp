@@ -86,12 +86,6 @@ bool game::GameManager::joinRoom(int roomId,
   std::cout << "[ROOM] Client " << client->_player_id << " joined room "
             << roomId << std::endl;
 
-  // if (room->getPlayerCount() == 1 && room->getState() == RoomStatus::WAITING)
-  // {
-  //   room->start();
-  //   std::cout << "[ROOM] Room " << roomId << " started." << std::endl;
-  // }
-
   return true;
 }
 
