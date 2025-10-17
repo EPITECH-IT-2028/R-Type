@@ -317,22 +317,22 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
   return OK;
 }
 
-int packet::InputPlayerHandler::handlePacket(server::Server &server,
+int packet::PlayerInputHandler::handlePacket(server::Server &server,
                                              server::Client &client,
                                              const char *data,
                                              std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
-      serialization::BitserySerializer::deserialize<InputPlayerPacket>(buffer);
+      serialization::BitserySerializer::deserialize<PlayerInputPacket>(buffer);
 
   if (!deserializedPacket) {
-    std::cerr << "[ERROR] Failed to deserialize InputPlayerPacket from client "
+    std::cerr << "[ERROR] Failed to deserialize PlayerInputPacket from client "
               << client._player_id << std::endl;
     return KO;
   }
 
-  const InputPlayerPacket &packet = deserializedPacket.value();
+  const PlayerInputPacket &packet = deserializedPacket.value();
   auto room = server.getGameManager().getRoom(client._room_id);
   if (!room) {
     return KO;

@@ -31,8 +31,8 @@ namespace packet {
                []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
               {PacketType::PlayerShoot,
                []() { return std::make_unique<PlayerShootHandler>(); }},
-              {PacketType::InputPlayer,
-               []() { return std::make_unique<InputPlayerHandler>(); }}};
+              {PacketType::PlayerInput,
+               []() { return std::make_unique<PlayerInputHandler>(); }}};
   };
 
 }  // namespace packet

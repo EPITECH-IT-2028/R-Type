@@ -353,8 +353,8 @@ namespace client {
     }
 
     try {
-      InputPlayerPacket packet =
-          PacketBuilder::makeInputPlayer(input, _sequence_number);
+      PlayerInputPacket packet =
+          PacketBuilder::makePlayerInput(input, _sequence_number);
 
       send(packet);
 

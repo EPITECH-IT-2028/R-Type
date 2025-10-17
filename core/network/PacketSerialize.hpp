@@ -233,7 +233,7 @@ void serialize(S& s, GameEndPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, InputPlayerPacket& packet) {
+void serialize(S& s, PlayerInputPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.input);

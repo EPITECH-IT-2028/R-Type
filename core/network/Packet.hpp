@@ -23,7 +23,7 @@ enum class PacketType : uint8_t {
   EnemyHit = 0x11,
   PlayerHit = 0x12,
   PlayerDeath = 0x13,
-  InputPlayer = 0x14,
+  PlayerInput = 0x14,
   PositionPlayer = 0x15
 };
 
@@ -318,7 +318,7 @@ struct ALIGNED PlayerDeathPacket {
     float y;
 };
 
-struct ALIGNED InputPlayerPacket {
+struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     MovementInputType input;
     int sequence_number;
