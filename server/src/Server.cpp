@@ -174,6 +174,11 @@ void server::Server::handleGameEvent(const queue::GameEvent &event) {
               PacketBuilder::makeGameStart(specificEvent.game_started);
           broadcast::Broadcast::broadcastGameStart(_networkManager, _clients,
                                                    gameStartPacket);
+        } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
+          auto positionPacket = PacketBuilder::makePositionPlayer(
+              specificEvent.player_id, specificEvent.x, specificEvent.y);
+          broadcast::Broadcast::broadcastPositionUpdate(
+              _networkManager, _clients, positionPacket);
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }
@@ -204,12 +209,6 @@ void server::Server::startReceive() {
  */
 void server::Server::handleReceive(const char *data,
                                    std::size_t bytes_transferred) {
-  if (bytes_transferred < sizeof(PacketHeader)) {
-    std::cerr << "[DEBUG] Received packet too small: " << bytes_transferred
-              << " bytes" << std::endl;
-    return;
-  }
-
   serialization::Buffer buffer(data, data + bytes_transferred);
 
   auto headerOpt =
@@ -307,12 +306,6 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   }
 
   auto client = _clients[client_idx];
-
-  if (size < sizeof(PacketHeader)) {
-    std::cerr << "[WARNING] Packet too small from client "
-              << _clients[client_idx]->_player_id << std::endl;
-    return;
-  }
 
   serialization::Buffer buffer(reinterpret_cast<const uint8_t *>(data),
                                reinterpret_cast<const uint8_t *>(data) + size);

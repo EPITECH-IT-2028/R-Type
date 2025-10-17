@@ -236,4 +236,14 @@ void serialize(S& s, InputPlayerPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.input);
+  s.value4b(packet.sequence_number);
+}
+
+template <typename S>
+void serialize(S& s, PositionPlayerPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.player_id);
+  s.value4b(packet.x);
+  s.value4b(packet.y);
 }

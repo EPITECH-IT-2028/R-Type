@@ -241,5 +241,12 @@ namespace broadcast {
           const PlayerDisconnectPacket &packet) {
         broadcastToAll(networkManager, clients, packet);
       };
+
+      static void broadcastPositionUpdate(
+          network::ServerNetworkManager &networkManager,
+          const std::vector<std::shared_ptr<server::Client>> &clients,
+          const PositionPlayerPacket &packet) {
+        broadcastToAll(networkManager, clients, packet);
+      };
   };
 }  // namespace broadcast

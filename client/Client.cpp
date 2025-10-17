@@ -320,7 +320,7 @@ void Client::sendInput(MovementInputType input) {
   }
 
   try {
-    InputPlayerPacket packet = PacketBuilder::makeInputPlayer(input);
+    InputPlayerPacket packet = PacketBuilder::makeInputPlayer(input, _sequence_number);
     
     send(packet);
     

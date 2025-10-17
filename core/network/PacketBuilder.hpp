@@ -346,11 +346,22 @@ struct PacketBuilder {
       return packet;
     }
 
-    static InputPlayerPacket makeInputPlayer(MovementInputType input) {
+    static InputPlayerPacket makeInputPlayer(MovementInputType input, int sequence_number) {
       InputPlayerPacket packet{};
       packet.header.type = PacketType::InputPlayer;
       packet.header.size = sizeof(packet);
       packet.input = input;
+      packet.sequence_number = sequence_number;
+      return packet;
+    }
+
+    static PositionPlayerPacket makePositionPlayer(uint32_t player_id, float x, float y) {
+      PositionPlayerPacket packet{};
+      packet.header.type = PacketType::PositionPlayer;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      packet.x = x;
+      packet.y = y;
       return packet;
     }
 };

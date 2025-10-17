@@ -278,21 +278,8 @@ int packet::InputPlayerHandler::handlePacket(server::Server &server,
 
   const InputPlayerPacket &packet = deserializedPacket.value();
 
-  float dirY =
-      static_cast<float>((packet.input == MovementInputType::DOWN ? 1 : 0) -
-                         (packet.input == MovementInputType::UP ? 1 : 0));
-  float dirX =
-      static_cast<float>((packet.input == MovementInputType::RIGHT ? 1 : 0) -
-                         (packet.input == MovementInputType::LEFT ? 1 : 0));
-
-  float length = std::sqrt(dirX * dirX + dirY * dirY);
-  if (length > 0.0f) {
-    dirX /= length;
-    dirY /= length;
-  }
-  auto player = server.getGame().getPlayer(client._player_id);
-  float vx = dirX * player->getSpeed();
-  float vy = dirY * player->getSpeed();
-  player->setVelocity(vx, vy);
+  server.getInputSystem()->queueInput(
+      client._entity_id,
+      {packet.input, packet.sequence_number, std::chrono::steady_clock::now()});
   return OK;
 }

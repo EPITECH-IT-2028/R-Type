@@ -28,10 +28,10 @@ void gameLoop(client::Client &client) {
       TraceLog(LOG_INFO, "[HEARTBEAT] Sent to server");
     }
 
-    if (now - lastPosSend >= posInterval) {
-      client.sendPosition();
-      lastPosSend = now;
-    }
+    // if (now - lastPosSend >= posInterval) {
+    //   client.sendPosition();
+    //   lastPosSend = now;
+    // }
   }
 }
 

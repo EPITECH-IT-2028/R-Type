@@ -8,6 +8,7 @@
 #include <vector>
 #include "Game.hpp"
 #include "PacketFactory.hpp"
+#include "ServerInputSystem.hpp"
 #include "ServerNetworkManager.hpp"
 
 namespace server {
@@ -65,6 +66,10 @@ namespace server {
       }
 
       void clearClientSlot(int player_id);
+
+      std::shared_ptr<ecs::ServerInputSystem> getInputSystem() {
+        return _game.getServerInputSystem();
+      }
 
     private:
       void startReceive();

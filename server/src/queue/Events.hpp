@@ -68,6 +68,12 @@ namespace queue {
       float y;
   };
 
+  struct PositionEvent {
+      int player_id;
+      float x;
+      float y;
+  };
+
   struct ProjectileDestroyEvent {
       std::uint32_t projectile_id;
       float x;
@@ -81,6 +87,6 @@ namespace queue {
   using GameEvent =
       std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent,
                    ProjectileSpawnEvent, PlayerHitEvent, EnemyHitEvent,
-                   ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent>;
+                   ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent, PositionEvent>;
 
 }  // namespace queue

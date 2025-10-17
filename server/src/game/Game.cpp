@@ -18,6 +18,7 @@
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
 #include "ScoreComponent.hpp"
+#include "ServerInputSystem.hpp"
 #include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -68,8 +69,9 @@ void game::Game::initECS() {
   _projectileSystem = _ecsManager.registerSystem<ecs::ProjectileSystem>();
   _projectileSystem->setECSManager(&_ecsManager);
 
-  _movementSystem = _ecsManager.registerSystem<ecs::MovementSystem>();
-  _movementSystem->setECSManager(&_ecsManager);
+  _serverInputSystem = _ecsManager.registerSystem<ecs::ServerInputSystem>();
+  _serverInputSystem->setECSManager(&_ecsManager);
+  _serverInputSystem->setEventQueue(&_eventQueue);
 
   Signature enemySignature;
   enemySignature.set(_ecsManager.getComponentType<ecs::EnemyComponent>());
@@ -99,14 +101,11 @@ void game::Game::initECS() {
       _ecsManager.getComponentType<ecs::ColliderComponent>());
   _ecsManager.setSystemSignature<ecs::CollisionSystem>(collisionSignature);
 
-  Signature movementSignature;
-  movementSignature.set(_ecsManager.getComponentType<ecs::PlayerComponent>());
-  movementSignature.set(_ecsManager.getComponentType<ecs::EnemyComponent>());
-  movementSignature.set(
-      _ecsManager.getComponentType<ecs::ProjectileComponent>());
-  movementSignature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
-  movementSignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
-  _ecsManager.setSystemSignature<ecs::MovementSystem>(movementSignature);
+  Signature serverInputSignature;
+  serverInputSignature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+  serverInputSignature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+  serverInputSignature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
+  _ecsManager.setSystemSignature<ecs::ServerInputSystem>(serverInputSignature);
 }
 
 /**
@@ -148,7 +147,7 @@ void game::Game::stop() {
  * frame rate.
  */
 void game::Game::gameLoop() {
-  std::this_thread::sleep_for(std::chrono::seconds(10));
+  std::this_thread::sleep_for(std::chrono::seconds(3));
 
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
@@ -164,6 +163,7 @@ void game::Game::gameLoop() {
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
     _collisionSystem->update(deltaTime.count());
+    _serverInputSystem->update(deltaTime.count());
 
     spawnEnemy(deltaTime.count());
 

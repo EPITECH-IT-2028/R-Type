@@ -37,35 +37,42 @@ namespace ecs {
       auto &animation =
           _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-      float dirY = static_cast<float>((IsKeyDown(KEY_DOWN) ? 1 : 0) -
-                                      (IsKeyDown(KEY_UP) ? 1 : 0));
-      float dirX = static_cast<float>((IsKeyDown(KEY_RIGHT) ? 1 : 0) -
-                                      (IsKeyDown(KEY_LEFT) ? 1 : 0));
+      bool upPressed = IsKeyDown(KEY_UP);
+      bool downPressed = IsKeyDown(KEY_DOWN);
+      bool leftPressed = IsKeyDown(KEY_LEFT);
+      bool rightPressed = IsKeyDown(KEY_RIGHT);
 
-      if (IsKeyDown(KEY_UP) && !IsKeyDown(KEY_DOWN)) {
+      if (leftPressed)
+        _client->sendInput(MovementInputType::LEFT);
+      if (rightPressed)
+        _client->sendInput(MovementInputType::RIGHT);
+      if (upPressed)
+        _client->sendInput(MovementInputType::UP);
+      if (downPressed)
+        _client->sendInput(MovementInputType::DOWN);
+
+      float dirY =
+          static_cast<float>((downPressed ? 1 : 0) - (upPressed ? 1 : 0));
+      float dirX =
+          static_cast<float>((rightPressed ? 1 : 0) - (leftPressed ? 1 : 0));
+
+      if (upPressed && !downPressed) {
         if (animation.frameTime < 0 || !animation.isPlaying) {
           animation.currentFrame = animation.neutralFrame;
           animation.frameTime = std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
-        _client->sendInput(MovementInputType::UP);
-      } else if (IsKeyDown(KEY_DOWN) && !IsKeyDown(KEY_UP)) {
+      } else if (downPressed && !upPressed) {
         if (animation.frameTime > 0 || !animation.isPlaying) {
           animation.currentFrame = animation.neutralFrame;
           animation.frameTime = -std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
-        _client->sendInput(MovementInputType::DOWN);
-      } else if (IsKeyDown(KEY_RIGHT) && !IsKeyDown(KEY_LEFT)) {
+      } else if ((rightPressed && !leftPressed) ||
+                 (leftPressed && !rightPressed)) {
         animation.isPlaying = false;
         animation.currentFrame = animation.neutralFrame;
         animation.frameTime = std::abs(animation.frameTime);
-        _client->sendInput(MovementInputType::RIGHT);
-      } else if (IsKeyDown(KEY_LEFT) && !IsKeyDown(KEY_RIGHT)) {
-        animation.isPlaying = false;
-        animation.currentFrame = animation.neutralFrame;
-        animation.frameTime = std::abs(animation.frameTime);
-        _client->sendInput(MovementInputType::LEFT);
       }
 
       float length = std::sqrt(dirX * dirX + dirY * dirY);
@@ -76,6 +83,7 @@ namespace ecs {
 
       velocity.vx = dirX * speed.speed;
       velocity.vy = dirY * speed.speed;
+
       if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);
