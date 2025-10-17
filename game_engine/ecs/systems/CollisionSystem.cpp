@@ -91,13 +91,13 @@ void ecs::CollisionSystem::update(float dt) {
 void ecs::CollisionSystem::handleCollision(const Entity &entity1,
                                            const Entity &entity2) {
   bool entity1IsProjectile =
-      _ecsManager.hasComponent<ProjectileComponent>(entity1);
+      _ecsManager->hasComponent<ProjectileComponent>(entity1);
   bool entity2IsProjectile =
-      _ecsManager.hasComponent<ProjectileComponent>(entity2);
-  bool entity1IsEnemy = _ecsManager.hasComponent<EnemyComponent>(entity1);
-  bool entity2IsEnemy = _ecsManager.hasComponent<EnemyComponent>(entity2);
-  bool entity1IsPlayer = _ecsManager.hasComponent<PlayerComponent>(entity1);
-  bool entity2IsPlayer = _ecsManager.hasComponent<PlayerComponent>(entity2);
+      _ecsManager->hasComponent<ProjectileComponent>(entity2);
+  bool entity1IsEnemy = _ecsManager->hasComponent<EnemyComponent>(entity1);
+  bool entity2IsEnemy = _ecsManager->hasComponent<EnemyComponent>(entity2);
+  bool entity1IsPlayer = _ecsManager->hasComponent<PlayerComponent>(entity1);
+  bool entity2IsPlayer = _ecsManager->hasComponent<PlayerComponent>(entity2);
 
   std::shared_ptr<game::Enemy> enemy;
   std::shared_ptr<game::Projectile> projectile;
@@ -106,14 +106,16 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
       (entity2IsProjectile && entity1IsEnemy)) {
     if (entity1IsEnemy && entity2IsProjectile) {
       enemy = _game->getEnemy(
-          _ecsManager.getComponent<EnemyComponent>(entity1).enemy_id);
+          _ecsManager->getComponent<EnemyComponent>(entity1).enemy_id);
       projectile = _game->getProjectile(
-          _ecsManager.getComponent<ProjectileComponent>(entity2).projectile_id);
+          _ecsManager->getComponent<ProjectileComponent>(entity2)
+              .projectile_id);
     } else {
       enemy = _game->getEnemy(
-          _ecsManager.getComponent<EnemyComponent>(entity2).enemy_id);
+          _ecsManager->getComponent<EnemyComponent>(entity2).enemy_id);
       projectile = _game->getProjectile(
-          _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
+          _ecsManager->getComponent<ProjectileComponent>(entity1)
+              .projectile_id);
     }
     if (!enemy || !projectile)
       return;
@@ -122,14 +124,16 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
              (entity2IsProjectile && entity1IsPlayer)) {
     if (entity1IsPlayer && entity2IsProjectile) {
       player = _game->getPlayer(
-          _ecsManager.getComponent<PlayerComponent>(entity1).player_id);
+          _ecsManager->getComponent<PlayerComponent>(entity1).player_id);
       projectile = _game->getProjectile(
-          _ecsManager.getComponent<ProjectileComponent>(entity2).projectile_id);
+          _ecsManager->getComponent<ProjectileComponent>(entity2)
+              .projectile_id);
     } else {
       player = _game->getPlayer(
-          _ecsManager.getComponent<PlayerComponent>(entity2).player_id);
+          _ecsManager->getComponent<PlayerComponent>(entity2).player_id);
       projectile = _game->getProjectile(
-          _ecsManager.getComponent<ProjectileComponent>(entity1).projectile_id);
+          _ecsManager->getComponent<ProjectileComponent>(entity1)
+              .projectile_id);
     }
     if (!player || !projectile)
       return;
@@ -138,14 +142,14 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
              (entity2IsPlayer && entity1IsEnemy)) {
     if (entity1IsEnemy && entity2IsPlayer) {
       enemy = _game->getEnemy(
-          _ecsManager.getComponent<EnemyComponent>(entity1).enemy_id);
+          _ecsManager->getComponent<EnemyComponent>(entity1).enemy_id);
       player = _game->getPlayer(
-          _ecsManager.getComponent<PlayerComponent>(entity2).player_id);
+          _ecsManager->getComponent<PlayerComponent>(entity2).player_id);
     } else {
       enemy = _game->getEnemy(
-          _ecsManager.getComponent<EnemyComponent>(entity2).enemy_id);
+          _ecsManager->getComponent<EnemyComponent>(entity2).enemy_id);
       player = _game->getPlayer(
-          _ecsManager.getComponent<PlayerComponent>(entity1).player_id);
+          _ecsManager->getComponent<PlayerComponent>(entity1).player_id);
     }
     if (!enemy || !player)
       return;
@@ -171,17 +175,17 @@ void ecs::CollisionSystem::handleCollision(const Entity &entity1,
  */
 bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
                                            const Entity &b) const {
-  if (!_ecsManager.hasComponent<ColliderComponent>(a) ||
-      !_ecsManager.hasComponent<ColliderComponent>(b) ||
-      !_ecsManager.hasComponent<PositionComponent>(a) ||
-      !_ecsManager.hasComponent<PositionComponent>(b)) {
+  if (!_ecsManager->hasComponent<ColliderComponent>(a) ||
+      !_ecsManager->hasComponent<ColliderComponent>(b) ||
+      !_ecsManager->hasComponent<PositionComponent>(a) ||
+      !_ecsManager->hasComponent<PositionComponent>(b)) {
     return false;
   }
 
-  const auto &colliderA = _ecsManager.getComponent<ColliderComponent>(a);
-  const auto &colliderB = _ecsManager.getComponent<ColliderComponent>(b);
-  const auto &positionA = _ecsManager.getComponent<PositionComponent>(a);
-  const auto &positionB = _ecsManager.getComponent<PositionComponent>(b);
+  const auto &colliderA = _ecsManager->getComponent<ColliderComponent>(a);
+  const auto &colliderB = _ecsManager->getComponent<ColliderComponent>(b);
+  const auto &positionA = _ecsManager->getComponent<PositionComponent>(a);
+  const auto &positionB = _ecsManager->getComponent<PositionComponent>(b);
 
   float axMin = positionA.x + colliderA.center.x - colliderA.halfSize.x;
   float axMax = positionA.x + colliderA.center.x + colliderA.halfSize.x;
@@ -216,7 +220,7 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
   if (!projectile || !player) {
     return;
   }
-  if (!_ecsManager.hasComponent<ProjectileComponent>(
+  if (!_ecsManager->hasComponent<ProjectileComponent>(
           projectile->getEntityId())) {
     return;
   }
@@ -392,12 +396,12 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
  */
 void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
                                                 std::uint32_t score) {
-  for (auto entity : _ecsManager.getAllEntities()) {
-    if (_ecsManager.hasComponent<PlayerComponent>(entity) &&
-        _ecsManager.hasComponent<ecs::ScoreComponent>(entity)) {
-      auto &playerComp = _ecsManager.getComponent<PlayerComponent>(entity);
+  for (auto entity : _ecsManager->getAllEntities()) {
+    if (_ecsManager->hasComponent<PlayerComponent>(entity) &&
+        _ecsManager->hasComponent<ScoreComponent>(entity)) {
+      auto &playerComp = _ecsManager->getComponent<PlayerComponent>(entity);
       if (playerComp.player_id == owner_id) {
-        auto &scoreComp = _ecsManager.getComponent<ScoreComponent>(entity);
+        auto &scoreComp = _ecsManager->getComponent<ScoreComponent>(entity);
         scoreComp.score += score;
         return;
       }
@@ -422,12 +426,12 @@ void ecs::CollisionSystem::incrementPlayerScore(std::uint32_t owner_id,
  * otherwise.
  */
 bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
-  if (!_ecsManager.hasComponent<PositionComponent>(entity) ||
-      !_ecsManager.hasComponent<ecs::ProjectileComponent>(entity)) {
+  if (!_ecsManager->hasComponent<PositionComponent>(entity) ||
+      !_ecsManager->hasComponent<ProjectileComponent>(entity)) {
     return false;
   }
-  auto &position = _ecsManager.getComponent<PositionComponent>(entity);
-  auto &projectile = _ecsManager.getComponent<ProjectileComponent>(entity);
+  auto &position = _ecsManager->getComponent<PositionComponent>(entity);
+  auto &projectile = _ecsManager->getComponent<ProjectileComponent>(entity);
   const float margin = 100.0f;
 
   bool isOutOfBounds =
@@ -444,6 +448,6 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
     _eventQueue->addRequest(projectileDestroyEvent);
   }
 
-  _ecsManager.destroyEntity(entity);
+  _ecsManager->destroyEntity(entity);
   return true;
 }

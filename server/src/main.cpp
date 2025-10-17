@@ -21,7 +21,8 @@ int main(int ac, char **av) {
     Parser parser(SERVER_PROPERTIES);
     parser.parseProperties();
 
-    server::Server server(parser.getPort(), parser.getMaxClients());
+    server::Server server(parser.getPort(), parser.getMaxClients(),
+                          parser.getClientsPerRoom());
 
     std::cout << "Starting server on port " << parser.getPort() << "..."
               << std::endl;

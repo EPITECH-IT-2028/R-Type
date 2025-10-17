@@ -9,11 +9,12 @@
 #include "VelocityComponent.hpp"
 
 /**
- * @brief Advances enemy behavior for all managed entities over the given time step.
+ * @brief Advances enemy behavior for all managed entities over the given time
+ * step.
  *
- * Iterates the system's entities and, for each entity that has an EnemyComponent,
- * updates that enemy's movement and combat behavior for its specific type
- * (currently handles BASIC_FIGHTER).
+ * Iterates the system's entities and, for each entity that has an
+ * EnemyComponent, updates that enemy's movement and combat behavior for its
+ * specific type (currently handles BASIC_FIGHTER).
  *
  * @param deltaTime Time elapsed since the last update, in seconds.
  */
