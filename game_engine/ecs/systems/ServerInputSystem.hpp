@@ -16,7 +16,7 @@ namespace ecs {
 
   class ServerInputSystem : public System {
     public:
-      explicit ServerInputSystem();
+      explicit ServerInputSystem() = default;
 
       void setECSManager(ECSManager *ecsManager) {
         _ecsManagerPtr = ecsManager;

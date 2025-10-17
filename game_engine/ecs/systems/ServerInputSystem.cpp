@@ -6,14 +6,15 @@
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
 
-ecs::ServerInputSystem::ServerInputSystem() {
-}
-
 void ecs::ServerInputSystem::update(float deltaTime) {
   if (_pendingInputs.empty() || !_eventQueue)
     return;
   for (auto &[entityId, inputs] : _pendingInputs) {
     if (inputs.empty())
+      continue;
+    if (!_ecsManagerPtr ||
+        !_ecsManagerPtr->hasComponent<PositionComponent>(entityId) ||
+        !_ecsManagerPtr->hasComponent<SpeedComponent>(entityId))
       continue;
     processInput(entityId, inputs, deltaTime);
     sendPositionUpdate(entityId);
@@ -33,10 +34,6 @@ void ecs::ServerInputSystem::queueInput(Entity entityId,
 
 void ecs::ServerInputSystem::processInput(
     Entity entityId, const std::vector<PlayerInput> &inputs, float deltaTime) {
-  if (!_ecsManagerPtr->hasComponent<PositionComponent>(entityId) ||
-      !_ecsManagerPtr->hasComponent<SpeedComponent>(entityId))
-    return;
-
   float deltaX = 0.0f;
   float deltaY = 0.0f;
   auto &position = _ecsManagerPtr->getComponent<PositionComponent>(entityId);
