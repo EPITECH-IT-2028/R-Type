@@ -162,8 +162,6 @@ void game::Game::stop() {
  * frame rate.
  */
 void game::Game::gameLoop() {
-  std::this_thread::sleep_for(
-      std::chrono::seconds(3));  // TODO: remove when lobby
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);

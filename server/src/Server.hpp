@@ -13,7 +13,8 @@
 
 namespace game {
   class GameManager;
-}
+  class GameRoom;
+}  // namespace game
 
 namespace server {
 
@@ -103,6 +104,9 @@ namespace server {
                             std::size_t size);
 
       std::shared_ptr<Client> getClient(std::size_t idx) const;
+
+      void handleCountdown(std::shared_ptr<game::GameRoom> room,
+                           std::shared_ptr<asio::steady_timer> timer);
 
       network::ServerNetworkManager _networkManager;
 

@@ -25,6 +25,10 @@ namespace network {
       virtual void run() = 0;
       virtual void stop() = 0;
 
+      asio::io_context& getIoContext() {
+        return _io_context;
+      }
+
     protected:
       asio::io_context _io_context;
       asio::ip::udp::socket _socket;

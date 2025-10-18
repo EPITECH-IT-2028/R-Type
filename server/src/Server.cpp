@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include "Broadcast.hpp"
 #include "Events.hpp"
 #include "GameManager.hpp"
@@ -286,35 +287,6 @@ void server::Server::handlePlayerInfoPacket(const char *data,
 
       std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
 
-      // bool joined = _gameManager->joinAnyRoom(_clients[i]);
-      // if (!joined) {
-      //   auto newRoom = _gameManager->createRoom("Room_" +
-      //   std::to_string(id)); if (newRoom) {
-      //     bool joinedNew = newRoom->addClient(_clients[i]);
-      //     if (joinedNew) {
-      //       std::cout << "[WORLD] Player " << id << " created and joined room
-      //       "
-      //                 << newRoom->getRoomId() << "." << std::endl;
-      //     } else {
-      //       std::cerr << "[ERROR] Player " << id
-      //                 << " failed to join newly created room." << std::endl;
-      //       _clients[i].reset();
-      //       _player_count--;
-      //       return;
-      //     }
-      //   } else {
-      //     std::cerr << "[ERROR] Failed to create a new room for player " <<
-      //     id
-      //               << "." << std::endl;
-      //     _clients[i].reset();
-      //     _player_count--;
-      //     return;
-      //   }
-      // } else {
-      //   std::cout << "[WORLD] Player " << id << " joined an existing room."
-      //             << std::endl;
-      // }
-
       auto handler = _factory.createHandler(PacketType::PlayerInfo);
       if (handler) {
         handler->handlePacket(*this, *_clients[i], data, size);
@@ -438,12 +410,12 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   if (roomClients.size() >= 2 &&
       room->getState() == game::RoomStatus::WAITING) {
-    room->start();
-    for (auto &roomClient : roomClients) {
-      if (roomClient) {
-        roomClient->_state = ClientState::IN_GAME;
-      }
-    }
+    room->startCountdown(COUNTDOWN_TIME);
+
+    auto timer = std::make_shared<asio::steady_timer>(
+        _networkManager.getIoContext(), std::chrono::seconds(1));
+
+    handleCountdown(room, timer);
   }
 
   std::cout << "[WORLD] Player " << client._player_id << " ("
@@ -451,6 +423,48 @@ bool server::Server::initializePlayerInRoom(Client &client) {
             << client._room_id << std::endl;
 
   return true;
+}
+
+void server::Server::handleCountdown(
+    std::shared_ptr<game::GameRoom> room,
+    std::shared_ptr<asio::steady_timer> timer) {
+  if (!room || room->getState() != game::RoomStatus::STARTING) {
+    return;
+  }
+
+  int countdown = room->getCountdownValue();
+  auto roomClients = room->getClients();
+
+  if (countdown <= 0) {
+    auto startPacket = PacketBuilder::makeGameStart(true);
+    broadcast::Broadcast::broadcastGameStartToRoom(_networkManager, roomClients,
+                                                   startPacket);
+    room->start();
+    for (auto &roomClient : roomClients) {
+      if (roomClient) {
+        roomClient->_state = ClientState::IN_GAME;
+      }
+    }
+
+    std::cout << "[ROOM] Game started in room " << room->getRoomId()
+              << std::endl;
+    return;
+  }
+
+  std::cout << "[ROOM] Countdown " << countdown << " for room "
+            << room->getRoomId() << std::endl;
+
+  room->decrementCountdown();
+
+  timer->expires_after(std::chrono::seconds(1));
+  timer->async_wait([this, room, timer](const asio::error_code &error) {
+    if (!error) {
+      handleCountdown(room, timer);
+    } else {
+      std::cerr << "[ERROR] Timer error in countdown: " << error.message()
+                << std::endl;
+    }
+  });
 }
 
 /*

@@ -65,8 +65,9 @@ namespace game {
       }
 
       bool canJoin() const {
-        return _state.load() == RoomStatus::WAITING && !isFull() &&
-               !isPrivate();
+        return (_state.load() == RoomStatus::WAITING ||
+                _state.load() == RoomStatus::STARTING) &&
+               !isFull() && !isPrivate();
       }
 
       bool addClient(std::shared_ptr<server::Client> client) {
@@ -103,10 +104,14 @@ namespace game {
       }
 
       void start() {
-        RoomStatus expected = RoomStatus::WAITING;
-        if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
-          _state.store(RoomStatus::RUNNING);
+        RoomStatus expected = RoomStatus::STARTING;
+        if (_state.compare_exchange_strong(expected, RoomStatus::RUNNING)) {
           _game->start();
+        } else {
+          expected = RoomStatus::WAITING;
+          if (_state.compare_exchange_strong(expected, RoomStatus::RUNNING)) {
+            _game->start();
+          }
         }
       }
 
@@ -160,6 +165,21 @@ namespace game {
         return _max_players;
       }
 
+      void startCountdown(int seconds) {
+        RoomStatus expected = RoomStatus::WAITING;
+        if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
+          _countdown = seconds;
+        }
+      }
+
+      int getCountdownValue() const {
+        return _countdown.load();
+      }
+
+      void decrementCountdown() {
+        _countdown--;
+      }
+
     private:
       uint32_t _room_id;
       std::string _room_name;
@@ -170,6 +190,7 @@ namespace game {
 
       std::atomic<RoomStatus> _state;
       std::unique_ptr<Game> _game;
+      std::atomic<int> _countdown;
       std::vector<std::shared_ptr<server::Client>> _clients;
       mutable std::mutex _mutex;
   };
