@@ -20,7 +20,8 @@ namespace game {
       GameManager(int maxPlayers = 4);
       ~GameManager();
 
-      std::shared_ptr<GameRoom> createRoom(const std::string &roomName = "");
+      std::shared_ptr<GameRoom> createRoom(const std::string &roomName = "",
+                                           const std::string &password = "");
       bool destroyRoom(int roomId);
       std::shared_ptr<GameRoom> findAvailableRoom();
       std::shared_ptr<GameRoom> getRoom(uint32_t roomId) const;

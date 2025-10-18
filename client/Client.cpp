@@ -29,7 +29,8 @@ namespace client {
       : _networkManager(host, port),
         _sequence_number{0},
         _packet_count{0},
-        _ecsManager(ecs::ECSManager::getInstance()) {
+        _ecsManager(ecs::ECSManager::getInstance()),
+        _state(ClientState::DISCONNECTED) {
     _running.store(false, std::memory_order_release);
   }
 
@@ -239,6 +240,9 @@ namespace client {
     }
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
+    if (_state == ClientState::CONNECTED_MENU) {
+      _state = ClientState::IN_ROOM_WAITING;
+    }
   }
 
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
@@ -346,6 +350,16 @@ namespace client {
 
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
+    }
+  }
+
+  void Client::sendMatchmakingRequest() {
+    try {
+      MatchmakingRequestPacket packet = PacketBuilder::makeMatchmakingRequest();
+      send(packet);
+      TraceLog(LOG_INFO, "[MATCHMAKING] Sent matchmaking request");
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[MATCHMAKING] Exception: %s", e.what());
     }
   }
 }  // namespace client

@@ -4,10 +4,12 @@
 #include <cstring>
 #include <ctime>
 #include <string>
+#include <vector>
 #include "Packet.hpp"
 
 struct PacketBuilder {
-    static MessagePacket makeMessage(const std::string &msg, std::uint32_t player_id) {
+    static MessagePacket makeMessage(const std::string &msg,
+                                     std::uint32_t player_id) {
       MessagePacket packet{};
       packet.header.type = PacketType::Message;
       packet.header.size = sizeof(packet);
@@ -344,6 +346,88 @@ struct PacketBuilder {
       packet.header.type = PacketType::Heartbeat;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+      return packet;
+    }
+
+    static CreateRoomPacket makeCreateRoom(const std::string &room_name,
+                                           uint32_t max_players) {
+      CreateRoomPacket packet{};
+      packet.header.type = PacketType::CreateRoom;
+      packet.header.size = sizeof(packet);
+      strncpy(packet.room_name, room_name.c_str(),
+              sizeof(packet.room_name) - 1);
+      packet.room_name[sizeof(packet.room_name) - 1] = '\0';
+      packet.max_players = max_players;
+      return packet;
+    }
+
+    static JoinRoomPacket makeJoinRoom(uint32_t room_id) {
+      JoinRoomPacket packet{};
+      packet.header.type = PacketType::JoinRoom;
+      packet.header.size = sizeof(packet);
+      packet.room_id = room_id;
+      return packet;
+    }
+
+    static JoinRoomResponsePacket makeJoinRoomResponse(
+        const RoomError &error_code) {
+      JoinRoomResponsePacket packet{};
+      packet.header.type = PacketType::JoinRoom;
+      packet.header.size = sizeof(packet);
+      packet.error_code = error_code;
+      return packet;
+    }
+
+    static LeaveRoomPacket makeLeaveRoom(uint32_t room_id) {
+      LeaveRoomPacket packet{};
+      packet.header.type = PacketType::LeaveRoom;
+      packet.header.size = sizeof(packet);
+      packet.room_id = room_id;
+      return packet;
+    }
+
+    static ListRoomPacket makeListRoom() {
+      ListRoomPacket packet{};
+      packet.header.type = PacketType::ListRoom;
+      packet.header.size = sizeof(packet);
+      return packet;
+    }
+
+    /**
+     * @brief Create a ListRoomResponsePacket containing room information.
+     * @param room_count Number of rooms included in the packet.
+     * @param rooms Pointer to an array of RoomInfo structures describing
+     * each room.
+     * @return ListRoomResponsePacket Packet with header type set to
+     * PacketType::ListRoom, header size set, room_count populated,
+     * and room information copied from the provided array.
+     */
+    static ListRoomResponsePacket makeListRoomResponse(
+        const std::vector<RoomInfo> &rooms) {
+      ListRoomResponsePacket packet{};
+      packet.header.type = PacketType::ListRoom;
+      packet.header.size = sizeof(packet);
+      packet.room_count = static_cast<uint32_t>(rooms.size());
+
+      for (std::size_t i = 0; i < rooms.size() && i < 10; ++i) {
+        packet.rooms[i] = rooms[i];
+      }
+      return packet;
+    }
+
+    static MatchmakingRequestPacket makeMatchmakingRequest() {
+      MatchmakingRequestPacket packet{};
+      packet.header.type = PacketType::MatchmakingRequest;
+      packet.header.size = sizeof(packet);
+      return packet;
+    }
+
+    static MatchmakingResponsePacket makeMatchmakingResponse(
+        const RoomError &error_code) {
+      MatchmakingResponsePacket packet{};
+      packet.header.type = PacketType::MatchmakingRequest;
+      packet.header.size = sizeof(packet);
+      packet.error_code = error_code;
       return packet;
     }
 };

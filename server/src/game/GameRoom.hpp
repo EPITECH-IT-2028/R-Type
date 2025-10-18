@@ -65,7 +65,8 @@ namespace game {
       }
 
       bool canJoin() const {
-        return _state.load() == RoomStatus::WAITING && !isFull();
+        return _state.load() == RoomStatus::WAITING && !isFull() &&
+               !isPrivate();
       }
 
       bool addClient(std::shared_ptr<server::Client> client) {
@@ -124,10 +125,49 @@ namespace game {
         return _state.load() == RoomStatus::RUNNING;
       }
 
+      void setPassword(const std::string& password) {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _password = password;
+      }
+
+      std::string getPassword() const {
+        std::lock_guard<std::mutex> lock(_mutex);
+        return _password;
+      }
+
+      bool checkPassword(const std::string& password) const {
+        std::lock_guard<std::mutex> lock(_mutex);
+        return _password == password;
+      }
+
+      bool hasPassword() const {
+        std::lock_guard<std::mutex> lock(_mutex);
+        return !_password.empty();
+      }
+
+      bool isPrivate() const {
+        std::lock_guard<std::mutex> lock(_mutex);
+        return _is_private;
+      }
+
+      bool setPrivate(bool is_private) {
+        std::lock_guard<std::mutex> lock(_mutex);
+        _is_private = is_private;
+        return _is_private;
+      }
+
+      uint16_t getMaxPlayers() const {
+        return _max_players;
+      }
+
     private:
       uint32_t _room_id;
       std::string _room_name;
       uint16_t _max_players;
+      std::string _password;
+
+      bool _is_private = false;
+
       std::atomic<RoomStatus> _state;
       std::unique_ptr<Game> _game;
       std::vector<std::shared_ptr<server::Client>> _clients;

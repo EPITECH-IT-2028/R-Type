@@ -231,3 +231,79 @@ void serialize(S& s, GameEndPacket& packet) {
   s.value4b(packet.header.size);
   s.value1b(packet.game_end);
 }
+
+/*
+ * Room Packets
+ */
+template <typename S>
+void serialize(S& s, CreateRoomPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(packet.room_name[i]);
+  }
+  s.value4b(packet.max_players);
+}
+
+template <typename S>
+void serialize(S& s, JoinRoomPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.room_id);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(packet.password[i]);
+  }
+}
+
+template <typename S>
+void serialize(S& s, JoinRoomResponsePacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value1b(packet.error_code);
+}
+
+template <typename S>
+void serialize(S& s, LeaveRoomPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.room_id);
+}
+
+template <typename S>
+void serialize(S& s, ListRoomPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+}
+
+template <typename S>
+void serialize(S& s, RoomInfo& room) {
+  s.value4b(room.room_id);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(room.room_name[i]);
+  }
+  s.value4b(room.player_count);
+  s.value4b(room.max_players);
+}
+
+template <typename S>
+void serialize(S& s, ListRoomResponsePacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.room_count);
+  for (size_t i = 0; i < 10; ++i) {
+    serialize(s, packet.rooms[i]);
+  }
+}
+
+template <typename S>
+void serialize(S& s, MatchmakingRequestPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+}
+
+template <typename S>
+void serialize(S& s, MatchmakingResponsePacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value1b(packet.error_code);
+}

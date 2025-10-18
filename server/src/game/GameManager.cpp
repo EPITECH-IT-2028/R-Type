@@ -17,7 +17,7 @@ game::GameManager::~GameManager() {
 }
 
 std::shared_ptr<game::GameRoom> game::GameManager::createRoom(
-    const std::string &roomName) {
+    const std::string &roomName, const std::string &password) {
   std::scoped_lock lock(_roomMutex);
   int roomId = _nextRoomId++;
 
@@ -28,6 +28,12 @@ std::shared_ptr<game::GameRoom> game::GameManager::createRoom(
   } else {
     room->setRoomName("Room " + std::to_string(roomId));
   }
+
+  if (!password.empty()) {
+    room->setPassword(password);
+    room->setPrivate(true);
+  }
+
   _rooms[roomId] = room;
   return room;
 }

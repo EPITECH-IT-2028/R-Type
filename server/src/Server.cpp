@@ -232,12 +232,6 @@ void server::Server::startReceive() {
  */
 void server::Server::handleReceive(const char *data,
                                    std::size_t bytes_transferred) {
-  if (bytes_transferred < sizeof(PacketHeader)) {
-    std::cerr << "[DEBUG] Received packet too small: " << bytes_transferred
-              << " bytes" << std::endl;
-    return;
-  }
-
   serialization::Buffer buffer(data, data + bytes_transferred);
 
   auto headerOpt =
@@ -292,32 +286,34 @@ void server::Server::handlePlayerInfoPacket(const char *data,
 
       std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
 
-      bool joined = _gameManager->joinAnyRoom(_clients[i]);
-      if (!joined) {
-        auto newRoom = _gameManager->createRoom("Room_" + std::to_string(id));
-        if (newRoom) {
-          bool joinedNew = newRoom->addClient(_clients[i]);
-          if (joinedNew) {
-            std::cout << "[WORLD] Player " << id << " created and joined room "
-                      << newRoom->getRoomId() << "." << std::endl;
-          } else {
-            std::cerr << "[ERROR] Player " << id
-                      << " failed to join newly created room." << std::endl;
-            _clients[i].reset();
-            _player_count--;
-            return;
-          }
-        } else {
-          std::cerr << "[ERROR] Failed to create a new room for player " << id
-                    << "." << std::endl;
-          _clients[i].reset();
-          _player_count--;
-          return;
-        }
-      } else {
-        std::cout << "[WORLD] Player " << id << " joined an existing room."
-                  << std::endl;
-      }
+      // bool joined = _gameManager->joinAnyRoom(_clients[i]);
+      // if (!joined) {
+      //   auto newRoom = _gameManager->createRoom("Room_" +
+      //   std::to_string(id)); if (newRoom) {
+      //     bool joinedNew = newRoom->addClient(_clients[i]);
+      //     if (joinedNew) {
+      //       std::cout << "[WORLD] Player " << id << " created and joined room
+      //       "
+      //                 << newRoom->getRoomId() << "." << std::endl;
+      //     } else {
+      //       std::cerr << "[ERROR] Player " << id
+      //                 << " failed to join newly created room." << std::endl;
+      //       _clients[i].reset();
+      //       _player_count--;
+      //       return;
+      //     }
+      //   } else {
+      //     std::cerr << "[ERROR] Failed to create a new room for player " <<
+      //     id
+      //               << "." << std::endl;
+      //     _clients[i].reset();
+      //     _player_count--;
+      //     return;
+      //   }
+      // } else {
+      //   std::cout << "[WORLD] Player " << id << " joined an existing room."
+      //             << std::endl;
+      // }
 
       auto handler = _factory.createHandler(PacketType::PlayerInfo);
       if (handler) {
@@ -365,12 +361,6 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
 
   auto client = _clients[client_idx];
 
-  if (size < sizeof(PacketHeader)) {
-    std::cerr << "[WARNING] Packet too small from client "
-              << _clients[client_idx]->_player_id << std::endl;
-    return;
-  }
-
   serialization::Buffer buffer(data, data + size);
 
   auto headerOpt =
@@ -393,6 +383,76 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   }
 }
 
+bool server::Server::initializePlayerInRoom(Client &client) {
+  if (client._state == ClientState::CONNECTED_MENU) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " - still in menu" << std::endl;
+    return false;
+  }
+
+  if (client._room_id == NO_ROOM) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " not in any room" << std::endl;
+    return false;
+  }
+
+  if (client._player_name.empty()) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " no name set" << std::endl;
+    return false;
+  }
+
+  auto room = _gameManager->getRoom(client._room_id);
+  if (!room) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " room " << client._room_id << " not found" << std::endl;
+    return false;
+  }
+
+  auto player =
+      room->getGame().createPlayer(client._player_id, client._player_name);
+  client._entity_id = player->getEntityId();
+
+  std::pair<float, float> pos = player->getPosition();
+  float speed = player->getSpeed();
+  int health = player->getHealth().value_or(0);
+
+  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, pos.first, pos.second, speed, health);
+  auto serializedBuffer =
+      serialization::BitserySerializer::serialize(ownPlayerPacket);
+  _networkManager.sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+
+  auto roomClients = room->getClients();
+
+  broadcast::Broadcast::broadcastExistingPlayersToRoom(
+      _networkManager, room->getGame(), client._player_id, roomClients);
+
+  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, pos.first, pos.second, speed, health);
+  broadcast::Broadcast::broadcastAncientPlayerToRoom(
+      _networkManager, roomClients, newPlayerPacket);
+
+  if (roomClients.size() >= 2 &&
+      room->getState() == game::RoomStatus::WAITING) {
+    room->start();
+    for (auto &roomClient : roomClients) {
+      if (roomClient) {
+        roomClient->_state = ClientState::IN_GAME;
+      }
+    }
+  }
+
+  std::cout << "[WORLD] Player " << client._player_id << " ("
+            << client._player_name << ") initialized in room "
+            << client._room_id << std::endl;
+
+  return true;
+}
+
 /*
  * Retrieve a client by index.
  * Returns nullptr if the index is invalid or the client does not exist.
@@ -403,6 +463,16 @@ std::shared_ptr<server::Client> server::Server::getClient(
     return nullptr;
   }
   return _clients[idx];
+}
+
+std::shared_ptr<server::Client> server::Server::getClientById(
+    int player_id) const {
+  for (const auto &client : _clients) {
+    if (client && client->_player_id == player_id) {
+      return client;
+    }
+  }
+  return nullptr;
 }
 
 void server::Server::clearClientSlot(int player_id) {

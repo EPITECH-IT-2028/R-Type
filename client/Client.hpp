@@ -42,9 +42,17 @@ namespace client {
   constexpr int KO = 1;
   constexpr float PLAYER_SPEED = 500.0f;
 
+  enum class ClientState {
+    DISCONNECTED,
+    CONNECTED_MENU,
+    IN_ROOM_WAITING,
+    IN_GAME
+  };
+
   /**
    * Player sprite and animation configuration.
-   * Values must match the layout of the player sprite-sheet used for rendering.
+   * Values must match the layout of the player sprite-sheet used for
+   * rendering.
    */
   struct PlayerSpriteConfig {
       static constexpr float RECT_X = 0.0f;  ///< X coordinate in sprite sheet
@@ -106,6 +114,12 @@ namespace client {
 
       void connect() {
         _networkManager.connect();
+        if (isConnected()) {
+          _state = ClientState::CONNECTED_MENU;
+
+          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player");
+          send(packet);
+        }
       }
 
       void disconnect() {
@@ -185,6 +199,15 @@ namespace client {
 
       void sendPosition();
       void sendShoot(float x, float y);
+      void sendMatchmakingRequest();
+
+      ClientState getClientState() const {
+        return _state;
+      }
+
+      void setClientState(ClientState state) {
+        _state = state;
+      }
 
     private:
       std::array<char, 2048> _recv_buffer;
@@ -199,6 +222,7 @@ namespace client {
       std::unordered_map<uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+      ClientState _state = ClientState::DISCONNECTED;
 
       void registerComponent();
       void registerSystem();

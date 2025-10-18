@@ -22,7 +22,14 @@ enum class PacketType : uint8_t {
   Heartbeat = 0x10,
   EnemyHit = 0x11,
   PlayerHit = 0x12,
-  PlayerDeath = 0x13
+  PlayerDeath = 0x13,
+  CreateRoom = 0x14,
+  JoinRoom = 0x15,
+  LeaveRoom = 0x16,
+  ListRoom = 0x17,
+  ListRoomResponse = 0x18,
+  MatchmakingRequest = 0x19,
+  MatchmakingResponse = 0x1A
 };
 
 enum class EnemyType : uint8_t {
@@ -32,6 +39,15 @@ enum class EnemyType : uint8_t {
 enum class ProjectileType : uint8_t {
   PLAYER_BASIC = 0x01,
   ENEMY_BASIC = 0x02
+};
+
+enum class RoomError : uint8_t {
+  SUCCESS = 0x00,
+  ROOM_NOT_FOUND = 0x01,
+  ROOM_FULL = 0x02,
+  WRONG_PASSWORD = 0x03,
+  ALREADY_IN_ROOM = 0x04,
+  PLAYER_BANNED = 0x05
 };
 
 #define ALIGNED alignas(4)
@@ -307,4 +323,55 @@ struct ALIGNED PlayerDeathPacket {
     std::uint32_t player_id;
     float x;
     float y;
+};
+
+/* Room Management Packets */
+struct ALIGNED CreateRoomPacket {
+    PacketHeader header;
+    char room_name[32];
+    bool is_private;
+    char password[32];
+    uint32_t max_players;
+};
+
+struct ALIGNED JoinRoomPacket {
+    PacketHeader header;
+    uint32_t room_id;
+    char password[32];
+};
+
+struct ALIGNED JoinRoomResponsePacket {
+    PacketHeader header;
+    RoomError error_code;
+};
+
+struct ALIGNED LeaveRoomPacket {
+    PacketHeader header;
+    uint32_t room_id;
+};
+
+struct ALIGNED ListRoomPacket {
+    PacketHeader header;
+};
+
+struct ALIGNED RoomInfo {
+    uint32_t room_id;
+    char room_name[32];
+    uint32_t player_count;
+    uint32_t max_players;
+};
+
+struct ALIGNED ListRoomResponsePacket {
+    PacketHeader header;
+    uint32_t room_count;
+    RoomInfo rooms[10];
+};
+
+struct ALIGNED MatchmakingRequestPacket {
+    PacketHeader header;
+};
+
+struct ALIGNED MatchmakingResponsePacket {
+    PacketHeader header;
+    RoomError error_code;
 };

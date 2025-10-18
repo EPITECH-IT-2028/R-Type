@@ -18,18 +18,29 @@ namespace packet {
     private:
       inline static const std::unordered_map<
           PacketType, std::function<std::unique_ptr<APacket>()>>
-          _handlers = {{PacketType::Message,
-                        []() { return std::make_unique<MessageHandler>(); }},
-                       {PacketType::PlayerInfo,
-                        []() { return std::make_unique<PlayerInfoHandler>(); }},
-                       {PacketType::Position,
-                        []() { return std::make_unique<PositionHandler>(); }},
-                       {PacketType::Heartbeat,
-                        []() { return std::make_unique<HeartbeatPlayerHandler>(); }},
-                       {PacketType::PlayerDisconnected,
-                        []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
-                       {PacketType::PlayerShoot,
-                        []() { return std::make_unique<PlayerShootHandler>(); }}};
+          _handlers = {
+              {PacketType::Message,
+               []() { return std::make_unique<MessageHandler>(); }},
+              {PacketType::PlayerInfo,
+               []() { return std::make_unique<PlayerInfoHandler>(); }},
+              {PacketType::Position,
+               []() { return std::make_unique<PositionHandler>(); }},
+              {PacketType::Heartbeat,
+               []() { return std::make_unique<HeartbeatPlayerHandler>(); }},
+              {PacketType::PlayerDisconnected,
+               []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
+              {PacketType::PlayerShoot,
+               []() { return std::make_unique<PlayerShootHandler>(); }},
+              {PacketType::CreateRoom,
+               []() { return std::make_unique<CreateRoomHandler>(); }},
+              {PacketType::JoinRoom,
+               []() { return std::make_unique<JoinRoomHandler>(); }},
+              {PacketType::LeaveRoom,
+               []() { return std::make_unique<LeaveRoomHandler>(); }},
+              {PacketType::ListRoom,
+               []() { return std::make_unique<ListRoomHandler>(); }},
+              {PacketType::MatchmakingRequest,
+               []() { return std::make_unique<MatchmakingRequestHandler>(); }}};
   };
 
 }  // namespace packet
