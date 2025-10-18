@@ -44,7 +44,7 @@ namespace packet {
       int handlePacket(server::Server &server, server::Client &client,
                        const char *data, std::size_t size) override;
   };
-  class InputPlayerHandler : public APacket {
+  class PlayerInputHandler : public APacket {
     public:
       int handlePacket(server::Server &server, server::Client &client,
                        const char *data, std::size_t size) override;
