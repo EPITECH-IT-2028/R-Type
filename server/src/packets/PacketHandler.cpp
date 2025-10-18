@@ -341,7 +341,7 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   if (!sis) {
     return KO;
   }
-  if (client._entity_id == 0 || client._entity_id == static_cast<Entity>(-1)) {
+  if (client._entity_id == static_cast<Entity>(-1)) {
     std::cerr << "[ERROR] Client " << client._player_id
               << " has invalid entity_id" << std::endl;
     return KO;

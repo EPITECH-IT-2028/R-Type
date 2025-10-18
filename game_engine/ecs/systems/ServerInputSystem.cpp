@@ -1,12 +1,12 @@
 #include "ServerInputSystem.hpp"
+#include <algorithm>
+#include <cmath>
 #include "Events.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "SpeedComponent.hpp"
-#include <cmath>
-#include <algorithm>
 
 void ecs::ServerInputSystem::update(float deltaTime) {
   if (_pendingInputs.empty() || !_eventQueue)
