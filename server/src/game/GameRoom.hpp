@@ -4,10 +4,9 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <vector>
+#include "Client.hpp"
 #include "Game.hpp"
 #include "Macro.hpp"
-#include "Server.hpp"
 
 namespace game {
 

@@ -11,13 +11,6 @@
 #include "Macro.hpp"
 #include "Packet.hpp"
 
-server::Client::Client(int id) : _player_id(id) {
-  _connected = true;
-  _last_heartbeat = std::chrono::steady_clock::now();
-  _last_position_update = std::chrono::steady_clock::now();
-  _room_id = NO_ROOM;
-}
-
 server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
                        std::uint8_t max_clients_per_room)
     : _networkManager(port),
@@ -202,6 +195,11 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               PacketBuilder::makeGameStart(specificEvent.game_started);
           broadcast::Broadcast::broadcastGameStartToRoom(
               _networkManager, clients, gameStartPacket);
+        } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
+          auto positionPacket = PacketBuilder::makePositionPlayer(
+              specificEvent.player_id, specificEvent.x, specificEvent.y, specificEvent.sequence_number);
+          broadcast::Broadcast::broadcastPositionUpdateToRoom(
+              _networkManager, clients, positionPacket);
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }
@@ -232,12 +230,6 @@ void server::Server::startReceive() {
  */
 void server::Server::handleReceive(const char *data,
                                    std::size_t bytes_transferred) {
-  if (bytes_transferred < sizeof(PacketHeader)) {
-    std::cerr << "[DEBUG] Received packet too small: " << bytes_transferred
-              << " bytes" << std::endl;
-    return;
-  }
-
   serialization::Buffer buffer(data, data + bytes_transferred);
 
   auto headerOpt =

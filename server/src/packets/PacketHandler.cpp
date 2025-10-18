@@ -316,3 +316,36 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
   server.clearClientSlot(client._player_id);
   return OK;
 }
+
+int packet::PlayerInputHandler::handlePacket(server::Server &server,
+                                             server::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<PlayerInputPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize PlayerInputPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const PlayerInputPacket &packet = deserializedPacket.value();
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room) {
+    return KO;
+  }
+  auto sis = room->getGame().getServerInputSystem();
+  if (!sis) {
+    return KO;
+  }
+  if (client._entity_id == static_cast<Entity>(-1)) {
+    std::cerr << "[ERROR] Client " << client._player_id
+              << " has invalid entity_id" << std::endl;
+    return KO;
+  }
+  sis->queueInput(client._entity_id, {packet.input, packet.sequence_number});
+  return OK;
+}

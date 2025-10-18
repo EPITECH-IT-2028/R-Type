@@ -22,7 +22,9 @@ enum class PacketType : uint8_t {
   Heartbeat = 0x10,
   EnemyHit = 0x11,
   PlayerHit = 0x12,
-  PlayerDeath = 0x13
+  PlayerDeath = 0x13,
+  PlayerInput = 0x14,
+  PositionPlayer = 0x15
 };
 
 enum class EnemyType : uint8_t {
@@ -32,6 +34,13 @@ enum class EnemyType : uint8_t {
 enum class ProjectileType : uint8_t {
   PLAYER_BASIC = 0x01,
   ENEMY_BASIC = 0x02
+};
+
+enum class MovementInputType : uint8_t {
+  UP = 0x01,
+  DOWN = 0x02,
+  LEFT = 0x03,
+  RIGHT = 0x04
 };
 
 #define ALIGNED alignas(4)
@@ -307,4 +316,18 @@ struct ALIGNED PlayerDeathPacket {
     std::uint32_t player_id;
     float x;
     float y;
+};
+
+struct ALIGNED PlayerInputPacket {
+    PacketHeader header;
+    MovementInputType input;
+    int sequence_number;
+};
+
+struct ALIGNED PositionPlayerPacket {
+    PacketHeader header;
+    uint32_t player_id;
+    float x;
+    float y;
+    std::uint32_t sequence_number;
 };

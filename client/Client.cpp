@@ -336,16 +336,30 @@ namespace client {
                "shoot");
       return;
     }
-
     try {
       PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
           x, y, ProjectileType::PLAYER_BASIC,
           _sequence_number.load(std::memory_order_acquire));
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
+    }
+  }
+
+  void Client::sendInput(MovementInputType input) {
+    if (_player_id == static_cast<uint32_t>(-1)) {
+      TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
+      return;
+    }
+
+    try {
+      PlayerInputPacket packet =
+          PacketBuilder::makePlayerInput(input, _sequence_number);
 
       send(packet);
 
     } catch (const std::exception &e) {
-      TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
+      TraceLog(LOG_ERROR, "[SEND INPUT] Exception: %s", e.what());
     }
   }
 }  // namespace client

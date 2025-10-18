@@ -1,34 +1,22 @@
 #pragma once
 
 #include <asio.hpp>
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include "Client.hpp"
 #include "Events.hpp"
-#include "Macro.hpp"
 #include "PacketFactory.hpp"
+#include "ServerInputSystem.hpp"
 #include "ServerNetworkManager.hpp"
+#include "game/GameManager.hpp"
 
 namespace game {
   class GameManager;
 }
 
 namespace server {
-
-  struct Client {
-    public:
-      Client(int id);
-      ~Client() = default;
-
-      bool _connected = false;
-      int _player_id = -1;
-      uint32_t _room_id = NO_ROOM;
-      std::chrono::steady_clock::time_point _last_heartbeat;
-      std::chrono::steady_clock::time_point _last_position_update;
-      uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
-  };
 
   class Server {
     public:
@@ -72,6 +60,13 @@ namespace server {
       }
 
       void clearClientSlot(int player_id);
+
+      std::shared_ptr<ecs::ServerInputSystem> getInputSystem(uint32_t roomId) const {
+        if (!_gameManager)
+          return nullptr;
+        auto room = _gameManager->getRoom(roomId);
+        return room ? room->getGame().getServerInputSystem() : nullptr;
+      }
 
     private:
       void startReceive();

@@ -346,4 +346,24 @@ struct PacketBuilder {
       packet.player_id = player_id;
       return packet;
     }
+
+    static PlayerInputPacket makePlayerInput(MovementInputType input, int sequence_number) {
+      PlayerInputPacket packet{};
+      packet.header.type = PacketType::PlayerInput;
+      packet.header.size = sizeof(packet);
+      packet.input = input;
+      packet.sequence_number = sequence_number;
+      return packet;
+    }
+
+    static PositionPlayerPacket makePositionPlayer(uint32_t player_id, float x, float y, std::uint32_t sequence_number) {
+      PositionPlayerPacket packet{};
+      packet.header.type = PacketType::PositionPlayer;
+      packet.header.size = sizeof(packet);
+      packet.player_id = player_id;
+      packet.x = x;
+      packet.y = y;
+      packet.sequence_number = 0;
+      return packet;
+    }
 };

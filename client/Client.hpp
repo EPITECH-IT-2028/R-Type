@@ -185,6 +185,7 @@ namespace client {
 
       void sendPosition();
       void sendShoot(float x, float y);
+      void sendInput(MovementInputType input);
 
     private:
       std::array<char, 2048> _recv_buffer;
