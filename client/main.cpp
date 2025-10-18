@@ -25,7 +25,6 @@ void gameLoop(client::Client &client) {
           PacketBuilder::makeHeartbeatPlayer(client.getPlayerId());
       client.send(heartbeat);
       lastHeartbeat = now;
-      TraceLog(LOG_INFO, "[HEARTBEAT] Sent to server");
     }
   }
 }

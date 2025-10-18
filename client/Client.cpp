@@ -235,7 +235,6 @@ namespace client {
     if (_player_id == static_cast<uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
     }
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;

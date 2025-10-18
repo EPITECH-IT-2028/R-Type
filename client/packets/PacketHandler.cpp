@@ -75,7 +75,7 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
   try {
     auto playerEntity = client.getPlayerEntity(packet.player_id);
     if (playerEntity == client::KO) {
-      TraceLog(LOG_WARNING, "[PLAYER DISCONNECTED] Player ID: %u not found",
+      TraceLog(LOG_WARNING, "[PLAYER DEATH] Player ID: %u not found",
                packet.player_id);
       return packet::KO;
     }
@@ -83,12 +83,12 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
     client.destroyPlayerEntity(packet.player_id);
 
     if (client.getPlayerId() == packet.player_id) {
-      TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Our player ID %u disconnected",
+      TraceLog(LOG_INFO, "[PLAYER DEATH] Our player ID %u died",
                packet.player_id);
       client.disconnect();
     }
   } catch (const std::exception &e) {
-    TraceLog(LOG_ERROR, "[PLAYER DISCONNECTED] Failed to remove player %u: %s",
+    TraceLog(LOG_ERROR, "[PLAYER DEATH] Failed to remove player %u: %s",
              packet.player_id, e.what());
     return packet::KO;
   }
@@ -197,9 +197,6 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
   }
 
   const EnemySpawnPacket &packet = packetOpt.value();
-  TraceLog(
-      LOG_INFO, "[ENEMY SPAWN] Enemy ID: %u of type %d spawned at (%f, %f)",
-      packet.enemy_id, static_cast<int>(packet.enemy_type), packet.x, packet.y);
 
   client.createEnemyEntity(packet);
   return packet::OK;
@@ -253,9 +250,6 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
   }
 
   const EnemyDeathPacket &packet = packetOpt.value();
-
-  TraceLog(LOG_INFO, "[ENEMY DEATH] Enemy ID: %u has been destroyed",
-           packet.enemy_id);
 
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
@@ -366,11 +360,6 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
 
   const ProjectileHitPacket &packet = packetOpt.value();
 
-  TraceLog(LOG_INFO,
-           "[PROJECTILE HIT] projectile=%u target=%u is_player=%u at=(%f,%f)",
-           packet.projectile_id, packet.target_id, packet.target_is_player,
-           packet.hit_x, packet.hit_y);
-
   auto &ecsManager = ecs::ECSManager::getInstance();
   auto entity = client.getProjectileEntity(packet.projectile_id);
   if (entity != static_cast<Entity>(-1)) {
@@ -401,9 +390,6 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
   }
 
   const ProjectileDestroyPacket &packet = packetOpt.value();
-
-  TraceLog(LOG_INFO, "[PROJECTILE DESTROY] projectile=%u at=(%f,%f)",
-           packet.projectile_id, packet.x, packet.y);
 
   auto &ecsManager = ecs::ECSManager::getInstance();
   auto entity = client.getProjectileEntity(packet.projectile_id);
