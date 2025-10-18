@@ -196,9 +196,9 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
           broadcast::Broadcast::broadcastGameStartToRoom(
               _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
-          auto positionPacket = PacketBuilder::makePositionPlayer(
+          auto positionPacket = PacketBuilder::makePlayerMove(
               specificEvent.player_id, specificEvent.x, specificEvent.y, specificEvent.sequence_number);
-          broadcast::Broadcast::broadcastPositionUpdateToRoom(
+          broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;

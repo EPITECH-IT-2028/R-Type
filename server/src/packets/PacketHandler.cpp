@@ -165,7 +165,7 @@ int packet::PositionHandler::handlePacket(server::Server &server,
   client._last_position_update = now;
   std::pair<float, float> pos = player->getPosition();
 
-  auto movePacket = PacketBuilder::makeMove(
+  auto movePacket = PacketBuilder::makePlayerMove(
       client._player_id, player->getSequenceNumber().value_or(0), pos.first,
       pos.second);
 

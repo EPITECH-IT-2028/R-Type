@@ -14,7 +14,7 @@ inline std::string packetTypeToString(PacketType type) {
   switch (type) {
     case PacketType::Message:
       return "Message";
-    case PacketType::Move:
+    case PacketType::PlayerMove:
       return "Move";
     case PacketType::NewPlayer:
       return "NewPlayer";
@@ -52,8 +52,6 @@ inline std::string packetTypeToString(PacketType type) {
       return "PlayerDeath";
     case PacketType::PlayerInput:
       return "PlayerInput";
-    case PacketType::PositionPlayer:
-      return "PositionPlayer";
     default:
       std::stringstream ss;
       ss << "Unknown(" << static_cast<int>(type) << ")";

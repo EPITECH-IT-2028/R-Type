@@ -293,39 +293,20 @@ namespace client {
     _projectileEntities.erase(projectileId);
   }
 
-  void Client::sendPosition() {
-    if (_player_id == static_cast<uint32_t>(-1)) {
-      TraceLog(LOG_WARNING,
-               "[WARN] Player ID not assigned yet, cannot send "
-               "position");
+  void Client::sendInput(MovementInputType input) {
+    if (_player_id == static_cast<std::uint32_t>(-1)) {
+      TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
       return;
     }
 
-    Entity playerEntity;
-    {
-      std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
-      auto it = _playerEntities.find(_player_id);
-      if (it == _playerEntities.end()) {
-        TraceLog(LOG_WARNING,
-                 "[SEND POSITION] Player entity not found for ID: %u",
-                 _player_id);
-        return;
-      }
-      playerEntity = it->second;
-    }
-
     try {
-      auto &position =
-          _ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
-
-      PositionPacket packet = PacketBuilder::makePosition(
-          position.x, position.y,
-          _sequence_number.load(std::memory_order_acquire));
+      PlayerInputPacket packet =
+          PacketBuilder::makePlayerInput(input, _sequence_number);
 
       send(packet);
 
     } catch (const std::exception &e) {
-      TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
+      TraceLog(LOG_ERROR, "[SEND INPUT] Exception: %s", e.what());
     }
   }
 
@@ -343,23 +324,6 @@ namespace client {
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
-    }
-  }
-
-  void Client::sendInput(MovementInputType input) {
-    if (_player_id == static_cast<uint32_t>(-1)) {
-      TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
-      return;
-    }
-
-    try {
-      PlayerInputPacket packet =
-          PacketBuilder::makePlayerInput(input, _sequence_number);
-
-      send(packet);
-
-    } catch (const std::exception &e) {
-      TraceLog(LOG_ERROR, "[SEND INPUT] Exception: %s", e.what());
     }
   }
 }  // namespace client

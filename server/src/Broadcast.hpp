@@ -93,7 +93,7 @@ namespace broadcast {
       static void broadcastPlayerMoveToRoom(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
-          const MovePacket &packet) {
+          const PlayerMovePacket &packet) {
         broadcastToRoom(networkManager, roomClients, packet);
       }
 

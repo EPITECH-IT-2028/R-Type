@@ -82,7 +82,7 @@ void serialize(S& s, HeartbeatPlayerPacket& packet) {
  * Server to Client Packets
  */
 template <typename S>
-void serialize(S& s, MovePacket& packet) {
+void serialize(S& s, PlayerMovePacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
@@ -240,12 +240,4 @@ void serialize(S& s, PlayerInputPacket& packet) {
   s.value4b(packet.sequence_number);
 }
 
-template <typename S>
-void serialize(S& s, PositionPlayerPacket& packet) {
-  s.value1b(packet.header.type);
-  s.value4b(packet.header.size);
-  s.value4b(packet.player_id);
-  s.value4b(packet.sequence_number);
-  s.template value<sizeof(float)>(packet.x);
-  s.template value<sizeof(float)>(packet.y);
-}
+

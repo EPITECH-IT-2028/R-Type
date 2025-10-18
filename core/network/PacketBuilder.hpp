@@ -42,10 +42,10 @@ struct PacketBuilder {
       return packet;
     }
 
-    static MovePacket makeMove(uint32_t player_id, uint32_t seq, float x,
+    static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq, float x,
                                float y) {
-      MovePacket packet{};
-      packet.header.type = PacketType::Move;
+      PlayerMovePacket packet{};
+      packet.header.type = PacketType::PlayerMove;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.sequence_number = seq;
@@ -356,14 +356,5 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PositionPlayerPacket makePositionPlayer(uint32_t player_id, float x, float y, std::uint32_t sequence_number) {
-      PositionPlayerPacket packet{};
-      packet.header.type = PacketType::PositionPlayer;
-      packet.header.size = sizeof(packet);
-      packet.player_id = player_id;
-      packet.x = x;
-      packet.y = y;
-      packet.sequence_number = 0;
-      return packet;
-    }
+
 };
