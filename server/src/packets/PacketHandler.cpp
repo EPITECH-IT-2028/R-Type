@@ -493,8 +493,8 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
     std::strncpy(info.room_name, room->getRoomName().c_str(),
                  sizeof(info.room_name) - 1);
     info.room_name[sizeof(info.room_name) - 1] = '\0';
-    info.player_count = static_cast<uint8_t>(room->getPlayerCount());
-    info.max_players = static_cast<uint8_t>(room->getMaxPlayers());
+    info.player_count = room->getPlayerCount();
+    info.max_players = room->getMaxPlayers();
     roomInfos.push_back(info);
   }
 

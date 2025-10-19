@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include <cstdint>
+#include <locale>
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "BoundarySystem.hpp"
@@ -129,6 +130,7 @@ namespace client {
           _ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
