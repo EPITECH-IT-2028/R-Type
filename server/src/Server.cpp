@@ -383,14 +383,21 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   auto player =
       room->getGame().createPlayer(client._player_id, client._player_name);
+  if (!player) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " failed to create player entity in room " << client._room_id
+              << std::endl;
+    return false;
+  }
+
   client._entity_id = player->getEntityId();
 
   std::pair<float, float> pos = player->getPosition();
   float speed = player->getSpeed();
-  int health = player->getHealth().value_or(0);
+  int max_health = player->getMaxHealth().value_or(100);
 
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, health);
+      client._player_id, pos.first, pos.second, speed, max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
   _networkManager.sendToClient(
@@ -404,7 +411,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
       _networkManager, room->getGame(), client._player_id, roomClients);
 
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, health);
+      client._player_id, pos.first, pos.second, speed, max_health);
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
 

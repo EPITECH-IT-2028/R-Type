@@ -43,3 +43,5 @@ constexpr int MARGIN_WINDOW = 30;
 constexpr int NO_ROOM = -1;
 
 constexpr int COUNTDOWN_TIME = 5;
+
+constexpr int MAX_ROOMS = 10;

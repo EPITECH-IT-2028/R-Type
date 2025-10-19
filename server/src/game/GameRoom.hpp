@@ -24,7 +24,8 @@ namespace game {
           : _room_id(room_id),
             _max_players(max_players),
             _state(RoomStatus::WAITING),
-            _game(std::make_unique<Game>()) {
+            _game(std::make_unique<Game>()),
+            _countdown(0) {
       }
 
       ~GameRoom() {
@@ -65,8 +66,9 @@ namespace game {
       }
 
       bool canJoin() const {
-        return (_state.load() == RoomStatus::WAITING ||
-                _state.load() == RoomStatus::STARTING) &&
+        RoomStatus state = _state.load();
+        return (state == RoomStatus::WAITING ||
+                state == RoomStatus::STARTING) &&
                !isFull() && !isPrivate();
       }
 
@@ -162,6 +164,7 @@ namespace game {
       }
 
       uint16_t getMaxPlayers() const {
+        std::lock_guard<std::mutex> lock(_mutex);
         return _max_players;
       }
 
@@ -177,13 +180,16 @@ namespace game {
       }
 
       void decrementCountdown() {
-        _countdown--;
+        int current = _countdown.load();
+        if (current > 0) {
+          _countdown--;
+        }
       }
 
     private:
       uint32_t _room_id;
       std::string _room_name;
-      uint16_t _max_players;
+      const uint16_t _max_players;
       std::string _password;
 
       bool _is_private = false;

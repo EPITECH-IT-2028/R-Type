@@ -115,7 +115,7 @@ namespace client {
       void connect() {
         _networkManager.connect();
         if (isConnected()) {
-          _state = ClientState::CONNECTED_MENU;
+          setClientState(ClientState::CONNECTED_MENU);
 
           PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player");
           send(packet);
@@ -202,11 +202,11 @@ namespace client {
       void sendMatchmakingRequest();
 
       ClientState getClientState() const {
-        return _state;
+        return _state.load(std::memory_order_acquire);
       }
 
       void setClientState(ClientState state) {
-        _state = state;
+        _state.store(state, std::memory_order_release);
       }
 
     private:
@@ -222,7 +222,7 @@ namespace client {
       std::unordered_map<uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
-      ClientState _state = ClientState::DISCONNECTED;
+      std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 
       void registerComponent();
       void registerSystem();

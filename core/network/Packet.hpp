@@ -29,7 +29,8 @@ enum class PacketType : uint8_t {
   ListRoom = 0x17,
   ListRoomResponse = 0x18,
   MatchmakingRequest = 0x19,
-  MatchmakingResponse = 0x1A
+  MatchmakingResponse = 0x1A,
+  JoinRoomResponse = 0x1B
 };
 
 enum class EnemyType : uint8_t {
@@ -47,7 +48,8 @@ enum class RoomError : uint8_t {
   ROOM_FULL = 0x02,
   WRONG_PASSWORD = 0x03,
   ALREADY_IN_ROOM = 0x04,
-  PLAYER_BANNED = 0x05
+  PLAYER_BANNED = 0x05,
+  UNKNOWN_ERROR = 0x06
 };
 
 #define ALIGNED alignas(4)
@@ -329,7 +331,7 @@ struct ALIGNED PlayerDeathPacket {
 struct ALIGNED CreateRoomPacket {
     PacketHeader header;
     char room_name[32];
-    bool is_private;
+    uint8_t is_private;
     char password[32];
     uint32_t max_players;
 };

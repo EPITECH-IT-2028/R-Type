@@ -5,6 +5,7 @@
 #include <ctime>
 #include <string>
 #include <vector>
+#include "Macro.hpp"
 #include "Packet.hpp"
 
 struct PacketBuilder {
@@ -350,7 +351,8 @@ struct PacketBuilder {
     }
 
     static CreateRoomPacket makeCreateRoom(const std::string &room_name,
-                                           uint32_t max_players) {
+                                           uint32_t max_players,
+                                           const std::string &password = "") {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
       packet.header.size = sizeof(packet);
@@ -358,21 +360,31 @@ struct PacketBuilder {
               sizeof(packet.room_name) - 1);
       packet.room_name[sizeof(packet.room_name) - 1] = '\0';
       packet.max_players = max_players;
+      packet.is_private = !password.empty();
+      if (packet.is_private) {
+        strncpy(packet.password, password.c_str(), sizeof(packet.password) - 1);
+        packet.password[sizeof(packet.password) - 1] = '\0';
+      } else {
+        std::memset(packet.password, 0, sizeof(packet.password));
+      }
       return packet;
     }
 
-    static JoinRoomPacket makeJoinRoom(uint32_t room_id) {
+    static JoinRoomPacket makeJoinRoom(uint32_t room_id,
+                                       const std::string &password) {
       JoinRoomPacket packet{};
       packet.header.type = PacketType::JoinRoom;
       packet.header.size = sizeof(packet);
       packet.room_id = room_id;
+      strncpy(packet.password, password.c_str(), sizeof(packet.password) - 1);
+      packet.password[sizeof(packet.password) - 1] = '\0';
       return packet;
     }
 
     static JoinRoomResponsePacket makeJoinRoomResponse(
         const RoomError &error_code) {
       JoinRoomResponsePacket packet{};
-      packet.header.type = PacketType::JoinRoom;
+      packet.header.type = PacketType::JoinRoomResponse;
       packet.header.size = sizeof(packet);
       packet.error_code = error_code;
       return packet;
@@ -405,11 +417,12 @@ struct PacketBuilder {
     static ListRoomResponsePacket makeListRoomResponse(
         const std::vector<RoomInfo> &rooms) {
       ListRoomResponsePacket packet{};
-      packet.header.type = PacketType::ListRoom;
+      packet.header.type = PacketType::ListRoomResponse;
       packet.header.size = sizeof(packet);
-      packet.room_count = static_cast<uint32_t>(rooms.size());
+      packet.room_count =
+          static_cast<uint32_t>(std::min<std::size_t>(rooms.size(), MAX_ROOMS));
 
-      for (std::size_t i = 0; i < rooms.size() && i < 10; ++i) {
+      for (std::size_t i = 0; i < packet.room_count; ++i) {
         packet.rooms[i] = rooms[i];
       }
       return packet;
@@ -425,7 +438,7 @@ struct PacketBuilder {
     static MatchmakingResponsePacket makeMatchmakingResponse(
         const RoomError &error_code) {
       MatchmakingResponsePacket packet{};
-      packet.header.type = PacketType::MatchmakingRequest;
+      packet.header.type = PacketType::MatchmakingResponse;
       packet.header.size = sizeof(packet);
       packet.error_code = error_code;
       return packet;

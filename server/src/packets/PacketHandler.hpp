@@ -1,7 +1,17 @@
 #pragma once
 #include "APacket.hpp"
+#include "Packet.hpp"
 
 namespace packet {
+
+  class ResponseHelper {
+    public:
+      static void sendJoinRoomResponse(server::Server &server,
+                                       uint32_t player_id, RoomError error);
+
+      static void sendMatchmakingResponse(server::Server &server,
+                                          uint32_t player_id, RoomError error);
+  };
 
   class MessageHandler : public APacket {
     public:

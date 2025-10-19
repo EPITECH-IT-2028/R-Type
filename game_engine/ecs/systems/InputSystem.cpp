@@ -49,6 +49,11 @@ namespace ecs {
       return;
     }
     for (auto const &entity : _entities) {
+      if (!_ecsManager.hasComponent<VelocityComponent>(entity) ||
+          !_ecsManager.hasComponent<SpeedComponent>(entity) ||
+          !_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
+        continue;
+      }
       auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
       auto const &speed = _ecsManager.getComponent<SpeedComponent>(entity);
       auto &animation =

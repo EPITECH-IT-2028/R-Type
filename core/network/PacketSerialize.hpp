@@ -243,6 +243,10 @@ void serialize(S& s, CreateRoomPacket& packet) {
     s.value1b(packet.room_name[i]);
   }
   s.value4b(packet.max_players);
+  s.value1b(packet.is_private);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(packet.password[i]);
+  }
 }
 
 template <typename S>
