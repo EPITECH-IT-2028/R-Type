@@ -1,4 +1,5 @@
 #include "PacketHandler.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
