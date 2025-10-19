@@ -52,7 +52,7 @@ namespace ecs {
       if (rightPressed)
         inputs |= static_cast<uint8_t>(MovementInputType::RIGHT);
 
-      if (inputs != 0)
+      if (inputs != 0 && _client != nullptr)
         _client->sendInput(inputs);
 
       if (upPressed && !downPressed) {
