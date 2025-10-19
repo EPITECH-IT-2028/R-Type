@@ -67,8 +67,7 @@ namespace ecs {
           animation.frameTime = -std::abs(animation.frameTime);
           animation.isPlaying = true;
         }
-      } else if ((rightPressed && !leftPressed) ||
-                 (leftPressed && !rightPressed)) {
+      } else {
         animation.isPlaying = false;
         animation.currentFrame = animation.neutralFrame;
         animation.frameTime = std::abs(animation.frameTime);
