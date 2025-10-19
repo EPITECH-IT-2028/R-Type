@@ -8,22 +8,21 @@ enum class PacketType : uint8_t {
   PlayerMove = 0x02,
   NewPlayer = 0x03,
   PlayerInfo = 0x04,
-  Position = 0x05,
-  EnemySpawn = 0x06,
-  EnemyMove = 0x07,
-  EnemyDeath = 0x08,
-  PlayerShoot = 0x09,
-  ProjectileSpawn = 0x0A,
-  ProjectileHit = 0x0B,
-  ProjectileDestroy = 0x0C,
-  GameStart = 0x0D,
-  GameEnd = 0x0E,
-  PlayerDisconnected = 0x0F,
-  Heartbeat = 0x10,
-  EnemyHit = 0x11,
-  PlayerHit = 0x12,
-  PlayerDeath = 0x13,
-  PlayerInput = 0x14,
+  EnemySpawn = 0x05,
+  EnemyMove = 0x06,
+  EnemyDeath = 0x07,
+  PlayerShoot = 0x08,
+  ProjectileSpawn = 0x09,
+  ProjectileHit = 0x0A,
+  ProjectileDestroy = 0x0B,
+  GameStart = 0x0C,
+  GameEnd = 0x0D,
+  PlayerDisconnected = 0x0E,
+  Heartbeat = 0x0F,
+  EnemyHit = 0x10,
+  PlayerHit = 0x11,
+  PlayerDeath = 0x12,
+  PlayerInput = 0x13,
 };
 
 enum class EnemyType : uint8_t {
@@ -126,26 +125,6 @@ struct ALIGNED PlayerHitPacket {
     float x;
     float y;
     int sequence_number;
-};
-
-/**
- * @brief Sends the client's current position with an ordering sequence number.
- *
- * Packet used by the client to report its position to the server.
- * From server to client.
- *
- * Fields:
- *  - header: Common packet header identifying the packet type and payload size.
- *  - sequence_number: Client-side sequence number for ordering position
- * updates.
- *  - x: X coordinate of the player's position.
- *  - y: Y coordinate of the player's position.
- */
-struct ALIGNED PositionPacket {
-    PacketHeader header;
-    uint32_t sequence_number;
-    float x;
-    float y;
 };
 
 /* Enemy Packets */

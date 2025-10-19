@@ -32,16 +32,6 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PositionPacket makePosition(float x, float y, uint32_t seq) {
-      PositionPacket packet{};
-      packet.header.type = PacketType::Position;
-      packet.header.size = sizeof(packet);
-      packet.x = x;
-      packet.y = y;
-      packet.sequence_number = seq;
-      return packet;
-    }
-
     static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq, float x,
                                float y) {
       PlayerMovePacket packet{};

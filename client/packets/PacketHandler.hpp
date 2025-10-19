@@ -35,12 +35,6 @@ namespace packet {
                        std::size_t size) override;
   };
 
-  class PositionHandler : public IPacket {
-    public:
-      int handlePacket(client::Client &client, const char *data,
-                       std::size_t size) override;
-  };
-
   class ProjectileSpawnHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,

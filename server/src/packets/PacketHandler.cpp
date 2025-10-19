@@ -115,67 +115,6 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   return OK;
 }
 
-int packet::PositionHandler::handlePacket(server::Server &server,
-                                          server::Client &client,
-                                          const char *data, std::size_t size) {
-  serialization::Buffer buffer(data, data + size);
-  auto deserializedPacket =
-      serialization::BitserySerializer::deserialize<PositionPacket>(buffer);
-  if (!deserializedPacket) {
-    std::cerr << "[ERROR] Failed to deserialize PositionPacket from client "
-              << client._player_id << std::endl;
-    return KO;
-  }
-  const PositionPacket &packet = deserializedPacket.value();
-
-  auto room = server.getGameManager().getRoom(client._room_id);
-  if (!room)
-    return KO;
-
-  auto player = room->getGame().getPlayer(client._player_id);
-  if (!player) {
-    return KO;
-  }
-
-  float oldX = player->getPosition().first;
-  float oldY = player->getPosition().second;
-
-  auto now = std::chrono::steady_clock::now();
-  auto timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(
-      now - client._last_position_update);
-
-  if (timeDiff.count() > 5) {
-    float deltaX = packet.x - oldX;
-    float deltaY = packet.y - oldY;
-    float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    float timeSeconds = timeDiff.count() / 1000.0f;
-    float actualSpeed = distance / timeSeconds;
-    float maxSpeed = (player->getSpeed() * FPS) * TOLERANCE;
-
-    if (actualSpeed > maxSpeed) {
-      std::cout << "[ANTICHEAT] Player " << client._player_id
-                << " is moving too fast!" << std::endl;
-      player->setSequenceNumber(packet.sequence_number);
-      return KO;
-    }
-  }
-
-  player->setPosition(packet.x, packet.y);
-  player->setSequenceNumber(packet.sequence_number);
-  client._last_position_update = now;
-  std::pair<float, float> pos = player->getPosition();
-
-  auto movePacket = PacketBuilder::makePlayerMove(
-      client._player_id, player->getSequenceNumber().value_or(0), pos.first,
-      pos.second);
-
-  auto roomClients = room->getClients();
-  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
-                                                  roomClients, movePacket);
-  return OK;
-}
-
 int packet::HeartbeatPlayerHandler::handlePacket(
     [[maybe_unused]] server::Server &server, server::Client &client,
     const char *data, std::size_t size) {

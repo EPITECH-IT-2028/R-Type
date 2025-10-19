@@ -20,8 +20,6 @@ inline std::string packetTypeToString(PacketType type) {
       return "NewPlayer";
     case PacketType::PlayerInfo:
       return "PlayerInfo";
-    case PacketType::Position:
-      return "Position";
     case PacketType::EnemySpawn:
       return "EnemySpawn";
     case PacketType::EnemyMove:

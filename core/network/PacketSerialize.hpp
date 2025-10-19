@@ -44,16 +44,6 @@ void serialize(S& s, PlayerInfoPacket& packet) {
     s.value1b(packet.name[i]);
   }
 }
-
-template <typename S>
-void serialize(S& s, PositionPacket& packet) {
-  s.value1b(packet.header.type);
-  s.value4b(packet.header.size);
-  s.value4b(packet.sequence_number);
-  s.template value<sizeof(float)>(packet.x);
-  s.template value<sizeof(float)>(packet.y);
-}
-
 template <typename S>
 void serialize(S& s, PlayerShootPacket& packet) {
   s.value1b(packet.header.type);
