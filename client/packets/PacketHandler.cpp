@@ -160,13 +160,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       return packet::OK;
     }
 
-    if (client.getPlayerId() == packet.player_id) {
-      uint32_t lastSeqNum = client.getSequenceNumber();
-      if (packet.sequence_number <= lastSeqNum) {
-        return packet::OK;
-      }
-    }
-
     auto &position =
         ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
     position.x = packet.x;
