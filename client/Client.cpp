@@ -2,7 +2,6 @@
 #include <cstdint>
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
-#include "BoundarySystem.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -79,7 +78,6 @@ namespace client {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
-    _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
     _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
@@ -96,7 +94,6 @@ namespace client {
    * - RenderSystem: PositionComponent, RenderComponent
    * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent,
    * SpriteAnimationComponent
-   * - BoundarySystem: PositionComponent, SpriteComponent, PlayerTagComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
    */
   void Client::signSystem() {
@@ -129,13 +126,6 @@ namespace client {
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
-    }
-    {
-      Signature signature;
-      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
-      _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
     }
     {
       Signature signature;
