@@ -30,8 +30,7 @@ void gameLoop(client::Client &client) {
 }
 
 int main(void) {
-  renderManager::Renderer renderer(renderManager::WINDOW_WIDTH,
-                                   renderManager::WINDOW_HEIGHT,
+  renderManager::Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT,
                                    "R-Type Client");
   if (!renderer.InitSucceeded()) {
     std::cerr << "[ERROR] Failed to initialize window. Exiting." << std::endl;

@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include <cstdio>
 #include <cstdlib>
+#include "Macro.hpp"
 
 namespace renderManager {
   Renderer::Renderer(int width, int height, const char *title) {
