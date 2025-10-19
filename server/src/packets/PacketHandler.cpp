@@ -368,8 +368,8 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   float newX = player->getPosition().first + dirX * moveDistance;
   float newY = player->getPosition().second + dirY * moveDistance;
 
-  newX = std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH));
-  newY = std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT));
+  newX = std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
+  newY = std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
 
   player->setPosition(newX, newY);
 

@@ -37,6 +37,8 @@ constexpr float PROJECTILE_SPEED = 100.0f;
 
 constexpr int WINDOW_HEIGHT = 750;
 constexpr int WINDOW_WIDTH = 1200;
+constexpr float PLAYER_WIDTH = 66.0f;
+constexpr float PLAYER_HEIGHT = 37.0f;
 
 constexpr int MARGIN_WINDOW = 30;
 
