@@ -292,7 +292,7 @@ namespace client {
     _projectileEntities.erase(projectileId);
   }
 
-  void Client::sendInput(MovementInputType input) {
+  void Client::sendInput(uint8_t input) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
       return;

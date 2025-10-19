@@ -397,5 +397,3 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
 
   return packet::OK;
 }
-
-

@@ -36,10 +36,10 @@ enum class ProjectileType : uint8_t {
 };
 
 enum class MovementInputType : uint8_t {
-  UP = 0x01,
-  DOWN = 0x02,
-  LEFT = 0x03,
-  RIGHT = 0x04
+  UP = 1 << 0,
+  DOWN = 1 << 1,
+  LEFT = 1 << 2,
+  RIGHT = 1 << 3
 };
 
 #define ALIGNED alignas(4)
@@ -319,8 +319,6 @@ struct ALIGNED PlayerDeathPacket {
 
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
-    MovementInputType input;
+    uint8_t input;
     int sequence_number;
 };
-
-

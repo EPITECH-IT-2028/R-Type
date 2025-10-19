@@ -347,23 +347,26 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
   float moveDistance = player->getSpeed() * 0.016f;
 
-  float newX = player->getPosition().first;
-  float newY = player->getPosition().second;
+  float dirX = 0.0f;
+  float dirY = 0.0f;
 
-  switch (packet.input) {
-    case MovementInputType::UP:
-      newY -= moveDistance;
-      break;
-    case MovementInputType::DOWN:
-      newY += moveDistance;
-      break;
-    case MovementInputType::LEFT:
-      newX -= moveDistance;
-      break;
-    case MovementInputType::RIGHT:
-      newX += moveDistance;
-      break;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::UP))
+    dirY -= 1.0f;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::DOWN))
+    dirY += 1.0f;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::LEFT))
+    dirX -= 1.0f;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::RIGHT))
+    dirX += 1.0f;
+
+  float length = std::sqrt(dirX * dirX + dirY * dirY);
+  if (length > 0.0f) {
+    dirX /= length;
+    dirY /= length;
   }
+
+  float newX = player->getPosition().first + dirX * moveDistance;
+  float newY = player->getPosition().second + dirY * moveDistance;
 
   newX = std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH));
   newY = std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT));
@@ -371,8 +374,7 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   player->setPosition(newX, newY);
 
   auto movePacket = PacketBuilder::makePlayerMove(
-      client._player_id, player->getSequenceNumber().value_or(0), newX,
-      newY);
+      client._player_id, player->getSequenceNumber().value_or(0), newX, newY);
 
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),

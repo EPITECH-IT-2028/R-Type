@@ -42,15 +42,18 @@ namespace ecs {
       bool leftPressed = IsKeyDown(KEY_LEFT);
       bool rightPressed = IsKeyDown(KEY_RIGHT);
 
-      // TODO: Optimize to send input only on state change/ Add limit rate
-      if (leftPressed)
-        _client->sendInput(MovementInputType::LEFT);
-      if (rightPressed)
-        _client->sendInput(MovementInputType::RIGHT);
+      uint8_t inputs = 0;
       if (upPressed)
-        _client->sendInput(MovementInputType::UP);
+        inputs |= static_cast<uint8_t>(MovementInputType::UP);
       if (downPressed)
-        _client->sendInput(MovementInputType::DOWN);
+        inputs |= static_cast<uint8_t>(MovementInputType::DOWN);
+      if (leftPressed)
+        inputs |= static_cast<uint8_t>(MovementInputType::LEFT);
+      if (rightPressed)
+        inputs |= static_cast<uint8_t>(MovementInputType::RIGHT);
+
+      if (inputs != 0)
+        _client->sendInput(inputs);
 
       if (upPressed && !downPressed) {
         if (animation.frameTime < 0 || !animation.isPlaying) {

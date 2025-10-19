@@ -347,7 +347,7 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PlayerInputPacket makePlayerInput(MovementInputType input, int sequence_number) {
+    static PlayerInputPacket makePlayerInput(uint8_t input, int sequence_number) {
       PlayerInputPacket packet{};
       packet.header.type = PacketType::PlayerInput;
       packet.header.size = sizeof(packet);

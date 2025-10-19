@@ -183,7 +183,7 @@ namespace client {
         _sequence_number.store(seq, std::memory_order_release);
       }
 
-      void sendInput(MovementInputType input);
+      void sendInput(uint8_t input);
       void sendShoot(float x, float y);
 
     private:
