@@ -1,5 +1,4 @@
 #include "PacketHandler.hpp"
-#include <sys/socket.h>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
