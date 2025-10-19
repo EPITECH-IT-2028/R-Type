@@ -15,7 +15,7 @@
 #include "Projectile.hpp"
 #include "ProjectileSystem.hpp"
 #include "Queue.hpp"
-#include "ServerInputSystem.hpp"
+
 
 namespace game {
 
@@ -41,9 +41,7 @@ namespace game {
 
       std::shared_ptr<Projectile> getProjectile(std::uint32_t projectile_id);
 
-      std::shared_ptr<ecs::ServerInputSystem> getServerInputSystem() const {
-        return _serverInputSystem;
-      }
+
 
       std::vector<std::shared_ptr<Player>> getAllPlayers() const;
 
@@ -95,7 +93,7 @@ namespace game {
       std::shared_ptr<ecs::EnemySystem> _enemySystem;
       std::shared_ptr<ecs::ProjectileSystem> _projectileSystem;
       std::shared_ptr<ecs::CollisionSystem> _collisionSystem;
-      std::shared_ptr<ecs::ServerInputSystem> _serverInputSystem;
+
 
       std::unordered_map<int, std::shared_ptr<Enemy>> _enemies;
       std::unordered_map<int, std::shared_ptr<Player>> _players;

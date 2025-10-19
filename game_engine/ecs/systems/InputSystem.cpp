@@ -52,11 +52,6 @@ namespace ecs {
       if (downPressed)
         _client->sendInput(MovementInputType::DOWN);
 
-      float dirY =
-          static_cast<float>((downPressed ? 1 : 0) - (upPressed ? 1 : 0));
-      float dirX =
-          static_cast<float>((rightPressed ? 1 : 0) - (leftPressed ? 1 : 0));
-
       if (upPressed && !downPressed) {
         if (animation.frameTime < 0 || !animation.isPlaying) {
           animation.currentFrame = animation.neutralFrame;
@@ -75,15 +70,6 @@ namespace ecs {
         animation.currentFrame = animation.neutralFrame;
         animation.frameTime = std::abs(animation.frameTime);
       }
-
-      float length = std::sqrt(dirX * dirX + dirY * dirY);
-      if (length > 0.0f) {
-        dirX /= length;
-        dirY /= length;
-      }
-
-      velocity.vx = dirX * speed.speed;
-      velocity.vy = dirY * speed.speed;
 
       if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);

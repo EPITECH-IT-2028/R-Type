@@ -1,4 +1,5 @@
 #include "PacketHandler.hpp"
+#include <sys/socket.h>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -337,15 +338,44 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   if (!room) {
     return KO;
   }
-  auto sis = room->getGame().getServerInputSystem();
-  if (!sis) {
+  auto player = room->getGame().getPlayer(client._player_id);
+  if (!player) {
     return KO;
   }
-  if (client._entity_id == static_cast<Entity>(-1)) {
-    std::cerr << "[ERROR] Client " << client._player_id
-              << " has invalid entity_id" << std::endl;
-    return KO;
+
+  player->setSequenceNumber(packet.sequence_number);
+
+  float moveDistance = player->getSpeed() * 0.016f;
+
+  float newX = player->getPosition().first;
+  float newY = player->getPosition().second;
+
+  switch (packet.input) {
+    case MovementInputType::UP:
+      newY -= moveDistance;
+      break;
+    case MovementInputType::DOWN:
+      newY += moveDistance;
+      break;
+    case MovementInputType::LEFT:
+      newX -= moveDistance;
+      break;
+    case MovementInputType::RIGHT:
+      newX += moveDistance;
+      break;
   }
-  sis->queueInput(client._entity_id, {packet.input, packet.sequence_number});
+
+  newX = std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH));
+  newY = std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT));
+
+  player->setPosition(newX, newY);
+
+  auto movePacket = PacketBuilder::makePlayerMove(
+      client._player_id, player->getSequenceNumber().value_or(0), newX,
+      newY);
+
+  auto roomClients = room->getClients();
+  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
+                                                  roomClients, movePacket);
   return OK;
 }

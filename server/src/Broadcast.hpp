@@ -252,12 +252,7 @@ namespace broadcast {
         broadcastToRoom(networkManager, roomClients, packet);
       }
 
-      static void broadcastPositionUpdateToRoom(
-          network::ServerNetworkManager &networkManager,
-          const std::vector<std::shared_ptr<server::Client>> &roomClients,
-          const PositionPlayerPacket &packet) {
-        broadcastToRoom(networkManager, roomClients, packet);
-      };
+
 
       static void broadcastMessageToRoom(
           network::ServerNetworkManager &networkManager,

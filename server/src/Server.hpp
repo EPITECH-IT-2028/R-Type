@@ -8,7 +8,7 @@
 #include "Client.hpp"
 #include "Events.hpp"
 #include "PacketFactory.hpp"
-#include "ServerInputSystem.hpp"
+
 #include "ServerNetworkManager.hpp"
 #include "game/GameManager.hpp"
 
@@ -61,12 +61,7 @@ namespace server {
 
       void clearClientSlot(int player_id);
 
-      std::shared_ptr<ecs::ServerInputSystem> getInputSystem(uint32_t roomId) const {
-        if (!_gameManager)
-          return nullptr;
-        auto room = _gameManager->getRoom(roomId);
-        return room ? room->getGame().getServerInputSystem() : nullptr;
-      }
+
 
     private:
       void startReceive();
