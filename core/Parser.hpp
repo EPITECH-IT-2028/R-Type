@@ -3,9 +3,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <stdexcept>
 #include "ParamsError.hpp"
 
 /* Macros for files paths */
@@ -18,20 +18,26 @@ constexpr int MIN_PORT = 1;
 
 class Parser {
   public:
-    Parser(std::string propertiesPath) : _propertiesPath(std::move(propertiesPath)) {}
+    Parser(std::string propertiesPath)
+        : _propertiesPath(std::move(propertiesPath)) {
+    }
     ~Parser() = default;
 
     void parseProperties();
 
     bool isValidIp(const std::string &ip) const;
-    
+
     std::string trimString(const std::string &str) const;
 
     std::uint16_t getPort() const {
       return _port;
     }
-    std::uint16_t getMaxClients() const {
+    std::uint8_t getMaxClients() const {
       return _max_clients;
+    }
+
+    std::uint8_t getClientsPerRoom() const {
+      return _max_clients_per_room;
     }
 
     std::string getHost() const {
@@ -42,7 +48,9 @@ class Parser {
     const std::string _propertiesPath;
     std::uint16_t _port = 4242;
     std::string _host = "127.0.0.1";
-    std::uint16_t _max_clients = 4;
+    std::uint8_t _max_clients = 100;
+    std::uint8_t _max_clients_per_room = 4;
+
     std::unordered_map<std::string, std::function<void(const std::string &)>>
         _propertyParsers = {
             {"PORT",
@@ -83,5 +91,25 @@ class Parser {
                      "Invalid max clients in server properties file.");
                }
              }},
-    };
+            {"MAX_CLIENTS_PER_ROOM",
+             [this](const std::string &max_clients_per_room) {
+               if (!max_clients_per_room.empty()) {
+                 try {
+                   int value = std::stoi(max_clients_per_room);
+                   if (value < 0) {
+                     throw ParamsError(
+                         "Clients per room must be non-negative.");
+                   }
+                   _max_clients_per_room = static_cast<std::uint8_t>(value);
+                 } catch (const std::invalid_argument &e) {
+                   throw ParamsError(
+                       "Invalid clients per room in server properties file.");
+                 } catch (const std::out_of_range &e) {
+                   throw ParamsError("Clients per room value out of range.");
+                 }
+               } else {
+                 throw ParamsError(
+                     "Invalid clients per room in server properties file.");
+               }
+             }}};
 };

@@ -7,9 +7,10 @@ namespace ecs {
   /**
    * @brief Update tracked entities' positions by applying their velocities.
    *
-   * Updates each entity's PositionComponent by adding its VelocityComponent multiplied
-   * by the given elapsed time. Entities that have a ProjectileComponent or that lack
-   * either a VelocityComponent or PositionComponent are skipped.
+   * Updates each entity's PositionComponent by adding its VelocityComponent
+   * multiplied by the given elapsed time. Entities that have a
+   * ProjectileComponent or that lack either a VelocityComponent or
+   * PositionComponent are skipped.
    *
    * @param deltaTime Elapsed time since the last update (time step).
    */

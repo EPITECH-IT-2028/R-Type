@@ -13,7 +13,8 @@ std::string Parser::trimString(const std::string &str) const {
 }
 
 void Parser::parseProperties() {
-  if (_propertiesPath != SERVER_PROPERTIES && _propertiesPath != CLIENT_PROPERTIES) {
+  if (_propertiesPath != SERVER_PROPERTIES &&
+      _propertiesPath != CLIENT_PROPERTIES) {
     throw ParamsError("Invalid properties file path.");
   }
 
@@ -53,5 +54,8 @@ void Parser::parseProperties() {
     if (_port <= MIN_PORT || _port > MAX_PORT) {
       throw ParamsError("Invalid client properties.");
     }
+  }
+  if (_max_clients_per_room > _max_clients) {
+    throw ParamsError("MAX_CLIENTS_PER_ROOM cannot exceed MAX_CLIENTS");
   }
 }

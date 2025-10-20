@@ -39,6 +39,12 @@ namespace ecs {
       }
 
       template <typename T>
+      bool isComponentRegistered() {
+        std::type_index ti(typeid(T));
+        return _componentTypes.find(ti) != _componentTypes.end();
+      }
+
+      template <typename T>
       void addComponent(Entity entityId, T component) {
         getComponentArray<T>()->insertData(entityId, component);
       }

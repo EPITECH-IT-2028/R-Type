@@ -5,6 +5,7 @@
 #include <raylib.h>
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "PacketUtils.hpp"
 
 using namespace network;
 

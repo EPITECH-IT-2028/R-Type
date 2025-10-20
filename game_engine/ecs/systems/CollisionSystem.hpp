@@ -24,8 +24,7 @@ namespace ecs {
        * @param ecsManager Reference to the ECSManager that the collision system
        * will use.
        */
-      CollisionSystem(ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {};
+      CollisionSystem() = default;
       /**
        * @brief Destroys the CollisionSystem and performs any necessary cleanup.
        */
@@ -39,6 +38,10 @@ namespace ecs {
        */
       void setGame(game::Game *game) {
         _game = game;
+      }
+
+      void setECSManager(ECSManager *ecsManager) {
+        _ecsManager = ecsManager;
       }
 
       /**
@@ -72,7 +75,7 @@ namespace ecs {
           std::shared_ptr<game::Enemy> enemy);
 
     private:
-      ECSManager &_ecsManager;
+      ECSManager *_ecsManager = nullptr;
       game::Game *_game = nullptr;
       queue::EventQueue *_eventQueue = nullptr;
   };

@@ -1,32 +1,26 @@
 #pragma once
 
 #include <asio.hpp>
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
-#include "Game.hpp"
+#include "Client.hpp"
+#include "Events.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
+#include "game/GameManager.hpp"
+
+namespace game {
+  class GameManager;
+}
 
 namespace server {
 
-  struct Client {
-    public:
-      Client(int id);
-      ~Client() = default;
-
-      bool _connected = false;
-      int _player_id = -1;
-      std::chrono::steady_clock::time_point _last_heartbeat;
-      std::chrono::steady_clock::time_point _last_position_update;
-      uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
-  };
-
   class Server {
     public:
-      Server(std::uint16_t port, std::uint16_t max_clients);
+      Server(std::uint16_t port, std::uint8_t max_clients,
+             std::uint8_t max_clients_per_room);
       ~Server() = default;
 
       void start();
@@ -60,8 +54,8 @@ namespace server {
         return _clients;
       }
 
-      game::Game &getGame() {
-        return _game;
+      game::GameManager &getGameManager() {
+        return *_gameManager;
       }
 
       void clearClientSlot(int player_id);
@@ -75,7 +69,7 @@ namespace server {
 
       void scheduleEventProcessing();
       void processGameEvents();
-      void handleGameEvent(const queue::GameEvent &event);
+      void handleGameEvent(const queue::GameEvent &event, uint32_t roomId);
 
       size_t findExistingClient();
       void handlePlayerInfoPacket(const char *data, std::size_t size);
@@ -93,9 +87,10 @@ namespace server {
       uint16_t screen_width = 800;
       uint16_t screen_height = 1200;
 
-      game::Game _game;
+      std::shared_ptr<game::GameManager> _gameManager;
 
-      std::uint16_t _max_clients;
+      std::uint8_t _max_clients;
+      std::uint8_t _max_clients_per_room = 4;
       std::uint16_t _port;
       int _player_count;
       int _next_player_id;

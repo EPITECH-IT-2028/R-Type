@@ -49,7 +49,7 @@ namespace game {
       std::vector<std::shared_ptr<Enemy>> getAllEnemies() const;
 
       ecs::ECSManager &getECSManager() {
-        return _ecsManager;
+        return *_ecsManager;
       }
 
       std::shared_ptr<ecs::EnemySystem> getEnemySystem() {
@@ -62,8 +62,31 @@ namespace game {
 
       std::vector<std::shared_ptr<Projectile>> getAllProjectiles() const;
 
-      std::uint64_t getNextProjectileId() noexcept {
+      std::uint32_t getNextProjectileId() noexcept {
         return _nextProjectileId++;
+      }
+
+      /**
+       * @brief Clears all entities from the game, including players, enemies,
+       * and projectiles. This method locks the ECS manager to safely destroy
+       * all entities and resets internal state.
+       *
+       * After calling this method, the game will have no entities and internal
+       * ID counters for enemies and projectiles will be reset.
+       *
+       * @note This does not stop the game loop; it only clears entities.
+       *
+       */
+      void clearAllEntities();
+
+      /**
+       * @brief Retrieves the current delta time used for game updates.
+       *
+       * @return float The delta time in seconds between the current and
+       * previous update.
+       */
+      float getDeltaTime() const {
+        return _deltaTime.load();
       }
 
     private:
@@ -71,6 +94,7 @@ namespace game {
       void initECS();
       std::atomic<bool> _running;
       std::thread _gameThread;
+      std::atomic<float> _deltaTime{0.0f};
 
       void spawnEnemy(float deltaTime);
 
@@ -86,9 +110,9 @@ namespace game {
       float _enemySpawnTimer = 0.0f;
       float _enemySpawnInterval = 5.0f;
       int _nextEnemyId = 0;
-      std::atomic<std::uint64_t> _nextProjectileId{0};
+      std::atomic<std::uint32_t> _nextProjectileId{0};
 
-      ecs::ECSManager &_ecsManager;
+      std::unique_ptr<ecs::ECSManager> _ecsManager;
       mutable std::mutex _ecsMutex;
       mutable std::mutex _playerMutex;
       mutable std::mutex _enemyMutex;

@@ -10,7 +10,7 @@ namespace serialization {
   class BitserySerializer {
     public:
       template <typename Packet>
-      static Buffer serialize(const Packet& packet) {
+      static Buffer serialize(const Packet &packet) {
         Buffer buffer;
         auto writtenSize =
             bitsery::quickSerialization<OutputAdapter>(buffer, packet);
@@ -19,7 +19,7 @@ namespace serialization {
       }
 
       template <typename Packet>
-      static std::optional<Packet> deserialize(const Buffer& buffer) {
+      static std::optional<Packet> deserialize(const Buffer &buffer) {
         Packet packet;
         auto state = bitsery::quickDeserialization<InputAdapter>(
             {buffer.begin(), buffer.size()}, packet);

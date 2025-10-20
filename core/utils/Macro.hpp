@@ -23,7 +23,7 @@ constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
 
-constexpr float PLAYER_SPEED = 400.0f;
+constexpr float PLAYER_SPEED = 250.0f;
 
 constexpr float ENEMY_SPEED = -80.0f;
 
@@ -37,5 +37,9 @@ constexpr float PROJECTILE_SPEED = 100.0f;
 
 constexpr int WINDOW_HEIGHT = 750;
 constexpr int WINDOW_WIDTH = 1200;
+constexpr float PLAYER_WIDTH = 66.0f;
+constexpr float PLAYER_HEIGHT = 37.0f;
 
 constexpr int MARGIN_WINDOW = 30;
+
+constexpr int NO_ROOM = -1;
