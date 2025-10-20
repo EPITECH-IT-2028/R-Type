@@ -13,7 +13,6 @@
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
-#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
@@ -50,14 +49,13 @@ namespace client {
    *
    * Registers the following components so they can be attached to entities and
    * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
-   * SpeedComponent, SpriteComponent, ScaleComponent, BackgroundTagComponent,
+   * SpriteComponent, ScaleComponent, BackgroundTagComponent,
    * PlayerTagComponent, and SpriteAnimationComponent.
    */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
-    _ecsManager.registerComponent<ecs::SpeedComponent>();
     _ecsManager.registerComponent<ecs::SpriteComponent>();
     _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
@@ -93,7 +91,7 @@ namespace client {
    * BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: VelocityComponent, SpeedComponent, LocalPlayerTagComponent,
+   * - InputSystem: VelocityComponent, LocalPlayerTagComponent,
    * SpriteAnimationComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
    * - ProjectileSystem: PositionComponent, VelocityComponent,
@@ -122,8 +120,6 @@ namespace client {
     }
     {
       Signature signature;
-      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       signature.set(
           _ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
       signature.set(
@@ -190,13 +186,13 @@ namespace client {
    * components.
    *
    * Attaches a PositionComponent (from packet.x/packet.y), a zeroed
-   * VelocityComponent, a SpeedComponent (from packet.speed), a RenderComponent
-   * using the player render asset, a SpriteComponent and ScaleComponent using
-   * PlayerSpriteConfig values, and a configured SpriteAnimationComponent. Also
-   * attaches a PlayerTagComponent. If the client's local player ID is
-   * unassigned, assigns it from packet.player_id and attaches a
-   * LocalPlayerTagComponent. Records the created entity in the client's
-   * player-entity mapping in a thread-safe manner.
+   * VelocityComponent, a RenderComponent using the player render asset, a
+   * SpriteComponent and ScaleComponent using PlayerSpriteConfig values, and a
+   * configured SpriteAnimationComponent. Also attaches a PlayerTagComponent. If
+   * the client's local player ID is unassigned, assigns it from
+   * packet.player_id and attaches a LocalPlayerTagComponent. Records the
+   * created entity in the client's player-entity mapping in a thread-safe
+   * manner.
    *
    * @param packet NewPlayerPacket containing the player's id, initial position,
    * and speed.
@@ -205,8 +201,6 @@ namespace client {
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player,
                                                      {packet.x, packet.y});
-    _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::SpeedComponent>(player, {packet.speed});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
     ecs::SpriteComponent sprite;

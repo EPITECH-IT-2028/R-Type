@@ -40,7 +40,6 @@
 namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
-  constexpr float PLAYER_SPEED = 500.0f;
 
   /**
    * Player sprite and animation configuration.

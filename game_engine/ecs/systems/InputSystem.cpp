@@ -3,9 +3,7 @@
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
-#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
-#include "VelocityComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
@@ -33,8 +31,6 @@ namespace ecs {
    */
   void InputSystem::update([[maybe_unused]] float deltaTime) {
     for (auto const &entity : _entities) {
-      auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
-      auto const &speed = _ecsManager.getComponent<SpeedComponent>(entity);
       auto &animation =
           _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
