@@ -1,6 +1,5 @@
 #pragma once
 
-#include <asio.hpp>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>

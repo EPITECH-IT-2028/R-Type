@@ -23,7 +23,6 @@
 #endif
 
 #include <array>
-#include <asio.hpp>
 #include <atomic>
 #include <chrono>
 #include <iostream>
