@@ -82,6 +82,7 @@ void ClientNetworkManager::disconnect() {
     _socket.close();
   }
 
+  std::lock_guard<std::mutex> lock(_mutex);
   while (!_packet_queue.empty()) {
     _packet_queue.pop();
   }
@@ -144,6 +145,7 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
 void ClientNetworkManager::processReceivedPackets(client::Client &client) {
   std::queue<ReceivedPacket> packet_queue_to_process;
 
+  std::lock_guard<std::mutex> lock(_mutex);
   std::swap(packet_queue_to_process, _packet_queue);
 
   while (!packet_queue_to_process.empty()) {
@@ -162,6 +164,12 @@ void ClientNetworkManager::processPacket(const char *data, std::size_t size, cli
   PacketHeader header;
   std::memcpy(&header, data, sizeof(PacketHeader));
   PacketType packet_type = static_cast<PacketType>(header.type);
+
+  if (header.size != size) {
+    std::cerr << "Packet size mismatch: expected " << header.size
+              << ", got " << size << std::endl;
+    return;
+  }
 
   auto handler = _packetFactory.createHandler(packet_type);
   if (handler) {

@@ -41,6 +41,7 @@ namespace network {
       packet::PacketHandlerFactory _packetFactory;
 
       std::queue<ReceivedPacket> _packet_queue;
+      std::mutex _mutex;
       static constexpr size_t MAX_QUEUE_SIZE = 1000;
 
       void startAsyncReceive();
