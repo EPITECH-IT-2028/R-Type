@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include "Macro.hpp"
 
 enum class PacketType : std::uint8_t {
   Message = 0x01,
@@ -394,7 +395,7 @@ struct ALIGNED RoomInfo {
 struct ALIGNED ListRoomResponsePacket {
     PacketHeader header;
     std::uint32_t room_count;
-    RoomInfo rooms[10];
+    RoomInfo rooms[MAX_ROOMS];
 };
 
 struct ALIGNED MatchmakingRequestPacket {
