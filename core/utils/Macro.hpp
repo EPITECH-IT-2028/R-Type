@@ -23,7 +23,7 @@ constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
 
-constexpr float PLAYER_SPEED = 400.0f;
+constexpr float PLAYER_SPEED = 250.0f;
 
 constexpr float ENEMY_SPEED = -80.0f;
 
