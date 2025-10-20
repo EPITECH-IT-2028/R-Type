@@ -3,16 +3,19 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include "Macro.hpp"
 
 namespace server {
   struct Client {
     public:
       /**
-       * @brief Constructs a Client for the given player identifier and initializes connection state and timestamps.
+       * @brief Constructs a Client for the given player identifier and
+       * initializes connection state and timestamps.
        *
-       * Initializes the client with the provided player id, marks it as connected, assigns no room, and records
-       * the current steady-clock time for both the last heartbeat and last position update.
+       * Initializes the client with the provided player id, marks it as
+       * connected, assigns no room, and records the current steady-clock time
+       * for both the last heartbeat and last position update.
        *
        * @param id Player identifier to associate with this client.
        */
@@ -24,11 +27,11 @@ namespace server {
             _last_position_update(std::chrono::steady_clock::now()) {
       }
       /**
- * @brief Destroys the Client object.
- *
- * Performs default destruction of the client's members.
- */
-~Client() = default;
+       * @brief Destroys the Client object.
+       *
+       * Performs default destruction of the client's members.
+       */
+      ~Client() = default;
 
       bool _connected = false;
       int _player_id = -1;
