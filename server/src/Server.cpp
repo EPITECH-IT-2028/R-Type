@@ -11,6 +11,17 @@
 #include "Macro.hpp"
 #include "Packet.hpp"
 
+/**
+ * @brief Constructs a Server configured with the listening port and client limits.
+ *
+ * Initializes internal counters, creates the GameManager with the specified
+ * per-room client limit, and resizes internal client storage to accommodate
+ * the maximum number of clients.
+ *
+ * @param port UDP port the server will bind to for network communication.
+ * @param max_clients Maximum total concurrent clients the server will accept.
+ * @param max_clients_per_room Maximum number of clients allowed in a single game room.
+ */
 server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
                        std::uint8_t max_clients_per_room)
     : _networkManager(port),
@@ -113,16 +124,15 @@ void server::Server::handleTimeout() {
 }
 
 /**
- * @brief Translate a game event into its network packet and broadcast it to
- * all connected clients.
+ * @brief Convert a game event into its network packet and broadcast it to a room.
  *
- * Handles each concrete variant of `queue::GameEvent` (EnemySpawnEvent,
- * EnemyDestroyEvent, EnemyHitEvent, EnemyMoveEvent, ProjectileSpawnEvent,
- * ProjectileDestroyEvent, PlayerHitEvent, PlayerDestroyEvent) by building the
- * corresponding network packet and broadcasting it to every connected client
- * via the server's UDP socket.
+ * Converts the provided `queue::GameEvent` into the corresponding network packet
+ * and broadcasts that packet to every client currently in the specified room.
+ * If `roomId` equals `NO_ROOM` or the room is not found/active, the function
+ * does nothing.
  *
- * @param event Variant containing the specific game event to handle.
+ * @param event Variant holding the specific game event to translate and send.
+ * @param roomId Identifier of the target room whose clients will receive the packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      uint32_t roomId) {
@@ -217,16 +227,15 @@ void server::Server::startReceive() {
 }
 
 /**
- * @brief Handle incoming data from clients.
+ * @brief Process a received network packet and dispatch it to the appropriate handler.
  *
- * Parses the packet header to determine the packet type and delegates to the
- * appropriate handler function. If the packet is a PlayerInfo packet, it
- * calls `handlePlayerInfoPacket` to manage new player connections. For other
- * packet types, it attempts to find the existing client based on the sender's
- * endpoint and processes the data accordingly.
+ * Parses the packet header; if the packet is a PlayerInfo packet it handles player
+ * connection setup, otherwise it resolves the sender to an existing client and
+ * forwards the packet for client-specific processing. If header deserialization
+ * fails or the sender cannot be resolved to a connected client, the packet is ignored.
  *
  * @param data Pointer to the received data buffer.
- * @param bytes_transferred Number of bytes received in the buffer.
+ * @param bytes_transferred Number of bytes available in the buffer.
  */
 void server::Server::handleReceive(const char *data,
                                    std::size_t bytes_transferred) {
