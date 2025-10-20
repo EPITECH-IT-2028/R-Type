@@ -29,11 +29,12 @@ game::Game::Game()
 }
 
 /**
- * @brief Stops the game loop and cleans up the game thread.
+ * @brief Cleanly shuts down the game, stops the game loop, and releases game
+ * resources.
  *
- * Ensures the running flag is cleared so the main loop stops, then joins the
- * internal game thread if it is joinable to guarantee the thread has finished
- * before destruction.
+ * Stops the running game loop and joins the internal game thread, clears each
+ * core system's reference to the ECS manager, destroys all entities, and
+ * releases system resources.
  */
 game::Game::~Game() {
   stop();
@@ -56,20 +57,17 @@ game::Game::~Game() {
 }
 
 /**
- * @brief Initialize the game's entity-component-system (ECS) by registering
- * components and configuring core systems.
+ * @brief Register all ECS component types and configure core systems with their
+ * required component signatures and links to this Game and the event queue.
  *
- * Registers all component types used by the game and creates/configures the
- * core systems, assigning each system the component signature it requires and
- * wiring systems to the game, ECS manager, and event queue.
+ * Registers the component types used by the game and creates/configures the
+ * core systems (EnemySystem, ProjectileSystem, CollisionSystem), setting each
+ * system's component signature and wiring the systems to the Game instance and
+ * the event queue.
  *
- * Registered components: Position, Health, Speed, Player, Projectile, Velocity,
- * Enemy, Shoot, Collider, Score.
- *
- * Configured systems and their required signatures:
- * - EnemySystem: Enemy, Position, Velocity, Shoot, Health, Collider
- * - ProjectileSystem: Projectile, Position, Velocity, Collider
- * - CollisionSystem: Position, Collider
+ * Registered components: PositionComponent, HealthComponent, SpeedComponent,
+ * PlayerComponent, ProjectileComponent, VelocityComponent, EnemyComponent,
+ * ShootComponent, ColliderComponent, ScoreComponent.
  */
 void game::Game::initECS() {
   try {
@@ -153,17 +151,22 @@ void game::Game::stop() {
 }
 
 /**
- * @brief Executes the game's main loop, updating core systems and spawning
- * enemies until stopped.
+ * @brief Runs the main game loop, updating core systems and spawning enemies.
  *
- * Runs while the Game's running flag remains set. Each iteration computes the
- * elapsed frame time (in seconds) and passes it to the enemy, projectile, and
- * collision systems, invokes enemy spawn logic, and sleeps briefly to cap the
- * frame rate.
+ * The loop begins after a 3-second delay, emits a GameStartEvent to the event
+ * queue, then repeatedly:
+ * - captures frame time and stores it in `_deltaTime`,
+ * - updates the enemy, projectile, and collision systems with the frame time,
+ * - invokes enemy spawn logic,
+ * - sleeps ~16ms to cap frame pacing.
+ *
+ * The loop stops when the Game is no longer running or if any required system
+ * (enemy, projectile, collision) is not initialized, in which case it clears
+ * the running flag.
  */
 void game::Game::gameLoop() {
-  std::this_thread::sleep_for(
-      std::chrono::seconds(3));  // TODO: remove when lobby
+  std::this_thread::sleep_for(std::chrono::seconds(3));
+
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
@@ -179,6 +182,7 @@ void game::Game::gameLoop() {
     }
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> deltaTime = now - lastTime;
+    _deltaTime.store(deltaTime.count());
     lastTime = now;
 
     _enemySystem->update(deltaTime.count());

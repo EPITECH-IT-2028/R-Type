@@ -87,13 +87,19 @@ namespace broadcast {
                 const auto &client) { return client._player_id != player_id; });
       }
 
-      /*
-       * Broadcast the player movement to all other connected clients.
+      /**
+       * @brief Broadcasts a player's movement to all clients in the room.
+       *
+       * Sends the provided PlayerMovePacket to each connected client in the given room via the server network manager.
+       *
+       * @param networkManager Server network manager used to send packets.
+       * @param roomClients Vector of clients that are members of the room; only connected clients will receive the packet.
+       * @param packet Player movement information to forward to the room.
        */
       static void broadcastPlayerMoveToRoom(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
-          const MovePacket &packet) {
+          const PlayerMovePacket &packet) {
         broadcastToRoom(networkManager, roomClients, packet);
       }
 
@@ -237,13 +243,10 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a player disconnect event to all connected clients.
+       * @brief Broadcasts a player disconnect event to all connected clients in a room.
        *
-       * @param socket UDP socket used to send the packet.
-       * @param clients Vector of client shared pointers; only connected clients
-       * will be sent the packet.
-       * @param packet Packet describing the player disconnect (including the
-       * player id).
+       * @param roomClients List of room clients; only non-null, connected clients will receive the packet.
+       * @param packet Packet describing the disconnect; contains the player id of the disconnecting player.
        */
       static void broadcastPlayerDisconnectToRoom(
           network::ServerNetworkManager &networkManager,
@@ -252,6 +255,15 @@ namespace broadcast {
         broadcastToRoom(networkManager, roomClients, packet);
       }
 
+
+
+      /**
+       * @brief Broadcasts a message packet to all clients in the specified room.
+       *
+       * @param networkManager Server network manager used to send packets to clients.
+       * @param roomClients Vector of room clients; only non-null, connected clients will be targeted.
+       * @param packet MessagePacket to broadcast to the room.
+       */
       static void broadcastMessageToRoom(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,

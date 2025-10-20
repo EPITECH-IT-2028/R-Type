@@ -33,7 +33,7 @@ namespace packet {
                         []() { return std::make_unique<PlayerDeathHandler>(); }},
                        {PacketType::PlayerDisconnected,
                         []() { return std::make_unique<PlayerDisconnectedHandler>(); }},
-                       {PacketType::Move,
+                       {PacketType::PlayerMove,
                         []() { return std::make_unique<PlayerMoveHandler>(); }},
                        {PacketType::EnemyMove,
                         []() { return std::make_unique<EnemyMoveHandler>(); }},
