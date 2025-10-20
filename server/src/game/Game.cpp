@@ -18,7 +18,6 @@
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
 #include "ScoreComponent.hpp"
-
 #include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -30,11 +29,12 @@ game::Game::Game()
 }
 
 /**
- * @brief Cleanly shuts down the game, stops the game loop, and releases game resources.
+ * @brief Cleanly shuts down the game, stops the game loop, and releases game
+ * resources.
  *
- * Stops the running game loop and joins the internal game thread, clears each core
- * system's reference to the ECS manager, destroys all entities, and releases
- * system resources.
+ * Stops the running game loop and joins the internal game thread, clears each
+ * core system's reference to the ECS manager, destroys all entities, and
+ * releases system resources.
  */
 game::Game::~Game() {
   stop();
@@ -49,23 +49,25 @@ game::Game::~Game() {
     _collisionSystem->setECSManager(nullptr);
   }
 
-
   clearAllEntities();
 
   _enemySystem.reset();
   _collisionSystem.reset();
   _projectileSystem.reset();
-
 }
 
 /**
- * @brief Register all ECS component types and configure core systems with their required component signatures and links to this Game and the event queue.
+ * @brief Register all ECS component types and configure core systems with their
+ * required component signatures and links to this Game and the event queue.
  *
- * Registers the component types used by the game and creates/configures the core systems (EnemySystem, ProjectileSystem, CollisionSystem),
- * setting each system's component signature and wiring the systems to the Game instance and the event queue.
+ * Registers the component types used by the game and creates/configures the
+ * core systems (EnemySystem, ProjectileSystem, CollisionSystem), setting each
+ * system's component signature and wiring the systems to the Game instance and
+ * the event queue.
  *
- * Registered components: PositionComponent, HealthComponent, SpeedComponent, PlayerComponent, ProjectileComponent,
- * VelocityComponent, EnemyComponent, ShootComponent, ColliderComponent, ScoreComponent.
+ * Registered components: PositionComponent, HealthComponent, SpeedComponent,
+ * PlayerComponent, ProjectileComponent, VelocityComponent, EnemyComponent,
+ * ShootComponent, ColliderComponent, ScoreComponent.
  */
 void game::Game::initECS() {
   try {
@@ -92,8 +94,6 @@ void game::Game::initECS() {
     _collisionSystem = _ecsManager->registerSystem<ecs::CollisionSystem>();
     _collisionSystem->setGame(this);
     _collisionSystem->setEventQueue(&_eventQueue);
-
-
 
     _projectileSystem = _ecsManager->registerSystem<ecs::ProjectileSystem>();
 
@@ -124,7 +124,6 @@ void game::Game::initECS() {
     collisionSignature.set(
         _ecsManager->getComponentType<ecs::ColliderComponent>());
     _ecsManager->setSystemSignature<ecs::CollisionSystem>(collisionSignature);
-
 
   } catch (const std::runtime_error &e) {
     std::cerr << "ECS System registration error: " << e.what() << std::endl;
@@ -189,7 +188,6 @@ void game::Game::gameLoop() {
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
     _collisionSystem->update(deltaTime.count());
-
 
     spawnEnemy(deltaTime.count());
 

@@ -12,7 +12,8 @@
 #include "Packet.hpp"
 
 /**
- * @brief Constructs a Server configured with the listening port and client limits.
+ * @brief Constructs a Server configured with the listening port and client
+ * limits.
  *
  * Initializes internal counters, creates the GameManager with the specified
  * per-room client limit, and resizes internal client storage to accommodate
@@ -20,7 +21,8 @@
  *
  * @param port UDP port the server will bind to for network communication.
  * @param max_clients Maximum total concurrent clients the server will accept.
- * @param max_clients_per_room Maximum number of clients allowed in a single game room.
+ * @param max_clients_per_room Maximum number of clients allowed in a single
+ * game room.
  */
 server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
                        std::uint8_t max_clients_per_room)
@@ -124,15 +126,17 @@ void server::Server::handleTimeout() {
 }
 
 /**
- * @brief Convert a game event into its network packet and broadcast it to a room.
+ * @brief Convert a game event into its network packet and broadcast it to a
+ * room.
  *
- * Converts the provided `queue::GameEvent` into the corresponding network packet
- * and broadcasts that packet to every client currently in the specified room.
- * If `roomId` equals `NO_ROOM` or the room is not found/active, the function
- * does nothing.
+ * Converts the provided `queue::GameEvent` into the corresponding network
+ * packet and broadcasts that packet to every client currently in the specified
+ * room. If `roomId` equals `NO_ROOM` or the room is not found/active, the
+ * function does nothing.
  *
  * @param event Variant holding the specific game event to translate and send.
- * @param roomId Identifier of the target room whose clients will receive the packet.
+ * @param roomId Identifier of the target room whose clients will receive the
+ * packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      uint32_t roomId) {
@@ -207,7 +211,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
-              specificEvent.player_id, specificEvent.x, specificEvent.y, specificEvent.sequence_number);
+              specificEvent.player_id, specificEvent.x, specificEvent.y,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
         } else {
@@ -227,12 +232,14 @@ void server::Server::startReceive() {
 }
 
 /**
- * @brief Process a received network packet and dispatch it to the appropriate handler.
+ * @brief Process a received network packet and dispatch it to the appropriate
+ * handler.
  *
- * Parses the packet header; if the packet is a PlayerInfo packet it handles player
- * connection setup, otherwise it resolves the sender to an existing client and
- * forwards the packet for client-specific processing. If header deserialization
- * fails or the sender cannot be resolved to a connected client, the packet is ignored.
+ * Parses the packet header; if the packet is a PlayerInfo packet it handles
+ * player connection setup, otherwise it resolves the sender to an existing
+ * client and forwards the packet for client-specific processing. If header
+ * deserialization fails or the sender cannot be resolved to a connected client,
+ * the packet is ignored.
  *
  * @param data Pointer to the received data buffer.
  * @param bytes_transferred Number of bytes available in the buffer.

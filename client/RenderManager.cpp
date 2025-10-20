@@ -8,10 +8,10 @@ namespace renderManager {
   /**
    * @brief Initialize renderer and create the application window.
    *
-   * Initializes windowing configuration and attempts to create a window with the given
-   * size and title; stores whether initialization succeeded, configures a default
-   * target frame rate when vertical sync is not enabled, and registers the renderer's
-   * colored log callback.
+   * Initializes windowing configuration and attempts to create a window with
+   * the given size and title; stores whether initialization succeeded,
+   * configures a default target frame rate when vertical sync is not enabled,
+   * and registers the renderer's colored log callback.
    *
    * @param width Initial window width in pixels.
    * @param height Initial window height in pixels.

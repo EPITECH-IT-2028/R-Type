@@ -54,17 +54,20 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Process a player-death packet and remove the corresponding player on the client.
+ * @brief Process a player-death packet and remove the corresponding player on
+ * the client.
  *
- * Deserializes a PlayerDeathPacket from the provided buffer, logs the death, destroys
- * the player's entity in the ECS and removes the client-side player record. If the
- * deceased player is the local player, the client will be disconnected.
+ * Deserializes a PlayerDeathPacket from the provided buffer, logs the death,
+ * destroys the player's entity in the ECS and removes the client-side player
+ * record. If the deceased player is the local player, the client will be
+ * disconnected.
  *
  * @param client Reference to the client managing player entities.
  * @param data Pointer to the raw packet data.
  * @param size Size of the raw packet data in bytes.
- * @return int `packet::OK` on successful handling; `packet::KO` if deserialization fails,
- *             the target player is not found, or an internal error occurs while removing the player.
+ * @return int `packet::OK` on successful handling; `packet::KO` if
+ * deserialization fails, the target player is not found, or an internal error
+ * occurs while removing the player.
  */
 int packet::PlayerDeathHandler::handlePacket(client::Client &client,
                                              const char *data,
@@ -152,16 +155,18 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Apply a player's position update from received packet data to client state.
+ * @brief Apply a player's position update from received packet data to client
+ * state.
  *
- * Processes a PlayerMovePacket carried in the provided byte buffer and updates the
- * corresponding player's PositionComponent in the local ECS. If the update targets
- * the local player, the client's sequence number is updated.
+ * Processes a PlayerMovePacket carried in the provided byte buffer and updates
+ * the corresponding player's PositionComponent in the local ECS. If the update
+ * targets the local player, the client's sequence number is updated.
  *
  * @param data Pointer to the start of the received packet buffer.
  * @param size Number of bytes available at `data`.
- * @return int `packet::OK` if the packet was handled (including when the target player entity is not present),
- * `packet::KO` if deserialization failed or an exception occurred while applying the update.
+ * @return int `packet::OK` if the packet was handled (including when the target
+ * player entity is not present), `packet::KO` if deserialization failed or an
+ * exception occurred while applying the update.
  */
 int packet::PlayerMoveHandler::handlePacket(client::Client &client,
                                             const char *data,
@@ -203,15 +208,17 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Processes an EnemySpawnPacket and creates the corresponding enemy entity on the client.
+ * @brief Processes an EnemySpawnPacket and creates the corresponding enemy
+ * entity on the client.
  *
- * Deserializes an EnemySpawnPacket from the provided buffer and instructs the client to create
- * the enemy entity described by the packet.
+ * Deserializes an EnemySpawnPacket from the provided buffer and instructs the
+ * client to create the enemy entity described by the packet.
  *
  * @param client Client instance used to create the enemy entity.
  * @param data Pointer to the serialized packet bytes.
  * @param size Number of bytes available at `data`.
- * @return int `packet::OK` on successful deserialization and entity creation, `packet::KO` if deserialization fails.
+ * @return int `packet::OK` on successful deserialization and entity creation,
+ * `packet::KO` if deserialization fails.
  */
 int packet::EnemySpawnHandler::handlePacket(client::Client &client,
                                             const char *data,
@@ -268,14 +275,15 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
 /**
  * @brief Handle an enemy death notification received from the server.
  *
- * Deserializes an EnemyDeathPacket from the provided buffer, destroys the corresponding
- * enemy entity in the ECS, and removes the client-side reference.
+ * Deserializes an EnemyDeathPacket from the provided buffer, destroys the
+ * corresponding enemy entity in the ECS, and removes the client-side reference.
  *
  * @param client Client instance used to lookup and remove the enemy entity.
  * @param data Pointer to the serialized packet data.
  * @param size Size, in bytes, of the serialized packet data.
- * @return int `packet::OK` when the enemy was successfully removed, `packet::KO` on failure
- * (deserialization error, enemy not found, or failure during destruction).
+ * @return int `packet::OK` when the enemy was successfully removed,
+ * `packet::KO` on failure (deserialization error, enemy not found, or failure
+ * during destruction).
  */
 int packet::EnemyDeathHandler::handlePacket(client::Client &client,
                                             const char *data,
@@ -386,10 +394,13 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Handle a projectile hit notification from the server and remove the projectile entity if present.
+ * @brief Handle a projectile hit notification from the server and remove the
+ * projectile entity if present.
  *
- * Deserializes a ProjectileHitPacket from the provided buffer and, if successful, destroys the matching projectile
- * entity in the ECS and removes the client's reference; logs a warning if the projectile entity does not exist.
+ * Deserializes a ProjectileHitPacket from the provided buffer and, if
+ * successful, destroys the matching projectile entity in the ECS and removes
+ * the client's reference; logs a warning if the projectile entity does not
+ * exist.
  *
  * @param client Client instance owning entity mappings.
  * @param data Pointer to the serialized packet data.
@@ -428,16 +439,20 @@ int packet::ProjectileHitHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Process a ProjectileDestroyPacket and remove the corresponding projectile.
+ * @brief Process a ProjectileDestroyPacket and remove the corresponding
+ * projectile.
  *
- * Deserializes a ProjectileDestroyPacket from the provided buffer; if successful,
- * destroys the associated projectile entity (if present) and removes its client-side mapping.
- * Logs a warning if the projectile entity cannot be found.
+ * Deserializes a ProjectileDestroyPacket from the provided buffer; if
+ * successful, destroys the associated projectile entity (if present) and
+ * removes its client-side mapping. Logs a warning if the projectile entity
+ * cannot be found.
  *
- * @param client Reference to the client used to lookup and remove the projectile entity.
+ * @param client Reference to the client used to lookup and remove the
+ * projectile entity.
  * @param data Pointer to the serialized ProjectileDestroyPacket payload.
  * @param size Size of the serialized payload in bytes.
- * @return int `packet::OK` on successful processing, `packet::KO` if deserialization fails.
+ * @return int `packet::OK` on successful processing, `packet::KO` if
+ * deserialization fails.
  */
 int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
                                                    const char *data,

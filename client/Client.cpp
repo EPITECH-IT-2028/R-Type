@@ -84,15 +84,20 @@ namespace client {
   }
 
   /**
-   * @brief Configure required component signatures for each ECS system used by the client.
+   * @brief Configure required component signatures for each ECS system used by
+   * the client.
    *
-   * Sets which component types entities must have to be processed by each system:
-   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
+   * Sets which component types entities must have to be processed by each
+   * system:
+   * - BackgroundSystem: PositionComponent, RenderComponent,
+   * BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: VelocityComponent, SpeedComponent, LocalPlayerTagComponent, SpriteAnimationComponent
+   * - InputSystem: VelocityComponent, SpeedComponent, LocalPlayerTagComponent,
+   * SpriteAnimationComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
-   * - ProjectileSystem: PositionComponent, VelocityComponent, ProjectileComponent
+   * - ProjectileSystem: PositionComponent, VelocityComponent,
+   * ProjectileComponent
    */
   void Client::signSystem() {
     {
@@ -181,17 +186,20 @@ namespace client {
   }
 
   /**
-   * @brief Create a player entity with visual, movement, and identification components.
+   * @brief Create a player entity with visual, movement, and identification
+   * components.
    *
-   * Attaches a PositionComponent (from packet.x/packet.y), a zeroed VelocityComponent,
-   * a SpeedComponent (from packet.speed), a RenderComponent using the player render
-   * asset, a SpriteComponent and ScaleComponent using PlayerSpriteConfig values,
-   * and a configured SpriteAnimationComponent. Also attaches a PlayerTagComponent.
-   * If the client's local player ID is unassigned, assigns it from packet.player_id
-   * and attaches a LocalPlayerTagComponent. Records the created entity in the
-   * client's player-entity mapping in a thread-safe manner.
+   * Attaches a PositionComponent (from packet.x/packet.y), a zeroed
+   * VelocityComponent, a SpeedComponent (from packet.speed), a RenderComponent
+   * using the player render asset, a SpriteComponent and ScaleComponent using
+   * PlayerSpriteConfig values, and a configured SpriteAnimationComponent. Also
+   * attaches a PlayerTagComponent. If the client's local player ID is
+   * unassigned, assigns it from packet.player_id and attaches a
+   * LocalPlayerTagComponent. Records the created entity in the client's
+   * player-entity mapping in a thread-safe manner.
    *
-   * @param packet NewPlayerPacket containing the player's id, initial position, and speed.
+   * @param packet NewPlayerPacket containing the player's id, initial position,
+   * and speed.
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -278,8 +286,9 @@ namespace client {
   /**
    * @brief Remove the mapping for a projectile by its identifier.
    *
-   * Erases the projectileId entry from the client's projectile map in a thread-safe manner.
-   * If no entry exists for the given identifier, the function has no effect.
+   * Erases the projectileId entry from the client's projectile map in a
+   * thread-safe manner. If no entry exists for the given identifier, the
+   * function has no effect.
    *
    * @param projectileId Unique identifier of the projectile to remove.
    */
@@ -292,7 +301,8 @@ namespace client {
    * @brief Sends the local player's input state to the server.
    *
    * If the client has not been assigned a local player ID, the call is ignored.
-   * Any exceptions raised while building or sending the packet are caught and not propagated.
+   * Any exceptions raised while building or sending the packet are caught and
+   * not propagated.
    *
    * @param input The player's input state encoded as a byte (input flags).
    */
@@ -314,9 +324,11 @@ namespace client {
   }
 
   /**
-   * @brief Send a shoot action for the local player to the server at the given world coordinates.
+   * @brief Send a shoot action for the local player to the server at the given
+   * world coordinates.
    *
-   * If the local player ID is unassigned, no packet is sent and the function returns immediately.
+   * If the local player ID is unassigned, no packet is sent and the function
+   * returns immediately.
    *
    * @param x World-space X coordinate where the player is shooting.
    * @param y World-space Y coordinate where the player is shooting.

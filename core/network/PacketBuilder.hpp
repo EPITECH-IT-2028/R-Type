@@ -21,8 +21,9 @@ struct PacketBuilder {
     /**
      * @brief Creates a NewPlayerPacket for a newly joined player.
      *
-     * The returned packet contains the player's identity, position, movement speed,
-     * and maximum health, and has its packet header initialized for a NewPlayer.
+     * The returned packet contains the player's identity, position, movement
+     * speed, and maximum health, and has its packet header initialized for a
+     * NewPlayer.
      *
      * @param player_id Unique identifier for the player.
      * @param x Initial X position of the player.
@@ -52,7 +53,9 @@ struct PacketBuilder {
      * @param seq Sequence number used to order this movement update.
      * @param x New X coordinate of the player.
      * @param y New Y coordinate of the player.
-     * @return PlayerMovePacket Packet populated with header.type set to PlayerMove, header.size set to the packet size, and fields: player_id, sequence_number, x, and y.
+     * @return PlayerMovePacket Packet populated with header.type set to
+     * PlayerMove, header.size set to the packet size, and fields: player_id,
+     * sequence_number, x, and y.
      */
     static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq, float x,
                                float y) {
@@ -347,7 +350,9 @@ struct PacketBuilder {
      * @brief Create a HeartbeatPlayerPacket for the specified player.
      *
      * @param player_id Player identifier to embed in the packet.
-     * @return HeartbeatPlayerPacket with header.type set to PacketType::Heartbeat, header.size set to the packet size, and player_id set to the provided value.
+     * @return HeartbeatPlayerPacket with header.type set to
+     * PacketType::Heartbeat, header.size set to the packet size, and player_id
+     * set to the provided value.
      */
     static HeartbeatPlayerPacket makeHeartbeatPlayer(uint32_t player_id) {
       HeartbeatPlayerPacket packet{};
@@ -358,14 +363,16 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs a PlayerInputPacket representing a player's input state.
+     * @brief Constructs a PlayerInputPacket representing a player's input
+     * state.
      *
-     * The returned packet has its header type and size initialized and contains the provided
-     * input flags and sequence number for ordering.
+     * The returned packet has its header type and size initialized and contains
+     * the provided input flags and sequence number for ordering.
      *
      * @param input Player input flags (bitmask representing buttons/actions).
-     * @param sequence_number Monotonically increasing sequence number for this input.
-     * @return PlayerInputPacket Populated packet ready for transmission. 
+     * @param sequence_number Monotonically increasing sequence number for this
+     * input.
+     * @return PlayerInputPacket Populated packet ready for transmission.
      */
     static PlayerInputPacket makePlayerInput(uint8_t input, int sequence_number) {
       PlayerInputPacket packet{};
@@ -375,6 +382,4 @@ struct PacketBuilder {
       packet.sequence_number = sequence_number;
       return packet;
     }
-
-
 };

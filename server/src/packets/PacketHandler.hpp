@@ -5,7 +5,7 @@
 namespace server {
   class Server;
   struct Client;
-}
+}  // namespace server
 
 namespace packet {
 

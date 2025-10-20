@@ -16,7 +16,6 @@
 #include "ProjectileSystem.hpp"
 #include "Queue.hpp"
 
-
 namespace game {
 
   class Game {
@@ -40,8 +39,6 @@ namespace game {
       std::shared_ptr<Player> getPlayer(int player_id);
 
       std::shared_ptr<Projectile> getProjectile(std::uint32_t projectile_id);
-
-
 
       std::vector<std::shared_ptr<Player>> getAllPlayers() const;
 
@@ -85,7 +82,8 @@ namespace game {
       /**
        * @brief Retrieves the current delta time used for game updates.
        *
-       * @return float The delta time in seconds between the current and previous update. 
+       * @return float The delta time in seconds between the current and
+       * previous update.
        */
       float getDeltaTime() const {
         return _deltaTime.load();
@@ -103,7 +101,6 @@ namespace game {
       std::shared_ptr<ecs::EnemySystem> _enemySystem;
       std::shared_ptr<ecs::ProjectileSystem> _projectileSystem;
       std::shared_ptr<ecs::CollisionSystem> _collisionSystem;
-
 
       std::unordered_map<int, std::shared_ptr<Enemy>> _enemies;
       std::unordered_map<int, std::shared_ptr<Player>> _players;

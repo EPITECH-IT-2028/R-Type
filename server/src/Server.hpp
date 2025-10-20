@@ -8,7 +8,6 @@
 #include "Client.hpp"
 #include "Events.hpp"
 #include "PacketFactory.hpp"
-
 #include "ServerNetworkManager.hpp"
 #include "game/GameManager.hpp"
 
@@ -60,8 +59,6 @@ namespace server {
       }
 
       void clearClientSlot(int player_id);
-
-
 
     private:
       void startReceive();

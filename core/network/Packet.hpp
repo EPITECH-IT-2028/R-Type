@@ -22,7 +22,7 @@ enum class PacketType : uint8_t {
   EnemyHit = 0x10,
   PlayerHit = 0x11,
   PlayerDeath = 0x12,
-  PlayerInput = 0x13,
+  PlayerInput = 0x13
 };
 
 enum class EnemyType : uint8_t {
@@ -50,10 +50,12 @@ struct ALIGNED PacketHeader {
 };
 
 /**
- * @brief Packet carrying a timestamped text message and the originating player ID.
+ * @brief Packet carrying a timestamped text message and the originating player
+ * ID.
  *
- * Contains a common packet header, a 32-bit timestamp, a fixed-size 256-byte message buffer,
- * and the ID of the player that sent or is associated with the message.
+ * Contains a common packet header, a 32-bit timestamp, a fixed-size 256-byte
+ * message buffer, and the ID of the player that sent or is associated with the
+ * message.
  *
  * @var header
  * Common packet header (type and size).
@@ -156,7 +158,8 @@ struct ALIGNED PlayerHitPacket {
 /**
  * @brief Server-to-client packet announcing a spawned enemy.
  *
- * Contains the spawned enemy's identifier, type, position, velocity, and health values as sent from the server to clients.
+ * Contains the spawned enemy's identifier, type, position, velocity, and health
+ * values as sent from the server to clients.
  *
  * Members:
  * - header: Common packet header (type and size).
@@ -335,15 +338,18 @@ struct ALIGNED PlayerDeathPacket {
 };
 
 /**
- * @brief Packet sent from client to server conveying the player's current input state.
+ * @brief Packet sent from client to server conveying the player's current input
+ * state.
  *
- * Contains the common packet header, a bitfield representing directional inputs, and a client-side
- * sequence number for ordering/correlation.
+ * Contains the common packet header, a bitfield representing directional
+ * inputs, and a client-side sequence number for ordering/correlation.
  *
  * Fields:
  * - header: Common packet header (type and size).
- * - input: Bitflags defined by MovementInputType indicating which movement directions are active.
- * - sequence_number: Client-side sequence number used to order inputs and correlate acknowledgements.
+ * - input: Bitflags defined by MovementInputType indicating which movement
+ * directions are active.
+ * - sequence_number: Client-side sequence number used to order inputs and
+ * correlate acknowledgements.
  */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;

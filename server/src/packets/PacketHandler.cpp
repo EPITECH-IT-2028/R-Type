@@ -47,16 +47,17 @@ int packet::MessageHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handles an incoming PlayerInfoPacket from a client, registers the player
- * in their room, sends the player's info back to the originating client, and
- * broadcasts existing and new-player information to room participants. 
+ * @brief Handles an incoming PlayerInfoPacket from a client, registers the
+ * player in their room, sends the player's info back to the originating client,
+ * and broadcasts existing and new-player information to room participants.
  *
  * @param server Server instance managing rooms, game state, and networking.
- * @param client Client that sent the packet; its player and entity IDs may be updated.
+ * @param client Client that sent the packet; its player and entity IDs may be
+ * updated.
  * @param data Pointer to the raw packet bytes containing a PlayerInfoPacket.
  * @param size Size of the data buffer in bytes.
- * @return int `OK` on successful handling (player created/broadcasts sent), `KO` on failure
- * such as deserialization error or missing room.
+ * @return int `OK` on successful handling (player created/broadcasts sent),
+ * `KO` on failure such as deserialization error or missing room.
  */
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             server::Client &client,
@@ -128,7 +129,8 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Validates a HeartbeatPlayerPacket and updates the client's heartbeat timestamp.
+ * @brief Validates a HeartbeatPlayerPacket and updates the client's heartbeat
+ * timestamp.
  *
  * Validates that the incoming packet deserializes correctly and that its
  * player_id matches the client's player id; on success updates the client's
@@ -137,7 +139,8 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
  * @param client The client whose heartbeat is being validated and updated.
  * @param data Pointer to the received packet data.
  * @param size Size of the received packet data in bytes.
- * @return int `OK` on successful validation and heartbeat update, `KO` otherwise.
+ * @return int `OK` on successful validation and heartbeat update, `KO`
+ * otherwise.
  */
 int packet::HeartbeatPlayerHandler::handlePacket(
     [[maybe_unused]] server::Server &server, server::Client &client,
@@ -221,17 +224,19 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle an incoming PlayerDisconnectPacket and process the player's disconnection.
+ * @brief Handle an incoming PlayerDisconnectPacket and process the player's
+ * disconnection.
  *
- * Processes a serialized PlayerDisconnectPacket from the provided buffer, validates the packet's
- * player id against the client, updates server and client state, removes the player from their
- * room and game (if present), broadcasts the disconnect to remaining room clients, and clears
- * the client's server slot.
+ * Processes a serialized PlayerDisconnectPacket from the provided buffer,
+ * validates the packet's player id against the client, updates server and
+ * client state, removes the player from their room and game (if present),
+ * broadcasts the disconnect to remaining room clients, and clears the client's
+ * server slot.
  *
  * @param data Pointer to the serialized PlayerDisconnectPacket.
  * @param size Size of the serialized data in bytes.
- * @return int `OK` on successful processing; `KO` if deserialization fails or the packet's
- * player_id does not match the client.
+ * @return int `OK` on successful processing; `KO` if deserialization fails or
+ * the packet's player_id does not match the client.
  */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
@@ -295,17 +300,22 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process a player's input packet, update the player's position, and broadcast the resulting move to the room.
+ * @brief Process a player's input packet, update the player's position, and
+ * broadcast the resulting move to the room.
  *
- * Deserializes a PlayerInputPacket from the provided buffer, validates the room and player, updates the player's
- * sequence number and position according to the input and the game's delta time, clamps the position to window bounds,
+ * Deserializes a PlayerInputPacket from the provided buffer, validates the room
+ * and player, updates the player's sequence number and position according to
+ * the input and the game's delta time, clamps the position to window bounds,
  * and broadcasts a PlayerMove packet to all clients in the room.
  *
- * @param server Server instance used to access the game manager and network manager.
- * @param client Client that sent the input; used to identify the player and room.
+ * @param server Server instance used to access the game manager and network
+ * manager.
+ * @param client Client that sent the input; used to identify the player and
+ * room.
  * @param data Pointer to the raw packet data to deserialize.
  * @param size Size of the raw packet data in bytes.
- * @return int `OK` on success; `KO` on error (for example: deserialization failure, missing or inactive room, or missing player).
+ * @return int `OK` on success; `KO` on error (for example: deserialization
+ * failure, missing or inactive room, or missing player).
  */
 int packet::PlayerInputHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -365,8 +375,10 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   float newX = player->getPosition().first + dirX * moveDistance;
   float newY = player->getPosition().second + dirY * moveDistance;
 
-  newX = std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
-  newY = std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
+  newX =
+      std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
+  newY =
+      std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
 
   player->setPosition(newX, newY);
 
