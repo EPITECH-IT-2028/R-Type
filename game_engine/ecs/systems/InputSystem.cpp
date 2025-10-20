@@ -10,25 +10,18 @@
 
 namespace ecs {
   /**
-   * @brief Update per-entity movement velocity and vertical sprite animation
-   * state based on keyboard input.
+   * @brief Process keyboard input for each tracked entity, forward movement/shoot events to the client, and adjust vertical sprite animation state.
    *
-   * For each entity in the system, reads up/down/left/right key state to
-   * compute a normalized movement direction, assigns the entity's velocity by
-   * multiplying the direction by its SpeedComponent, and updates the entity's
-   * SpriteAnimationComponent vertical state:
-   * - When UP (and not DOWN) is pressed, ensures animation plays forward
-   * (positive frameTime) from the neutral frame.
-   * - When DOWN (and not UP) is pressed, ensures animation plays backward
-   * (negative frameTime) from the neutral frame.
-   * - When neither or both vertical keys are pressed, stops the animation and
-   * resets to the neutral frame with non-negative frameTime.
+   * For each entity, reads UP/DOWN/LEFT/RIGHT key states and:
+   * - Emits a packed movement input bitfield to the client when any movement key is pressed (if a client is available).
+   * - Updates the entity's SpriteAnimationComponent vertical state:
+   *   - If UP (and not DOWN) is pressed, starts or continues forward playback from the neutral frame.
+   *   - If DOWN (and not UP) is pressed, starts or continues backward playback from the neutral frame.
+   *   - If neither or both vertical keys are pressed, stops playback and resets to the neutral frame with non-negative frame time.
    *
-   * Also handles shooting input: when the space bar is pressed, calls the
-   * client's sendShoot method with the local player's position.
+   * Additionally, when SPACE is pressed (and a client is available), sends a shoot event to the client using the entity's position.
    *
-   * @param deltaTime Time elapsed since the last update in seconds (provided by
-   * caller; not used by this implementation).
+   * @param deltaTime Elapsed time since the last update in seconds; provided by the caller but not used by this implementation.
    */
   void InputSystem::update([[maybe_unused]] float deltaTime) {
     for (auto const &entity : _entities) {

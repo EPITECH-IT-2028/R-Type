@@ -49,7 +49,24 @@ struct ALIGNED PacketHeader {
     uint32_t size;
 };
 
-/* both client and server packets */
+/**
+ * @brief Packet carrying a timestamped text message and the originating player ID.
+ *
+ * Contains a common packet header, a 32-bit timestamp, a fixed-size 256-byte message buffer,
+ * and the ID of the player that sent or is associated with the message.
+ *
+ * @var header
+ * Common packet header (type and size).
+ *
+ * @var timestamp
+ * Packet timestamp as a 32-bit unsigned integer.
+ *
+ * @var message
+ * Fixed-size 256-byte message buffer.
+ *
+ * @var player_id
+ * Identifier of the player that sent or is associated with this message.
+ */
 struct ALIGNED MessagePacket {
     PacketHeader header;
     uint32_t timestamp;
@@ -57,7 +74,15 @@ struct ALIGNED MessagePacket {
     uint32_t player_id;
 };
 
-/* Server to client packets */
+/**
+ * @brief Server-to-client packet that conveys a player's movement update.
+ *
+ * header: Common packet header containing packet type and size.
+ * player_id: Identifier of the player whose position is being reported.
+ * sequence_number: Sequence number used to order or correlate movement updates.
+ * x: Player's X coordinate in world space.
+ * y: Player's Y coordinate in world space.
+ */
 struct ALIGNED PlayerMovePacket {
     PacketHeader header;
     uint32_t player_id;
@@ -128,7 +153,20 @@ struct ALIGNED PlayerHitPacket {
 };
 
 /* Enemy Packets */
-/* Server to client packets */
+/**
+ * @brief Server-to-client packet announcing a spawned enemy.
+ *
+ * Contains the spawned enemy's identifier, type, position, velocity, and health values as sent from the server to clients.
+ *
+ * Members:
+ * - header: Common packet header (type and size).
+ * - enemy_id: Unique identifier for the enemy.
+ * - enemy_type: EnemyType value indicating the enemy variant.
+ * - x, y: Spawn position coordinates.
+ * - velocity_x, velocity_y: Velocity components.
+ * - health: Current health of the enemy.
+ * - max_health: Maximum health of the enemy.
+ */
 struct ALIGNED EnemySpawnPacket {
     PacketHeader header;
     uint32_t enemy_id;
@@ -296,6 +334,17 @@ struct ALIGNED PlayerDeathPacket {
     float y;
 };
 
+/**
+ * @brief Packet sent from client to server conveying the player's current input state.
+ *
+ * Contains the common packet header, a bitfield representing directional inputs, and a client-side
+ * sequence number for ordering/correlation.
+ *
+ * Fields:
+ * - header: Common packet header (type and size).
+ * - input: Bitflags defined by MovementInputType indicating which movement directions are active.
+ * - sequence_number: Client-side sequence number used to order inputs and correlate acknowledgements.
+ */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     uint8_t input;

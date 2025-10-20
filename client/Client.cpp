@@ -69,10 +69,10 @@ namespace client {
   }
 
   /**
-   * @brief Registers the game's ECS systems with the ECS manager.
+   * @brief Registers core ECS systems with the ECS manager.
    *
-   * Registers the background, movement, input, boundary, sprite animation, and
-   * render systems so they are tracked and updated by the ECS manager.
+   * Registers the background, movement, input, sprite animation, projectile,
+   * and render systems so they are created and managed by the ECS manager.
    */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
@@ -84,17 +84,15 @@ namespace client {
   }
 
   /**
-   * @brief Assigns component signatures to each ECS system used by the client.
+   * @brief Configure required component signatures for each ECS system used by the client.
    *
-   * Configures which component types each system requires so the ECS manager
-   * can match entities to systems. The mappings set here are:
-   * - BackgroundSystem: PositionComponent, RenderComponent,
-   * BackgroundTagComponent
+   * Sets which component types entities must have to be processed by each system:
+   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent,
-   * SpriteAnimationComponent
+   * - InputSystem: VelocityComponent, SpeedComponent, LocalPlayerTagComponent, SpriteAnimationComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
+   * - ProjectileSystem: PositionComponent, VelocityComponent, ProjectileComponent
    */
   void Client::signSystem() {
     {
@@ -183,17 +181,17 @@ namespace client {
   }
 
   /**
-   * @brief Creates and configures the player entity in the ECS.
+   * @brief Create a player entity with visual, movement, and identification components.
    *
-   * Constructs a player entity and attaches its initial components: position,
-   * velocity, movement speed, render asset, sprite source rectangle, scale,
-   * player tag, and sprite animation metadata.
+   * Attaches a PositionComponent (from packet.x/packet.y), a zeroed VelocityComponent,
+   * a SpeedComponent (from packet.speed), a RenderComponent using the player render
+   * asset, a SpriteComponent and ScaleComponent using PlayerSpriteConfig values,
+   * and a configured SpriteAnimationComponent. Also attaches a PlayerTagComponent.
+   * If the client's local player ID is unassigned, assigns it from packet.player_id
+   * and attaches a LocalPlayerTagComponent. Records the created entity in the
+   * client's player-entity mapping in a thread-safe manner.
    *
-   * The created entity is positioned at (100, 100) with zero initial velocity
-   * and uses renderManager::PLAYER_PATH for rendering. Sprite and scale values
-   * are taken from PlayerSpriteConfig. The sprite animation component is
-   * initialized with column/row counts, selected/neutral frames, frame timing,
-   * and non-playing, non-looping defaults.
+   * @param packet NewPlayerPacket containing the player's id, initial position, and speed.
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -277,11 +275,27 @@ namespace client {
     return static_cast<Entity>(-1);
   }
 
+  /**
+   * @brief Remove the mapping for a projectile by its identifier.
+   *
+   * Erases the projectileId entry from the client's projectile map in a thread-safe manner.
+   * If no entry exists for the given identifier, the function has no effect.
+   *
+   * @param projectileId Unique identifier of the projectile to remove.
+   */
   void Client::removeProjectileEntity(uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectileEntities.erase(projectileId);
   }
 
+  /**
+   * @brief Sends the local player's input state to the server.
+   *
+   * If the client has not been assigned a local player ID, the call is ignored.
+   * Any exceptions raised while building or sending the packet are caught and not propagated.
+   *
+   * @param input The player's input state encoded as a byte (input flags).
+   */
   void Client::sendInput(uint8_t input) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
@@ -299,6 +313,14 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Send a shoot action for the local player to the server at the given world coordinates.
+   *
+   * If the local player ID is unassigned, no packet is sent and the function returns immediately.
+   *
+   * @param x World-space X coordinate where the player is shooting.
+   * @param y World-space Y coordinate where the player is shooting.
+   */
   void Client::sendShoot(float x, float y) {
     if (_player_id == static_cast<uint32_t>(-1)) {
       TraceLog(LOG_WARNING,

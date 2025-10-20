@@ -179,6 +179,13 @@ namespace client {
         return _sequence_number.load(std::memory_order_acquire);
       }
 
+      /**
+       * @brief Update the outgoing packet sequence number used for sent packets.
+       *
+       * Stores the provided sequence value so subsequent sends use this sequence.
+       *
+       * @param seq New sequence number to store.
+       */
       void updateSequenceNumber(uint32_t seq) {
         _sequence_number.store(seq, std::memory_order_release);
       }
