@@ -230,9 +230,6 @@ namespace client {
     }
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
-    if (_state == ClientState::CONNECTED_MENU) {
-      _state = ClientState::IN_ROOM_WAITING;
-    }
   }
 
   void Client::createEnemyEntity(EnemySpawnPacket packet) {

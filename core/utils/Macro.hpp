@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
+#include <limits>
 #ifdef ERROR
   #undef ERROR
 #endif
@@ -42,7 +44,7 @@ constexpr float PLAYER_HEIGHT = 37.0f;
 
 constexpr int MARGIN_WINDOW = 30;
 
-constexpr int NO_ROOM = -1;
+constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
 
 constexpr int COUNTDOWN_TIME = 5;
 

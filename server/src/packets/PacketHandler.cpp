@@ -259,7 +259,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
     server.setPlayerCount(server.getPlayerCount() - 1);
   }
 
-  if (client._room_id != -1) {
+  if (client._room_id != NO_ROOM) {
     auto room = server.getGameManager().getRoom(client._room_id);
     if (room) {
       auto player = room->getGame().getPlayer(client._player_id);
@@ -319,6 +319,14 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
     return KO;
   }
 
+  auto sharedClient = server.getClientById(client._player_id);
+  if (!sharedClient) {
+    std::cerr << "[ERROR] Failed to get shared_ptr for client "
+              << client._player_id << std::endl;
+    server.getGameManager().destroyRoom(newRoom->getRoomId());
+    return KO;
+  }
+
   bool joinSuccess = server.getGameManager().joinRoom(
       newRoom->getRoomId(), server.getClientById(client._player_id));
 
@@ -334,6 +342,8 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
   if (!server.initializePlayerInRoom(client)) {
     std::cerr << "[ERROR] Failed to initialize player " << client._player_id
               << " in room " << newRoom->getRoomId() << std::endl;
+    server.getGameManager().leaveRoom(sharedClient);
+    server.getGameManager().destroyRoom(newRoom->getRoomId());
     client._state = server::ClientState::CONNECTED_MENU;
     return KO;
   }

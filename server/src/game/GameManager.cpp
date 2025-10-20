@@ -38,7 +38,7 @@ std::shared_ptr<game::GameRoom> game::GameManager::createRoom(
   return room;
 }
 
-bool game::GameManager::destroyRoom(int roomId) {
+bool game::GameManager::destroyRoom(std::uint32_t roomId) {
   std::shared_ptr<GameRoom> roomToStop;
   {
     std::scoped_lock lock(_roomMutex);
@@ -75,7 +75,7 @@ std::shared_ptr<game::GameRoom> game::GameManager::getRoom(
   return nullptr;
 }
 
-bool game::GameManager::joinRoom(int roomId,
+bool game::GameManager::joinRoom(std::uint32_t roomId,
                                  std::shared_ptr<server::Client> client) {
   std::scoped_lock lock(_roomMutex);
 

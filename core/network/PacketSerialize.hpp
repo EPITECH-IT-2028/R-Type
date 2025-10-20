@@ -5,6 +5,7 @@
 #include <bitsery/traits/string.h>
 #include <bitsery/traits/vector.h>
 #include <vector>
+#include "Macro.hpp"
 #include "Packet.hpp"
 
 namespace serialization {
@@ -318,7 +319,7 @@ void serialize(S& s, ListRoomResponsePacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_count);
-  for (size_t i = 0; i < 10; ++i) {
+  for (size_t i = 0; i < MAX_ROOMS; ++i) {
     serialize(s, packet.rooms[i]);
   }
 }

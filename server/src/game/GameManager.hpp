@@ -22,10 +22,11 @@ namespace game {
 
       std::shared_ptr<GameRoom> createRoom(const std::string &roomName = "",
                                            const std::string &password = "");
-      bool destroyRoom(int roomId);
+      bool destroyRoom(std::uint32_t roomId);
       std::shared_ptr<GameRoom> findAvailableRoom();
       std::shared_ptr<GameRoom> getRoom(std::uint32_t roomId) const;
-      bool joinRoom(int roomId, std::shared_ptr<server::Client> client);
+      bool joinRoom(std::uint32_t roomId,
+                    std::shared_ptr<server::Client> client);
       bool joinAnyRoom(std::shared_ptr<server::Client> client);
       void leaveRoom(std::shared_ptr<server::Client> client);
       std::vector<std::shared_ptr<GameRoom>> getAllRooms() const;

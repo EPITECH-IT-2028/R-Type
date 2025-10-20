@@ -483,3 +483,61 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
 
   return packet::OK;
 }
+
+int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
+                                                  const char *data,
+                                                  std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<JoinRoomResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[JOIN ROOM RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const JoinRoomResponsePacket &packet = deserializedPacket.value();
+
+  if (packet.error_code == RoomError::SUCCESS) {
+    client.setClientState(client::ClientState::IN_ROOM_WAITING);
+    TraceLog(LOG_INFO, "[JOIN ROOM RESPONSE] Successfully joined room");
+  } else {
+    TraceLog(LOG_WARNING,
+             "[JOIN ROOM RESPONSE] Failed to join room, error code: %d",
+             static_cast<int>(packet.error_code));
+  }
+
+  return OK;
+}
+
+int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
+                                                     const char *data,
+                                                     std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<MatchmakingResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[MATCHMAKING RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const MatchmakingResponsePacket &packet = deserializedPacket.value();
+
+  if (packet.error_code == RoomError::SUCCESS) {
+    client.setClientState(client::ClientState::IN_ROOM_WAITING);
+    TraceLog(LOG_INFO,
+             "[MATCHMAKING RESPONSE] Successfully joined/created room");
+  } else {
+    TraceLog(
+        LOG_WARNING,
+        "[MATCHMAKING RESPONSE] Failed to join/create room, error code: %d",
+        static_cast<int>(packet.error_code));
+  }
+
+  return OK;
+}
