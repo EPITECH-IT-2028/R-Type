@@ -82,11 +82,16 @@ namespace game {
        */
       void clearAllEntities();
 
+      float getDeltaTime() const {
+        return _deltaTime.load();
+      }
+
     private:
       void gameLoop();
       void initECS();
       std::atomic<bool> _running;
       std::thread _gameThread;
+      std::atomic<float> _deltaTime{0.0f};
 
       void spawnEnemy(float deltaTime);
 

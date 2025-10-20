@@ -185,6 +185,7 @@ void game::Game::gameLoop() {
     }
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> deltaTime = now - lastTime;
+    _deltaTime.store(deltaTime.count());
     lastTime = now;
 
     _enemySystem->update(deltaTime.count());

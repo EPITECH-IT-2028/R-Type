@@ -274,9 +274,17 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
   const PlayerInputPacket &packet = deserializedPacket.value();
   auto room = server.getGameManager().getRoom(client._room_id);
-  if (!room) {
+  if (!room || !room->isActive()) {
     return KO;
   }
+
+  auto &game = room->getGame();
+  float deltaTime = game.getDeltaTime();
+
+  if (deltaTime == 0.0f) {
+    deltaTime = 0.016f;
+  }
+
   auto player = room->getGame().getPlayer(client._player_id);
   if (!player) {
     return KO;
@@ -284,7 +292,7 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
   player->setSequenceNumber(packet.sequence_number);
 
-  float moveDistance = player->getSpeed() * 0.016f;
+  float moveDistance = player->getSpeed() * deltaTime;
 
   float dirX = 0.0f;
   float dirY = 0.0f;
