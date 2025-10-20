@@ -312,7 +312,7 @@ struct ALIGNED EnemyHitPacket {
     float hit_x;
     float hit_y;
     float damage;
-    int sequence_number;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -354,5 +354,5 @@ struct ALIGNED PlayerDeathPacket {
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     uint8_t input;
-    int sequence_number;
+    std::uint32_t sequence_number;
 };
