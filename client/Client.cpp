@@ -303,8 +303,8 @@ namespace client {
     }
 
     try {
-      PlayerInputPacket packet =
-          PacketBuilder::makePlayerInput(input, _sequence_number);
+      PlayerInputPacket packet = PacketBuilder::makePlayerInput(
+          input, _sequence_number.load(std::memory_order_acquire));
 
       send(packet);
 
