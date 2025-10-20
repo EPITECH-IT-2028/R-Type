@@ -143,14 +143,14 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
 }
 
 void ClientNetworkManager::processReceivedPackets(client::Client &client) {
-  std::queue<ReceivedPacket> packet_queue;
+  std::queue<ReceivedPacket> packet_queue_to_process;
 
-  std::swap(packet_queue, _packet_queue);
+  std::swap(packet_queue_to_process, _packet_queue);
 
-  while (!packet_queue.empty()) {
-    const ReceivedPacket &packet = packet_queue.front();
+  while (!packet_queue_to_process.empty()) {
+    const ReceivedPacket &packet = packet_queue_to_process.front();
     processPacket(packet.data.data(), packet.data.size(), client);
-    packet_queue.pop();
+    packet_queue_to_process.pop();
   }
 }
 
