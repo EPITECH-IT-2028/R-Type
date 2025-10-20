@@ -431,11 +431,10 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   if (roomClients.size() >= 2 &&
       room->getState() == game::RoomStatus::WAITING) {
-    room->startCountdown(COUNTDOWN_TIME);
-
     auto timer = std::make_shared<asio::steady_timer>(
         _networkManager.getIoContext(), std::chrono::seconds(1));
 
+    room->startCountdown(COUNTDOWN_TIME, timer);
     handleCountdown(room, timer);
   }
 
@@ -479,6 +478,11 @@ void server::Server::handleCountdown(
 
   timer->expires_after(std::chrono::seconds(1));
   timer->async_wait([this, room, timer](const asio::error_code &error) {
+    if (error == asio::error::operation_aborted) {
+      std::cout << "[ROOM] Countdown timer cancelled for room "
+                << room->getRoomId() << std::endl;
+      return;
+    }
     if (!error) {
       handleCountdown(room, timer);
     } else {

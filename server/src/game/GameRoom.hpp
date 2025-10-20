@@ -1,5 +1,6 @@
 #pragma once
 
+#include <asio/steady_timer.hpp>
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -24,7 +25,8 @@ namespace game {
             _max_players(max_players),
             _state(RoomStatus::WAITING),
             _game(std::make_unique<Game>()),
-            _countdown(0) {
+            _countdown(0),
+            _countdown_timer(nullptr) {
       }
 
       ~GameRoom() {
@@ -120,7 +122,13 @@ namespace game {
         if (_state.load() == RoomStatus::FINISHED) {
           return;
         }
-
+        {
+          std::lock_guard<std::mutex> lock(_mutex);
+          if (_countdown_timer) {
+            _countdown_timer->cancel();
+            _countdown_timer.reset();
+          }
+        }
         _state.store(RoomStatus::FINISHED);
         if (_game) {
           _game->stop();
@@ -167,10 +175,13 @@ namespace game {
         return _max_players;
       }
 
-      void startCountdown(int seconds) {
+      void startCountdown(int seconds,
+                          std::shared_ptr<asio::steady_timer> timer) {
         RoomStatus expected = RoomStatus::WAITING;
         if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
           _countdown = seconds;
+          std::lock_guard<std::mutex> lock(_mutex);
+          _countdown_timer = timer;
         }
       }
 
@@ -196,6 +207,7 @@ namespace game {
       std::atomic<RoomStatus> _state;
       std::unique_ptr<Game> _game;
       std::atomic<int> _countdown;
+      std::shared_ptr<asio::steady_timer> _countdown_timer;
       std::vector<std::shared_ptr<server::Client>> _clients;
       mutable std::mutex _mutex;
   };

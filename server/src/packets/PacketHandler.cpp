@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
 #include "GameManager.hpp"
@@ -529,6 +530,13 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
   if (!joinSuccess) {
     auto newRoom = server.getGameManager().createRoom("Matchmaking Room");
+    if (!newRoom) {
+      std::cerr << "[ERROR] Client " << client._player_id
+                << " failed to create new room for matchmaking" << std::endl;
+      ResponseHelper::sendMatchmakingResponse(server, client._player_id,
+                                              RoomError::UNKNOWN_ERROR);
+      return KO;
+    }
     auto joinSuccess =
         server.getGameManager().joinRoom(newRoom->getRoomId(), sharedClient);
     if (newRoom && joinSuccess) {
