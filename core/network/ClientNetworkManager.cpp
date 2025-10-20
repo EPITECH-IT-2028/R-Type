@@ -2,7 +2,6 @@
 #include <atomic>
 #include <iostream>
 #include <queue>
-#include <raylib.h>
 #include "Client.hpp"
 #include "Packet.hpp"
 
@@ -110,7 +109,7 @@ void ClientNetworkManager::handleReceive(const asio::error_code &ec,
 
   if (ec) {
     if (ec != asio::error::operation_aborted) {
-      TraceLog(LOG_WARNING, "[Network] Receive error: %s", ec.message().c_str());
+      std::cerr << "Receive error: " << ec.message() << std::endl;
     }
     return;
   }
