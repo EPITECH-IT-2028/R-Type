@@ -375,7 +375,8 @@ struct PacketBuilder {
      * input.
      * @return PlayerInputPacket Populated packet ready for transmission.
      */
-    static PlayerInputPacket makePlayerInput(uint8_t input, int sequence_number) {
+    static PlayerInputPacket makePlayerInput(uint8_t input,
+                                             std::uint32_t sequence_number) {
       PlayerInputPacket packet{};
       packet.header.type = PacketType::PlayerInput;
       packet.header.size = sizeof(packet);

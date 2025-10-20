@@ -151,7 +151,7 @@ struct ALIGNED PlayerHitPacket {
     uint32_t damage;
     float x;
     float y;
-    int sequence_number;
+    std::uint32_t sequence_number;
 };
 
 /* Enemy Packets */
