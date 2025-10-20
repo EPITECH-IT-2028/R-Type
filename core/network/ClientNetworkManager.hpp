@@ -17,7 +17,7 @@ namespace network {
 
       void startReceive(const std::function<void(const char *, std::size_t)> &callback) override;
 
-      void receivePackets(client::Client &client);
+      void receivePackets();
       void processReceivedPackets(client::Client &client);
 
       void send(const char *data, std::size_t size) override;

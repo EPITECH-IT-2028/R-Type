@@ -138,7 +138,7 @@ void ClientNetworkManager::handleReceive(const asio::error_code &ec,
   startAsyncReceive();
 }
 
-void ClientNetworkManager::receivePackets(client::Client &client) {
+void ClientNetworkManager::receivePackets() {
   _io_context.poll();
 }
 

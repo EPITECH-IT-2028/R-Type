@@ -101,7 +101,7 @@ namespace client {
       void initializeECS();
 
       void startReceive() {
-        _networkManager.receivePackets(*this);
+        _networkManager.receivePackets();
 
         _networkManager.processReceivedPackets(*this);
       }
