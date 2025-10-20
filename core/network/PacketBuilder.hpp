@@ -7,7 +7,8 @@
 #include "Packet.hpp"
 
 struct PacketBuilder {
-    static MessagePacket makeMessage(const std::string &msg, std::uint32_t player_id) {
+    static MessagePacket makeMessage(const std::string &msg,
+                                     std::uint32_t player_id) {
       MessagePacket packet{};
       packet.header.type = PacketType::Message;
       packet.header.size = sizeof(packet);
@@ -57,8 +58,8 @@ struct PacketBuilder {
      * PlayerMove, header.size set to the packet size, and fields: player_id,
      * sequence_number, x, and y.
      */
-    static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq, float x,
-                               float y) {
+    static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq,
+                                           float x, float y) {
       PlayerMovePacket packet{};
       packet.header.type = PacketType::PlayerMove;
       packet.header.size = sizeof(packet);
