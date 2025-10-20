@@ -23,7 +23,6 @@
 #endif
 
 #include <array>
-#include <asio.hpp>
 #include <atomic>
 #include <chrono>
 #include <iostream>
@@ -40,7 +39,6 @@
 namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
-  constexpr float PLAYER_SPEED = 500.0f;
 
   enum class ClientState {
     DISCONNECTED,
@@ -193,11 +191,20 @@ namespace client {
         return _sequence_number.load(std::memory_order_acquire);
       }
 
+      /**
+       * @brief Update the outgoing packet sequence number used for sent
+       * packets.
+       *
+       * Stores the provided sequence value so subsequent sends use this
+       * sequence.
+       *
+       * @param seq New sequence number to store.
+       */
       void updateSequenceNumber(uint32_t seq) {
         _sequence_number.store(seq, std::memory_order_release);
       }
 
-      void sendPosition();
+      void sendInput(uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
 

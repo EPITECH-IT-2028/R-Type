@@ -21,6 +21,20 @@ struct PacketBuilder {
       return packet;
     }
 
+    /**
+     * @brief Creates a NewPlayerPacket for a newly joined player.
+     *
+     * The returned packet contains the player's identity, position, movement
+     * speed, and maximum health, and has its packet header initialized for a
+     * NewPlayer.
+     *
+     * @param player_id Unique identifier for the player.
+     * @param x Initial X position of the player.
+     * @param y Initial Y position of the player.
+     * @param speed Initial movement speed of the player.
+     * @param max_health Maximum health for the player (default: 100).
+     * @return NewPlayerPacket Populated packet ready to be serialized and sent.
+     */
     static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
                                          float speed,
                                          uint32_t max_health = 100) {
@@ -35,20 +49,21 @@ struct PacketBuilder {
       return packet;
     }
 
-    static PositionPacket makePosition(float x, float y, uint32_t seq) {
-      PositionPacket packet{};
-      packet.header.type = PacketType::Position;
-      packet.header.size = sizeof(packet);
-      packet.x = x;
-      packet.y = y;
-      packet.sequence_number = seq;
-      return packet;
-    }
-
-    static MovePacket makeMove(uint32_t player_id, uint32_t seq, float x,
-                               float y) {
-      MovePacket packet{};
-      packet.header.type = PacketType::Move;
+    /**
+     * @brief Create a movement update for a player.
+     *
+     * @param player_id ID of the player who moved.
+     * @param seq Sequence number used to order this movement update.
+     * @param x New X coordinate of the player.
+     * @param y New Y coordinate of the player.
+     * @return PlayerMovePacket Packet populated with header.type set to
+     * PlayerMove, header.size set to the packet size, and fields: player_id,
+     * sequence_number, x, and y.
+     */
+    static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq,
+                                           float x, float y) {
+      PlayerMovePacket packet{};
+      packet.header.type = PacketType::PlayerMove;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.sequence_number = seq;
@@ -335,12 +350,12 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Construct a heartbeat packet for the given player.
+     * @brief Create a HeartbeatPlayerPacket for the specified player.
      *
      * @param player_id Player identifier to embed in the packet.
-     * @return HeartbeatPlayerPacket Packet whose header.type is
-     * PacketType::Heartbeat, header.size is set to the packet size, and
-     * player_id is set to the provided value.
+     * @return HeartbeatPlayerPacket with header.type set to
+     * PacketType::Heartbeat, header.size set to the packet size, and player_id
+     * set to the provided value.
      */
     static HeartbeatPlayerPacket makeHeartbeatPlayer(uint32_t player_id) {
       HeartbeatPlayerPacket packet{};
@@ -441,6 +456,28 @@ struct PacketBuilder {
       packet.header.type = PacketType::MatchmakingResponse;
       packet.header.size = sizeof(packet);
       packet.error_code = error_code;
+      return packet;
+    };
+
+    /**
+     * @brief Constructs a PlayerInputPacket representing a player's input
+     * state.
+     *
+     * The returned packet has its header type and size initialized and contains
+     * the provided input flags and sequence number for ordering.
+     *
+     * @param input Player input flags (bitmask representing buttons/actions).
+     * @param sequence_number Monotonically increasing sequence number for this
+     * input.
+     * @return PlayerInputPacket Populated packet ready for transmission.
+     */
+    static PlayerInputPacket makePlayerInput(uint8_t input,
+                                             std::uint32_t sequence_number) {
+      PlayerInputPacket packet{};
+      packet.header.type = PacketType::PlayerInput;
+      packet.header.size = sizeof(packet);
+      packet.input = input;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 };

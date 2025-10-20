@@ -5,32 +5,32 @@
 
 enum class PacketType : uint8_t {
   Message = 0x01,
-  Move = 0x02,
+  PlayerMove = 0x02,
   NewPlayer = 0x03,
   PlayerInfo = 0x04,
-  Position = 0x05,
-  EnemySpawn = 0x06,
-  EnemyMove = 0x07,
-  EnemyDeath = 0x08,
-  PlayerShoot = 0x09,
-  ProjectileSpawn = 0x0A,
-  ProjectileHit = 0x0B,
-  ProjectileDestroy = 0x0C,
-  GameStart = 0x0D,
-  GameEnd = 0x0E,
-  PlayerDisconnected = 0x0F,
-  Heartbeat = 0x10,
-  EnemyHit = 0x11,
-  PlayerHit = 0x12,
-  PlayerDeath = 0x13,
-  CreateRoom = 0x14,
-  JoinRoom = 0x15,
-  LeaveRoom = 0x16,
-  ListRoom = 0x17,
-  ListRoomResponse = 0x18,
-  MatchmakingRequest = 0x19,
-  MatchmakingResponse = 0x1A,
-  JoinRoomResponse = 0x1B
+  EnemySpawn = 0x05,
+  EnemyMove = 0x06,
+  EnemyDeath = 0x07,
+  PlayerShoot = 0x08,
+  ProjectileSpawn = 0x09,
+  ProjectileHit = 0x0A,
+  ProjectileDestroy = 0x0B,
+  GameStart = 0x0C,
+  GameEnd = 0x0D,
+  PlayerDisconnected = 0x0E,
+  Heartbeat = 0x0F,
+  EnemyHit = 0x10,
+  PlayerHit = 0x11,
+  PlayerDeath = 0x12,
+  CreateRoom = 0x13,
+  JoinRoom = 0x14,
+  LeaveRoom = 0x15,
+  ListRoom = 0x16,
+  ListRoomResponse = 0x17,
+  MatchmakingRequest = 0x18,
+  MatchmakingResponse = 0x19,
+  JoinRoomResponse = 0x1A,
+  PlayerInput = 0x1B
 };
 
 enum class EnemyType : uint8_t {
@@ -52,6 +52,13 @@ enum class RoomError : uint8_t {
   UNKNOWN_ERROR = 0x06
 };
 
+enum class MovementInputType : uint8_t {
+  UP = 1 << 0,
+  DOWN = 1 << 1,
+  LEFT = 1 << 2,
+  RIGHT = 1 << 3
+};
+
 #define ALIGNED alignas(4)
 
 /* both client and server packets */
@@ -60,7 +67,26 @@ struct ALIGNED PacketHeader {
     uint32_t size;
 };
 
-/* both client and server packets */
+/**
+ * @brief Packet carrying a timestamped text message and the originating player
+ * ID.
+ *
+ * Contains a common packet header, a 32-bit timestamp, a fixed-size 256-byte
+ * message buffer, and the ID of the player that sent or is associated with the
+ * message.
+ *
+ * @var header
+ * Common packet header (type and size).
+ *
+ * @var timestamp
+ * Packet timestamp as a 32-bit unsigned integer.
+ *
+ * @var message
+ * Fixed-size 256-byte message buffer.
+ *
+ * @var player_id
+ * Identifier of the player that sent or is associated with this message.
+ */
 struct ALIGNED MessagePacket {
     PacketHeader header;
     uint32_t timestamp;
@@ -68,8 +94,16 @@ struct ALIGNED MessagePacket {
     uint32_t player_id;
 };
 
-/* Server to client packets */
-struct ALIGNED MovePacket {
+/**
+ * @brief Server-to-client packet that conveys a player's movement update.
+ *
+ * header: Common packet header containing packet type and size.
+ * player_id: Identifier of the player whose position is being reported.
+ * sequence_number: Sequence number used to order or correlate movement updates.
+ * x: Player's X coordinate in world space.
+ * y: Player's Y coordinate in world space.
+ */
+struct ALIGNED PlayerMovePacket {
     PacketHeader header;
     uint32_t player_id;
     uint32_t sequence_number;
@@ -135,31 +169,25 @@ struct ALIGNED PlayerHitPacket {
     uint32_t damage;
     float x;
     float y;
-    int sequence_number;
-};
-
-/**
- * @brief Sends the client's current position with an ordering sequence number.
- *
- * Packet used by the client to report its position to the server.
- * From server to client.
- *
- * Fields:
- *  - header: Common packet header identifying the packet type and payload size.
- *  - sequence_number: Client-side sequence number for ordering position
- * updates.
- *  - x: X coordinate of the player's position.
- *  - y: Y coordinate of the player's position.
- */
-struct ALIGNED PositionPacket {
-    PacketHeader header;
-    uint32_t sequence_number;
-    float x;
-    float y;
+    std::uint32_t sequence_number;
 };
 
 /* Enemy Packets */
-/* Server to client packets */
+/**
+ * @brief Server-to-client packet announcing a spawned enemy.
+ *
+ * Contains the spawned enemy's identifier, type, position, velocity, and health
+ * values as sent from the server to clients.
+ *
+ * Members:
+ * - header: Common packet header (type and size).
+ * - enemy_id: Unique identifier for the enemy.
+ * - enemy_type: EnemyType value indicating the enemy variant.
+ * - x, y: Spawn position coordinates.
+ * - velocity_x, velocity_y: Velocity components.
+ * - health: Current health of the enemy.
+ * - max_health: Maximum health of the enemy.
+ */
 struct ALIGNED EnemySpawnPacket {
     PacketHeader header;
     uint32_t enemy_id;
@@ -302,7 +330,7 @@ struct ALIGNED EnemyHitPacket {
     float hit_x;
     float hit_y;
     float damage;
-    int sequence_number;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -376,4 +404,24 @@ struct ALIGNED MatchmakingRequestPacket {
 struct ALIGNED MatchmakingResponsePacket {
     PacketHeader header;
     RoomError error_code;
+};
+
+/**
+ * @brief Packet sent from client to server conveying the player's current input
+ * state.
+ *
+ * Contains the common packet header, a bitfield representing directional
+ * inputs, and a client-side sequence number for ordering/correlation.
+ *
+ * Fields:
+ * - header: Common packet header (type and size).
+ * - input: Bitflags defined by MovementInputType indicating which movement
+ * directions are active.
+ * - sequence_number: Client-side sequence number used to order inputs and
+ * correlate acknowledgements.
+ */
+struct ALIGNED PlayerInputPacket {
+    PacketHeader header;
+    uint8_t input;
+    std::uint32_t sequence_number;
 };

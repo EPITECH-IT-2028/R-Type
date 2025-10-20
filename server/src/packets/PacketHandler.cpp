@@ -1,4 +1,5 @@
 #include "PacketHandler.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -64,6 +65,19 @@ int packet::MessageHandler::handlePacket(server::Server &server,
   return OK;
 }
 
+/**
+ * @brief Handles an incoming PlayerInfoPacket from a client, registers the
+ * player in their room, sends the player's info back to the originating client,
+ * and broadcasts existing and new-player information to room participants.
+ *
+ * @param server Server instance managing rooms, game state, and networking.
+ * @param client Client that sent the packet; its player and entity IDs may be
+ * updated.
+ * @param data Pointer to the raw packet bytes containing a PlayerInfoPacket.
+ * @param size Size of the data buffer in bytes.
+ * @return int `OK` on successful handling (player created/broadcasts sent),
+ * `KO` on failure such as deserialization error or missing room.
+ */
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             server::Client &client,
                                             const char *data,
@@ -104,67 +118,20 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   }
 }
 
-int packet::PositionHandler::handlePacket(server::Server &server,
-                                          server::Client &client,
-                                          const char *data, std::size_t size) {
-  serialization::Buffer buffer(data, data + size);
-  auto deserializedPacket =
-      serialization::BitserySerializer::deserialize<PositionPacket>(buffer);
-  if (!deserializedPacket) {
-    std::cerr << "[ERROR] Failed to deserialize PositionPacket from client "
-              << client._player_id << std::endl;
-    return KO;
-  }
-  const PositionPacket &packet = deserializedPacket.value();
-
-  auto room = server.getGameManager().getRoom(client._room_id);
-  if (!room)
-    return KO;
-
-  auto player = room->getGame().getPlayer(client._player_id);
-  if (!player) {
-    return KO;
-  }
-
-  float oldX = player->getPosition().first;
-  float oldY = player->getPosition().second;
-
-  auto now = std::chrono::steady_clock::now();
-  auto timeDiff = std::chrono::duration_cast<std::chrono::milliseconds>(
-      now - client._last_position_update);
-
-  if (timeDiff.count() > 5) {
-    float deltaX = packet.x - oldX;
-    float deltaY = packet.y - oldY;
-    float distance = std::sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    float timeSeconds = timeDiff.count() / 1000.0f;
-    float actualSpeed = distance / timeSeconds;
-    float maxSpeed = (player->getSpeed() * FPS) * TOLERANCE;
-
-    if (actualSpeed > maxSpeed) {
-      std::cout << "[ANTICHEAT] Player " << client._player_id
-                << " is moving too fast!" << std::endl;
-      player->setSequenceNumber(packet.sequence_number);
-      return KO;
-    }
-  }
-
-  player->setPosition(packet.x, packet.y);
-  player->setSequenceNumber(packet.sequence_number);
-  client._last_position_update = now;
-  std::pair<float, float> pos = player->getPosition();
-
-  auto movePacket = PacketBuilder::makeMove(
-      client._player_id, player->getSequenceNumber().value_or(0), pos.first,
-      pos.second);
-
-  auto roomClients = room->getClients();
-  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
-                                                  roomClients, movePacket);
-  return OK;
-}
-
+/**
+ * @brief Validates a HeartbeatPlayerPacket and updates the client's heartbeat
+ * timestamp.
+ *
+ * Validates that the incoming packet deserializes correctly and that its
+ * player_id matches the client's player id; on success updates the client's
+ * last_heartbeat to the current time.
+ *
+ * @param client The client whose heartbeat is being validated and updated.
+ * @param data Pointer to the received packet data.
+ * @param size Size of the received packet data in bytes.
+ * @return int `OK` on successful validation and heartbeat update, `KO`
+ * otherwise.
+ */
 int packet::HeartbeatPlayerHandler::handlePacket(
     [[maybe_unused]] server::Server &server, server::Client &client,
     const char *data, std::size_t size) {
@@ -246,6 +213,21 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   return OK;
 }
 
+/**
+ * @brief Handle an incoming PlayerDisconnectPacket and process the player's
+ * disconnection.
+ *
+ * Processes a serialized PlayerDisconnectPacket from the provided buffer,
+ * validates the packet's player id against the client, updates server and
+ * client state, removes the player from their room and game (if present),
+ * broadcasts the disconnect to remaining room clients, and clears the client's
+ * server slot.
+ *
+ * @param data Pointer to the serialized PlayerDisconnectPacket.
+ * @param size Size of the serialized data in bytes.
+ * @return int `OK` on successful processing; `KO` if deserialization fails or
+ * the packet's player_id does not match the client.
+ */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
                                                     const char *data,
@@ -578,6 +560,100 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
     ResponseHelper::sendMatchmakingResponse(server, client._player_id,
                                             RoomError::SUCCESS);
   }
+
+  return OK;
+}
+
+/**
+ * @brief Process a player's input packet, update the player's position, and
+ * broadcast the resulting move to the room.
+ *
+ * Deserializes a PlayerInputPacket from the provided buffer, validates the
+ * room and player, updates the player's sequence number and position
+ * according to the input and the game's delta time, clamps the position to
+ * window bounds, and broadcasts a PlayerMove packet to all clients in the
+ * room.
+ *
+ * @param server Server instance used to access the game manager and network
+ * manager.
+ * @param client Client that sent the input; used to identify the player and
+ * room.
+ * @param data Pointer to the raw packet data to deserialize.
+ * @param size Size of the raw packet data in bytes.
+ * @return int `OK` on success; `KO` on error (for example: deserialization
+ * failure, missing or inactive room, or missing player).
+ */
+int packet::PlayerInputHandler::handlePacket(server::Server &server,
+                                             server::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<PlayerInputPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize PlayerInputPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const PlayerInputPacket &packet = deserializedPacket.value();
+  auto room = server.getGameManager().getRoom(client._room_id);
+  if (!room || !room->isActive()) {
+    return KO;
+  }
+
+  auto &game = room->getGame();
+  float deltaTime = game.getDeltaTime();
+
+  if (deltaTime == 0.0f) {
+    deltaTime = 0.016f;
+  }
+
+  auto player = room->getGame().getPlayer(client._player_id);
+  if (!player) {
+    return KO;
+  }
+
+  player->setSequenceNumber(packet.sequence_number);
+
+  float moveDistance = player->getSpeed() * deltaTime;
+
+  float dirX = 0.0f;
+  float dirY = 0.0f;
+
+  if (packet.input & static_cast<uint8_t>(MovementInputType::UP))
+    dirY -= 1.0f;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::DOWN))
+    dirY += 1.0f;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::LEFT))
+    dirX -= 1.0f;
+  if (packet.input & static_cast<uint8_t>(MovementInputType::RIGHT))
+    dirX += 1.0f;
+
+  float length = std::sqrt(dirX * dirX + dirY * dirY);
+  if (length > 0.0f) {
+    dirX /= length;
+    dirY /= length;
+  }
+
+  float newX = player->getPosition().first + dirX * moveDistance;
+  float newY = player->getPosition().second + dirY * moveDistance;
+
+  newX =
+      std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
+  newY =
+      std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
+
+  player->setPosition(newX, newY);
+
+  auto movePacket = PacketBuilder::makePlayerMove(
+      client._player_id, player->getSequenceNumber().value_or(0), newX, newY);
+
+  auto roomClients = room->getClients();
+  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
+                                                  roomClients, movePacket);
 
   return OK;
 }

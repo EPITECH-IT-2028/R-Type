@@ -1,9 +1,7 @@
 #include "Client.hpp"
 #include <cstdint>
-#include <locale>
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
-#include "BoundarySystem.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -15,7 +13,6 @@
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
-#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
@@ -53,14 +50,13 @@ namespace client {
    *
    * Registers the following components so they can be attached to entities and
    * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
-   * SpeedComponent, SpriteComponent, ScaleComponent, BackgroundTagComponent,
+   * SpriteComponent, ScaleComponent, BackgroundTagComponent,
    * PlayerTagComponent, and SpriteAnimationComponent.
    */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
-    _ecsManager.registerComponent<ecs::SpeedComponent>();
     _ecsManager.registerComponent<ecs::SpriteComponent>();
     _ecsManager.registerComponent<ecs::ScaleComponent>();
     _ecsManager.registerComponent<ecs::BackgroundTagComponent>();
@@ -72,34 +68,35 @@ namespace client {
   }
 
   /**
-   * @brief Registers the game's ECS systems with the ECS manager.
+   * @brief Registers core ECS systems with the ECS manager.
    *
-   * Registers the background, movement, input, boundary, sprite animation, and
-   * render systems so they are tracked and updated by the ECS manager.
+   * Registers the background, movement, input, sprite animation, projectile,
+   * and render systems so they are created and managed by the ECS manager.
    */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
-    _ecsManager.registerSystem<ecs::BoundarySystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
     _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
 
   /**
-   * @brief Assigns component signatures to each ECS system used by the client.
+   * @brief Configure required component signatures for each ECS system used by
+   * the client.
    *
-   * Configures which component types each system requires so the ECS manager
-   * can match entities to systems. The mappings set here are:
+   * Sets which component types entities must have to be processed by each
+   * system:
    * - BackgroundSystem: PositionComponent, RenderComponent,
    * BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: VelocityComponent, SpeedComponent, PlayerTagComponent,
+   * - InputSystem: VelocityComponent, LocalPlayerTagComponent,
    * SpriteAnimationComponent
-   * - BoundarySystem: PositionComponent, SpriteComponent, PlayerTagComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
+   * - ProjectileSystem: PositionComponent, VelocityComponent,
+   * ProjectileComponent
    */
   void Client::signSystem() {
     {
@@ -124,21 +121,12 @@ namespace client {
     }
     {
       Signature signature;
-      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       signature.set(
           _ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
-    }
-    {
-      Signature signature;
-      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::SpriteComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::PlayerTagComponent>());
-      _ecsManager.setSystemSignature<ecs::BoundarySystem>(signature);
     }
     {
       Signature signature;
@@ -196,24 +184,25 @@ namespace client {
   }
 
   /**
-   * @brief Creates and configures the player entity in the ECS.
+   * @brief Create a player entity with visual, movement, and identification
+   * components.
    *
-   * Constructs a player entity and attaches its initial components: position,
-   * velocity, movement speed, render asset, sprite source rectangle, scale,
-   * player tag, and sprite animation metadata.
+   * Attaches a PositionComponent (from packet.x/packet.y), a zeroed
+   * VelocityComponent, a RenderComponent using the player render asset, a
+   * SpriteComponent and ScaleComponent using PlayerSpriteConfig values, and a
+   * configured SpriteAnimationComponent. Also attaches a PlayerTagComponent. If
+   * the client's local player ID is unassigned, assigns it from
+   * packet.player_id and attaches a LocalPlayerTagComponent. Records the
+   * created entity in the client's player-entity mapping in a thread-safe
+   * manner.
    *
-   * The created entity is positioned at (100, 100) with zero initial velocity
-   * and uses renderManager::PLAYER_PATH for rendering. Sprite and scale values
-   * are taken from PlayerSpriteConfig. The sprite animation component is
-   * initialized with column/row counts, selected/neutral frames, frame timing,
-   * and non-playing, non-looping defaults.
+   * @param packet NewPlayerPacket containing the player's id, initial position,
+   * and speed.
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player,
                                                      {packet.x, packet.y});
-    _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::SpeedComponent>(player, {packet.speed});
     _ecsManager.addComponent<ecs::RenderComponent>(
         player, {renderManager::PLAYER_PATH});
     ecs::SpriteComponent sprite;
@@ -238,7 +227,6 @@ namespace client {
     if (_player_id == static_cast<uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      TraceLog(LOG_INFO, "Assigned player ID: %u", _player_id);
     }
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
@@ -294,47 +282,56 @@ namespace client {
     return static_cast<Entity>(-1);
   }
 
+  /**
+   * @brief Remove the mapping for a projectile by its identifier.
+   *
+   * Erases the projectileId entry from the client's projectile map in a
+   * thread-safe manner. If no entry exists for the given identifier, the
+   * function has no effect.
+   *
+   * @param projectileId Unique identifier of the projectile to remove.
+   */
   void Client::removeProjectileEntity(uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectileEntities.erase(projectileId);
   }
 
-  void Client::sendPosition() {
-    if (_player_id == static_cast<uint32_t>(-1)) {
-      TraceLog(LOG_WARNING,
-               "[WARN] Player ID not assigned yet, cannot send "
-               "position");
+  /**
+   * @brief Sends the local player's input state to the server.
+   *
+   * If the client has not been assigned a local player ID, the call is ignored.
+   * Any exceptions raised while building or sending the packet are caught and
+   * not propagated.
+   *
+   * @param input The player's input state encoded as a byte (input flags).
+   */
+  void Client::sendInput(uint8_t input) {
+    if (_player_id == static_cast<std::uint32_t>(-1)) {
+      TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
       return;
     }
 
-    Entity playerEntity;
-    {
-      std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
-      auto it = _playerEntities.find(_player_id);
-      if (it == _playerEntities.end()) {
-        TraceLog(LOG_WARNING,
-                 "[SEND POSITION] Player entity not found for ID: %u",
-                 _player_id);
-        return;
-      }
-      playerEntity = it->second;
-    }
-
     try {
-      auto &position =
-          _ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
-
-      PositionPacket packet = PacketBuilder::makePosition(
-          position.x, position.y,
-          _sequence_number.load(std::memory_order_acquire));
+      PlayerInputPacket packet = PacketBuilder::makePlayerInput(
+          input, _sequence_number.load(std::memory_order_acquire));
 
       send(packet);
 
     } catch (const std::exception &e) {
-      TraceLog(LOG_ERROR, "[SEND POSITION] Exception: %s", e.what());
+      TraceLog(LOG_ERROR, "[SEND INPUT] Exception: %s", e.what());
     }
   }
 
+  /**
+   * @brief Send a shoot action for the local player to the server at the given
+   * world coordinates.
+   *
+   * If the local player ID is unassigned, no packet is sent and the function
+   * returns immediately.
+   *
+   * @param x World-space X coordinate where the player is shooting.
+   * @param y World-space Y coordinate where the player is shooting.
+   */
   void Client::sendShoot(float x, float y) {
     if (_player_id == static_cast<uint32_t>(-1)) {
       TraceLog(LOG_WARNING,
@@ -342,14 +339,11 @@ namespace client {
                "shoot");
       return;
     }
-
     try {
       PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
           x, y, ProjectileType::PLAYER_BASIC,
           _sequence_number.load(std::memory_order_acquire));
-
       send(packet);
-
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
     }

@@ -8,20 +8,20 @@
  * @brief Convert a PacketType enum value to its human-readable name.
  *
  * @param type PacketType enum value to convert.
- * @return std::string The corresponding name (e.g., "Message", "Move", "PlayerDeath"); if the value is not recognized, returns "Unknown(n)" where n is the integer value of the enum.
+ * @return std::string The corresponding name (e.g., "Message", "Move",
+ * "PlayerDeath"); if the value is not recognized, returns "Unknown(n)" where n
+ * is the integer value of the enum.
  */
 inline std::string packetTypeToString(PacketType type) {
   switch (type) {
     case PacketType::Message:
       return "Message";
-    case PacketType::Move:
+    case PacketType::PlayerMove:
       return "Move";
     case PacketType::NewPlayer:
       return "NewPlayer";
     case PacketType::PlayerInfo:
       return "PlayerInfo";
-    case PacketType::Position:
-      return "Position";
     case PacketType::EnemySpawn:
       return "EnemySpawn";
     case PacketType::EnemyMove:
@@ -50,6 +50,8 @@ inline std::string packetTypeToString(PacketType type) {
       return "PlayerHit";
     case PacketType::PlayerDeath:
       return "PlayerDeath";
+    case PacketType::PlayerInput:
+      return "PlayerInput";
     default:
       std::stringstream ss;
       ss << "Unknown(" << static_cast<int>(type) << ")";

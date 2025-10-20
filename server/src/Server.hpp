@@ -1,15 +1,15 @@
 #pragma once
 
 #include <asio.hpp>
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include "Client.hpp"
 #include "Events.hpp"
-#include "Macro.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
+#include "game/GameManager.hpp"
 
 namespace game {
   class GameManager;
@@ -17,28 +17,6 @@ namespace game {
 }  // namespace game
 
 namespace server {
-
-  enum class ClientState {
-    CONNECTED_MENU = 0,
-    IN_ROOM_WAITING = 1,
-    IN_GAME = 2,
-    DISCONNECTED = 3
-  };
-
-  struct Client {
-    public:
-      Client(int id);
-      ~Client() = default;
-
-      bool _connected = false;
-      int _player_id = -1;
-      uint32_t _room_id = NO_ROOM;
-      std::string _player_name = "";
-      ClientState _state = ClientState::CONNECTED_MENU;
-      std::chrono::steady_clock::time_point _last_heartbeat;
-      std::chrono::steady_clock::time_point _last_position_update;
-      uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
-  };
 
   class Server {
     public:

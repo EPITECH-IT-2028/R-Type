@@ -1,6 +1,12 @@
 #pragma once
+#include <cstddef>
 #include "APacket.hpp"
 #include "Packet.hpp"
+
+namespace server {
+  class Server;
+  struct Client;
+}  // namespace server
 
 namespace packet {
 
@@ -74,6 +80,12 @@ namespace packet {
   };
 
   class MatchmakingRequestHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
+
+  class PlayerInputHandler : public APacket {
     public:
       int handlePacket(server::Server &server, server::Client &client,
                        const char *data, std::size_t size) override;
