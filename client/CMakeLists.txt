@@ -23,6 +23,7 @@ set(ECS_SOURCES
 
 set(CORE_SOURCES
   ${CMAKE_SOURCE_DIR}/core/Parser.cpp
+  ${CMAKE_SOURCE_DIR}/core/network/ClientnetworkManager.cpp
 )
 
 add_executable(${PROJECT_NAME}

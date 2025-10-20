@@ -2,6 +2,7 @@
 
 #include "BaseNetworkManager.hpp"
 #include "PacketFactory.hpp"
+#include <queue>
 
 namespace network {
 

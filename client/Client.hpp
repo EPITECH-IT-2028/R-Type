@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
