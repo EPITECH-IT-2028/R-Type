@@ -19,7 +19,7 @@ namespace game {
 
   class GameRoom {
     public:
-      GameRoom(uint32_t room_id, uint16_t max_players)
+      GameRoom(std::uint32_t room_id, std::uint16_t max_players)
           : _room_id(room_id),
             _max_players(max_players),
             _state(RoomStatus::WAITING),
@@ -31,7 +31,7 @@ namespace game {
         stop();
       }
 
-      uint32_t getRoomId() const {
+      std::uint32_t getRoomId() const {
         return _room_id;
       }
 
@@ -162,7 +162,7 @@ namespace game {
         return _is_private;
       }
 
-      uint16_t getMaxPlayers() const {
+      std::uint16_t getMaxPlayers() const {
         std::lock_guard<std::mutex> lock(_mutex);
         return _max_players;
       }
@@ -186,9 +186,9 @@ namespace game {
       }
 
     private:
-      uint32_t _room_id;
+      std::uint32_t _room_id;
       std::string _room_name;
-      const uint16_t _max_players;
+      const std::uint16_t _max_players;
       std::string _password;
 
       bool _is_private = false;

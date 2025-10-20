@@ -150,7 +150,7 @@ namespace client {
         }
       }
 
-      uint32_t getEnemyEntity(uint32_t enemy_id) const {
+      std::uint32_t getEnemyEntity(std::uint32_t enemy_id) const {
         auto it = _enemyEntities.find(enemy_id);
         if (it != _enemyEntities.end()) {
           return it->second;
@@ -158,7 +158,7 @@ namespace client {
         return KO;
       }
 
-      uint32_t getPlayerEntity(uint32_t player_id) const {
+      std::uint32_t getPlayerEntity(std::uint32_t player_id) const {
         std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
         auto it = _playerEntities.find(player_id);
         if (it != _playerEntities.end()) {
@@ -167,27 +167,27 @@ namespace client {
         return KO;
       }
 
-      void destroyPlayerEntity(uint32_t playerId) {
+      void destroyPlayerEntity(std::uint32_t playerId) {
         std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
         _playerEntities.erase(playerId);
       }
 
-      void destroyEnemyEntity(uint32_t enemyId) {
+      void destroyEnemyEntity(std::uint32_t enemyId) {
         _enemyEntities.erase(enemyId);
       }
 
       void createPlayerEntity(NewPlayerPacket packet);
       void createEnemyEntity(EnemySpawnPacket packet);
 
-      void addProjectileEntity(uint32_t projectileId, Entity entity);
-      Entity getProjectileEntity(uint32_t projectileId);
-      void removeProjectileEntity(uint32_t projectileId);
+      void addProjectileEntity(std::uint32_t projectileId, Entity entity);
+      Entity getProjectileEntity(std::uint32_t projectileId);
+      void removeProjectileEntity(std::uint32_t projectileId);
 
-      uint32_t getPlayerId() const {
+      std::uint32_t getPlayerId() const {
         return _player_id;
       }
 
-      uint32_t getSequenceNumber() const {
+      std::uint32_t getSequenceNumber() const {
         return _sequence_number.load(std::memory_order_acquire);
       }
 
@@ -200,11 +200,11 @@ namespace client {
        *
        * @param seq New sequence number to store.
        */
-      void updateSequenceNumber(uint32_t seq) {
+      void updateSequenceNumber(std::uint32_t seq) {
         _sequence_number.store(seq, std::memory_order_release);
       }
 
-      void sendInput(uint8_t input);
+      void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
 
@@ -218,15 +218,15 @@ namespace client {
 
     private:
       std::array<char, 2048> _recv_buffer;
-      std::atomic<uint32_t> _sequence_number;
+      std::atomic<std::uint32_t> _sequence_number;
       std::atomic<bool> _running;
       network::ClientNetworkManager _networkManager;
-      std::atomic<uint64_t> _packet_count;
+      std::atomic<std::uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
-      std::unordered_map<uint32_t, Entity> _playerEntities;
+      std::unordered_map<std::uint32_t, Entity> _playerEntities;
       mutable std::shared_mutex _playerEntitiesMutex;
-      std::unordered_map<uint32_t, Entity> _enemyEntities;
-      std::unordered_map<uint32_t, Entity> _projectileEntities;
+      std::unordered_map<std::uint32_t, Entity> _enemyEntities;
+      std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};

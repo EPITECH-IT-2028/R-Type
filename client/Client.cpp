@@ -224,7 +224,7 @@ namespace client {
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
-    if (_player_id == static_cast<uint32_t>(-1)) {
+    if (_player_id == static_cast<std::uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
     }
@@ -268,12 +268,12 @@ namespace client {
     _enemyEntities[packet.enemy_id] = enemy;
   }
 
-  void Client::addProjectileEntity(uint32_t projectileId, Entity entity) {
+  void Client::addProjectileEntity(std::uint32_t projectileId, Entity entity) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectileEntities[projectileId] = entity;
   }
 
-  Entity Client::getProjectileEntity(uint32_t projectileId) {
+  Entity Client::getProjectileEntity(std::uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     auto it = _projectileEntities.find(projectileId);
     if (it != _projectileEntities.end()) {
@@ -291,7 +291,7 @@ namespace client {
    *
    * @param projectileId Unique identifier of the projectile to remove.
    */
-  void Client::removeProjectileEntity(uint32_t projectileId) {
+  void Client::removeProjectileEntity(std::uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectileEntities.erase(projectileId);
   }
@@ -305,7 +305,7 @@ namespace client {
    *
    * @param input The player's input state encoded as a byte (input flags).
    */
-  void Client::sendInput(uint8_t input) {
+  void Client::sendInput(std::uint8_t input) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
       return;
@@ -333,7 +333,7 @@ namespace client {
    * @param y World-space Y coordinate where the player is shooting.
    */
   void Client::sendShoot(float x, float y) {
-    if (_player_id == static_cast<uint32_t>(-1)) {
+    if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING,
                "[WARN] Player ID not assigned yet, cannot send "
                "shoot");

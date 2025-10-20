@@ -3,9 +3,7 @@
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
-#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
-#include "VelocityComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
@@ -50,13 +48,9 @@ namespace ecs {
     }
 
     for (auto const &entity : _entities) {
-      if (!_ecsManager.hasComponent<VelocityComponent>(entity) ||
-          !_ecsManager.hasComponent<SpeedComponent>(entity) ||
-          !_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
+      if (!_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
         continue;
       }
-      auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
-      auto const &speed = _ecsManager.getComponent<SpeedComponent>(entity);
       auto &animation =
           _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
@@ -65,15 +59,15 @@ namespace ecs {
       bool leftPressed = IsKeyDown(KEY_LEFT);
       bool rightPressed = IsKeyDown(KEY_RIGHT);
 
-      uint8_t inputs = 0;
+      std::uint8_t inputs = 0;
       if (upPressed)
-        inputs |= static_cast<uint8_t>(MovementInputType::UP);
+        inputs |= static_cast<std::uint8_t>(MovementInputType::UP);
       if (downPressed)
-        inputs |= static_cast<uint8_t>(MovementInputType::DOWN);
+        inputs |= static_cast<std::uint8_t>(MovementInputType::DOWN);
       if (leftPressed)
-        inputs |= static_cast<uint8_t>(MovementInputType::LEFT);
+        inputs |= static_cast<std::uint8_t>(MovementInputType::LEFT);
       if (rightPressed)
-        inputs |= static_cast<uint8_t>(MovementInputType::RIGHT);
+        inputs |= static_cast<std::uint8_t>(MovementInputType::RIGHT);
 
       if (inputs != 0 && _client != nullptr)
         _client->sendInput(inputs);

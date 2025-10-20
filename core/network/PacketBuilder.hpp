@@ -14,7 +14,7 @@ struct PacketBuilder {
       MessagePacket packet{};
       packet.header.type = PacketType::Message;
       packet.header.size = sizeof(packet);
-      packet.timestamp = static_cast<uint32_t>(time(nullptr));
+      packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
       packet.message[sizeof(packet.message) - 1] = '\0';
       packet.player_id = player_id;
@@ -35,9 +35,9 @@ struct PacketBuilder {
      * @param max_health Maximum health for the player (default: 100).
      * @return NewPlayerPacket Populated packet ready to be serialized and sent.
      */
-    static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
-                                         float speed,
-                                         uint32_t max_health = 100) {
+    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id, float x,
+                                         float y, float speed,
+                                         std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
@@ -60,8 +60,9 @@ struct PacketBuilder {
      * PlayerMove, header.size set to the packet size, and fields: player_id,
      * sequence_number, x, and y.
      */
-    static PlayerMovePacket makePlayerMove(uint32_t player_id, uint32_t seq,
-                                           float x, float y) {
+    static PlayerMovePacket makePlayerMove(std::uint32_t player_id,
+                                           std::uint32_t seq, float x,
+                                           float y) {
       PlayerMovePacket packet{};
       packet.header.type = PacketType::PlayerMove;
       packet.header.size = sizeof(packet);
@@ -131,10 +132,11 @@ struct PacketBuilder {
      * @return EnemySpawnPacket Packet with fields initialized and its header
      * indicating an EnemySpawn.
      */
-    static EnemySpawnPacket makeEnemySpawn(uint32_t enemy_id, EnemyType type,
-                                           float x, float y, float vx, float vy,
-                                           uint32_t health,
-                                           uint32_t max_health) {
+    static EnemySpawnPacket makeEnemySpawn(std::uint32_t enemy_id,
+                                           EnemyType type, float x, float y,
+                                           float vx, float vy,
+                                           std::uint32_t health,
+                                           std::uint32_t max_health) {
       EnemySpawnPacket packet{};
       packet.header.type = PacketType::EnemySpawn;
       packet.header.size = sizeof(packet);
@@ -149,9 +151,9 @@ struct PacketBuilder {
       return packet;
     }
 
-    static EnemyMovePacket makeEnemyMove(uint32_t enemy_id, float x, float y,
-                                         float velocity_x, float velocity_y,
-                                         int seq) {
+    static EnemyMovePacket makeEnemyMove(std::uint32_t enemy_id, float x,
+                                         float y, float velocity_x,
+                                         float velocity_y, int seq) {
       EnemyMovePacket packet{};
       packet.header.type = PacketType::EnemyMove;
       packet.header.size = sizeof(packet);
@@ -177,8 +179,8 @@ struct PacketBuilder {
      * coordinates, player_id, and score; packet header is set to
      * `PacketType::EnemyDeath` and `header.size` is set to the packet's size.
      */
-    static EnemyDeathPacket makeEnemyDeath(uint32_t enemy_id, float death_x,
-                                           float death_y,
+    static EnemyDeathPacket makeEnemyDeath(std::uint32_t enemy_id,
+                                           float death_x, float death_y,
                                            std::uint32_t player_id,
                                            std::uint32_t score) {
       EnemyDeathPacket packet{};
@@ -203,7 +205,7 @@ struct PacketBuilder {
      * @return EnemyHitPacket Packet populated with header, enemy id, hit
      * position, damage, and sequence number.
      */
-    static EnemyHitPacket makeEnemyHit(uint32_t enemy_id, float hit_x,
+    static EnemyHitPacket makeEnemyHit(std::uint32_t enemy_id, float hit_x,
                                        float hit_y, float damage,
                                        int sequence_number) {
       EnemyHitPacket packet{};
@@ -230,7 +232,7 @@ struct PacketBuilder {
      */
     static PlayerShootPacket makePlayerShoot(float x, float y,
                                              ProjectileType projectile_type,
-                                             uint32_t seq) {
+                                             std::uint32_t seq) {
       PlayerShootPacket packet{};
       packet.header.type = PacketType::PlayerShoot;
       packet.header.size = sizeof(packet);
@@ -242,9 +244,9 @@ struct PacketBuilder {
     }
 
     static ProjectileSpawnPacket makeProjectileSpawn(
-        uint32_t projectile_id, ProjectileType type, float x, float y,
-        float vel_x, float vel_y, bool is_enemy, uint32_t damage,
-        uint32_t owner_id) {
+        std::uint32_t projectile_id, ProjectileType type, float x, float y,
+        float vel_x, float vel_y, bool is_enemy, std::uint32_t damage,
+        std::uint32_t owner_id) {
       ProjectileSpawnPacket packet{};
       packet.header.type = PacketType::ProjectileSpawn;
       packet.header.size = sizeof(packet);
@@ -260,10 +262,9 @@ struct PacketBuilder {
       return packet;
     }
 
-    static ProjectileHitPacket makeProjectileHit(uint32_t projectile_id,
-                                                 uint32_t target_id,
-                                                 float hit_x, float hit_y,
-                                                 uint8_t target_is_player) {
+    static ProjectileHitPacket makeProjectileHit(
+        std::uint32_t projectile_id, std::uint32_t target_id, float hit_x,
+        float hit_y, std::uint8_t target_is_player) {
       ProjectileHitPacket packet{};
       packet.header.type = PacketType::ProjectileHit;
       packet.header.size = sizeof(packet);
@@ -275,8 +276,8 @@ struct PacketBuilder {
       return packet;
     }
 
-    static ProjectileDestroyPacket makeProjectileDestroy(uint32_t projectile_id,
-                                                         float x, float y) {
+    static ProjectileDestroyPacket makeProjectileDestroy(
+        std::uint32_t projectile_id, float x, float y) {
       ProjectileDestroyPacket packet{};
       packet.header.type = PacketType::ProjectileDestroy;
       packet.header.size = sizeof(packet);
@@ -322,7 +323,7 @@ struct PacketBuilder {
      * @param y World Y coordinate of the death location.
      * @return PlayerDeathPacket Populated packet ready for transmission.
      */
-    static PlayerDeathPacket makePlayerDeath(uint32_t player_id, float x,
+    static PlayerDeathPacket makePlayerDeath(std::uint32_t player_id, float x,
                                              float y) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
@@ -341,7 +342,8 @@ struct PacketBuilder {
      * PacketType::PlayerDisconnected, header size set to the packet's sizeof,
      * and player_id populated.
      */
-    static PlayerDisconnectPacket makePlayerDisconnect(uint32_t player_id) {
+    static PlayerDisconnectPacket makePlayerDisconnect(
+        std::uint32_t player_id) {
       PlayerDisconnectPacket packet{};
       packet.header.type = PacketType::PlayerDisconnected;
       packet.header.size = sizeof(packet);
@@ -357,7 +359,7 @@ struct PacketBuilder {
      * PacketType::Heartbeat, header.size set to the packet size, and player_id
      * set to the provided value.
      */
-    static HeartbeatPlayerPacket makeHeartbeatPlayer(uint32_t player_id) {
+    static HeartbeatPlayerPacket makeHeartbeatPlayer(std::uint32_t player_id) {
       HeartbeatPlayerPacket packet{};
       packet.header.type = PacketType::Heartbeat;
       packet.header.size = sizeof(packet);
@@ -366,7 +368,7 @@ struct PacketBuilder {
     }
 
     static CreateRoomPacket makeCreateRoom(const std::string &room_name,
-                                           uint32_t max_players,
+                                           std::uint32_t max_players,
                                            const std::string &password = "") {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
@@ -385,7 +387,7 @@ struct PacketBuilder {
       return packet;
     }
 
-    static JoinRoomPacket makeJoinRoom(uint32_t room_id,
+    static JoinRoomPacket makeJoinRoom(std::uint32_t room_id,
                                        const std::string &password) {
       JoinRoomPacket packet{};
       packet.header.type = PacketType::JoinRoom;
@@ -405,7 +407,7 @@ struct PacketBuilder {
       return packet;
     }
 
-    static LeaveRoomPacket makeLeaveRoom(uint32_t room_id) {
+    static LeaveRoomPacket makeLeaveRoom(std::uint32_t room_id) {
       LeaveRoomPacket packet{};
       packet.header.type = PacketType::LeaveRoom;
       packet.header.size = sizeof(packet);
@@ -434,8 +436,8 @@ struct PacketBuilder {
       ListRoomResponsePacket packet{};
       packet.header.type = PacketType::ListRoomResponse;
       packet.header.size = sizeof(packet);
-      packet.room_count =
-          static_cast<uint32_t>(std::min<std::size_t>(rooms.size(), MAX_ROOMS));
+      packet.room_count = static_cast<std::uint32_t>(
+          std::min<std::size_t>(rooms.size(), MAX_ROOMS));
 
       for (std::size_t i = 0; i < packet.room_count; ++i) {
         packet.rooms[i] = rooms[i];
@@ -471,7 +473,7 @@ struct PacketBuilder {
      * input.
      * @return PlayerInputPacket Populated packet ready for transmission.
      */
-    static PlayerInputPacket makePlayerInput(uint8_t input,
+    static PlayerInputPacket makePlayerInput(std::uint8_t input,
                                              std::uint32_t sequence_number) {
       PlayerInputPacket packet{};
       packet.header.type = PacketType::PlayerInput;

@@ -12,7 +12,7 @@
 #include "Server.hpp"
 
 void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
-                                                  uint32_t player_id,
+                                                  std::uint32_t player_id,
                                                   RoomError error) {
   auto response = PacketBuilder::makeJoinRoomResponse(error);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
@@ -22,7 +22,7 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
 }
 
 void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
-                                                     uint32_t player_id,
+                                                     std::uint32_t player_id,
                                                      RoomError error) {
   auto response = PacketBuilder::makeMatchmakingResponse(error);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
@@ -49,7 +49,7 @@ int packet::MessageHandler::handlePacket(server::Server &server,
             << packet.message << std::endl;
 
   MessagePacket validatedPacket = packet;
-  validatedPacket.player_id = static_cast<uint32_t>(client._player_id);
+  validatedPacket.player_id = static_cast<std::uint32_t>(client._player_id);
 
   auto room = server.getGameManager().getRoom(client._room_id);
   if (!room) {
@@ -147,7 +147,7 @@ int packet::HeartbeatPlayerHandler::handlePacket(
   }
 
   const auto &hb = deserializedPacket.value();
-  if (hb.player_id != static_cast<uint32_t>(client._player_id)) {
+  if (hb.player_id != static_cast<std::uint32_t>(client._player_id)) {
     return KO;
   }
   client._last_heartbeat = std::chrono::steady_clock::now();
@@ -246,7 +246,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
   }
 
   const auto &disc = deserializedPacket.value();
-  if (disc.player_id != static_cast<uint32_t>(client._player_id)) {
+  if (disc.player_id != static_cast<std::uint32_t>(client._player_id)) {
     return KO;
   }
   std::cout << "[WORLD] Player " << client._player_id << " disconnected."
@@ -389,15 +389,13 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   bool joinSuccess =
       server.getGameManager().joinRoom(packet.room_id, sharedClient);
 
-  if (joinSuccess) {
-    std::cout << "[JOIN ROOM] Client " << client._player_id
-              << " successfully joined room " << packet.room_id << std::endl;
-  } else {
+  if (!joinSuccess) {
     std::cout << "[JOIN ROOM] Client " << client._player_id
               << " failed to join room " << packet.room_id << std::endl;
 
     ResponseHelper::sendJoinRoomResponse(server, client._player_id,
                                          RoomError::ROOM_FULL);
+    return KO;
   }
 
   client._state = server::ClientState::IN_ROOM_WAITING;
@@ -521,7 +519,9 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
   if (!joinSuccess) {
     auto newRoom = server.getGameManager().createRoom("Matchmaking Room");
-    if (newRoom && newRoom->addClient(sharedClient)) {
+    auto joinSuccess =
+        server.getGameManager().joinRoom(newRoom->getRoomId(), sharedClient);
+    if (newRoom && joinSuccess) {
       std::cout << "[MATCHMAKING] Client " << client._player_id
                 << " created and joined new room " << newRoom->getRoomId()
                 << std::endl;
@@ -623,13 +623,13 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   float dirX = 0.0f;
   float dirY = 0.0f;
 
-  if (packet.input & static_cast<uint8_t>(MovementInputType::UP))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::UP))
     dirY -= 1.0f;
-  if (packet.input & static_cast<uint8_t>(MovementInputType::DOWN))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::DOWN))
     dirY += 1.0f;
-  if (packet.input & static_cast<uint8_t>(MovementInputType::LEFT))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::LEFT))
     dirX -= 1.0f;
-  if (packet.input & static_cast<uint8_t>(MovementInputType::RIGHT))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::RIGHT))
     dirX += 1.0f;
 
   float length = std::sqrt(dirX * dirX + dirY * dirY);

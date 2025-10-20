@@ -8,7 +8,7 @@
 #include "Packet.hpp"
 
 namespace serialization {
-  using Buffer = std::vector<uint8_t>;
+  using Buffer = std::vector<std::uint8_t>;
   using OutputAdapter = bitsery::OutputBufferAdapter<Buffer>;
   using InputAdapter = bitsery::InputBufferAdapter<Buffer>;
 }  // namespace serialization
@@ -266,7 +266,7 @@ void serialize(S& s, CreateRoomPacket& packet) {
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(packet.room_name[i]);
   }
-  s.value4b(packet.max_players);
+  s.value1b(packet.max_players);
   s.value1b(packet.is_private);
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(packet.password[i]);
@@ -309,8 +309,8 @@ void serialize(S& s, RoomInfo& room) {
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(room.room_name[i]);
   }
-  s.value4b(room.player_count);
-  s.value4b(room.max_players);
+  s.value1b(room.player_count);
+  s.value1b(room.max_players);
 }
 
 template <typename S>

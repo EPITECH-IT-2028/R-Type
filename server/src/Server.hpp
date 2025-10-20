@@ -74,7 +74,7 @@ namespace server {
 
       void scheduleEventProcessing();
       void processGameEvents();
-      void handleGameEvent(const queue::GameEvent &event, uint32_t roomId);
+      void handleGameEvent(const queue::GameEvent &event, std::uint32_t roomId);
 
       size_t findExistingClient();
       void handlePlayerInfoPacket(const char *data, std::size_t size);
@@ -91,8 +91,8 @@ namespace server {
       std::vector<std::shared_ptr<Client>> _clients;
       packet::PacketHandlerFactory _factory;
 
-      uint16_t screen_width = 800;
-      uint16_t screen_height = 1200;
+      std::uint16_t screen_width = 800;
+      std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
 

@@ -24,7 +24,7 @@ namespace game {
                                            const std::string &password = "");
       bool destroyRoom(int roomId);
       std::shared_ptr<GameRoom> findAvailableRoom();
-      std::shared_ptr<GameRoom> getRoom(uint32_t roomId) const;
+      std::shared_ptr<GameRoom> getRoom(std::uint32_t roomId) const;
       bool joinRoom(int roomId, std::shared_ptr<server::Client> client);
       bool joinAnyRoom(std::shared_ptr<server::Client> client);
       void leaveRoom(std::shared_ptr<server::Client> client);
@@ -34,9 +34,9 @@ namespace game {
       void shutdownRooms();
 
     private:
-      std::unordered_map<uint32_t, std::shared_ptr<game::GameRoom>> _rooms;
+      std::unordered_map<std::uint32_t, std::shared_ptr<game::GameRoom>> _rooms;
       int _maxPlayers;
-      std::atomic<uint32_t> _nextRoomId;
+      std::atomic<std::uint32_t> _nextRoomId;
       mutable std::mutex _roomMutex;
   };
 }  // namespace game

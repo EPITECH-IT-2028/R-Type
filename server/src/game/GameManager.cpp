@@ -66,7 +66,7 @@ std::shared_ptr<game::GameRoom> game::GameManager::findAvailableRoom() {
 }
 
 std::shared_ptr<game::GameRoom> game::GameManager::getRoom(
-    uint32_t roomId) const {
+    std::uint32_t roomId) const {
   std::scoped_lock lock(_roomMutex);
   auto it = _rooms.find(roomId);
   if (it != _rooms.end()) {
@@ -155,7 +155,7 @@ void game::GameManager::removeEmptyRooms() {
   std::vector<std::shared_ptr<GameRoom>> roomsToStop;
   {
     std::lock_guard<std::mutex> lock(_roomMutex);
-    std::vector<uint32_t> roomIdsToRemove;
+    std::vector<std::uint32_t> roomIdsToRemove;
 
     for (auto &[room_id, room] : _rooms) {
       if (room->isEmpty() && room->getState() == RoomStatus::FINISHED) {
@@ -163,7 +163,7 @@ void game::GameManager::removeEmptyRooms() {
         roomsToStop.push_back(room);
       }
     }
-    for (uint32_t room_id : roomIdsToRemove) {
+    for (std::uint32_t room_id : roomIdsToRemove) {
       _rooms.erase(room_id);
       std::cout << "[GAME_MANAGER] Marked room " << room_id << " for cleanup"
                 << std::endl;

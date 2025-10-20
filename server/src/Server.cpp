@@ -140,7 +140,7 @@ void server::Server::handleTimeout() {
  * packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
-                                     uint32_t roomId) {
+                                     std::uint32_t roomId) {
   if (roomId == NO_ROOM) {
     return;
   }
