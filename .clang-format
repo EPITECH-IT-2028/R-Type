@@ -15,7 +15,7 @@ BraceWrapping:
 AllowShortFunctionsOnASingleLine: None      # Disallow single-line functions
 AllowShortBlocksOnASingleLine: Never        # Disallow single-line blocks
 AllowShortEnumsOnASingleLine: false         # Disallow single-line enum
-ColumnLimit: 80                             # Maximum line width of 999 columnsgg
+ColumnLimit: 80                             # Maximum line width of 80 columns
 
 # Space handling
 SpaceBeforeParens: ControlStatements        # Add space before parentheses in control statements
@@ -35,7 +35,7 @@ IndentCaseLabels: true                      # Indent case labels in switch state
 IndentPPDirectives: BeforeHash              # Preprocessor directives align with indentation
 IndentAccessModifiers: true
 NamespaceIndentation: All
-BreakAfterReturnType: Automatic             # Break after return type for top-level functions only
+AlwaysBreakAfterReturnType: None            # Don't break after return type
 
 # Custom rules
 AllowShortIfStatementsOnASingleLine: false  # Do not allow single-line if statements
