@@ -107,7 +107,7 @@ if [[ "$OS_TYPE" == "Linux" ]]; then
         if [ ${#missing_packages[@]} -gt 0 ]; then
             if [[ $EUID -ne 0 ]]; then
                 echo "Installing missing dependencies requires root privileges."
-                echo "Please re-run with: sudo ./build.sh --install-deps $@"
+                echo "Please re-run with: sudo ./build.sh --install-deps"
                 exit 1
             fi
             echo "[...] Installing ${#missing_packages[@]} package(s)..."
