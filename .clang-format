@@ -1,0 +1,42 @@
+BasedOnStyle: Google
+Language: Cpp
+
+# Formatting options
+IndentWidth: 2                              # Use 2 spaces for indentation
+TabWidth: 2                                 # Set tab width to 2 spaces
+UseTab: Never                               # Do not use tabs for indentation
+BreakBeforeBraces: Custom                   # Control braces placement
+BraceWrapping:
+  AfterFunction: false                      # Functions: braces start on a new line
+  AfterControlStatement: false              # Control statements: braces stay on the same line
+  AfterClass: false                         # Classes: braces start on a new line
+  AfterNamespace: false                     # Namespaces: braces start on a new line
+
+AllowShortFunctionsOnASingleLine: None      # Disallow single-line functions
+AllowShortBlocksOnASingleLine: Never        # Disallow single-line blocks
+AllowShortEnumsOnASingleLine: false         # Disallow single-line enum
+ColumnLimit: 80                             # Maximum line width of 999 columnsgg
+
+# Space handling
+SpaceBeforeParens: ControlStatements        # Add space before parentheses in control statements
+SpacesInParentheses: false                  # No spaces inside parentheses
+SpacesInSquareBrackets: false               # No spaces inside square brackets
+PointerAlignment: Right                     # Pointer * aligns to the variable name
+
+# Include handling
+SortIncludes: true                          # Do not sort include statements automatically
+IncludeBlocks: Merge                        # Preserve existing include block spacing
+
+# Comment style
+CommentPragmas: '^#'                        # Define a pragma comment prefix (optional customization)
+
+# Other style guidelines
+IndentCaseLabels: true                      # Indent case labels in switch statements
+IndentPPDirectives: BeforeHash              # Preprocessor directives align with indentation
+IndentAccessModifiers: true
+NamespaceIndentation: All
+BreakAfterReturnType: Automatic             # Break after return type for top-level functions only
+
+# Custom rules
+AllowShortIfStatementsOnASingleLine: false  # Do not allow single-line if statements
+AllowShortLoopsOnASingleLine: false         # Do not allow single-line loops
