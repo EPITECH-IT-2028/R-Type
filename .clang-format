@@ -24,7 +24,7 @@ SpacesInSquareBrackets: false               # No spaces inside square brackets
 PointerAlignment: Right                     # Pointer * aligns to the variable name
 
 # Include handling
-SortIncludes: true                          # Do not sort include statements automatically
+SortIncludes: true                          # Sort include statements automatically
 IncludeBlocks: Merge                        # Preserve existing include block spacing
 
 # Comment style
