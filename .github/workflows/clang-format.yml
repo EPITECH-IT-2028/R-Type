@@ -26,4 +26,4 @@ jobs:
 
       - name: Check formatting
         run: |
-          clang-format-18 --dry-run --Werror -style=file src/**/*.cpp src/**/*.h include/**/*.h
+          clang-format-18 --dry-run --Werror -style=file server/**/*.cpp server/**/*.hpp client/**/*.cpp client/**/*.hpp
