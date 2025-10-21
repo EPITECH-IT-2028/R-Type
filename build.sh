@@ -213,7 +213,7 @@ fi
 echo "Building R-Type with target: $TARGET, build type: $BUILD_TYPE"
 
 echo "Installing conan dependencies..."
-if ! conan profile show default > /dev/null 2>&1; then
+if ! conan profile show > /dev/null 2>&1; then
     echo "[INFO] Conan default profile not found. Detecting..."
     conan profile detect --force > /dev/null 2>&1
 fi
