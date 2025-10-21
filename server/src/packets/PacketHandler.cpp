@@ -388,6 +388,21 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
                                                   roomClients, movePacket);
+
+  // queue::PositionEvent event;
+  // event.player_id = client._player_id; 
+  // event.x = newX;
+  // event.y = newY;
+  // event.sequence_number = game.getSequenceNumber();
+  // game.getEventQueue().addRequest(event);
+  // game.setSequenceNumber(game.getSequenceNumber() + 1);
+  for (const auto &client : roomClients) {
+    client->addUnacknowledgedPacket(
+        game.getSequenceNumber(),
+        std::make_shared<std::vector<uint8_t>>(
+            serialization::BitserySerializer::serialize(movePacket)));
+  }
+  game.setSequenceNumber(room->getGame().getSequenceNumber() + 1);
   return OK;
 }
 

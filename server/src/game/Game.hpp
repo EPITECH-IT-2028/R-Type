@@ -89,6 +89,13 @@ namespace game {
         return _deltaTime.load();
       }
 
+      std::atomic<std::uint32_t> &getSequenceNumber() {
+        return _sequence_number;
+      }
+      void setSequenceNumber(std::uint32_t value) {
+        _sequence_number = value;
+      }
+
     private:
       void gameLoop();
       void initECS();
