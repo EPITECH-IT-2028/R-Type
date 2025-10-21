@@ -62,6 +62,7 @@ REQUIRED_PACKAGES=(
     libxcb-util-dev
     libxcb-util0-dev
     clang
+    sudo
 )
 
 UNAME_OUT="$(uname -s)"
