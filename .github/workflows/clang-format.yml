@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - clang-format-ci
-
 jobs:
   check_formatting:
     name: Check Code Formatting
@@ -18,23 +17,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/apt-cache
-          key: clang-format-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
+          key: clang-format-${{ runner.os }}
           restore-keys: |
             clang-format-${{ runner.os }}-
 
       - name: Install clang-format
         run: |
-          if [ ! -f /tmp/apt-cache/clang-format-18 ]; then
-            sudo apt-get update
-            sudo apt-get install -y clang-format-18
-            touch /tmp/apt-cache/clang-format-18
-          fi
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18
 
-      - name: Run clang-format
+      - name: Check formatting
         run: |
-          clang-format src/**/*.cpp src/**/*.h include/**/*.h -i -style=file
-
-      - name: Check for unformatted files
-        run: |
-          git diff --exit-code || (echo "Code is not formatted correctly" && exit 1)
-
+          clang-format --dry-run --Werror -style=file src/**/*.cpp src/**/*.h include/**/*.h
