@@ -390,3 +390,32 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
                                                   roomClients, movePacket);
   return OK;
 }
+
+int packet::AckPacketHandler::handlePacket(server::Server &server,
+                                           server::Client &client,
+                                           const char *data,
+                                           std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<AckPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize AckPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const AckPacket &packet = deserializedPacket.value();
+  std::cout << "[ACK] Received ACK for sequence number "
+            << packet.sequence_number << " from player "
+            << packet.player_id << std::endl;
+
+  for (auto &client : server.getClients()) {
+    if (client && client->_player_id == static_cast<int>(packet.player_id)) {
+      client->removeAcknowledgedPacket(packet.sequence_number);
+      break;
+    }
+  }
+  return OK;
+}

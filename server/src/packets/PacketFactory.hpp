@@ -30,7 +30,9 @@ namespace packet {
               {PacketType::PlayerShoot,
                []() { return std::make_unique<PlayerShootHandler>(); }},
               {PacketType::PlayerInput,
-               []() { return std::make_unique<PlayerInputHandler>(); }}};
+               []() { return std::make_unique<PlayerInputHandler>(); }},
+              {PacketType::Ack,
+               []() { return std::make_unique<AckPacketHandler>(); }}};
   };
 
 }  // namespace packet
