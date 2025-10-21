@@ -2,9 +2,26 @@
 
 # Usage: ./build.sh [debug|release] (defaults to both)
 #        ./build.sh [client|server|both] [debug|release]
+#        ./build.sh --install-deps
 #        ./build.sh clean
 
 set -e
+
+# Default to not installing dependencies
+INSTALL_DEPS=false
+
+# Check for --install-deps flag
+if [[ " $* " == *" --install-deps "* ]]; then
+    INSTALL_DEPS=true
+    # Remove the flag from the arguments
+    new_args=()
+    for arg in "$@"; do
+        if [[ "$arg" != "--install-deps" ]]; then
+            new_args+=("$arg")
+        fi
+    done
+    set -- "${new_args[@]}"
+fi
 
 REQUIRED_PACKAGES=(
     build-essential
@@ -80,27 +97,31 @@ case "${UNAME_OUT}" in
         ;;
 esac
 
-if [[ "$OS_TYPE" == "Linux" ]]; then
-    echo "Linux detected, ensuring required packages are installed..."
-    missing_packages=()
-    for pkg in "${REQUIRED_PACKAGES[@]}"; do
-        if ! dpkg -s "$pkg" &> /dev/null; then
-            missing_packages+=("$pkg")
+if [ "$INSTALL_DEPS" = "true" ]; then
+    if [[ "$OS_TYPE" == "Linux" ]]; then
+        echo "Linux detected, ensuring required packages are installed..."
+        missing_packages=()
+        for pkg in "${REQUIRED_PACKAGES[@]}"; do
+            if ! dpkg -s "$pkg" &> /dev/null; then
+                missing_packages+=("$pkg")
+            fi
+        done
+        
+        if [ ${#missing_packages[@]} -gt 0 ]; then
+            if [[ $EUID -ne 0 ]]; then
+                echo "Installing missing dependencies requires root privileges."
+                echo "Please re-run with: sudo ./build.sh --install-deps $@"
+                exit 1
+            fi
+            echo "[...] Installing ${#missing_packages[@]} package(s)..."
+            apt-get update
+            apt-get install -y "${missing_packages[@]}"
+        else
+            echo "All required packages are already installed."
         fi
-    done
-    
-    if [ ${#missing_packages[@]} -gt 0 ]; then
-        if [[ $EUID -ne 0 ]]; then
-            echo "Installation des dépendances manquantes requiert les privilèges root."
-            echo "Veuillez relancer avec: sudo ./build.sh $@"
-            exit 1
-        fi
-        echo "[...] Installation de ${#missing_packages[@]} paquet(s)..."
-        apt-get update
-        apt-get install -y "${missing_packages[@]}"
+    else
+        echo "Non-Linux OS detected ($OS_TYPE), skipping system package installation."
     fi
-else
-    echo "Non-Linux OS detected ($OS_TYPE), skipping system package installation."
 fi
 
 if [ $# -eq 0 ]; then
