@@ -28,4 +28,4 @@ jobs:
 
       - name: Check formatting
         run: |
-          clang-format --dry-run --Werror -style=file src/**/*.cpp src/**/*.h include/**/*.h
+          clang-format --dry-run --Werror -style=file server/src/**/*.cpp client/**/*.h include/**/*.h
