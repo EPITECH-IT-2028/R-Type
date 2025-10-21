@@ -6,6 +6,96 @@
 
 set -e
 
+REQUIRED_PACKAGES=(
+    build-essential
+    cmake
+    ninja-build
+    pkg-config
+    libgl-dev
+    libgl1-mesa-dev
+    libx11-dev
+    libx11-xcb-dev
+    libfontenc-dev
+    libice-dev
+    libsm-dev
+    libxau-dev
+    libxaw7-dev
+    libxcomposite-dev
+    libxcursor-dev
+    libxdamage-dev
+    libxext-dev
+    libxfixes-dev
+    libxi-dev
+    libxinerama-dev
+    libxkbfile-dev
+    libxmu-dev
+    libxmuu-dev
+    libxpm-dev
+    libxrandr-dev
+    libxrender-dev
+    libxres-dev
+    libxss-dev
+    libxt-dev
+    libxtst-dev
+    libxv-dev
+    libxxf86vm-dev
+    libxcb-glx0-dev
+    libxcb-render0-dev
+    libxcb-render-util0-dev
+    libxcb-xkb-dev
+    libxcb-icccm4-dev
+    libxcb-image0-dev
+    libxcb-keysyms1-dev
+    libxcb-randr0-dev
+    libxcb-shape0-dev
+    libxcb-sync-dev
+    libxcb-xfixes0-dev
+    libxcb-xinerama0-dev
+    uuid-dev
+    libxcb-cursor-dev
+    libxcb-dri2-0-dev
+    libxcb-dri3-dev
+    libxcb-present-dev
+    libxcb-composite0-dev
+    libxcb-ewmh-dev
+    libxcb-res0-dev
+    libxcb-util-dev
+    libxcb-util0-dev
+    clang
+)
+
+UNAME_OUT="$(uname -s)"
+case "${UNAME_OUT}" in
+    Linux*)
+        OS_TYPE=Linux
+        ;;
+    Darwin*)
+        OS_TYPE=Mac
+        ;;
+    CYGWIN*|MINGW*|MSYS*)
+        OS_TYPE=Windows
+        ;;
+    *)
+        OS_TYPE="Unknown"
+        ;;
+esac
+
+if [[ "$OS_TYPE" == "Linux" ]]; then
+    echo "Linux detected, ensuring required packages are installed..."
+    if [[ $EUID -ne 0 ]]; then
+       echo "Some dependencies may require root privileges. Please run as root (sudo ./build.sh) if packages are missing."
+    fi
+    for pkg in "${REQUIRED_PACKAGES[@]}"; do
+        if ! dpkg -s "$pkg" &> /dev/null; then
+            echo "[...] Installing $pkg"
+            sudo apt-get update
+            sudo apt-get install -y "$pkg"
+        fi
+    done
+else
+    echo "Non-Linux OS detected ($OS_TYPE), skipping system package installation."
+fi
+
 if [ $# -eq 0 ]; then
     TARGET="both"
     BUILD_TYPE="Release"
