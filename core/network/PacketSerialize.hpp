@@ -269,3 +269,9 @@ void serialize(S& s, PlayerInputPacket& packet) {
   s.value4b(packet.sequence_number);
 }
 
+template <typename S>
+void serialize(S& s, AckPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.sequence_number);
+}

@@ -52,6 +52,8 @@ inline std::string packetTypeToString(PacketType type) {
       return "PlayerDeath";
     case PacketType::PlayerInput:
       return "PlayerInput";
+    case PacketType::Ack:
+      return "Ack";
     default:
       std::stringstream ss;
       ss << "Unknown(" << static_cast<int>(type) << ")";
