@@ -43,3 +43,5 @@ constexpr float PLAYER_HEIGHT = 37.0f;
 constexpr int MARGIN_WINDOW = 30;
 
 constexpr int NO_ROOM = -1;
+
+constexpr int RESEND_PACKET_DELAY = 5; // number in seconds
