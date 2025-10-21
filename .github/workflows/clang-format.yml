@@ -14,16 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install LLVM clang-format-18
+      - name: Install LLVM clang-format-22
         run: |
           sudo apt-get update
           sudo apt-get install -y wget gnupg lsb-release
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 18
-          sudo apt-get install -y clang-format-18
-          clang-format-18 --version
+          sudo ./llvm.sh 22
+          sudo apt-get install -y clang-format-22
+          clang-format-22 --version
 
       - name: Check formatting
         run: |
-          clang-format-18 --dry-run --Werror -style=file server/**/*.cpp server/**/*.hpp client/**/*.cpp client/**/*.hpp
+          clang-format-22 --dry-run --Werror -style=file server/**/*.cpp server/**/*.hpp client/**/*.cpp client/**/*.hpp
