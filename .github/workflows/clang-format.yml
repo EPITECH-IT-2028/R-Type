@@ -2,7 +2,7 @@ name: Clang Format Check
 
 on:
   push:
-    branches: ["clang-format-ci"]
+    branches: ["main"]
   pull_request:
 
 jobs:
