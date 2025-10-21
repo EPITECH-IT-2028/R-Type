@@ -62,7 +62,6 @@ REQUIRED_PACKAGES=(
     libxcb-util-dev
     libxcb-util0-dev
     clang
-    sudo
 )
 
 UNAME_OUT="$(uname -s)"
@@ -83,16 +82,23 @@ esac
 
 if [[ "$OS_TYPE" == "Linux" ]]; then
     echo "Linux detected, ensuring required packages are installed..."
-    if [[ $EUID -ne 0 ]]; then
-       echo "Some dependencies may require root privileges. Please run as root (sudo ./build.sh) if packages are missing."
-    fi
+    missing_packages=()
     for pkg in "${REQUIRED_PACKAGES[@]}"; do
         if ! dpkg -s "$pkg" &> /dev/null; then
-            echo "[...] Installing $pkg"
-            sudo apt-get update
-            sudo apt-get install -y "$pkg"
+            missing_packages+=("$pkg")
         fi
     done
+    
+    if [ ${#missing_packages[@]} -gt 0 ]; then
+        if [[ $EUID -ne 0 ]]; then
+            echo "Installation des dépendances manquantes requiert les privilèges root."
+            echo "Veuillez relancer avec: sudo ./build.sh $@"
+            exit 1
+        fi
+        echo "[...] Installation de ${#missing_packages[@]} paquet(s)..."
+        apt-get update
+        apt-get install -y "${missing_packages[@]}"
+    fi
 else
     echo "Non-Linux OS detected ($OS_TYPE), skipping system package installation."
 fi
