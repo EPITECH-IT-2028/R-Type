@@ -2,8 +2,9 @@ name: Clang Format Check
 
 on:
   push:
-    branches:
-      - clang-format-ci
+    branches: ["clang-format-ci"]
+  pull_request:
+
 jobs:
   check_formatting:
     name: Check Code Formatting
@@ -13,19 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Cache clang-format dependencies
-        uses: actions/cache@v3
-        with:
-          path: /tmp/apt-cache
-          key: clang-format-${{ runner.os }}
-          restore-keys: |
-            clang-format-${{ runner.os }}-
-
-      - name: Install clang-format
+      - name: Install LLVM clang-format-18
         run: |
           sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 18
           sudo apt-get install -y clang-format-18
+          clang-format-18 --version
 
       - name: Check formatting
         run: |
-          clang-format --dry-run --Werror -style=file server/src/**/*.cpp client/**/*.cpp server/src/**/*.hpp client/**/*.hpp
+          clang-format-18 --dry-run --Werror -style=file src/**/*.cpp src/**/*.h include/**/*.h
