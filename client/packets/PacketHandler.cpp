@@ -4,6 +4,7 @@
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+#include "PacketBuilder.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSpriteConfig.hpp"
@@ -480,6 +481,27 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
              "[PROJECTILE DESTROY] projectile entity not found: %u",
              packet.projectile_id);
   }
+
+  return packet::OK;
+}
+
+int packet::GameStartHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<GameStartPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[GAME START] Failed to deserialize packet");
+    return packet::KO;
+  }
+
+
+  const GameStartPacket &packet = packetOpt.value();
+  TraceLog(LOG_INFO, "[GAME START] Game is starting!");
+  
+  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number, client.getPlayerId());
+  client.send(ackPacket);
 
   return packet::OK;
 }
