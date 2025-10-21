@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <unordered_map>
 #include <vector>
 #include "Client.hpp"
 #include "Events.hpp"
@@ -88,6 +89,7 @@ namespace server {
       uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
+      std::unordered_map<std::uint32_t, std::uint32_t> _acknowledgements;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;
