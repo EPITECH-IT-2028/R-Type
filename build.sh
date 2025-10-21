@@ -7,13 +7,10 @@
 
 set -e
 
-# Default to not installing dependencies
 INSTALL_DEPS=false
 
-# Check for --install-deps flag
 if [[ " $* " == *" --install-deps "* ]]; then
     INSTALL_DEPS=true
-    # Remove the flag from the arguments
     new_args=()
     for arg in "$@"; do
         if [[ "$arg" != "--install-deps" ]]; then
@@ -97,8 +94,8 @@ case "${UNAME_OUT}" in
         ;;
 esac
 
-if [ "$INSTALL_DEPS" = "true" ]; then
-    if [[ "$OS_TYPE" == "Linux" ]]; then
+if [[ "$OS_TYPE" == "Linux" ]]; then
+    if [ "$INSTALL_DEPS" = "true" ]; then
         echo "Linux detected, ensuring required packages are installed..."
         missing_packages=()
         for pkg in "${REQUIRED_PACKAGES[@]}"; do
@@ -119,7 +116,9 @@ if [ "$INSTALL_DEPS" = "true" ]; then
         else
             echo "All required packages are already installed."
         fi
-    else
+    fi
+else
+    if [ "$INSTALL_DEPS" = "true" ]; then
         echo "Non-Linux OS detected ($OS_TYPE), skipping system package installation."
     fi
 fi
@@ -241,10 +240,19 @@ fi
 echo "Building R-Type with target: $TARGET, build type: $BUILD_TYPE"
 
 echo "Installing conan dependencies..."
-if ! conan profile show > /dev/null 2>&1; then
-    echo "[INFO] Conan default profile not found. Detecting..."
-    conan profile detect --force > /dev/null 2>&1
+if ! command -v conan &> /dev/null
+then
+    if [[ $EUID -eq 0 ]]; then
+        echo "Warning: conan command not found. This might happen when running with sudo."
+        echo "The script will continue, but it might fail if conan is not installed."
+    else
+        echo "conan could not be found, please install it"
+        exit 1
+    fi
 fi
+
+echo "[INFO] Detecting conan profile..."
+conan profile detect --force > /dev/null 2>&1
 
 CONAN_EXTRA_ARGS=""
 if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
@@ -252,9 +260,17 @@ if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
 fi
 
 if [ "$TARGET" == "server" ]; then
-    conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+    if ! conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"; then
+        echo "Conan install failed. If you are on Linux, you may need to install system dependencies."
+        echo "Try running: sudo ./build.sh --install-deps"
+        exit 1
+    fi
 else
-    conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+    if ! conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"; then
+        echo "Conan install failed. If you are on Linux, you may need to install system dependencies."
+        echo "Try running: sudo ./build.sh --install-deps"
+        exit 1
+    fi
 fi
 
 case $TARGET in
