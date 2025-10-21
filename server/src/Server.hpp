@@ -79,6 +79,8 @@ namespace server {
 
       std::shared_ptr<Client> getClient(std::size_t idx) const;
 
+      void handleUnacknowledgedPackets();
+
     private:
       network::ServerNetworkManager _networkManager;
 

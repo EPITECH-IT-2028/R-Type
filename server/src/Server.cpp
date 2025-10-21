@@ -423,3 +423,11 @@ void server::Server::clearClientSlot(int player_id) {
     }
   }
 }
+
+void server::Server::handleUnacknowledgedPackets() {
+  for (auto &client : _clients) {
+    if (client && client->_connected) {
+      client->resendUnacknowledgedPackets(_networkManager);
+    }
+  }
+}

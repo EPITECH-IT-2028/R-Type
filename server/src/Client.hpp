@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <limits>
 #include "Macro.hpp"
+#include "Packet.hpp"
+#include "ServerNetworkManager.hpp"
 
 namespace server {
   struct Client {
@@ -43,5 +45,14 @@ namespace server {
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
+
+    std::unordered_map<std::uint32_t, std::shared_ptr<std::vector<uint8_t>>>
+        _unacknowledged_packets;
+
+    void resendUnacknowledgedPackets(network::ServerNetworkManager &networkManager);
+
+    void addUnacknowledgedPacket(std::uint32_t sequence_number,
+                                std::shared_ptr<std::vector<uint8_t>> packetData);
+    void removeAcknowledgedPacket(std::uint32_t sequence_number);
   };
 }  // namespace server
