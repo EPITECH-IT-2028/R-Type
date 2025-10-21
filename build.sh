@@ -254,11 +254,6 @@ fi
 echo "[INFO] Detecting conan profile..."
 conan profile detect --force > /dev/null 2>&1
 
-CONAN_EXTRA_ARGS=""
-if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
-    CONAN_EXTRA_ARGS="-c tools.system.package_manager:mode=install"
-fi
-
 if [ "$TARGET" == "server" ]; then
     if ! conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"; then
         echo "Conan install failed. If you are on Linux, you may need to install system dependencies."
