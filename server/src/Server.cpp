@@ -34,6 +34,8 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _projectile_count(0),
       _next_player_id(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
+  _resendThreadRunning = true;
+  _resendThread = std::thread(&Server::resendThreadFunction, this);
   _clients.resize(_max_clients);
 }
 
@@ -73,6 +75,7 @@ void server::Server::processGameEvents() {
     while (room->getGame().getEventQueue().popRequest(event)) {
       handleGameEvent(event, room->getRoomId());
     }
+
   }
 
   _gameManager->removeEmptyRooms();
@@ -82,6 +85,10 @@ void server::Server::stop() {
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
   _networkManager.closeSocket();
   _gameManager->shutdownRooms();
+  _resendThreadRunning = false;
+  if (_resendThread.joinable()) {
+    _resendThread.join();
+  }
 }
 
 void server::Server::handleTimeout() {
@@ -434,5 +441,15 @@ void server::Server::handleUnacknowledgedPackets() {
     if (client && client->_connected) {
       client->resendUnacknowledgedPackets(_networkManager);
     }
+  }
+}
+
+void server::Server::resendThreadFunction() {
+  while (_resendThreadRunning) {
+    std::this_thread::sleep_for(std::chrono::seconds(RESEND_PACKET_DELAY));
+    
+    if (!_resendThreadRunning) break;
+    
+    handleUnacknowledgedPackets();
   }
 }

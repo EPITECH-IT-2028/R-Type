@@ -81,6 +81,8 @@ namespace server {
 
       void handleUnacknowledgedPackets();
 
+      void resendThreadFunction();
+
     private:
       network::ServerNetworkManager _networkManager;
 
@@ -92,6 +94,10 @@ namespace server {
 
       std::shared_ptr<game::GameManager> _gameManager;
       std::unordered_map<std::uint32_t, std::uint32_t> _acknowledgements;
+
+      std::thread _resendThread;
+      std::atomic<bool> _resendThreadRunning{false};
+
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;
