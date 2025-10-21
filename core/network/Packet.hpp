@@ -22,7 +22,8 @@ enum class PacketType : uint8_t {
   EnemyHit = 0x10,
   PlayerHit = 0x11,
   PlayerDeath = 0x12,
-  PlayerInput = 0x13
+  PlayerInput = 0x13,
+  Ack = 0x14
 };
 
 enum class EnemyType : uint8_t {
@@ -355,4 +356,10 @@ struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     uint8_t input;
     std::uint32_t sequence_number;
+};
+
+struct ALIGNED AckPacket {
+    PacketHeader header;
+    uint32_t sequence_number;
+    std::uint32_t player_id;
 };

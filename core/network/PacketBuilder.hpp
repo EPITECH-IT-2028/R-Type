@@ -384,4 +384,14 @@ struct PacketBuilder {
       packet.sequence_number = sequence_number;
       return packet;
     }
+
+    static AckPacket makeAckPacket(uint32_t sequence_number,
+                                   std::uint32_t player_id) {
+      AckPacket packet{};
+      packet.header.type = PacketType::Ack;
+      packet.header.size = sizeof(packet);
+      packet.sequence_number = sequence_number;
+      packet.player_id = player_id;
+      return packet;
+    }
 };
