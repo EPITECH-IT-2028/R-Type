@@ -35,7 +35,7 @@ IndentCaseLabels: true                      # Indent case labels in switch state
 IndentPPDirectives: BeforeHash              # Preprocessor directives align with indentation
 IndentAccessModifiers: true
 NamespaceIndentation: All
-AlwaysBreakAfterReturnType: None            # Don't break after return type
+AlwaysBreakAfterReturnType: Automatic            # Don't break after return type
 
 # Custom rules
 AllowShortIfStatementsOnASingleLine: false  # Do not allow single-line if statements
