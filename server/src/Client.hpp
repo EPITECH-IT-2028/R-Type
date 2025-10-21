@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <limits>
 #include "Macro.hpp"
-#include "Packet.hpp"
 #include "ServerNetworkManager.hpp"
 
 namespace server {

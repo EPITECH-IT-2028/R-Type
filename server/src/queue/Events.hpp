@@ -83,6 +83,7 @@ namespace queue {
 
   struct GameStartEvent {
       bool game_started;
+      std::uint32_t sequence_number;
   };
 
   using GameEvent =

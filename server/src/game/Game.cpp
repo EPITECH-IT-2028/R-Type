@@ -169,6 +169,8 @@ void game::Game::gameLoop() {
 
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
+  startEvent.sequence_number = 0;
+  _sequence_number += 1;
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();

@@ -205,10 +205,15 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
           broadcast::Broadcast::broadcastPlayerDeathToRoom(
               _networkManager, clients, playerDestroyPacket);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
-          auto gameStartPacket =
-              PacketBuilder::makeGameStart(specificEvent.game_started);
+          GameStartPacket gameStartPacket =
+              PacketBuilder::makeGameStart(specificEvent.game_started, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastGameStartToRoom(
               _networkManager, clients, gameStartPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(gameStartPacket));
+          for (const auto &client : clients) {
+            client->addUnacknowledgedPacket(specificEvent.sequence_number, buffer);
+          }
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
               specificEvent.player_id, specificEvent.x, specificEvent.y,

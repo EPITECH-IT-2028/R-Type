@@ -263,6 +263,7 @@ struct ALIGNED ProjectileDestroyPacket {
 struct ALIGNED GameStartPacket {
     PacketHeader header;
     uint8_t game_start;
+    std::uint32_t sequence_number;
 };
 
 /**

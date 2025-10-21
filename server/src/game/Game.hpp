@@ -107,6 +107,7 @@ namespace game {
       std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>>
           _projectiles;
 
+      std::atomic<std::uint32_t> _sequence_number{0};
       float _enemySpawnTimer = 0.0f;
       float _enemySpawnInterval = 5.0f;
       int _nextEnemyId = 0;

@@ -284,11 +284,12 @@ struct PacketBuilder {
       return packet;
     }
 
-    static GameStartPacket makeGameStart(bool started) {
+    static GameStartPacket makeGameStart(bool started, std::uint32_t sequence_number) {
       GameStartPacket packet{};
       packet.header.type = PacketType::GameStart;
       packet.header.size = sizeof(packet);
       packet.game_start = started;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 

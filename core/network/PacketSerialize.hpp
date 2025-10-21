@@ -235,6 +235,7 @@ void serialize(S& s, GameStartPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.game_start);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
