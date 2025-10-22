@@ -553,6 +553,7 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
       if (!server.initializePlayerInRoom(client)) {
         server.getGameManager().leaveRoom(sharedClient);
+        server.getGameManager().destroyRoom(newRoom->getRoomId());
         client._state = server::ClientState::CONNECTED_MENU;
         return KO;
       }
