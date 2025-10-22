@@ -8,7 +8,8 @@ namespace ecs {
     public:
       explicit MovementSystem(
           ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {}
+          : _ecsManager(ecsManager) {
+      }
 
       void update(float deltaTime) override;
 

@@ -8,12 +8,13 @@ namespace ecs {
   class RenderSystem : public System {
     public:
       explicit RenderSystem(ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {}
+          : _ecsManager(ecsManager) {
+      }
 
-      RenderSystem(const RenderSystem&) = delete;
-      RenderSystem& operator=(const RenderSystem&) = delete;
-      RenderSystem(RenderSystem&&) noexcept = default;
-      RenderSystem& operator=(RenderSystem&&) = delete;
+      RenderSystem(const RenderSystem &) = delete;
+      RenderSystem &operator=(const RenderSystem &) = delete;
+      RenderSystem(RenderSystem &&) noexcept = default;
+      RenderSystem &operator=(RenderSystem &&) = delete;
 
       ~RenderSystem() noexcept;
 
