@@ -4,6 +4,7 @@
 #include <queue>
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "PacketUtils.hpp"
 #include "Serializer.hpp"
 
 using namespace network;
@@ -76,6 +77,12 @@ void ClientNetworkManager::connect() {
   }
 }
 
+/**
+ * @brief Stops the network manager, closes the socket, and reports disconnection.
+ *
+ * Sets the manager's running state to false, closes the underlying socket if it is open,
+ * and writes a disconnection message to standard output.
+ */
 void ClientNetworkManager::disconnect() {
   _running.store(false, std::memory_order_release);
 
@@ -157,7 +164,9 @@ void ClientNetworkManager::processReceivedPackets(client::Client &client) {
 }
 
 void ClientNetworkManager::processPacket(const char *data, std::size_t size, client::Client &client) {
-  serialization::Buffer buffer(data, data + size);
+  serialization::Buffer buffer(
+            reinterpret_cast<const std::uint8_t *>(data),
+            reinterpret_cast<const std::uint8_t *>(data) + size);
   auto headerOpt =
       serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
 
@@ -175,13 +184,13 @@ void ClientNetworkManager::processPacket(const char *data, std::size_t size, cli
   if (handler) {
     int result = handler->handlePacket(client, data, size);
     if (result != 0) {
-      std::cerr << "Error handling packet of type "
-                << static_cast<int>(packet_type) << ": " << result
-                << std::endl;
-    }
-  } else {
-    std::cerr << "No handler for packet type "
-              << static_cast<int>(packet_type) << std::endl;
-  }
+            std::cerr << "Error handling packet of type "
+                      << packetTypeToString(packet_type) << ": " << result
+                      << std::endl;
+          }
+        } else {
+          std::cerr << "No handler for packet type "
+                    << packetTypeToString(packet_type) << std::endl;
+        }
 }
 

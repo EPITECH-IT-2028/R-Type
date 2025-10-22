@@ -7,18 +7,35 @@ namespace game {
 
   class Enemy {
     public:
-      Enemy(int enemy_id, uint32_t entity_id, ecs::ECSManager &ecsManager)
+      /**
+       * @brief Construct an Enemy wrapper that associates a game enemy with an ECS entity.
+       *
+       * @param enemy_id Unique game-level identifier for the enemy.
+       * @param entity_id Identifier of the corresponding ECS entity.
+       * @param ecsManager Reference to the ECS manager used to access the entity's components; the manager must outlive this Enemy instance.
+       */
+      Enemy(int enemy_id, std::uint32_t entity_id, ecs::ECSManager &ecsManager)
           : _enemy_id(enemy_id),
             _entity_id(entity_id),
             _ecsManager(ecsManager) {
       }
       ~Enemy() = default;
 
+      /**
+       * @brief Gets the enemy's unique identifier.
+       *
+       * @return int The enemy's identifier.
+       */
       int getEnemyId() const {
         return _enemy_id;
       }
 
-      uint32_t getEntityId() const {
+      /**
+       * @brief Retrieve the entity's unique identifier within the ECS.
+       *
+       * @return std::uint32_t The ID of the entity associated with this Enemy.
+       */
+      std::uint32_t getEntityId() const {
         return _entity_id;
       }
 
@@ -53,7 +70,7 @@ namespace game {
 
     private:
       int _enemy_id;
-      uint32_t _entity_id;
+      std::uint32_t _entity_id;
       ecs::ECSManager &_ecsManager;
   };
 

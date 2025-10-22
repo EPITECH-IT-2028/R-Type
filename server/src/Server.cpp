@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include "Broadcast.hpp"
 #include "Events.hpp"
 #include "GameManager.hpp"
@@ -109,14 +110,14 @@ void server::Server::handleTimeout() {
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
         if (room) {
-          room->getGame().destroyPlayer(pid);
-          room->removeClient(pid);
-
           auto roomClients = room->getClients();
 
           auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
               _networkManager, roomClients, disconnectPacket);
+
+          room->getGame().destroyPlayer(pid);
+          _gameManager->leaveRoom(client);
         }
       }
 
@@ -139,7 +140,7 @@ void server::Server::handleTimeout() {
  * packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
-                                     uint32_t roomId) {
+                                     std::uint32_t roomId) {
   if (roomId == NO_ROOM) {
     return;
   }
@@ -270,13 +271,15 @@ void server::Server::handleReceive(const char *data,
 }
 
 /**
- * @brief Handle a PlayerInfo packet from a client attempting to connect.
+ * @brief Register a new client from a received PlayerInfo packet and establish its network association.
  *
- * Validates the packet size, checks if the client is already connected,
- * and if not, assigns a new player ID and registers the client.
- * If the server is at max capacity, it refuses the connection.
- * @param data Pointer to the received data buffer.
- * @param size Size of the received data buffer.
+ * If the remote endpoint is already associated with a connected client this returns without action.
+ * Otherwise attempts to allocate an available client slot, assigns a new player ID, marks the client as connected,
+ * registers the client endpoint with the network manager, and dispatches the PlayerInfo packet to the corresponding handler.
+ * If no client slot is available, the connection is refused and a warning is logged.
+ *
+ * @param data Pointer to the received PlayerInfo packet buffer.
+ * @param size Length in bytes of the packet buffer.
  */
 void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
@@ -299,33 +302,6 @@ void server::Server::handlePlayerInfoPacket(const char *data,
       _networkManager.registerClient(id, current_endpoint);
 
       std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
-
-      bool joined = _gameManager->joinAnyRoom(_clients[i]);
-      if (!joined) {
-        auto newRoom = _gameManager->createRoom("Room_" + std::to_string(id));
-        if (newRoom) {
-          bool joinedNew = newRoom->addClient(_clients[i]);
-          if (joinedNew) {
-            std::cout << "[WORLD] Player " << id << " created and joined room "
-                      << newRoom->getRoomId() << "." << std::endl;
-          } else {
-            std::cerr << "[ERROR] Player " << id
-                      << " failed to join newly created room." << std::endl;
-            _clients[i].reset();
-            _player_count--;
-            return;
-          }
-        } else {
-          std::cerr << "[ERROR] Failed to create a new room for player " << id
-                    << "." << std::endl;
-          _clients[i].reset();
-          _player_count--;
-          return;
-        }
-      } else {
-        std::cout << "[WORLD] Player " << id << " joined an existing room."
-                  << std::endl;
-      }
 
       auto handler = _factory.createHandler(PacketType::PlayerInfo);
       if (handler) {
@@ -361,8 +337,17 @@ size_t server::Server::findExistingClient() {
   return KO;
 }
 
-/*
- * Process data received from a client.
+/**
+ * @brief Handle and dispatch a packet received from a connected client.
+ *
+ * Deserializes the packet header from the provided raw buffer, selects an
+ * appropriate packet handler based on the header type, and delegates full
+ * packet processing to that handler. Logs a warning and returns if the
+ * header cannot be deserialized or if no handler exists for the packet type.
+ *
+ * @param client_idx Index of the client in the server's client storage.
+ * @param data Pointer to the raw packet bytes received from the client.
+ * @param size Number of bytes available at `data`.
  */
 void server::Server::handleClientData(std::size_t client_idx, const char *data,
                                       std::size_t size) {
@@ -372,12 +357,6 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   }
 
   auto client = _clients[client_idx];
-
-  if (size < sizeof(PacketHeader)) {
-    std::cerr << "[WARNING] Packet too small from client "
-              << _clients[client_idx]->_player_id << std::endl;
-    return;
-  }
 
   serialization::Buffer buffer(data, data + size);
 
@@ -401,9 +380,159 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   }
 }
 
-/*
- * Retrieve a client by index.
- * Returns nullptr if the index is invalid or the client does not exist.
+/**
+ * @brief Initialize a connected client as a player inside its assigned game room.
+ *
+ * Validates the client's state, room assignment, and name; creates a player
+ * entity in the room's game, stores the entity id on the client, sends the
+ * new-player state to the client, broadcasts existing players and the new
+ * player to the room, and starts the room countdown when conditions are met.
+ *
+ * @param client Client instance to initialize (modified in-place).
+ * @return true if the player was successfully initialized in the room, false otherwise.
+ */
+bool server::Server::initializePlayerInRoom(Client &client) {
+  if (client._state == ClientState::CONNECTED_MENU) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " - still in menu" << std::endl;
+    return false;
+  }
+
+  if (client._room_id == NO_ROOM) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " not in any room" << std::endl;
+    return false;
+  }
+
+  if (client._player_name.empty()) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " no name set" << std::endl;
+    return false;
+  }
+
+  auto room = _gameManager->getRoom(client._room_id);
+  if (!room) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " room " << client._room_id << " not found" << std::endl;
+    return false;
+  }
+
+  auto player =
+      room->getGame().createPlayer(client._player_id, client._player_name);
+  if (!player) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " failed to create player entity in room " << client._room_id
+              << std::endl;
+    return false;
+  }
+
+  client._entity_id = player->getEntityId();
+
+  std::pair<float, float> pos = player->getPosition();
+  float speed = player->getSpeed();
+  int max_health = player->getMaxHealth().value_or(100);
+
+  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, pos.first, pos.second, speed, max_health);
+  auto serializedBuffer =
+      serialization::BitserySerializer::serialize(ownPlayerPacket);
+  _networkManager.sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+
+  auto roomClients = room->getClients();
+
+  broadcast::Broadcast::broadcastExistingPlayersToRoom(
+      _networkManager, room->getGame(), client._player_id, roomClients);
+
+  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, pos.first, pos.second, speed, max_health);
+  broadcast::Broadcast::broadcastAncientPlayerToRoom(
+      _networkManager, roomClients, newPlayerPacket);
+
+  if (roomClients.size() >= 2 &&
+      room->getState() == game::RoomStatus::WAITING) {
+    auto timer = std::make_shared<asio::steady_timer>(
+        _networkManager.getIoContext(), std::chrono::seconds(1));
+
+    room->startCountdown(COUNTDOWN_TIME, timer);
+    handleCountdown(room, timer);
+  }
+
+  std::cout << "[WORLD] Player " << client._player_id << " ("
+            << client._player_name << ") initialized in room "
+            << client._room_id << std::endl;
+
+  return true;
+}
+
+/**
+ * @brief Runs and schedules the per-room countdown and starts the game when it reaches zero.
+ *
+ * If the supplied room is in STARTING state, this function checks the room's countdown value.
+ * - When the countdown is <= 0: broadcasts a GameStart packet to the room, transitions the room
+ *   to its running state, sets each connected client's state to IN_GAME, and logs the start.
+ * - When the countdown is > 0: logs the current countdown, decrements it, and reschedules the
+ *   provided timer to invoke this routine again after one second. If the timer wait is aborted,
+ *   the cancellation is logged; other timer errors are logged to stderr.
+ *
+ * @param room Shared pointer to the game room whose countdown should be driven. Must be non-null
+ *             and in STARTING state for the function to take effect.
+ * @param timer Shared pointer to an asio steady timer used to schedule the next countdown tick.
+ */
+void server::Server::handleCountdown(
+    std::shared_ptr<game::GameRoom> room,
+    std::shared_ptr<asio::steady_timer> timer) {
+  if (!room || room->getState() != game::RoomStatus::STARTING) {
+    return;
+  }
+
+  int countdown = room->getCountdownValue();
+  auto roomClients = room->getClients();
+
+  if (countdown <= 0) {
+    auto startPacket = PacketBuilder::makeGameStart(true);
+    broadcast::Broadcast::broadcastGameStartToRoom(_networkManager, roomClients,
+                                                   startPacket);
+    room->start();
+    for (auto &roomClient : roomClients) {
+      if (roomClient) {
+        roomClient->_state = ClientState::IN_GAME;
+      }
+    }
+
+    std::cout << "[ROOM] Game started in room " << room->getRoomId()
+              << std::endl;
+    return;
+  }
+
+  std::cout << "[ROOM] Countdown " << countdown << " for room "
+            << room->getRoomId() << std::endl;
+
+  room->decrementCountdown();
+
+  timer->expires_after(std::chrono::seconds(1));
+  timer->async_wait([this, room, timer](const asio::error_code &error) {
+    if (error == asio::error::operation_aborted) {
+      std::cout << "[ROOM] Countdown timer cancelled for room "
+                << room->getRoomId() << std::endl;
+      return;
+    }
+    if (!error) {
+      handleCountdown(room, timer);
+    } else {
+      std::cerr << "[ERROR] Timer error in countdown: " << error.message()
+                << std::endl;
+    }
+  });
+}
+
+/**
+ * @brief Get the client at the specified client slot index.
+ *
+ * @param idx Index of the client slot to retrieve.
+ * @return std::shared_ptr<server::Client> Shared pointer to the client at the given index, or `nullptr` if the index is out of range or the slot is empty.
  */
 std::shared_ptr<server::Client> server::Server::getClient(
     std::size_t idx) const {
@@ -413,10 +542,34 @@ std::shared_ptr<server::Client> server::Server::getClient(
   return _clients[idx];
 }
 
+/**
+ * @brief Finds a connected client by its player identifier.
+ *
+ * @param player_id The player identifier to search for.
+ * @return std::shared_ptr<server::Client> Shared pointer to the matching client if found, nullptr otherwise.
+ */
+std::shared_ptr<server::Client> server::Server::getClientById(
+    int player_id) const {
+  for (const auto &client : _clients) {
+    if (client && client->_player_id == player_id) {
+      return client;
+    }
+  }
+  return nullptr;
+}
+
+/**
+ * @brief Clears the server client slot for the specified player and removes them from their room if assigned.
+ *
+ * Instructs the game manager to have the client leave their room when the client's _room_id is not NO_ROOM,
+ * then resets the stored client pointer to free the slot.
+ *
+ * @param player_id Identifier of the player whose client slot should be cleared.
+ */
 void server::Server::clearClientSlot(int player_id) {
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
-      if (client->_room_id != -1)
+      if (client->_room_id != NO_ROOM)
         _gameManager->leaveRoom(client);
       client.reset();
       return;

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <asio.hpp>
+#include "Client.hpp"
 #include "Game.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Serializer.hpp"
-#include "Server.hpp"
 #include "ServerNetworkManager.hpp"
 
 namespace broadcast {
@@ -13,11 +13,19 @@ namespace broadcast {
   struct Broadcast {
     public:
       template <typename Packet, typename Pred>
+      /**
+       * @brief Serializes a packet and sends it to each client in the list that is connected and satisfies a predicate.
+       *
+       * @param networkManager ServerNetworkManager used to deliver the serialized packet.
+       * @param clients Candidate recipients; elements may be null or disconnected and will be skipped.
+       * @param packet Packet to serialize and send.
+       * @param pred Predicate invoked with a `server::Client` reference; the packet is sent to a client only if `pred` returns true.
+       */
       static void broadcastTo(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
-        auto buffer = std::make_shared<std::vector<uint8_t>>(
+        auto buffer = std::make_shared<std::vector<std::uint8_t>>(
             serialization::BitserySerializer::serialize(packet));
 
         for (const auto &client : clients) {
@@ -44,10 +52,17 @@ namespace broadcast {
         broadcastToAll(networkManager, roomClients, packet);
       }
 
-      /*
-       * Send existing players to the newly connected client.
-       * This allows the new client to be aware of all players already in the
-       * game.
+      /**
+       * @brief Send information about all currently connected players to a newly connected client.
+       *
+       * For each existing, connected player (excluding the new player), constructs a NewPlayer
+       * packet containing that player's position, speed, and maximum health, serializes it,
+       * and sends it to the client identified by newPlayerID.
+       *
+       * @param networkManager Server network manager used to send packets.
+       * @param game Source of current player state.
+       * @param newPlayerID ID of the newly connected client that should receive the player data.
+       * @param roomClients List of clients in the room (not directly iterated for sending here but provided for context).
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,
@@ -60,12 +75,12 @@ namespace broadcast {
               player->getPlayerId() != newPlayerID) {
             std::pair<float, float> pos = player->getPosition();
             float speed = player->getSpeed();
-            int health = player->getHealth().value_or(0);
+            int maxHealth = player->getMaxHealth().value_or(100);
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
-                player->getPlayerId(), pos.first, pos.second, speed, health);
+                player->getPlayerId(), pos.first, pos.second, speed, maxHealth);
 
-            auto buffer = std::make_shared<std::vector<uint8_t>>(
+            auto buffer = std::make_shared<std::vector<std::uint8_t>>(
                 serialization::BitserySerializer::serialize(existPlayerPacket));
 
             networkManager.sendToClient(newPlayerID, buffer);
@@ -232,10 +247,9 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a player-hit event to all connected clients.
+       * @brief Broadcasts a player hit event to all clients in the specified room.
        *
-       * @param packet PlayerHitPacket containing the hit event data to send to
-       * every connected client.
+       * @param packet PlayerHitPacket describing the hit event to forward to room members.
        */
       static void broadcastPlayerHitToRoom(
           network::ServerNetworkManager &networkManager,
@@ -245,13 +259,10 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a player disconnect event to all connected clients in
-       * a room.
+       * @brief Broadcasts a player disconnect event to all connected clients in a room.
        *
-       * @param roomClients List of room clients; only non-null, connected
-       * clients will receive the packet.
-       * @param packet Packet describing the disconnect; contains the player id
-       * of the disconnecting player.
+       * @param roomClients Collection of room clients; only non-null, connected clients will receive the packet.
+       * @param packet Packet describing the disconnect, containing the player id of the disconnecting player.
        */
       static void broadcastPlayerDisconnectToRoom(
           network::ServerNetworkManager &networkManager,

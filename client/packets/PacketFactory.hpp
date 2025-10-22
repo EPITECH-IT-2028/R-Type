@@ -39,6 +39,11 @@ namespace packet {
               {PacketType::EnemyMove,
                []() { return std::make_unique<EnemyMoveHandler>(); }},
               {PacketType::EnemyDeath,
-               []() { return std::make_unique<EnemyDeathHandler>(); }}};
+               []() { return std::make_unique<EnemyDeathHandler>(); }},
+              {PacketType::JoinRoomResponse,
+               []() { return std::make_unique<JoinRoomResponseHandler>(); }},
+              {PacketType::MatchmakingResponse, []() {
+                 return std::make_unique<MatchmakingResponseHandler>();
+               }}};
   };
 }  // namespace packet

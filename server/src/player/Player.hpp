@@ -10,14 +10,28 @@ namespace game {
 
   class Player {
     public:
-      Player(int player_id, uint32_t entity_id, ecs::ECSManager &ecsManager);
-      ~Player() = default;
+      Player(int player_id, std::uint32_t entity_id,
+             ecs::ECSManager &ecsManager);
+      /**
+ * @brief Destroys the Player.
+ */
+~Player() = default;
 
+      /**
+       * @brief Retrieve the player's identifier.
+       *
+       * @return int The player's identifier.
+       */
       int getPlayerId() const {
         return _player_id;
       }
 
-      uint32_t getEntityId() const {
+      /**
+       * @brief Retrieves the ECS entity identifier associated with this player.
+       *
+       * @return std::uint32_t The entity identifier linked to the player.
+       */
+      std::uint32_t getEntityId() const {
         return _entity_id;
       }
 
@@ -38,8 +52,8 @@ namespace game {
       std::pair<float, float> getVelocity() const;
       void setVelocity(float vx, float vy);
 
-      std::optional<uint32_t> getSequenceNumber() const;
-      void setSequenceNumber(uint32_t seq);
+      std::optional<std::uint32_t> getSequenceNumber() const;
+      void setSequenceNumber(std::uint32_t seq);
       bool isConnected() const;
       void setConnected(bool connected);
 
@@ -50,7 +64,7 @@ namespace game {
 
     private:
       int _player_id;
-      uint32_t _entity_id;
+      std::uint32_t _entity_id;
       ecs::ECSManager &_ecsManager;
 
       template <typename T>

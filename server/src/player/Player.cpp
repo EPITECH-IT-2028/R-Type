@@ -7,7 +7,14 @@
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
 
-game::Player::Player(int player_id, uint32_t entity_id,
+/**
+ * @brief Initialize a Player with identifiers and an ECS manager reference.
+ *
+ * @param player_id Integer identifier for the player.
+ * @param entity_id Entity identifier associated with this player.
+ * @param ecsManager Reference to the ECS manager used to access and modify components for this player.
+ */
+game::Player::Player(int player_id, std::uint32_t entity_id,
                      ecs::ECSManager &ecsManager)
     : _player_id(player_id), _entity_id(entity_id), _ecsManager(ecsManager) {
 }
@@ -100,6 +107,14 @@ std::pair<float, float> game::Player::getVelocity() const {
   return {0.0f, 0.0f};
 }
 
+/**
+ * @brief Sets the entity's velocity components when a VelocityComponent is present.
+ *
+ * Updates the VelocityComponent's horizontal and vertical velocity values.
+ *
+ * @param vx Velocity along the X axis.
+ * @param vy Velocity along the Y axis.
+ */
 void game::Player::setVelocity(float vx, float vy) {
   if (hasComponent<ecs::VelocityComponent>()) {
     auto &vel = getComponent<ecs::VelocityComponent>();
@@ -108,14 +123,26 @@ void game::Player::setVelocity(float vx, float vy) {
   }
 }
 
-std::optional<uint32_t> game::Player::getSequenceNumber() const {
+/**
+ * @brief Retrieve the player's network sequence number if available.
+ *
+ * @return std::optional<std::uint32_t> The player's sequence number when a PlayerComponent is present, otherwise `std::nullopt`.
+ */
+std::optional<std::uint32_t> game::Player::getSequenceNumber() const {
   if (hasComponent<ecs::PlayerComponent>()) {
     return getComponent<ecs::PlayerComponent>().sequence_number;
   }
   return std::nullopt;
 }
 
-void game::Player::setSequenceNumber(uint32_t seq) {
+/**
+ * @brief Set the player's sequence number if a PlayerComponent is attached.
+ *
+ * Does nothing if the entity does not have a PlayerComponent.
+ *
+ * @param seq Sequence number to assign to the player.
+ */
+void game::Player::setSequenceNumber(std::uint32_t seq) {
   if (hasComponent<ecs::PlayerComponent>()) {
     getComponent<ecs::PlayerComponent>().sequence_number = seq;
   }

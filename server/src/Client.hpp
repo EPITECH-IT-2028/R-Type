@@ -7,6 +7,13 @@
 #include "Macro.hpp"
 
 namespace server {
+  enum class ClientState {
+    CONNECTED_MENU = 0,
+    IN_ROOM_WAITING = 1,
+    IN_GAME = 2,
+    DISCONNECTED = 3
+  };
+
   struct Client {
     public:
       /**
@@ -35,9 +42,11 @@ namespace server {
 
       bool _connected = false;
       int _player_id = -1;
-      uint32_t _room_id = NO_ROOM;
+      std::uint32_t _room_id = NO_ROOM;
+      std::string _player_name = "";
+      ClientState _state = ClientState::CONNECTED_MENU;
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;
-      uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
+      std::uint32_t _entity_id = std::numeric_limits<std::uint32_t>::max();
   };
 }  // namespace server
