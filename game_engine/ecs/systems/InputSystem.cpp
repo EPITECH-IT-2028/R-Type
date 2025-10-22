@@ -8,10 +8,22 @@
 #include "raylib.h"
 
 namespace ecs {
+  /**
+   * @brief Tests whether the specified key was pressed according to AZERTY keyboard mapping.
+   *
+   * @param key Key to test.
+   * @return true if the key was pressed, false otherwise.
+   */
   static bool IsKeyPressedAZERTY(KeyboardKey key) {
     return utils::Raylib::IsKeyPressedAZERTY(key);
   }
 
+  /**
+   * @brief Checks whether the given keyboard key is currently held down using AZERTY layout semantics.
+   *
+   * @param key The key to test.
+   * @return bool `true` if the specified key is currently down, `false` otherwise.
+   */
   static bool IsKeyDownAZERTY(KeyboardKey key) {
     return utils::Raylib::IsKeyDownAZERTY(key);
   }
