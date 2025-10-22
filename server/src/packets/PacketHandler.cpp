@@ -200,6 +200,18 @@ int packet::HeartbeatPlayerHandler::handlePacket(
   return OK;
 }
 
+/**
+ * @brief Process an incoming PlayerShootPacket, spawn the projectile, acknowledge the sender, and broadcast the shot to the room.
+ *
+ * Deserializes the provided buffer as a PlayerShootPacket, validates the sender's room and player, creates a projectile in the room's game,
+ * sends an AckPacket back to the originating client, and broadcasts the resulting PlayerShoot packet to all clients in the room.
+ *
+ * @param server Server instance used to access game manager and network manager.
+ * @param client Originating client sending the shoot packet.
+ * @param data Pointer to the serialized PlayerShootPacket buffer.
+ * @param size Size of the serialized buffer in bytes.
+ * @return int `OK` on success; `KO` if deserialization fails, the room or player cannot be found, or projectile creation fails.
+ */
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
                                              const char *data,
@@ -812,6 +824,19 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   return OK;
 }
 
+/**
+ * @brief Process an incoming AckPacket and mark the referenced packet as acknowledged.
+ *
+ * Deserializes an AckPacket from the provided buffer, finds the corresponding client
+ * on the server by player_id, and removes the acknowledged sequence number from that
+ * client's unacknowledged packet set.
+ *
+ * @param server The server instance that owns the client list and packet state.
+ * @param client The client that sent the ACK (used for logging/context).
+ * @param data Pointer to the serialized AckPacket bytes.
+ * @param size Number of bytes available at `data`.
+ * @return int `OK` on successful processing; `KO` if deserialization fails.
+ */
 int packet::AckPacketHandler::handlePacket(server::Server &server,
                                            server::Client &client,
                                            const char *data, std::size_t size) {
