@@ -30,5 +30,9 @@ namespace utils {
       static bool IsKeyDownAZERTY(KeyboardKey key) {
         return IsKeyDown(MapAZERTYKey(key));
       }
+
+      static bool IsKeyReleasedAZERTY(KeyboardKey key) {
+        return IsKeyReleased(MapAZERTYKey(key));
+      }
   };
 }  // namespace utils
