@@ -83,12 +83,16 @@ void ClientNetworkManager::disconnect() {
 }
 
 /**
- * @brief Processes incoming UDP datagrams from the configured server and dispatches them to the appropriate packet handlers.
+ * @brief Processes incoming UDP datagrams from the configured server and
+ * dispatches them to the appropriate packet handlers.
  *
- * Continuously reads available datagrams from the socket until no more data is available, stops when the manager is not running or when the socket would block.
- * Packets from senders other than the configured server endpoint are ignored. For each received datagram, the function attempts to deserialize a PacketHeader,
- * looks up a handler for the packet type, and invokes the handler with the raw packet data. Errors during receive, deserialization, missing handlers, handler
- * failures, and exceptions are reported to standard error.
+ * Continuously reads available datagrams from the socket until no more data is
+ * available, stops when the manager is not running or when the socket would
+ * block. Packets from senders other than the configured server endpoint are
+ * ignored. For each received datagram, the function attempts to deserialize a
+ * PacketHeader, looks up a handler for the packet type, and invokes the handler
+ * with the raw packet data. Errors during receive, deserialization, missing
+ * handlers, handler failures, and exceptions are reported to standard error.
  *
  * @param client Reference to the client instance passed to packet handlers.
  */
@@ -123,8 +127,9 @@ void ClientNetworkManager::receivePackets(client::Client &client) {
 
       if (length > 0) {
         serialization::Buffer buffer(
-            reinterpret_cast<const uint8_t *>(_recv_buffer.data()),
-            reinterpret_cast<const uint8_t *>(_recv_buffer.data()) + length);
+            reinterpret_cast<const std::uint8_t *>(_recv_buffer.data()),
+            reinterpret_cast<const std::uint8_t *>(_recv_buffer.data()) +
+                length);
 
         auto headerOpt =
             serialization::BitserySerializer::deserialize<PacketHeader>(buffer);

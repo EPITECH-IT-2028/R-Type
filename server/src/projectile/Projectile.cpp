@@ -88,7 +88,7 @@ void game::Projectile::setType(ProjectileType type) {
   }
 }
 
-std::optional<uint32_t> game::Projectile::getSequenceNumber() const {
+std::optional<std::uint32_t> game::Projectile::getSequenceNumber() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
     return getComponent<ecs::ProjectileComponent>().sequence_number;
   }
@@ -101,7 +101,7 @@ void game::Projectile::setSequenceNumber(std::uint32_t seq) {
   }
 }
 
-std::optional<uint32_t> game::Projectile::getDamage() const {
+std::optional<std::uint32_t> game::Projectile::getDamage() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
     return getComponent<ecs::ProjectileComponent>().damage;
   }

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include "Broadcast.hpp"
 #include "Events.hpp"
 #include "GameManager.hpp"
@@ -109,14 +110,14 @@ void server::Server::handleTimeout() {
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
         if (room) {
-          room->getGame().destroyPlayer(pid);
-          room->removeClient(pid);
-
           auto roomClients = room->getClients();
 
           auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
               _networkManager, roomClients, disconnectPacket);
+
+          room->getGame().destroyPlayer(pid);
+          _gameManager->leaveRoom(client);
         }
       }
 
@@ -139,7 +140,7 @@ void server::Server::handleTimeout() {
  * packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
-                                     uint32_t roomId) {
+                                     std::uint32_t roomId) {
   if (roomId == NO_ROOM) {
     return;
   }
@@ -300,33 +301,6 @@ void server::Server::handlePlayerInfoPacket(const char *data,
 
       std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
 
-      bool joined = _gameManager->joinAnyRoom(_clients[i]);
-      if (!joined) {
-        auto newRoom = _gameManager->createRoom("Room_" + std::to_string(id));
-        if (newRoom) {
-          bool joinedNew = newRoom->addClient(_clients[i]);
-          if (joinedNew) {
-            std::cout << "[WORLD] Player " << id << " created and joined room "
-                      << newRoom->getRoomId() << "." << std::endl;
-          } else {
-            std::cerr << "[ERROR] Player " << id
-                      << " failed to join newly created room." << std::endl;
-            _clients[i].reset();
-            _player_count--;
-            return;
-          }
-        } else {
-          std::cerr << "[ERROR] Failed to create a new room for player " << id
-                    << "." << std::endl;
-          _clients[i].reset();
-          _player_count--;
-          return;
-        }
-      } else {
-        std::cout << "[WORLD] Player " << id << " joined an existing room."
-                  << std::endl;
-      }
-
       auto handler = _factory.createHandler(PacketType::PlayerInfo);
       if (handler) {
         handler->handlePacket(*this, *_clients[i], data, size);
@@ -373,12 +347,6 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
 
   auto client = _clients[client_idx];
 
-  if (size < sizeof(PacketHeader)) {
-    std::cerr << "[WARNING] Packet too small from client "
-              << _clients[client_idx]->_player_id << std::endl;
-    return;
-  }
-
   serialization::Buffer buffer(data, data + size);
 
   auto headerOpt =
@@ -401,6 +369,129 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
   }
 }
 
+bool server::Server::initializePlayerInRoom(Client &client) {
+  if (client._state == ClientState::CONNECTED_MENU) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " - still in menu" << std::endl;
+    return false;
+  }
+
+  if (client._room_id == NO_ROOM) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " not in any room" << std::endl;
+    return false;
+  }
+
+  if (client._player_name.empty()) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " no name set" << std::endl;
+    return false;
+  }
+
+  auto room = _gameManager->getRoom(client._room_id);
+  if (!room) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " room " << client._room_id << " not found" << std::endl;
+    return false;
+  }
+
+  auto player =
+      room->getGame().createPlayer(client._player_id, client._player_name);
+  if (!player) {
+    std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+              << " failed to create player entity in room " << client._room_id
+              << std::endl;
+    return false;
+  }
+
+  client._entity_id = player->getEntityId();
+
+  std::pair<float, float> pos = player->getPosition();
+  float speed = player->getSpeed();
+  int max_health = player->getMaxHealth().value_or(100);
+
+  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, pos.first, pos.second, speed, max_health);
+  auto serializedBuffer =
+      serialization::BitserySerializer::serialize(ownPlayerPacket);
+  _networkManager.sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+
+  auto roomClients = room->getClients();
+
+  broadcast::Broadcast::broadcastExistingPlayersToRoom(
+      _networkManager, room->getGame(), client._player_id, roomClients);
+
+  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, pos.first, pos.second, speed, max_health);
+  broadcast::Broadcast::broadcastAncientPlayerToRoom(
+      _networkManager, roomClients, newPlayerPacket);
+
+  if (roomClients.size() >= 2 &&
+      room->getState() == game::RoomStatus::WAITING) {
+    auto timer = std::make_shared<asio::steady_timer>(
+        _networkManager.getIoContext(), std::chrono::seconds(1));
+
+    room->startCountdown(COUNTDOWN_TIME, timer);
+    handleCountdown(room, timer);
+  }
+
+  std::cout << "[WORLD] Player " << client._player_id << " ("
+            << client._player_name << ") initialized in room "
+            << client._room_id << std::endl;
+
+  return true;
+}
+
+void server::Server::handleCountdown(
+    std::shared_ptr<game::GameRoom> room,
+    std::shared_ptr<asio::steady_timer> timer) {
+  if (!room || room->getState() != game::RoomStatus::STARTING) {
+    return;
+  }
+
+  int countdown = room->getCountdownValue();
+  auto roomClients = room->getClients();
+
+  if (countdown <= 0) {
+    auto startPacket = PacketBuilder::makeGameStart(true);
+    broadcast::Broadcast::broadcastGameStartToRoom(_networkManager, roomClients,
+                                                   startPacket);
+    room->start();
+    for (auto &roomClient : roomClients) {
+      if (roomClient) {
+        roomClient->_state = ClientState::IN_GAME;
+      }
+    }
+
+    std::cout << "[ROOM] Game started in room " << room->getRoomId()
+              << std::endl;
+    return;
+  }
+
+  std::cout << "[ROOM] Countdown " << countdown << " for room "
+            << room->getRoomId() << std::endl;
+
+  room->decrementCountdown();
+
+  timer->expires_after(std::chrono::seconds(1));
+  timer->async_wait([this, room, timer](const asio::error_code &error) {
+    if (error == asio::error::operation_aborted) {
+      std::cout << "[ROOM] Countdown timer cancelled for room "
+                << room->getRoomId() << std::endl;
+      return;
+    }
+    if (!error) {
+      handleCountdown(room, timer);
+    } else {
+      std::cerr << "[ERROR] Timer error in countdown: " << error.message()
+                << std::endl;
+    }
+  });
+}
+
 /*
  * Retrieve a client by index.
  * Returns nullptr if the index is invalid or the client does not exist.
@@ -413,10 +504,20 @@ std::shared_ptr<server::Client> server::Server::getClient(
   return _clients[idx];
 }
 
+std::shared_ptr<server::Client> server::Server::getClientById(
+    int player_id) const {
+  for (const auto &client : _clients) {
+    if (client && client->_player_id == player_id) {
+      return client;
+    }
+  }
+  return nullptr;
+}
+
 void server::Server::clearClientSlot(int player_id) {
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
-      if (client->_room_id != -1)
+      if (client->_room_id != NO_ROOM)
         _gameManager->leaveRoom(client);
       client.reset();
       return;

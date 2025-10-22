@@ -1,11 +1,11 @@
 #pragma once
 
 #include <asio.hpp>
+#include "Client.hpp"
 #include "Game.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Serializer.hpp"
-#include "Server.hpp"
 #include "ServerNetworkManager.hpp"
 
 namespace broadcast {
@@ -17,7 +17,7 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
-        auto buffer = std::make_shared<std::vector<uint8_t>>(
+        auto buffer = std::make_shared<std::vector<std::uint8_t>>(
             serialization::BitserySerializer::serialize(packet));
 
         for (const auto &client : clients) {
@@ -60,12 +60,12 @@ namespace broadcast {
               player->getPlayerId() != newPlayerID) {
             std::pair<float, float> pos = player->getPosition();
             float speed = player->getSpeed();
-            int health = player->getHealth().value_or(0);
+            int maxHealth = player->getMaxHealth().value_or(100);
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
-                player->getPlayerId(), pos.first, pos.second, speed, health);
+                player->getPlayerId(), pos.first, pos.second, speed, maxHealth);
 
-            auto buffer = std::make_shared<std::vector<uint8_t>>(
+            auto buffer = std::make_shared<std::vector<std::uint8_t>>(
                 serialization::BitserySerializer::serialize(existPlayerPacket));
 
             networkManager.sendToClient(newPlayerID, buffer);

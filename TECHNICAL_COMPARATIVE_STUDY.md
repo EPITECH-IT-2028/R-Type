@@ -10,7 +10,7 @@ This document presents a comparative analysis of the main technologies and desig
 
 ### C++20 vs Alternatives
 
-**Selected**: C++20  
+**Selected**: C++20
 **Considered**: C++17, Rust, C#, Java
 
 | Criteria              | C++20      | Rust       | C#         | Java       |
@@ -32,7 +32,7 @@ This document presents a comparative analysis of the main technologies and desig
 
 ### Raylib vs Alternatives
 
-**Selected**: Raylib 5.5  
+**Selected**: Raylib 5.5
 **Considered**: SFML, SDL2, OpenGL
 
 | Criteria           | Raylib     | SFML       | SDL2     |
@@ -79,8 +79,8 @@ This document presents a comparative analysis of the main technologies and desig
 // Custom reliability layer implementation
 struct PacketHeader {
     PacketType type;
-    uint32_t size;
-    uint32_t sequence_number;
+    std::uint32_t size;
+    std::uint32_t sequence_number;
 };
 ```
 
@@ -90,7 +90,7 @@ struct PacketHeader {
 
 ### Entity-Component-System (ECS)
 
-**Selected**: Custom ECS Implementation  
+**Selected**: Custom ECS Implementation
 **Alternatives**: Object-Oriented Hierarchy, Component-Based Architecture
 
 **ECS Advantages**:
@@ -126,7 +126,7 @@ class EventQueue {
 
 ### Configuration Format
 
-**Selected**: Properties File  
+**Selected**: Properties File
 **Alternatives**: JSON, XML
 
 | Format            | Properties | JSON     | XML    |
@@ -185,7 +185,7 @@ void validatePlayerPosition(Player& player, float newX, float newY) {
 
 ### CMake + Conan
 
-**Selected**: CMake 3.27.4 + Conan 2.x  
+**Selected**: CMake 3.27.4 + Conan 2.x
 **Alternatives**: Premake, vcpkg, Git Submodules
 
 **Benefits**:
@@ -241,11 +241,11 @@ The chosen technology stack balances:
 - **Security**: Basic protection with room for enhancement
 - **Scalability**: Architecture supports future growth
 
-**Key strengths**: Low-latency networking, cache-efficient ECS, simple build system  
+**Key strengths**: Low-latency networking, cache-efficient ECS, simple build system
 **Areas for improvement**: Enhanced security, data persistence, monitoring
 
 ---
 
-**Document Version**: 1.0  
+**Document Version**: 1.0
 **Last Updated**: October 2nd 2025
 **Team**: R-Type Development Team

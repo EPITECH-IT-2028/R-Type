@@ -2,8 +2,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include "Macro.hpp"
 
-enum class PacketType : uint8_t {
+enum class PacketType : std::uint8_t {
   Message = 0x01,
   PlayerMove = 0x02,
   NewPlayer = 0x03,
@@ -22,19 +23,37 @@ enum class PacketType : uint8_t {
   EnemyHit = 0x10,
   PlayerHit = 0x11,
   PlayerDeath = 0x12,
-  PlayerInput = 0x13
+  CreateRoom = 0x13,
+  JoinRoom = 0x14,
+  LeaveRoom = 0x15,
+  ListRoom = 0x16,
+  ListRoomResponse = 0x17,
+  MatchmakingRequest = 0x18,
+  MatchmakingResponse = 0x19,
+  JoinRoomResponse = 0x1A,
+  PlayerInput = 0x1B
 };
 
-enum class EnemyType : uint8_t {
+enum class EnemyType : std::uint8_t {
   BASIC_FIGHTER = 0x01
 };
 
-enum class ProjectileType : uint8_t {
+enum class ProjectileType : std::uint8_t {
   PLAYER_BASIC = 0x01,
   ENEMY_BASIC = 0x02
 };
 
-enum class MovementInputType : uint8_t {
+enum class RoomError : std::uint8_t {
+  SUCCESS = 0x00,
+  ROOM_NOT_FOUND = 0x01,
+  ROOM_FULL = 0x02,
+  WRONG_PASSWORD = 0x03,
+  ALREADY_IN_ROOM = 0x04,
+  PLAYER_BANNED = 0x05,
+  UNKNOWN_ERROR = 0x06
+};
+
+enum class MovementInputType : std::uint8_t {
   UP = 1 << 0,
   DOWN = 1 << 1,
   LEFT = 1 << 2,
@@ -46,7 +65,7 @@ enum class MovementInputType : uint8_t {
 /* both client and server packets */
 struct ALIGNED PacketHeader {
     PacketType type;
-    uint32_t size;
+    std::uint32_t size;
 };
 
 /**
@@ -71,9 +90,9 @@ struct ALIGNED PacketHeader {
  */
 struct ALIGNED MessagePacket {
     PacketHeader header;
-    uint32_t timestamp;
+    std::uint32_t timestamp;
     char message[256];
-    uint32_t player_id;
+    std::uint32_t player_id;
 };
 
 /**
@@ -87,8 +106,8 @@ struct ALIGNED MessagePacket {
  */
 struct ALIGNED PlayerMovePacket {
     PacketHeader header;
-    uint32_t player_id;
-    uint32_t sequence_number;
+    std::uint32_t player_id;
+    std::uint32_t sequence_number;
     float x;
     float y;
 };
@@ -96,23 +115,23 @@ struct ALIGNED PlayerMovePacket {
 /* Server to client packets */
 struct ALIGNED NewPlayerPacket {
     PacketHeader header;
-    uint32_t player_id;
+    std::uint32_t player_id;
     float x;
     float y;
     float speed;
-    uint32_t max_health;
+    std::uint32_t max_health;
 };
 
 /* Client to server packets */
 struct ALIGNED PlayerDisconnectPacket {
     PacketHeader header;
-    uint32_t player_id;
+    std::uint32_t player_id;
 };
 
 /* Client to server packets */
 struct ALIGNED HeartbeatPlayerPacket {
     PacketHeader header;
-    uint32_t player_id;
+    std::uint32_t player_id;
 };
 
 /**
@@ -147,8 +166,8 @@ struct ALIGNED PlayerInfoPacket {
  */
 struct ALIGNED PlayerHitPacket {
     PacketHeader header;
-    uint32_t player_id;
-    uint32_t damage;
+    std::uint32_t player_id;
+    std::uint32_t damage;
     float x;
     float y;
     std::uint32_t sequence_number;
@@ -172,25 +191,25 @@ struct ALIGNED PlayerHitPacket {
  */
 struct ALIGNED EnemySpawnPacket {
     PacketHeader header;
-    uint32_t enemy_id;
+    std::uint32_t enemy_id;
     EnemyType enemy_type;
     float x;
     float y;
     float velocity_x;
     float velocity_y;
-    uint32_t health;
-    uint32_t max_health;
+    std::uint32_t health;
+    std::uint32_t max_health;
 };
 
 /* Server to client packets */
 struct ALIGNED EnemyMovePacket {
     PacketHeader header;
-    uint32_t enemy_id;
+    std::uint32_t enemy_id;
     float x;
     float y;
     float velocity_x;
     float velocity_y;
-    uint32_t sequence_number;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -208,7 +227,7 @@ struct ALIGNED EnemyMovePacket {
  */
 struct ALIGNED EnemyDeathPacket {
     PacketHeader header;
-    uint32_t enemy_id;
+    std::uint32_t enemy_id;
     float death_x;
     float death_y;
     std::uint32_t player_id;
@@ -222,30 +241,30 @@ struct ALIGNED PlayerShootPacket {
     float x;
     float y;
     ProjectileType projectile_type;
-    uint32_t sequence_number;
+    std::uint32_t sequence_number;
 };
 
 /* Server to client packets */
 struct ALIGNED ProjectileSpawnPacket {
     PacketHeader header;
-    uint32_t projectile_id;
+    std::uint32_t projectile_id;
     ProjectileType projectile_type;
-    uint32_t owner_id;
-    uint8_t is_enemy_projectile;
+    std::uint32_t owner_id;
+    std::uint8_t is_enemy_projectile;
     float x;
     float y;
     float velocity_x;
     float velocity_y;
     float speed;
-    uint32_t damage;
+    std::uint32_t damage;
 };
 
 /* Server to client packets */
 struct ALIGNED ProjectileHitPacket {
     PacketHeader header;
-    uint32_t projectile_id;
-    uint32_t target_id;
-    uint8_t target_is_player;
+    std::uint32_t projectile_id;
+    std::uint32_t target_id;
+    std::uint8_t target_is_player;
     float hit_x;
     float hit_y;
 };
@@ -253,7 +272,7 @@ struct ALIGNED ProjectileHitPacket {
 /* Server to client packets */
 struct ALIGNED ProjectileDestroyPacket {
     PacketHeader header;
-    uint32_t projectile_id;
+    std::uint32_t projectile_id;
     float x;
     float y;
 };
@@ -261,7 +280,7 @@ struct ALIGNED ProjectileDestroyPacket {
 /* Server to client packets */
 struct ALIGNED GameStartPacket {
     PacketHeader header;
-    uint8_t game_start;
+    std::uint8_t game_start;
 };
 
 /**
@@ -277,7 +296,7 @@ struct ALIGNED GameStartPacket {
  */
 struct ALIGNED GameEndPacket {
     PacketHeader header;
-    uint8_t game_end;
+    std::uint8_t game_end;
 };
 
 /**
@@ -337,6 +356,57 @@ struct ALIGNED PlayerDeathPacket {
     float y;
 };
 
+/* Room Management Packets */
+struct ALIGNED CreateRoomPacket {
+    PacketHeader header;
+    char room_name[32];
+    std::uint8_t is_private;
+    char password[32];
+    std::uint8_t max_players;
+};
+
+struct ALIGNED JoinRoomPacket {
+    PacketHeader header;
+    std::uint32_t room_id;
+    char password[32];
+};
+
+struct ALIGNED JoinRoomResponsePacket {
+    PacketHeader header;
+    RoomError error_code;
+};
+
+struct ALIGNED LeaveRoomPacket {
+    PacketHeader header;
+    std::uint32_t room_id;
+};
+
+struct ALIGNED ListRoomPacket {
+    PacketHeader header;
+};
+
+struct ALIGNED RoomInfo {
+    std::uint32_t room_id;
+    char room_name[32];
+    std::uint8_t player_count;
+    std::uint8_t max_players;
+};
+
+struct ALIGNED ListRoomResponsePacket {
+    PacketHeader header;
+    std::uint32_t room_count;
+    RoomInfo rooms[MAX_ROOMS];
+};
+
+struct ALIGNED MatchmakingRequestPacket {
+    PacketHeader header;
+};
+
+struct ALIGNED MatchmakingResponsePacket {
+    PacketHeader header;
+    RoomError error_code;
+};
+
 /**
  * @brief Packet sent from client to server conveying the player's current input
  * state.
@@ -353,6 +423,6 @@ struct ALIGNED PlayerDeathPacket {
  */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
-    uint8_t input;
+    std::uint8_t input;
     std::uint32_t sequence_number;
 };

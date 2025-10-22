@@ -165,8 +165,6 @@ void game::Game::stop() {
  * the running flag.
  */
 void game::Game::gameLoop() {
-  std::this_thread::sleep_for(std::chrono::seconds(3));
-
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
@@ -237,7 +235,7 @@ void game::Game::destroyPlayer(int player_id) {
   std::scoped_lock lock(_playerMutex);
   auto it = _players.find(player_id);
   if (it != _players.end()) {
-    uint32_t entity_id = it->second->getEntityId();
+    std::uint32_t entity_id = it->second->getEntityId();
     _ecsManager->destroyEntity(entity_id);
     _players.erase(it);
   }
@@ -302,7 +300,7 @@ void game::Game::spawnEnemy(float deltaTime) {
 std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
   std::scoped_lock lock(_enemyMutex);
-  uint32_t entity;
+  std::uint32_t entity;
   switch (type) {
     case EnemyType::BASIC_FIGHTER: {
       std::scoped_lock ecsLock(_ecsMutex);
@@ -341,7 +339,7 @@ void game::Game::destroyEnemy(int enemy_id) {
   auto it = _enemies.find(enemy_id);
   if (it != _enemies.end()) {
     auto enemy = it->second;
-    uint32_t entity_id = enemy->getEntityId();
+    std::uint32_t entity_id = enemy->getEntityId();
 
     if (_ecsManager->hasComponent<ecs::EnemyComponent>(entity_id)) {
       auto &enemyComp =
@@ -388,7 +386,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
     std::uint32_t projectile_id, std::uint32_t owner_id, ProjectileType type,
     float x, float y, float vx, float vy) {
   std::shared_ptr<Projectile> projectile;
-  uint32_t entity;
+  std::uint32_t entity;
   {
     std::scoped_lock ecsLock(_ecsMutex);
     entity = _ecsManager->createEntity();
@@ -428,7 +426,7 @@ void game::Game::destroyProjectile(std::uint32_t projectile_id) {
   std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   if (it != _projectiles.end()) {
-    uint32_t entity_id = it->second->getEntityId();
+    std::uint32_t entity_id = it->second->getEntityId();
     {
       std::scoped_lock ecsLock(_ecsMutex);
       _ecsManager->destroyEntity(entity_id);

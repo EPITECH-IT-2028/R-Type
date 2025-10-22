@@ -7,7 +7,7 @@ namespace game {
 
   class Enemy {
     public:
-      Enemy(int enemy_id, uint32_t entity_id, ecs::ECSManager &ecsManager)
+      Enemy(int enemy_id, std::uint32_t entity_id, ecs::ECSManager &ecsManager)
           : _enemy_id(enemy_id),
             _entity_id(entity_id),
             _ecsManager(ecsManager) {
@@ -18,7 +18,7 @@ namespace game {
         return _enemy_id;
       }
 
-      uint32_t getEntityId() const {
+      std::uint32_t getEntityId() const {
         return _entity_id;
       }
 
@@ -53,7 +53,7 @@ namespace game {
 
     private:
       int _enemy_id;
-      uint32_t _entity_id;
+      std::uint32_t _entity_id;
       ecs::ECSManager &_ecsManager;
   };
 

@@ -50,6 +50,20 @@ inline std::string packetTypeToString(PacketType type) {
       return "PlayerHit";
     case PacketType::PlayerDeath:
       return "PlayerDeath";
+    case PacketType::CreateRoom:
+      return "CreateRoom";
+    case PacketType::JoinRoom:
+      return "JoinRoom";
+    case PacketType::JoinRoomResponse:
+      return "JoinRoomResponse";
+    case PacketType::ListRoom:
+      return "ListRoom";
+    case PacketType::ListRoomResponse:
+      return "ListRoomResponse";
+    case PacketType::MatchmakingRequest:
+      return "MatchmakingRequest";
+    case PacketType::MatchmakingResponse:
+      return "MatchmakingResponse";
     case PacketType::PlayerInput:
       return "PlayerInput";
     default:
