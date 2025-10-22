@@ -567,8 +567,8 @@ int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
   return OK;
 }
 
-int packet::PongHandler::handlePacket(client::Client &client,
-                                      const char *data, std::size_t size) {
+int packet::PongHandler::handlePacket(client::Client &client, const char *data,
+                                      std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =

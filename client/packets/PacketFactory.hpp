@@ -42,10 +42,9 @@ namespace packet {
                []() { return std::make_unique<EnemyDeathHandler>(); }},
               {PacketType::JoinRoomResponse,
                []() { return std::make_unique<JoinRoomResponseHandler>(); }},
-              {PacketType::MatchmakingResponse, []() {
-                 return std::make_unique<MatchmakingResponseHandler>(); }},
+              {PacketType::MatchmakingResponse,
+               []() { return std::make_unique<MatchmakingResponseHandler>(); }},
               {PacketType::Pong,
-               []() { return std::make_unique<PongHandler>(); }}
-              };
+               []() { return std::make_unique<PongHandler>(); }}};
   };
 }  // namespace packet
