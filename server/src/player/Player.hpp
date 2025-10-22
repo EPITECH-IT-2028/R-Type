@@ -12,12 +12,25 @@ namespace game {
     public:
       Player(int player_id, std::uint32_t entity_id,
              ecs::ECSManager &ecsManager);
-      ~Player() = default;
+      /**
+ * @brief Destroys the Player.
+ */
+~Player() = default;
 
+      /**
+       * @brief Retrieve the player's identifier.
+       *
+       * @return int The player's identifier.
+       */
       int getPlayerId() const {
         return _player_id;
       }
 
+      /**
+       * @brief Retrieves the ECS entity identifier associated with this player.
+       *
+       * @return std::uint32_t The entity identifier linked to the player.
+       */
       std::uint32_t getEntityId() const {
         return _entity_id;
       }

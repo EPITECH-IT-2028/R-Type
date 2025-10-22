@@ -62,31 +62,34 @@ enum class MovementInputType : std::uint8_t {
 
 #define ALIGNED alignas(4)
 
-/* both client and server packets */
+/**
+ * @brief Common 4-byte-aligned header present at the start of every network packet.
+ *
+ * Contains the packet's kind and the size of its payload (in bytes), used to
+ * route and validate incoming/outgoing packet data.
+ *
+ * @var type
+ *   PacketType value identifying the specific packet structure that follows.
+ * @var size
+ *   Size of the packet payload in bytes (not including this header).
+ */
 struct ALIGNED PacketHeader {
     PacketType type;
     std::uint32_t size;
 };
 
 /**
- * @brief Packet carrying a timestamped text message and the originating player
- * ID.
+ * @brief Carries a timestamped UTF-8 text message and the associated player ID.
  *
- * Contains a common packet header, a 32-bit timestamp, a fixed-size 256-byte
- * message buffer, and the ID of the player that sent or is associated with the
+ * Contains a common packet header identifying the packet type and payload size,
+ * a 32-bit timestamp, a fixed-size 256-byte null-terminated UTF-8 message buffer,
+ * and the 32-bit identifier of the player that sent or is associated with the
  * message.
  *
- * @var header
- * Common packet header (type and size).
- *
- * @var timestamp
- * Packet timestamp as a 32-bit unsigned integer.
- *
- * @var message
- * Fixed-size 256-byte message buffer.
- *
- * @var player_id
- * Identifier of the player that sent or is associated with this message.
+ * @var header Common packet header (type and size).
+ * @var timestamp Packet timestamp as a 32-bit unsigned integer.
+ * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
+ * @var player_id Identifier of the player that sent or is associated with this message.
  */
 struct ALIGNED MessagePacket {
     PacketHeader header;
@@ -96,13 +99,16 @@ struct ALIGNED MessagePacket {
 };
 
 /**
- * @brief Server-to-client packet that conveys a player's movement update.
+ * @brief Packet sent from server to client to convey a player's position update.
  *
- * header: Common packet header containing packet type and size.
- * player_id: Identifier of the player whose position is being reported.
- * sequence_number: Sequence number used to order or correlate movement updates.
- * x: Player's X coordinate in world space.
- * y: Player's Y coordinate in world space.
+ * Carries the target player's identifier, an ordering sequence number, and the
+ * player's world-space coordinates.
+ *
+ * @param header Common packet header containing packet type and payload size.
+ * @param player_id Identifier of the player whose position is being reported.
+ * @param sequence_number Sequence number used to order or correlate movement updates.
+ * @param x Player's X coordinate in world space.
+ * @param y Player's Y coordinate in world space.
  */
 struct ALIGNED PlayerMovePacket {
     PacketHeader header;
@@ -112,7 +118,18 @@ struct ALIGNED PlayerMovePacket {
     float y;
 };
 
-/* Server to client packets */
+/**
+ * @brief Notifies clients of a newly spawned player.
+ *
+ * Carries the new player's server-assigned ID, spawn position, movement speed, and maximum health.
+ *
+ * Fields:
+ * - header: Common packet header.
+ * - player_id: Server-assigned unique player identifier.
+ * - x, y: Spawn world coordinates.
+ * - speed: Movement speed scalar.
+ * - max_health: Player's maximum health points.
+ */
 struct ALIGNED NewPlayerPacket {
     PacketHeader header;
     std::uint32_t player_id;
@@ -122,13 +139,23 @@ struct ALIGNED NewPlayerPacket {
     std::uint32_t max_health;
 };
 
-/* Client to server packets */
+/**
+ * @brief Client-to-server packet indicating a player is disconnecting.
+ *
+ * Carries the common packet header and the identifier of the disconnecting player.
+ *
+ * @param player_id Identifier of the player who is disconnecting.
+ */
 struct ALIGNED PlayerDisconnectPacket {
     PacketHeader header;
     std::uint32_t player_id;
 };
 
-/* Client to server packets */
+/**
+ * @brief Heartbeat packet sent from client to server to indicate player liveness.
+ *
+ * Contains the common packet header and the identifier of the player sending the heartbeat.
+ */
 struct ALIGNED HeartbeatPlayerPacket {
     PacketHeader header;
     std::uint32_t player_id;
@@ -201,7 +228,13 @@ struct ALIGNED EnemySpawnPacket {
     std::uint32_t max_health;
 };
 
-/* Server to client packets */
+/**
+ * @brief Server-to-client update of an enemy's position, velocity, and sequence order.
+ *
+ * Contains the common packet header, the enemy identifier, current position (`x`, `y`),
+ * current velocity (`velocity_x`, `velocity_y`), and a `sequence_number` used to
+ * order or reconcile updates.
+ */
 struct ALIGNED EnemyMovePacket {
     PacketHeader header;
     std::uint32_t enemy_id;
@@ -235,7 +268,19 @@ struct ALIGNED EnemyDeathPacket {
 };
 
 /* Projectile Packets */
-/* Client to server packets */
+/**
+ * @brief Client-to-server packet reporting a player's shooting action.
+ *
+ * Contains the firing position, projectile type, and a sequence number used for ordering
+ * and acknowledgement of the shoot event.
+ *
+ * Fields:
+ * - header: Common packet header containing packet type and payload size.
+ * - x: Firing X coordinate.
+ * - y: Firing Y coordinate.
+ * - projectile_type: Variant of projectile to spawn.
+ * - sequence_number: Monotonic client sequence number for this action.
+ */
 struct ALIGNED PlayerShootPacket {
     PacketHeader header;
     float x;
@@ -244,7 +289,24 @@ struct ALIGNED PlayerShootPacket {
     std::uint32_t sequence_number;
 };
 
-/* Server to client packets */
+/**
+ * @brief Notifies clients that a projectile has been spawned, including ownership and motion data.
+ *
+ * Carries the projectile's server-assigned identifier, variant, owner identity, allegiance flag,
+ * world position, velocity components, scalar speed, and damage amount.
+ *
+ * @param header Packet header containing type and payload size.
+ * @param projectile_id Server-assigned unique identifier for the projectile.
+ * @param projectile_type Variant/type of the projectile.
+ * @param owner_id Identifier of the entity that spawned the projectile.
+ * @param is_enemy_projectile Nonzero if the projectile was spawned by an enemy, zero otherwise.
+ * @param x World X coordinate of the projectile spawn position.
+ * @param y World Y coordinate of the projectile spawn position.
+ * @param velocity_x X component of the projectile's velocity.
+ * @param velocity_y Y component of the projectile's velocity.
+ * @param speed Scalar speed magnitude of the projectile.
+ * @param damage Damage value applied by the projectile on hit.
+ */
 struct ALIGNED ProjectileSpawnPacket {
     PacketHeader header;
     std::uint32_t projectile_id;
@@ -259,7 +321,19 @@ struct ALIGNED ProjectileSpawnPacket {
     std::uint32_t damage;
 };
 
-/* Server to client packets */
+/**
+ * @brief Notifies the client that a projectile impacted a target.
+ *
+ * Carries the projectile identifier, the impacted target identifier and type,
+ * and the world coordinates of the impact.
+ *
+ * @var header Common packet header containing type and payload size.
+ * @var projectile_id Identifier of the projectile that hit a target.
+ * @var target_id Identifier of the target that was hit.
+ * @var target_is_player `1` if the target is a player, `0` otherwise.
+ * @var hit_x X coordinate of the impact in world space.
+ * @var hit_y Y coordinate of the impact in world space.
+ */
 struct ALIGNED ProjectileHitPacket {
     PacketHeader header;
     std::uint32_t projectile_id;
@@ -269,7 +343,17 @@ struct ALIGNED ProjectileHitPacket {
     float hit_y;
 };
 
-/* Server to client packets */
+/**
+ * @brief Server-to-client notification that a projectile was removed or expired.
+ *
+ * Contains the projectile's identifier and its last known world position.
+ *
+ * Fields:
+ * - header: Packet header identifying the packet type and payload size.
+ * - projectile_id: Unique identifier of the projectile being destroyed.
+ * - x: X coordinate of the projectile at destruction.
+ * - y: Y coordinate of the projectile at destruction.
+ */
 struct ALIGNED ProjectileDestroyPacket {
     PacketHeader header;
     std::uint32_t projectile_id;
@@ -277,22 +361,27 @@ struct ALIGNED ProjectileDestroyPacket {
     float y;
 };
 
-/* Server to client packets */
+/**
+ * @brief Notifies a client of the game's start state.
+ *
+ * Packet with a common PacketHeader and a single flag indicating whether the game has started.
+ *
+ * Fields:
+ * - header: Common packet header containing type and payload size.
+ * - game_start: `1` if the game has started, `0` otherwise.
+ */
 struct ALIGNED GameStartPacket {
     PacketHeader header;
     std::uint8_t game_start;
 };
 
 /**
- * @brief Signals the end of the game to the client.
+ * @brief Notifies a client that the game has ended.
  *
- * Contains the common packet header and a flag indicating whether the game has
- * ended.
+ * Contains the common packet header followed by a flag indicating game end.
  *
- * @var PacketHeader GameEndPacket::header
- *   Common packet header identifying packet type and payload size.
- * @var uint8_t GameEndPacket::game_end
- *   `1` if the game has ended, `0` otherwise.
+ * @var PacketHeader GameEndPacket::header Common packet header identifying packet type and payload size.
+ * @var std::uint8_t GameEndPacket::game_end `1` if the game has ended, `0` otherwise.
  */
 struct ALIGNED GameEndPacket {
     PacketHeader header;
@@ -356,7 +445,14 @@ struct ALIGNED PlayerDeathPacket {
     float y;
 };
 
-/* Room Management Packets */
+/**
+ * @brief Client request to create a room with access controls and capacity.
+ *
+ * @param room_name Null-terminated UTF‑8 room name (up to 31 characters; remaining bytes should be zero).
+ * @param is_private `1` to make the room private (password required), `0` for public.
+ * @param password Null-terminated UTF‑8 password used when `is_private` is `1` (up to 31 characters; remaining bytes should be zero).
+ * @param max_players Maximum number of players allowed in the room.
+ */
 struct ALIGNED CreateRoomPacket {
     PacketHeader header;
     char room_name[32];
@@ -365,26 +461,67 @@ struct ALIGNED CreateRoomPacket {
     std::uint8_t max_players;
 };
 
+/**
+ * @brief Client-to-server request to join an existing room.
+ *
+ * Contains the common packet header, the numeric room identifier, and an optional
+ * null-terminated UTF-8 password (maximum 31 characters plus terminating NUL).
+ *
+ * @var header Common 4-byte-aligned packet header indicating packet type and payload size.
+ * @var room_id Numeric identifier of the room to join.
+ * @var password Null-terminated UTF-8 password for the room; unused if empty. Capacity 32 bytes including terminator.
+ */
 struct ALIGNED JoinRoomPacket {
     PacketHeader header;
     std::uint32_t room_id;
     char password[32];
 };
 
+/**
+ * @brief Server response to a join-room request indicating success or the failure reason.
+ *
+ * Contains the common packet header and a RoomError value describing the outcome.
+ *
+ * - header: Common packet header identifying the packet type and payload size.
+ * - error_code: `RoomError` value; `SUCCESS` means the join succeeded, other values indicate the specific failure.
+ */
 struct ALIGNED JoinRoomResponsePacket {
     PacketHeader header;
     RoomError error_code;
 };
 
+/**
+ * @brief Client-to-server request to leave a room.
+ *
+ * Contains the common packet header and the identifier of the room the client requests to leave.
+ *
+ * Fields:
+ * - header: Common packet header indicating type and payload size.
+ * - room_id: Identifier of the room to leave.
+ */
 struct ALIGNED LeaveRoomPacket {
     PacketHeader header;
     std::uint32_t room_id;
 };
 
+/**
+ * @brief Client-to-server request to retrieve the list of available rooms.
+ *
+ * This packet contains only the standard packet header and signals the server
+ * to respond with a ListRoomResponsePacket containing current room summaries.
+ */
 struct ALIGNED ListRoomPacket {
     PacketHeader header;
 };
 
+/**
+ * @brief Describes a room's identity and current occupancy for room listings.
+ *
+ * @var room_id Unique numeric identifier of the room.
+ * @var room_name Null-terminated UTF-8 room name (up to 31 bytes of text plus terminator).
+ * @var player_count Current number of players in the room.
+ * @var max_players Maximum allowed players for the room.
+ */
 struct ALIGNED RoomInfo {
     std::uint32_t room_id;
     char room_name[32];
@@ -392,34 +529,53 @@ struct ALIGNED RoomInfo {
     std::uint8_t max_players;
 };
 
+/**
+ * @brief Server response containing a list of available rooms.
+ *
+ * Contains up to MAX_ROOMS room summaries and the count of valid entries.
+ *
+ * @var header Common packet header indicating packet type and payload size.
+ * @var room_count Number of valid RoomInfo entries in `rooms` (0 through MAX_ROOMS).
+ * @var rooms Fixed-size array of room summaries; only the first `room_count` entries are populated.
+ */
 struct ALIGNED ListRoomResponsePacket {
     PacketHeader header;
     std::uint32_t room_count;
     RoomInfo rooms[MAX_ROOMS];
 };
 
+/**
+ * @brief Client-to-server request to initiate matchmaking.
+ *
+ * This packet contains only the common PacketHeader and signals that the sender
+ * wants to be matched into a game lobby or match queue.
+ */
 struct ALIGNED MatchmakingRequestPacket {
     PacketHeader header;
 };
 
+/**
+ * @brief Server-to-client response to a matchmaking request indicating the result.
+ *
+ * Contains the common packet header and a RoomError value that describes whether
+ * matchmaking succeeded or the reason it failed.
+ *
+ * @var header Common packet header with packet type and payload size.
+ * @var error_code RoomError value indicating matchmaking result (e.g., `SUCCESS`, `ROOM_NOT_FOUND`, `ROOM_FULL`, `WRONG_PASSWORD`, `ALREADY_IN_ROOM`, `PLAYER_BANNED`, `UNKNOWN_ERROR`).
+ */
 struct ALIGNED MatchmakingResponsePacket {
     PacketHeader header;
     RoomError error_code;
 };
 
 /**
- * @brief Packet sent from client to server conveying the player's current input
- * state.
+ * @brief Conveys the client's current directional input and its sequence number.
  *
- * Contains the common packet header, a bitfield representing directional
- * inputs, and a client-side sequence number for ordering/correlation.
+ * Contains the common packet header, an 8-bit bitfield of MovementInputType flags indicating which movement directions are active, and a client-side sequence number used to order inputs and correlate acknowledgements.
  *
  * Fields:
- * - header: Common packet header (type and size).
- * - input: Bitflags defined by MovementInputType indicating which movement
- * directions are active.
- * - sequence_number: Client-side sequence number used to order inputs and
- * correlate acknowledgements.
+ * - input: Bitflags (MovementInputType) representing active directional inputs.
+ * - sequence_number: Client-side sequence number for input ordering and acknowledgement correlation.
  */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;

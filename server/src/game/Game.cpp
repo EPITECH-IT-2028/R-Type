@@ -151,18 +151,17 @@ void game::Game::stop() {
 }
 
 /**
- * @brief Runs the main game loop, updating core systems and spawning enemies.
+ * @brief Executes the main game loop, updating systems and handling enemy spawns.
  *
- * The loop begins after a 3-second delay, emits a GameStartEvent to the event
- * queue, then repeatedly:
- * - captures frame time and stores it in `_deltaTime`,
- * - updates the enemy, projectile, and collision systems with the frame time,
- * - invokes enemy spawn logic,
- * - sleeps ~16ms to cap frame pacing.
+ * Enqueues a GameStartEvent immediately, then repeatedly:
+ * - calculates and stores frame delta time in `_deltaTime`,
+ * - updates the enemy, projectile, and collision systems with the delta time,
+ * - runs enemy spawn logic,
+ * - sleeps approximately 16 milliseconds to cap frame pacing.
  *
- * The loop stops when the Game is no longer running or if any required system
- * (enemy, projectile, collision) is not initialized, in which case it clears
- * the running flag.
+ * The loop exits when `_running` becomes false or when any required system
+ * (enemy, projectile, collision) is not available, in which case the running
+ * flag is cleared and the loop stops.
  */
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
@@ -231,6 +230,14 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
   return player;
 }
 
+/**
+ * @brief Removes a player and its associated ECS entity from the game.
+ *
+ * Destroys the ECS entity owned by the player with the given id and removes the player
+ * from the internal registry. If no player with that id exists, the function has no effect.
+ *
+ * @param player_id Identifier of the player to remove.
+ */
 void game::Game::destroyPlayer(int player_id) {
   std::scoped_lock lock(_playerMutex);
   auto it = _players.find(player_id);
@@ -334,6 +341,15 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
   return enemy;
 }
 
+/**
+ * @brief Removes the enemy with the given id, marks it as dead, and destroys its ECS entity.
+ *
+ * If the enemy exists, its EnemyComponent (if present) will have `is_alive` set to `false`,
+ * the corresponding ECS entity will be destroyed, and the enemy will be removed from the registry.
+ * The operation is guarded by the internal enemy mutex.
+ *
+ * @param enemy_id Identifier of the enemy to destroy. No action is taken if no enemy with this id exists.
+ */
 void game::Game::destroyEnemy(int enemy_id) {
   std::scoped_lock lock(_enemyMutex);
   auto it = _enemies.find(enemy_id);
@@ -369,18 +385,16 @@ std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
 }
 
 /**
- * @brief Create and register a new projectile entity, store it in the game's
- * projectile registry, and emit a spawn event.
+ * @brief Create a new projectile entity, register it with the ECS and game registry, and emit a ProjectileSpawnEvent.
  *
  * @param projectile_id Unique identifier for the projectile.
- * @param owner_id Identifier of the entity that owns or fired the projectile.
+ * @param owner_id Identifier of the entity that fired the projectile.
  * @param type Projectile type.
- * @param x Initial X position of the projectile.
- * @param y Initial Y position of the projectile.
- * @param vx Initial X velocity of the projectile.
- * @param vy Initial Y velocity of the projectile.
- * @return std::shared_ptr<game::Projectile> Shared pointer to the created
- * Projectile.
+ * @param x Initial X position.
+ * @param y Initial Y position.
+ * @param vx Initial X velocity.
+ * @param vy Initial Y velocity.
+ * @return std::shared_ptr<game::Projectile> Shared pointer to the created projectile.
  */
 std::shared_ptr<game::Projectile> game::Game::createProjectile(
     std::uint32_t projectile_id, std::uint32_t owner_id, ProjectileType type,
@@ -422,6 +436,13 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   return projectile;
 }
 
+/**
+ * @brief Removes the projectile with the given id from the game and its ECS.
+ *
+ * Destroys the projectile's underlying ECS entity and removes the projectile from the internal registry. If no projectile with the given id exists, the call has no effect.
+ *
+ * @param projectile_id Identifier of the projectile to remove.
+ */
 void game::Game::destroyProjectile(std::uint32_t projectile_id) {
   std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
