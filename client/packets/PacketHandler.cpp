@@ -5,6 +5,7 @@
 #include "EntityManager.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
+#include "PacketUtils.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSpriteConfig.hpp"
@@ -14,7 +15,6 @@
 #include "Serializer.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
-#include "PacketUtils.hpp"
 #include "raylib.h"
 
 int packet::MessageHandler::handlePacket(client::Client &client,
@@ -31,7 +31,7 @@ int packet::MessageHandler::handlePacket(client::Client &client,
   const MessagePacket &packet = packetOpt.value();
   size_t len = strnlen(packet.message, sizeof(packet.message));
   TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
-  
+
   if (shouldAcknowledgePacketType(PacketType::Message)) {
     auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
                                                   client.getPlayerId());

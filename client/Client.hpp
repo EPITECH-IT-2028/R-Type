@@ -133,7 +133,8 @@ namespace client {
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player", _sequence_number.load());
+          PlayerInfoPacket packet =
+              PacketBuilder::makePlayerInfo("Player", _sequence_number.load());
           send(packet);
         }
       }
@@ -148,7 +149,7 @@ namespace client {
        */
       void disconnect() {
         _resendThreadRunning.store(false, std::memory_order_release);
-        
+
         if (_player_id == static_cast<std::uint32_t>(-1)) {
           _networkManager.disconnect();
           _running.store(false, std::memory_order_release);

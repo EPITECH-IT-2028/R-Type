@@ -108,7 +108,6 @@ namespace server {
       std::thread _resendThread;
       std::atomic<bool> _resendThreadRunning{false};
 
-
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;
       std::uint16_t _port;
