@@ -111,9 +111,14 @@ namespace client {
       }
 
       /**
-       * @brief Attempts to establish a network connection and, on success, transitions the client to the menu state and announces the local player.
+       * @brief Attempts to establish a network connection and, on success,
+       * transitions the client to the menu state and announces the local
+       * player.
        *
-       * Initiates a connection using the internal network manager. If the connection is established, sets the client state to ClientState::CONNECTED_MENU and sends a PlayerInfo packet for the local player named "Player".
+       * Initiates a connection using the internal network manager. If the
+       * connection is established, sets the client state to
+       * ClientState::CONNECTED_MENU and sends a PlayerInfo packet for the local
+       * player named "Player".
        */
       void connect() {
         _networkManager.connect();
@@ -126,11 +131,12 @@ namespace client {
       }
 
       /**
-       * @brief Disconnects the client from the server and stops the client's main loop.
+       * @brief Disconnects the client from the server and stops the client's
+       * main loop.
        *
-       * If the local player ID is valid, a PlayerDisconnect packet for that player
-       * is sent before the network connection is closed. In all cases the network
-       * manager is disconnected and the running flag is cleared.
+       * If the local player ID is valid, a PlayerDisconnect packet for that
+       * player is sent before the network connection is closed. In all cases
+       * the network manager is disconnected and the running flag is cleared.
        */
       void disconnect() {
         if (_player_id == static_cast<std::uint32_t>(-1)) {
@@ -149,9 +155,10 @@ namespace client {
       /**
        * @brief Sends a packet to the server using the client's network manager.
        *
-       * If the client is not connected, the call returns without sending. On successful
-       * transmission the client's internal packet counter and outgoing sequence number
-       * are incremented. Exceptions thrown during send are caught and not propagated.
+       * If the client is not connected, the call returns without sending. On
+       * successful transmission the client's internal packet counter and
+       * outgoing sequence number are incremented. Exceptions thrown during send
+       * are caught and not propagated.
        *
        * @tparam PacketType Type of the packet to send.
        * @param packet Packet to transmit over the network.
@@ -175,7 +182,8 @@ namespace client {
       /**
        * @brief Retrieve the ECS entity ID associated with an enemy identifier.
        *
-       * @returns std::uint32_t The entity ID mapped to the given enemy_id, or `KO` if no mapping exists.
+       * @returns std::uint32_t The entity ID mapped to the given enemy_id, or
+       * `KO` if no mapping exists.
        */
       std::uint32_t getEnemyEntity(std::uint32_t enemy_id) const {
         auto it = _enemyEntities.find(enemy_id);
@@ -189,7 +197,8 @@ namespace client {
        * @brief Retrieves the ECS entity associated with a player ID.
        *
        * @param player_id The player identifier to look up.
-       * @return std::uint32_t The entity ID mapped to the given player, or `KO` if no mapping exists.
+       * @return std::uint32_t The entity ID mapped to the given player, or `KO`
+       * if no mapping exists.
        */
       std::uint32_t getPlayerEntity(std::uint32_t player_id) const {
         std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
@@ -201,11 +210,14 @@ namespace client {
       }
 
       /**
-       * @brief Remove the entity associated with a player ID from the client registry.
+       * @brief Remove the entity associated with a player ID from the client
+       * registry.
        *
-       * Removes any mapping for the given playerId from the internal player-entity map.
+       * Removes any mapping for the given playerId from the internal
+       * player-entity map.
        *
-       * @param playerId ID of the player whose entity mapping should be removed.
+       * @param playerId ID of the player whose entity mapping should be
+       * removed.
        */
       void destroyPlayerEntity(std::uint32_t playerId) {
         std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
@@ -213,7 +225,8 @@ namespace client {
       }
 
       /**
-       * @brief Remove the enemy entity associated with the given enemy ID from the client's entity map.
+       * @brief Remove the enemy entity associated with the given enemy ID from
+       * the client's entity map.
        *
        * If no entity is mapped for the provided ID, no action is taken.
        *
@@ -233,7 +246,8 @@ namespace client {
       /**
        * @brief Retrieve the local player's identifier.
        *
-       * @return std::uint32_t The local player ID; returns `(std::uint32_t)-1` if no player is assigned.
+       * @return std::uint32_t The local player ID; returns `(std::uint32_t)-1`
+       * if no player is assigned.
        */
       std::uint32_t getPlayerId() const {
         return _player_id;

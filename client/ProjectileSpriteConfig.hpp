@@ -15,5 +15,5 @@ namespace renderManager {
 
     constexpr float DEFAULT_SCALE_X = 2.0f;
     constexpr float DEFAULT_SCALE_Y = 2.0f;
-  }
+  }  // namespace ProjectileSprite
 }  // namespace renderManager

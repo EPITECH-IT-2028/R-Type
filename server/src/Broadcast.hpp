@@ -14,12 +14,16 @@ namespace broadcast {
     public:
       template <typename Packet, typename Pred>
       /**
-       * @brief Serializes a packet and sends it to each client in the list that is connected and satisfies a predicate.
+       * @brief Serializes a packet and sends it to each client in the list that
+       * is connected and satisfies a predicate.
        *
-       * @param networkManager ServerNetworkManager used to deliver the serialized packet.
-       * @param clients Candidate recipients; elements may be null or disconnected and will be skipped.
+       * @param networkManager ServerNetworkManager used to deliver the
+       * serialized packet.
+       * @param clients Candidate recipients; elements may be null or
+       * disconnected and will be skipped.
        * @param packet Packet to serialize and send.
-       * @param pred Predicate invoked with a `server::Client` reference; the packet is sent to a client only if `pred` returns true.
+       * @param pred Predicate invoked with a `server::Client` reference; the
+       * packet is sent to a client only if `pred` returns true.
        */
       static void broadcastTo(
           network::ServerNetworkManager &networkManager,
@@ -53,16 +57,20 @@ namespace broadcast {
       }
 
       /**
-       * @brief Send information about all currently connected players to a newly connected client.
+       * @brief Send information about all currently connected players to a
+       * newly connected client.
        *
-       * For each existing, connected player (excluding the new player), constructs a NewPlayer
-       * packet containing that player's position, speed, and maximum health, serializes it,
-       * and sends it to the client identified by newPlayerID.
+       * For each existing, connected player (excluding the new player),
+       * constructs a NewPlayer packet containing that player's position, speed,
+       * and maximum health, serializes it, and sends it to the client
+       * identified by newPlayerID.
        *
        * @param networkManager Server network manager used to send packets.
        * @param game Source of current player state.
-       * @param newPlayerID ID of the newly connected client that should receive the player data.
-       * @param roomClients List of clients in the room (not directly iterated for sending here but provided for context).
+       * @param newPlayerID ID of the newly connected client that should receive
+       * the player data.
+       * @param roomClients List of clients in the room (not directly iterated
+       * for sending here but provided for context).
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,
@@ -247,9 +255,11 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a player hit event to all clients in the specified room.
+       * @brief Broadcasts a player hit event to all clients in the specified
+       * room.
        *
-       * @param packet PlayerHitPacket describing the hit event to forward to room members.
+       * @param packet PlayerHitPacket describing the hit event to forward to
+       * room members.
        */
       static void broadcastPlayerHitToRoom(
           network::ServerNetworkManager &networkManager,
@@ -259,10 +269,13 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a player disconnect event to all connected clients in a room.
+       * @brief Broadcasts a player disconnect event to all connected clients in
+       * a room.
        *
-       * @param roomClients Collection of room clients; only non-null, connected clients will receive the packet.
-       * @param packet Packet describing the disconnect, containing the player id of the disconnecting player.
+       * @param roomClients Collection of room clients; only non-null, connected
+       * clients will receive the packet.
+       * @param packet Packet describing the disconnect, containing the player
+       * id of the disconnecting player.
        */
       static void broadcastPlayerDisconnectToRoom(
           network::ServerNetworkManager &networkManager,
