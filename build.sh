@@ -94,6 +94,14 @@ case "${UNAME_OUT}" in
         ;;
 esac
 
+CMAKE_LINKER_FLAGS_ARG=""
+if [[ "$OS_TYPE" == "Windows" ]]; then
+    export LDFLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic"
+    CMAKE_LINKER_FLAGS_ARG="-DCMAKE_EXE_LINKER_FLAGS=-static"
+else
+    unset LDFLAGS
+fi
+
 if [[ "$OS_TYPE" == "Linux" ]]; then
     if [ "$INSTALL_DEPS" = "true" ]; then
         echo "Linux detected, ensuring required packages are installed..."
@@ -103,7 +111,7 @@ if [[ "$OS_TYPE" == "Linux" ]]; then
                 missing_packages+=("$pkg")
             fi
         done
-        
+
         if [ ${#missing_packages[@]} -gt 0 ]; then
             if [[ $EUID -ne 0 ]]; then
                 echo "Installing missing dependencies requires root privileges."
@@ -271,17 +279,23 @@ fi
 case $TARGET in
     "client")
         echo "Building client only..."
-        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" \
+              -DBUILD_CLIENT=ON -DBUILD_SERVER=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+              $CMAKE_LINKER_FLAGS_ARG
         cmake --build .build --config $BUILD_TYPE
         ;;
     "server")
         echo "Building server only..."
-        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=OFF -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" \
+              -DBUILD_CLIENT=OFF -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+              $CMAKE_LINKER_FLAGS_ARG
         cmake --build .build --config $BUILD_TYPE
         ;;
     "both")
         echo "Building both client and server..."
-        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" \
+              -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+              $CMAKE_LINKER_FLAGS_ARG
         cmake --build .build --config $BUILD_TYPE
         ;;
     *)
