@@ -4,6 +4,7 @@
 #include <queue>
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "Serializer.hpp"
 
 using namespace network;
 
@@ -156,20 +157,19 @@ void ClientNetworkManager::processReceivedPackets(client::Client &client) {
 }
 
 void ClientNetworkManager::processPacket(const char *data, std::size_t size, client::Client &client) {
-  if (size < sizeof(PacketHeader)) {
-    std::cerr << "Received packet too small to contain header." << std::endl;
+  serialization::Buffer buffer(data, data + size);
+  auto headerOpt =
+      serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
+
+  if (!headerOpt) {
+    std::cerr << "[WARNING] Failed to deserialize packet header" << std::endl;
     return;
   }
 
-  PacketHeader header;
+  PacketHeader header = headerOpt.value();
+
   std::memcpy(&header, data, sizeof(PacketHeader));
   PacketType packet_type = static_cast<PacketType>(header.type);
-
-  if (header.size != size) {
-    std::cerr << "Packet size mismatch: expected " << header.size
-              << ", got " << size << std::endl;
-    return;
-  }
 
   auto handler = _packetFactory.createHandler(packet_type);
   if (handler) {
