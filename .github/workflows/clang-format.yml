@@ -1,4 +1,4 @@
-name: Clang Format Check
+name: Clang Format Check & Auto Fix
 
 on:
   push:
@@ -13,8 +13,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
-      - name: Install LLVM clang-format-22
+      - name: Install clang-format 22
         run: |
           set -e
           sudo apt-get update
@@ -23,8 +26,17 @@ jobs:
           chmod +x llvm.sh
           sudo ./llvm.sh 22
           sudo apt-get install -y clang-format-22
-          clang-format-22 --version
 
-      - name: Check formatting
+      - name: Run Clang Format
         run: |
-          clang-format-22 --dry-run --Werror -style=file server/**/*.cpp server/**/*.hpp client/**/*.cpp client/**/*.hpp
+          clang-format-22 -i server/**/*.cpp server/**/*.hpp \
+                           client/**/*.cpp client/**/*.hpp \
+                           core/**/*.cpp core/**/*.hpp \
+                           game_engine/**/*.cpp game_engine/**/*.hpp
+
+      - name: Commit formatted code (if any)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(format): apply clang-format"
+          branch: ${{ github.head_ref }}
+          file_pattern: "*.cpp *.hpp"
