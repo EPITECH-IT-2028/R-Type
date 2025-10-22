@@ -8,8 +8,8 @@
  * @brief Convert a PacketType value to a human-readable name.
  *
  * @param type The PacketType value to convert.
- * @return The human-readable name for the packet type; "Unknown(n)" if the value
- * is not recognized, where n is the integer value of the enum.
+ * @return The human-readable name for the packet type; "Unknown(n)" if the
+ * value is not recognized, where n is the integer value of the enum.
  */
 inline std::string packetTypeToString(PacketType type) {
   switch (type) {

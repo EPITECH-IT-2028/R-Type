@@ -151,7 +151,8 @@ void game::Game::stop() {
 }
 
 /**
- * @brief Executes the main game loop, updating systems and handling enemy spawns.
+ * @brief Executes the main game loop, updating systems and handling enemy
+ * spawns.
  *
  * Enqueues a GameStartEvent immediately, then repeatedly:
  * - calculates and stores frame delta time in `_deltaTime`,
@@ -233,8 +234,9 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
 /**
  * @brief Removes a player and its associated ECS entity from the game.
  *
- * Destroys the ECS entity owned by the player with the given id and removes the player
- * from the internal registry. If no player with that id exists, the function has no effect.
+ * Destroys the ECS entity owned by the player with the given id and removes the
+ * player from the internal registry. If no player with that id exists, the
+ * function has no effect.
  *
  * @param player_id Identifier of the player to remove.
  */
@@ -342,13 +344,16 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
 }
 
 /**
- * @brief Removes the enemy with the given id, marks it as dead, and destroys its ECS entity.
+ * @brief Removes the enemy with the given id, marks it as dead, and destroys
+ * its ECS entity.
  *
- * If the enemy exists, its EnemyComponent (if present) will have `is_alive` set to `false`,
- * the corresponding ECS entity will be destroyed, and the enemy will be removed from the registry.
- * The operation is guarded by the internal enemy mutex.
+ * If the enemy exists, its EnemyComponent (if present) will have `is_alive` set
+ * to `false`, the corresponding ECS entity will be destroyed, and the enemy
+ * will be removed from the registry. The operation is guarded by the internal
+ * enemy mutex.
  *
- * @param enemy_id Identifier of the enemy to destroy. No action is taken if no enemy with this id exists.
+ * @param enemy_id Identifier of the enemy to destroy. No action is taken if no
+ * enemy with this id exists.
  */
 void game::Game::destroyEnemy(int enemy_id) {
   std::scoped_lock lock(_enemyMutex);
@@ -385,7 +390,8 @@ std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
 }
 
 /**
- * @brief Create a new projectile entity, register it with the ECS and game registry, and emit a ProjectileSpawnEvent.
+ * @brief Create a new projectile entity, register it with the ECS and game
+ * registry, and emit a ProjectileSpawnEvent.
  *
  * @param projectile_id Unique identifier for the projectile.
  * @param owner_id Identifier of the entity that fired the projectile.
@@ -394,7 +400,8 @@ std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
  * @param y Initial Y position.
  * @param vx Initial X velocity.
  * @param vy Initial Y velocity.
- * @return std::shared_ptr<game::Projectile> Shared pointer to the created projectile.
+ * @return std::shared_ptr<game::Projectile> Shared pointer to the created
+ * projectile.
  */
 std::shared_ptr<game::Projectile> game::Game::createProjectile(
     std::uint32_t projectile_id, std::uint32_t owner_id, ProjectileType type,
@@ -439,7 +446,9 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
 /**
  * @brief Removes the projectile with the given id from the game and its ECS.
  *
- * Destroys the projectile's underlying ECS entity and removes the projectile from the internal registry. If no projectile with the given id exists, the call has no effect.
+ * Destroys the projectile's underlying ECS entity and removes the projectile
+ * from the internal registry. If no projectile with the given id exists, the
+ * call has no effect.
  *
  * @param projectile_id Identifier of the projectile to remove.
  */

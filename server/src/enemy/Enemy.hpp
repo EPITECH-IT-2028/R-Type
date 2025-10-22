@@ -8,11 +8,13 @@ namespace game {
   class Enemy {
     public:
       /**
-       * @brief Construct an Enemy wrapper that associates a game enemy with an ECS entity.
+       * @brief Construct an Enemy wrapper that associates a game enemy with an
+       * ECS entity.
        *
        * @param enemy_id Unique game-level identifier for the enemy.
        * @param entity_id Identifier of the corresponding ECS entity.
-       * @param ecsManager Reference to the ECS manager used to access the entity's components; the manager must outlive this Enemy instance.
+       * @param ecsManager Reference to the ECS manager used to access the
+       * entity's components; the manager must outlive this Enemy instance.
        */
       Enemy(int enemy_id, std::uint32_t entity_id, ecs::ECSManager &ecsManager)
           : _enemy_id(enemy_id),

@@ -24,10 +24,12 @@
 
 namespace client {
   /**
-   * @brief Constructs a Client configured to connect to the given host and port.
+   * @brief Constructs a Client configured to connect to the given host and
+   * port.
    *
-   * Initializes the network manager, sequence and packet counters, obtains the ECS manager singleton,
-   * sets the client's initial state to DISCONNECTED, and marks the running flag as false.
+   * Initializes the network manager, sequence and packet counters, obtains the
+   * ECS manager singleton, sets the client's initial state to DISCONNECTED, and
+   * marks the running flag as false.
    *
    * @param host Server hostname or IP address.
    * @param port Server port number.
@@ -92,15 +94,19 @@ namespace client {
   }
 
   /**
-   * @brief Assign ECS component signatures that determine which entities each system processes.
+   * @brief Assign ECS component signatures that determine which entities each
+   * system processes.
    *
    * Sets the required component types for each system:
-   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
+   * - BackgroundSystem: PositionComponent, RenderComponent,
+   * BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: LocalPlayerTagComponent, SpriteAnimationComponent, PositionComponent
+   * - InputSystem: LocalPlayerTagComponent, SpriteAnimationComponent,
+   * PositionComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
-   * - ProjectileSystem: PositionComponent, VelocityComponent, ProjectileComponent
+   * - ProjectileSystem: PositionComponent, VelocityComponent,
+   * ProjectileComponent
    */
   void Client::signSystem() {
     {
@@ -240,7 +246,8 @@ namespace client {
    * enemy_id to the created entity. If an entity with the same enemy_id already
    * exists, logs a warning and returns without creating a new entity.
    *
-   * @param packet Spawn packet containing `enemy_id` and initial position `x`, `y`.
+   * @param packet Spawn packet containing `enemy_id` and initial position `x`,
+   * `y`.
    */
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
     if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
@@ -276,7 +283,8 @@ namespace client {
   }
 
   /**
-   * @brief Associate a projectile identifier with its ECS entity for later lookup.
+   * @brief Associate a projectile identifier with its ECS entity for later
+   * lookup.
    *
    * Stores the mapping in the client's projectile map in a thread-safe manner.
    *
@@ -292,7 +300,8 @@ namespace client {
    * @brief Retrieves the ECS entity associated with a projectile identifier.
    *
    * @param projectileId Identifier of the projectile to look up.
-   * @return Entity The associated entity, or `(Entity)(-1)` if no mapping exists.
+   * @return Entity The associated entity, or `(Entity)(-1)` if no mapping
+   * exists.
    */
   Entity Client::getProjectileEntity(std::uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
@@ -371,8 +380,8 @@ namespace client {
   /**
    * @brief Sends a matchmaking request to the connected server.
    *
-   * If the request is successfully sent, an informational log entry is produced;
-   * if sending fails, an error is logged.
+   * If the request is successfully sent, an informational log entry is
+   * produced; if sending fails, an error is logged.
    */
   void Client::sendMatchmakingRequest() {
     try {

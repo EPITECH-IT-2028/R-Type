@@ -1,8 +1,8 @@
 #pragma once
 
+#include <mutex>
 #include <string>
 #include <unordered_map>
-#include <mutex>
 #include "raylib.h"
 
 namespace asset {

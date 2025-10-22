@@ -488,7 +488,8 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
  * @param client Reference to the client instance whose state may be updated.
  * @param data Pointer to the raw packet buffer.
  * @param size Size of the raw packet buffer in bytes.
- * @return int `OK` if the packet was processed, `KO` if the packet could not be deserialized.
+ * @return int `OK` if the packet was processed, `KO` if the packet could not be
+ * deserialized.
  */
 int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
                                                   const char *data,

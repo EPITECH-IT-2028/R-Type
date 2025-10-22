@@ -78,10 +78,11 @@ void ClientNetworkManager::connect() {
 }
 
 /**
- * @brief Stops the network manager, closes the socket, and reports disconnection.
+ * @brief Stops the network manager, closes the socket, and reports
+ * disconnection.
  *
- * Sets the manager's running state to false, closes the underlying socket if it is open,
- * and writes a disconnection message to standard output.
+ * Sets the manager's running state to false, closes the underlying socket if it
+ * is open, and writes a disconnection message to standard output.
  */
 void ClientNetworkManager::disconnect() {
   _running.store(false, std::memory_order_release);
