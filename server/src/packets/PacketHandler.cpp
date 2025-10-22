@@ -13,7 +13,8 @@
 #include "Server.hpp"
 
 /**
- * @brief Send a JoinRoomResponse to a specific client indicating the result of a join attempt.
+ * @brief Send a JoinRoomResponse to a specific client indicating the result of
+ * a join attempt.
  *
  * @param player_id ID of the client to receive the response.
  * @param error Result code describing why the join succeeded or failed.
@@ -29,7 +30,8 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
 }
 
 /**
- * @brief Send a MatchmakingResponse to the specified player indicating the result of a matchmaking request.
+ * @brief Send a MatchmakingResponse to the specified player indicating the
+ * result of a matchmaking request.
  *
  * @param player_id ID of the target player to receive the response.
  * @param error Result code describing the matchmaking outcome.
@@ -45,17 +47,20 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
 }
 
 /**
- * @brief Handle an incoming chat MessagePacket and broadcast it to the sender's room.
+ * @brief Handle an incoming chat MessagePacket and broadcast it to the sender's
+ * room.
  *
  * Deserializes a MessagePacket from the provided buffer, replaces the packet's
  * player_id with the sender's id, and broadcasts the validated packet to all
  * clients in the sender's room.
  *
  * @param server The server instance used to access game and network managers.
- * @param client The client that sent the packet; its player_id and room_id are used.
+ * @param client The client that sent the packet; its player_id and room_id are
+ * used.
  * @param data Pointer to the serialized MessagePacket bytes.
  * @param size Number of bytes available at `data`.
- * @return int `OK` on success, `KO` if deserialization fails or the client is not in a room.
+ * @return int `OK` on success, `KO` if deserialization fails or the client is
+ * not in a room.
  */
 int packet::MessageHandler::handlePacket(server::Server &server,
                                          server::Client &client,
@@ -92,13 +97,17 @@ int packet::MessageHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process a PlayerInfoPacket from a client, update the client's player name, and initialize the player in a room when appropriate.
+ * @brief Process a PlayerInfoPacket from a client, update the client's player
+ * name, and initialize the player in a room when appropriate.
  *
  * @param server Server managing rooms, game state, and networking.
- * @param client Client that sent the packet; its `_player_name` and room-related state may be updated.
+ * @param client Client that sent the packet; its `_player_name` and
+ * room-related state may be updated.
  * @param data Pointer to the raw PlayerInfoPacket bytes.
  * @param size Size of the data buffer in bytes.
- * @return int `OK` if the packet was handled successfully and any required player initialization completed, `KO` on deserialization failure, invalid client state, or other errors.
+ * @return int `OK` if the packet was handled successfully and any required
+ * player initialization completed, `KO` on deserialization failure, invalid
+ * client state, or other errors.
  */
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             server::Client &client,
@@ -236,18 +245,21 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process an incoming PlayerDisconnectPacket and finalize the client's disconnection.
+ * @brief Process an incoming PlayerDisconnectPacket and finalize the client's
+ * disconnection.
  *
- * Validates and applies a PlayerDisconnectPacket from the provided buffer, updates server and client connection state,
- * removes the player from their room and game if present, broadcasts the disconnect to remaining room clients, and clears
- * the client's server slot.
+ * Validates and applies a PlayerDisconnectPacket from the provided buffer,
+ * updates server and client connection state, removes the player from their
+ * room and game if present, broadcasts the disconnect to remaining room
+ * clients, and clears the client's server slot.
  *
  * @param server Server instance handling clients and rooms.
  * @param client Client instance corresponding to the sending connection.
  * @param data Pointer to the serialized PlayerDisconnectPacket bytes.
  * @param size Size of the serialized data in bytes.
- * @return int `OK` if the disconnection was processed successfully; `KO` if packet deserialization fails or the packet's
- * player_id does not match the client.
+ * @return int `OK` if the disconnection was processed successfully; `KO` if
+ * packet deserialization fails or the packet's player_id does not match the
+ * client.
  */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
@@ -311,17 +323,20 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process a CreateRoomPacket: create a room, join the requesting client, and initialize the player in that room.
+ * @brief Process a CreateRoomPacket: create a room, join the requesting client,
+ * and initialize the player in that room.
  *
- * Deserializes the incoming packet, creates a game room using the provided name and password,
- * has the client join the newly created room, and initializes the player state inside the room.
- * On failure the function performs necessary cleanup (leaving/destroying the room) and restores client state.
+ * Deserializes the incoming packet, creates a game room using the provided name
+ * and password, has the client join the newly created room, and initializes the
+ * player state inside the room. On failure the function performs necessary
+ * cleanup (leaving/destroying the room) and restores client state.
  *
  * @param server Server instance handling game rooms and clients.
  * @param client Client that sent the CreateRoomPacket.
  * @param data Pointer to the serialized packet data.
  * @param size Size in bytes of the serialized packet.
- * @return int `OK` on success after room creation, join, and player initialization; `KO` on any failure.
+ * @return int `OK` on success after room creation, join, and player
+ * initialization; `KO` on any failure.
  */
 int packet::CreateRoomHandler::handlePacket(server::Server &server,
                                             server::Client &client,
@@ -395,11 +410,13 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process a client's JoinRoom request and respond with the appropriate JoinRoomResponse.
+ * @brief Process a client's JoinRoom request and respond with the appropriate
+ * JoinRoomResponse.
  *
- * Deserializes a JoinRoomPacket from the provided buffer, validates room existence and password,
- * attempts to join the room, initializes the player in the room on success, and sends a
- * JoinRoomResponse indicating the resulting RoomError.
+ * Deserializes a JoinRoomPacket from the provided buffer, validates room
+ * existence and password, attempts to join the room, initializes the player in
+ * the room on success, and sends a JoinRoomResponse indicating the resulting
+ * RoomError.
  *
  * @param data Pointer to the serialized JoinRoomPacket.
  * @param size Size of the serialized data in bytes.
@@ -483,8 +500,9 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
  *
  * @param data Pointer to the raw packet bytes containing the LeaveRoomPacket.
  * @param size Number of bytes available at data.
- * @return int OK on success (client left room or was not in a room), KO on failure
- *             (failed to deserialize the packet or failed to obtain the shared client).
+ * @return int OK on success (client left room or was not in a room), KO on
+ * failure (failed to deserialize the packet or failed to obtain the shared
+ * client).
  */
 int packet::LeaveRoomHandler::handlePacket(server::Server &server,
                                            server::Client &client,
@@ -524,15 +542,18 @@ int packet::LeaveRoomHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a ListRoom request and send the current room list to the requesting client.
+ * @brief Handle a ListRoom request and send the current room list to the
+ * requesting client.
  *
- * Deserializes a ListRoomPacket from the provided buffer, gathers all active rooms,
- * builds a ListRoomResponse containing each room's id, name, player count, and max players,
- * serializes that response, and sends it to the requesting client.
+ * Deserializes a ListRoomPacket from the provided buffer, gathers all active
+ * rooms, builds a ListRoomResponse containing each room's id, name, player
+ * count, and max players, serializes that response, and sends it to the
+ * requesting client.
  *
  * @param data Pointer to the incoming packet data.
  * @param size Size of the incoming packet data in bytes.
- * @return int `OK` on success, `KO` if deserialization fails or the request cannot be processed.
+ * @return int `OK` on success, `KO` if deserialization fails or the request
+ * cannot be processed.
  */
 int packet::ListRoomHandler::handlePacket(server::Server &server,
                                           server::Client &client,
@@ -573,20 +594,25 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Attempts to place the client into a matchmaking room and responds with the result.
+ * @brief Attempts to place the client into a matchmaking room and responds with
+ * the result.
  *
- * Deserializes a MatchmakingRequestPacket from the provided buffer, then either joins the
- * client to an existing suitable room or creates and joins a new matchmaking room.
- * On success the client is transitioned to IN_ROOM_WAITING, the server initializes the
- * player in the room, and a success matchmaking response is sent to the client.
- * On failure an appropriate matchmaking response (e.g., UNKNOWN_ERROR) is sent and the
- * client's state is restored where applicable.
+ * Deserializes a MatchmakingRequestPacket from the provided buffer, then either
+ * joins the client to an existing suitable room or creates and joins a new
+ * matchmaking room. On success the client is transitioned to IN_ROOM_WAITING,
+ * the server initializes the player in the room, and a success matchmaking
+ * response is sent to the client. On failure an appropriate matchmaking
+ * response (e.g., UNKNOWN_ERROR) is sent and the client's state is restored
+ * where applicable.
  *
- * @param server Reference to the server managing rooms, clients, and game state.
- * @param client Reference to the client issuing the matchmaking request; may be updated.
+ * @param server Reference to the server managing rooms, clients, and game
+ * state.
+ * @param client Reference to the client issuing the matchmaking request; may be
+ * updated.
  * @param data Pointer to the serialized MatchmakingRequestPacket data.
  * @param size Size in bytes of the serialized data buffer.
- * @return int `OK` if matchmaking succeeded and the client was initialized in a room, `KO` otherwise.
+ * @return int `OK` if matchmaking succeeded and the client was initialized in a
+ * room, `KO` otherwise.
  */
 int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
@@ -672,15 +698,21 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Apply a player's movement input to their in-room player state and broadcast the resulting PlayerMove to the room.
+ * @brief Apply a player's movement input to their in-room player state and
+ * broadcast the resulting PlayerMove to the room.
  *
- * Deserializes the incoming PlayerInput packet from the provided buffer, updates the player's sequence number and position according to the input and game delta time (clamped to window bounds), and broadcasts a PlayerMove packet to all clients in the same room.
+ * Deserializes the incoming PlayerInput packet from the provided buffer,
+ * updates the player's sequence number and position according to the input and
+ * game delta time (clamped to window bounds), and broadcasts a PlayerMove
+ * packet to all clients in the same room.
  *
  * @param server Server instance used to access game and network managers.
  * @param client Client that sent the input; identifies the player and room.
- * @param data Pointer to the raw packet data buffer containing a PlayerInputPacket.
+ * @param data Pointer to the raw packet data buffer containing a
+ * PlayerInputPacket.
  * @param size Size of the raw packet data buffer in bytes.
- * @return int `OK` on success; `KO` on error (e.g., deserialization failure, missing or inactive room, or missing player).
+ * @return int `OK` on success; `KO` on error (e.g., deserialization failure,
+ * missing or inactive room, or missing player).
  */
 int packet::PlayerInputHandler::handlePacket(server::Server &server,
                                              server::Client &client,

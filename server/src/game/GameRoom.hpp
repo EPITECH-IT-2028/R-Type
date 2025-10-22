@@ -23,8 +23,8 @@ namespace game {
       /**
        * @brief Constructs a GameRoom with the given identifier and capacity.
        *
-       * Initializes the room in the WAITING state, creates an internal Game instance,
-       * sets the countdown to 0, and clears any countdown timer.
+       * Initializes the room in the WAITING state, creates an internal Game
+       * instance, sets the countdown to 0, and clears any countdown timer.
        *
        * @param room_id Numeric identifier for the room.
        * @param max_players Maximum number of players allowed in the room.
@@ -41,8 +41,9 @@ namespace game {
       /**
        * @brief Cleans up the room and stops any active game or countdown.
        *
-       * Ensures the room is transitioned to a stopped/finished state, cancels any
-       * pending countdown timer, and stops the contained Game before destruction.
+       * Ensures the room is transitioned to a stopped/finished state, cancels
+       * any pending countdown timer, and stops the contained Game before
+       * destruction.
        */
       ~GameRoom() {
         stop();
@@ -62,7 +63,7 @@ namespace game {
         return _room_name;
       }
 
-      void setRoomName(const std::string& name) {
+      void setRoomName(const std::string &name) {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         _room_name = name;
       }
@@ -85,7 +86,8 @@ namespace game {
       /**
        * @brief Retrieves the room's current status.
        *
-       * @return RoomStatus The current room status: WAITING, STARTING, RUNNING, or FINISHED.
+       * @return RoomStatus The current room status: WAITING, STARTING, RUNNING,
+       * or FINISHED.
        */
       RoomStatus getState() const {
         return _state.load();
@@ -94,7 +96,8 @@ namespace game {
       /**
        * @brief Determines whether a client may join the room.
        *
-       * @return `true` if the room is in `WAITING` or `STARTING` state, is not full, and is not private; `false` otherwise.
+       * @return `true` if the room is in `WAITING` or `STARTING` state, is not
+       * full, and is not private; `false` otherwise.
        */
       bool canJoin() const {
         RoomStatus state = _state.load();
@@ -104,13 +107,17 @@ namespace game {
       }
 
       /**
-       * @brief Adds a client to the room if the client is connected and there is available space.
+       * @brief Adds a client to the room if the client is connected and there
+       * is available space.
        *
-       * If added, the client's room ID is set to this room's ID. The operation is performed
-       * with internal synchronization to protect the room's client list.
+       * If added, the client's room ID is set to this room's ID. The operation
+       * is performed with internal synchronization to protect the room's client
+       * list.
        *
-       * @param client Shared pointer to the client to add; must be non-null and connected.
-       * @return `true` if the client was added and their room ID assigned, `false` otherwise.
+       * @param client Shared pointer to the client to add; must be non-null and
+       * connected.
+       * @return `true` if the client was added and their room ID assigned,
+       * `false` otherwise.
        */
       bool addClient(std::shared_ptr<server::Client> client) {
         std::unique_lock<std::shared_mutex> lock(_mutex);
@@ -146,16 +153,17 @@ namespace game {
        *
        * @return Game& Reference to the room's Game instance.
        */
-      Game& getGame() {
+      Game &getGame() {
         return *_game;
       }
 
       /**
-       * @brief Transition the room to the running state and start the contained game.
+       * @brief Transition the room to the running state and start the contained
+       * game.
        *
-       * Attempts to change the room state to RUNNING. If the current state is STARTING
-       * or, if not, WAITING, the state is set to RUNNING and the contained Game's
-       * start() method is invoked.
+       * Attempts to change the room state to RUNNING. If the current state is
+       * STARTING or, if not, WAITING, the state is set to RUNNING and the
+       * contained Game's start() method is invoked.
        */
       void start() {
         RoomStatus expected = RoomStatus::STARTING;
@@ -168,8 +176,8 @@ namespace game {
        * @brief Stops the room and its game, transitioning the room to FINISHED.
        *
        * Cancels and clears any active countdown timer, sets the room state to
-       * FINISHED, and stops the contained Game if present. If the room is already
-       * in the FINISHED state, no action is taken.
+       * FINISHED, and stops the contained Game if present. If the room is
+       * already in the FINISHED state, no action is taken.
        */
       void stop() {
         if (_state.load() == RoomStatus::FINISHED) {
@@ -191,7 +199,8 @@ namespace game {
       /**
        * @brief Checks whether the room's game is currently running.
        *
-       * @return `true` if the room state is `RoomStatus::RUNNING`, `false` otherwise.
+       * @return `true` if the room state is `RoomStatus::RUNNING`, `false`
+       * otherwise.
        */
       bool isActive() const {
         return _state.load() == RoomStatus::RUNNING;
@@ -200,11 +209,13 @@ namespace game {
       /**
        * @brief Sets the room's access password.
        *
-       * Replaces any existing password with the provided value. An empty string clears the password.
+       * Replaces any existing password with the provided value. An empty string
+       * clears the password.
        *
-       * @param password New password for the room; an empty string removes the password.
+       * @param password New password for the room; an empty string removes the
+       * password.
        */
-      void setPassword(const std::string& password) {
+      void setPassword(const std::string &password) {
         std::unique_lock<std::shared_mutex> lock(_mutex);
         _password = password;
       }
@@ -214,7 +225,8 @@ namespace game {
        *
        * This accessor is thread-safe.
        *
-       * @return std::string The stored password; empty string if no password is set.
+       * @return std::string The stored password; empty string if no password is
+       * set.
        */
       std::string getPassword() const {
         std::shared_lock<std::shared_mutex> lock(_mutex);
@@ -222,12 +234,14 @@ namespace game {
       }
 
       /**
-       * @brief Checks whether the provided password matches the room's stored password.
+       * @brief Checks whether the provided password matches the room's stored
+       * password.
        *
        * @param password Candidate password to verify.
-       * @return true if `password` equals the room's stored password, false otherwise.
+       * @return true if `password` equals the room's stored password, false
+       * otherwise.
        */
-      bool checkPassword(const std::string& password) const {
+      bool checkPassword(const std::string &password) const {
         std::shared_lock<std::shared_mutex> lock(_mutex);
         return _password == password;
       }
@@ -259,8 +273,10 @@ namespace game {
       /**
        * @brief Set the room's privacy flag.
        *
-       * @param is_private `true` to mark the room as private, `false` to make it public.
-       * @return `true` if the room is private after the update, `false` otherwise.
+       * @param is_private `true` to mark the room as private, `false` to make
+       * it public.
+       * @return `true` if the room is private after the update, `false`
+       * otherwise.
        */
       bool setPrivate(bool is_private) {
         std::unique_lock<std::shared_mutex> lock(_mutex);
@@ -269,11 +285,13 @@ namespace game {
       }
 
       /**
-       * @brief Obtain the configured maximum number of players allowed in the room.
+       * @brief Obtain the configured maximum number of players allowed in the
+       * room.
        *
        * This accessor is thread-safe.
        *
-       * @return std::uint16_t The maximum number of players permitted in this room.
+       * @return std::uint16_t The maximum number of players permitted in this
+       * room.
        */
       std::uint16_t getMaxPlayers() const {
         std::shared_lock<std::shared_mutex> lock(_mutex);
@@ -283,12 +301,14 @@ namespace game {
       /**
        * @brief Begin a room start countdown and register its timer.
        *
-       * If the room is currently in WAITING, atomically transition it to STARTING,
-       * set the countdown value to seconds, and store the provided steady_timer
-       * for countdown events. If the state is not WAITING, this function has no effect.
+       * If the room is currently in WAITING, atomically transition it to
+       * STARTING, set the countdown value to seconds, and store the provided
+       * steady_timer for countdown events. If the state is not WAITING, this
+       * function has no effect.
        *
        * @param seconds Number of seconds to count down from (must be >= 0).
-       * @param timer Shared pointer to an asio::steady_timer used to drive the countdown; stored if the transition succeeds.
+       * @param timer Shared pointer to an asio::steady_timer used to drive the
+       * countdown; stored if the transition succeeds.
        */
       void startCountdown(int seconds,
                           std::shared_ptr<asio::steady_timer> timer) {
@@ -303,16 +323,19 @@ namespace game {
       /**
        * @brief Retrieves the current countdown timer value.
        *
-       * @return int The current countdown value in seconds; may be concurrently modified by other threads.
+       * @return int The current countdown value in seconds; may be concurrently
+       * modified by other threads.
        */
       int getCountdownValue() const {
         return _countdown.load();
       }
 
       /**
-       * @brief Decrements the room countdown by one if its current value is greater than zero.
+       * @brief Decrements the room countdown by one if its current value is
+       * greater than zero.
        *
-       * If the countdown is zero or negative, this function leaves it unchanged.
+       * If the countdown is zero or negative, this function leaves it
+       * unchanged.
        */
       void decrementCountdown() {
         int current = _countdown.load();

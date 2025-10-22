@@ -48,12 +48,7 @@ namespace asset {
                  assetName.c_str());
         Texture2D texture;
         return Texture2D{
-          .id = 0,
-          .width = 0,
-          .height = 0,
-          .mipmaps = 1,
-          .format = 0
-        };
+            .id = 0, .width = 0, .height = 0, .mipmaps = 1, .format = 0};
       }
     }
     return LoadTexture(path.c_str());
@@ -78,13 +73,11 @@ namespace asset {
       } else {
         TraceLog(LOG_WARNING, "[WARN] Embedded asset not found: %s",
                  assetName.c_str());
-        return Image{
-          .data = nullptr,
-          .width = 0,
-          .height = 0,
-          .mipmaps = 1,
-          .format = 0
-        };
+        return Image{.data = nullptr,
+                     .width = 0,
+                     .height = 0,
+                     .mipmaps = 1,
+                     .format = 0};
       }
     }
     return LoadImage(path.c_str());

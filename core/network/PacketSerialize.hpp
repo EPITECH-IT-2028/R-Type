@@ -18,13 +18,13 @@ namespace serialization {
  * Common Packets
  */
 template <typename S>
-void serialize(S& s, PacketHeader& packet) {
+void serialize(S &s, PacketHeader &packet) {
   s.value1b(packet.type);
   s.value4b(packet.size);
 }
 
 template <typename S>
-void serialize(S& s, MessagePacket& packet) {
+void serialize(S &s, MessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
@@ -46,7 +46,7 @@ template <typename S>
  *
  * @param packet The PlayerInfoPacket to serialize.
  */
-void serialize(S& s, PlayerInfoPacket& packet) {
+void serialize(S &s, PlayerInfoPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   for (size_t i = 0; i < 32; ++i) {
@@ -64,7 +64,7 @@ template <typename S>
  * @param s Serializer adapter used to write the packet fields.
  * @param packet PlayerShootPacket instance to serialize.
  */
-void serialize(S& s, PlayerShootPacket& packet) {
+void serialize(S &s, PlayerShootPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.template value<sizeof(float)>(packet.x);
@@ -74,14 +74,14 @@ void serialize(S& s, PlayerShootPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, PlayerDisconnectPacket& packet) {
+void serialize(S &s, PlayerDisconnectPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
 }
 
 template <typename S>
-void serialize(S& s, HeartbeatPlayerPacket& packet) {
+void serialize(S &s, HeartbeatPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
@@ -98,7 +98,7 @@ template <typename S>
  * @param packet Player movement packet whose header, identifiers, and position
  * fields are written.
  */
-void serialize(S& s, PlayerMovePacket& packet) {
+void serialize(S &s, PlayerMovePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
@@ -108,7 +108,7 @@ void serialize(S& s, PlayerMovePacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, NewPlayerPacket& packet) {
+void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
@@ -122,7 +122,7 @@ void serialize(S& s, NewPlayerPacket& packet) {
  * Enemy Packets (Server to Client)
  */
 template <typename S>
-void serialize(S& s, EnemySpawnPacket& packet) {
+void serialize(S &s, EnemySpawnPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.enemy_id);
@@ -136,7 +136,7 @@ void serialize(S& s, EnemySpawnPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, EnemyMovePacket& packet) {
+void serialize(S &s, EnemyMovePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.enemy_id);
@@ -148,7 +148,7 @@ void serialize(S& s, EnemyMovePacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, EnemyDeathPacket& packet) {
+void serialize(S &s, EnemyDeathPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.enemy_id);
@@ -159,7 +159,7 @@ void serialize(S& s, EnemyDeathPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, EnemyHitPacket& packet) {
+void serialize(S &s, EnemyHitPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.enemy_id);
@@ -173,7 +173,7 @@ void serialize(S& s, EnemyHitPacket& packet) {
  * Projectile Event Packets (Server to Client)
  */
 template <typename S>
-void serialize(S& s, ProjectileSpawnPacket& packet) {
+void serialize(S &s, ProjectileSpawnPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.projectile_id);
@@ -189,7 +189,7 @@ void serialize(S& s, ProjectileSpawnPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, ProjectileHitPacket& packet) {
+void serialize(S &s, ProjectileHitPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.projectile_id);
@@ -200,7 +200,7 @@ void serialize(S& s, ProjectileHitPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, ProjectileDestroyPacket& packet) {
+void serialize(S &s, ProjectileDestroyPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.projectile_id);
@@ -212,7 +212,7 @@ void serialize(S& s, ProjectileDestroyPacket& packet) {
  * Player Event Packets (Server to Client)
  */
 template <typename S>
-void serialize(S& s, PlayerHitPacket& packet) {
+void serialize(S &s, PlayerHitPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
@@ -223,7 +223,7 @@ void serialize(S& s, PlayerHitPacket& packet) {
 }
 
 template <typename S>
-void serialize(S& s, PlayerDeathPacket& packet) {
+void serialize(S &s, PlayerDeathPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
@@ -235,7 +235,7 @@ void serialize(S& s, PlayerDeathPacket& packet) {
  * Game State Packets (Server to Client)
  */
 template <typename S>
-void serialize(S& s, GameStartPacket& packet) {
+void serialize(S &s, GameStartPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.game_start);
@@ -247,9 +247,10 @@ template <typename S>
  *
  * Writes the packet header (type and size) followed by the `game_end` flag.
  *
- * @param packet Packet whose header and `game_end` flag will be written to the serializer.
+ * @param packet Packet whose header and `game_end` flag will be written to the
+ * serializer.
  */
-void serialize(S& s, GameEndPacket& packet) {
+void serialize(S &s, GameEndPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.game_end);
@@ -267,7 +268,7 @@ template <typename S>
  *
  * @param packet Packet instance whose fields will be serialized.
  */
-void serialize(S& s, CreateRoomPacket& packet) {
+void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   for (size_t i = 0; i < 32; ++i) {
@@ -284,12 +285,12 @@ template <typename S>
 /**
  * @brief Serializes a JoinRoomPacket into the given serializer.
  *
- * Writes the packet header (type as 1 byte, size as 4 bytes), the room ID (4 bytes),
- * and the 32-byte password as a sequence of bytes.
+ * Writes the packet header (type as 1 byte, size as 4 bytes), the room ID (4
+ * bytes), and the 32-byte password as a sequence of bytes.
  *
  * @param packet The JoinRoomPacket to serialize.
  */
-void serialize(S& s, JoinRoomPacket& packet) {
+void serialize(S &s, JoinRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
@@ -305,9 +306,10 @@ template <typename S>
  * Writes the packet header fields (type as 1 byte, size as 4 bytes) followed by
  * the response error code (1 byte).
  *
- * @param packet Join room response packet containing the header and `error_code`.
+ * @param packet Join room response packet containing the header and
+ * `error_code`.
  */
-void serialize(S& s, JoinRoomResponsePacket& packet) {
+void serialize(S &s, JoinRoomResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.error_code);
@@ -317,11 +319,13 @@ template <typename S>
 /**
  * @brief Serializes a LeaveRoomPacket into the provided serializer.
  *
- * Writes the packet header fields followed by the room identifier to the serializer in the packet's wire order.
+ * Writes the packet header fields followed by the room identifier to the
+ * serializer in the packet's wire order.
  *
- * @param packet The LeaveRoomPacket to serialize; its header (type, size) and `room_id` are written.
+ * @param packet The LeaveRoomPacket to serialize; its header (type, size) and
+ * `room_id` are written.
  */
-void serialize(S& s, LeaveRoomPacket& packet) {
+void serialize(S &s, LeaveRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
@@ -333,7 +337,7 @@ template <typename S>
  *
  * Writes the packet's header fields (type and size) to the serializer.
  */
-void serialize(S& s, ListRoomPacket& packet) {
+void serialize(S &s, ListRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
 }
@@ -342,11 +346,12 @@ template <typename S>
 /**
  * @brief Serializes a RoomInfo into the serializer in wire order.
  *
- * Serializes room_id (4 bytes), room_name as 32 bytes, player_count (1 byte), then max_players (1 byte).
+ * Serializes room_id (4 bytes), room_name as 32 bytes, player_count (1 byte),
+ * then max_players (1 byte).
  *
  * @param room RoomInfo instance whose fields will be serialized.
  */
-void serialize(S& s, RoomInfo& room) {
+void serialize(S &s, RoomInfo &room) {
   s.value4b(room.room_id);
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(room.room_name[i]);
@@ -362,9 +367,10 @@ template <typename S>
  * Serializes the packet header, the room count, and each RoomInfo entry in
  * the fixed-size rooms array (MAX_ROOMS entries).
  *
- * @param packet Packet containing the header, room_count, and rooms to serialize.
+ * @param packet Packet containing the header, room_count, and rooms to
+ * serialize.
  */
-void serialize(S& s, ListRoomResponsePacket& packet) {
+void serialize(S &s, ListRoomResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_count);
@@ -377,9 +383,10 @@ template <typename S>
 /**
  * @brief Serializes the matchmaking request packet header into the serializer.
  *
- * @param packet MatchmakingRequestPacket whose header `type` (1 byte) and `size` (4 bytes) are written to the serializer.
+ * @param packet MatchmakingRequestPacket whose header `type` (1 byte) and
+ * `size` (4 bytes) are written to the serializer.
  */
-void serialize(S& s, MatchmakingRequestPacket& packet) {
+void serialize(S &s, MatchmakingRequestPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
 }
@@ -394,7 +401,7 @@ template <typename S>
  * @param s Serializer to write bytes into.
  * @param packet Matchmaking response packet to serialize.
  */
-void serialize(S& s, MatchmakingResponsePacket& packet) {
+void serialize(S &s, MatchmakingResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.error_code);
@@ -414,12 +421,13 @@ template <typename S>
 /**
  * @brief Serializes a PlayerInputPacket into the provided serializer.
  *
- * Writes the packet header (type and size), then the input byte and sequence number.
+ * Writes the packet header (type and size), then the input byte and sequence
+ * number.
  *
  * @param s Serializer/archive to write into.
  * @param packet PlayerInputPacket to serialize.
  */
-void serialize(S& s, PlayerInputPacket& packet) {
+void serialize(S &s, PlayerInputPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.input);
