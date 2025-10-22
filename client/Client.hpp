@@ -41,10 +41,10 @@ namespace client {
   constexpr int KO = 1;
 
   enum class ClientState {
-    DISCONNECTED,
-    CONNECTED_MENU,
+    IN_CONNECTED_MENU,
     IN_ROOM_WAITING,
-    IN_GAME
+    IN_GAME,
+    DISCONNECTED
   };
 
   /**
@@ -113,7 +113,7 @@ namespace client {
       void connect() {
         _networkManager.connect();
         if (isConnected()) {
-          setClientState(ClientState::CONNECTED_MENU);
+          setClientState(ClientState::IN_CONNECTED_MENU);
 
           PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player");
           send(packet);

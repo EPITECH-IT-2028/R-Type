@@ -33,7 +33,7 @@ namespace ecs {
 
     client::ClientState clientState = _client->getClientState();
 
-    if (clientState == client::ClientState::CONNECTED_MENU) {
+    if (clientState == client::ClientState::IN_CONNECTED_MENU) {
       if (IsKeyPressed(KEY_M)) {
         _client->sendMatchmakingRequest();
         TraceLog(LOG_INFO,
