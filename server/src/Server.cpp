@@ -110,14 +110,14 @@ void server::Server::handleTimeout() {
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
         if (room) {
-          room->getGame().destroyPlayer(pid);
-          room->removeClient(pid);
-
           auto roomClients = room->getClients();
 
           auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
               _networkManager, roomClients, disconnectPacket);
+
+          room->getGame().destroyPlayer(pid);
+          _gameManager->leaveRoom(client);
         }
       }
 
