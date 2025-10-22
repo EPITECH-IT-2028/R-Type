@@ -90,10 +90,12 @@ namespace broadcast {
       /**
        * @brief Broadcasts a player's movement to all clients in the room.
        *
-       * Sends the provided PlayerMovePacket to each connected client in the given room via the server network manager.
+       * Sends the provided PlayerMovePacket to each connected client in the
+       * given room via the server network manager.
        *
        * @param networkManager Server network manager used to send packets.
-       * @param roomClients Vector of clients that are members of the room; only connected clients will receive the packet.
+       * @param roomClients Vector of clients that are members of the room; only
+       * connected clients will receive the packet.
        * @param packet Player movement information to forward to the room.
        */
       static void broadcastPlayerMoveToRoom(
@@ -243,10 +245,13 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a player disconnect event to all connected clients in a room.
+       * @brief Broadcasts a player disconnect event to all connected clients in
+       * a room.
        *
-       * @param roomClients List of room clients; only non-null, connected clients will receive the packet.
-       * @param packet Packet describing the disconnect; contains the player id of the disconnecting player.
+       * @param roomClients List of room clients; only non-null, connected
+       * clients will receive the packet.
+       * @param packet Packet describing the disconnect; contains the player id
+       * of the disconnecting player.
        */
       static void broadcastPlayerDisconnectToRoom(
           network::ServerNetworkManager &networkManager,
@@ -255,13 +260,14 @@ namespace broadcast {
         broadcastToRoom(networkManager, roomClients, packet);
       }
 
-
-
       /**
-       * @brief Broadcasts a message packet to all clients in the specified room.
+       * @brief Broadcasts a message packet to all clients in the specified
+       * room.
        *
-       * @param networkManager Server network manager used to send packets to clients.
-       * @param roomClients Vector of room clients; only non-null, connected clients will be targeted.
+       * @param networkManager Server network manager used to send packets to
+       * clients.
+       * @param roomClients Vector of room clients; only non-null, connected
+       * clients will be targeted.
        * @param packet MessagePacket to broadcast to the room.
        */
       static void broadcastMessageToRoom(
