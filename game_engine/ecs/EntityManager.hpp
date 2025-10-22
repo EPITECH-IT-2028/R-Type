@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cstdint>
-#include <bitset>
-#include <queue>
 #include <array>
+#include <bitset>
+#include <cstdint>
+#include <queue>
 
 constexpr int MAX_ENTITIES = 5000;
 constexpr int MAX_COMPONENTS = 32;
@@ -32,4 +32,4 @@ namespace ecs {
       std::array<Signature, MAX_ENTITIES> _signatures;
   };
 
-}
+}  // namespace ecs

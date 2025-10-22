@@ -85,7 +85,8 @@ ProjectileType game::Projectile::getType() const {
 /**
  * @brief Set the projectile's type on its ProjectileComponent.
  *
- * If the entity has a ProjectileComponent, updates that component's type to the provided value; otherwise no change occurs.
+ * If the entity has a ProjectileComponent, updates that component's type to the
+ * provided value; otherwise no change occurs.
  *
  * @param type The new ProjectileType to assign.
  */
@@ -98,7 +99,8 @@ void game::Projectile::setType(ProjectileType type) {
 /**
  * @brief Retrieve the projectile's sequence number if available.
  *
- * @return std::optional<std::uint32_t> The sequence number when the entity has a ProjectileComponent, `std::nullopt` otherwise.
+ * @return std::optional<std::uint32_t> The sequence number when the entity has
+ * a ProjectileComponent, `std::nullopt` otherwise.
  */
 std::optional<std::uint32_t> game::Projectile::getSequenceNumber() const {
   if (hasComponent<ecs::ProjectileComponent>()) {
@@ -110,7 +112,8 @@ std::optional<std::uint32_t> game::Projectile::getSequenceNumber() const {
 /**
  * @brief Sets the projectile's sequence number.
  *
- * If the underlying ProjectileComponent is present, updates its sequence_number to the given value.
+ * If the underlying ProjectileComponent is present, updates its sequence_number
+ * to the given value.
  *
  * @param seq Sequence number to assign to the projectile.
  */
@@ -123,7 +126,8 @@ void game::Projectile::setSequenceNumber(std::uint32_t seq) {
 /**
  * @brief Retrieves the projectile's damage value if available.
  *
- * @return std::optional<std::uint32_t> The damage value from the projectile component if present, `std::nullopt` otherwise.
+ * @return std::optional<std::uint32_t> The damage value from the projectile
+ * component if present, `std::nullopt` otherwise.
  */
 std::optional<std::uint32_t> game::Projectile::getDamage() const {
   if (hasComponent<ecs::ProjectileComponent>()) {

@@ -75,10 +75,11 @@ void ClientNetworkManager::connect() {
 }
 
 /**
- * @brief Stops the network manager, closes the socket, and reports disconnection.
+ * @brief Stops the network manager, closes the socket, and reports
+ * disconnection.
  *
- * Sets the manager's running state to false, closes the underlying socket if it is open,
- * and writes a disconnection message to standard output.
+ * Sets the manager's running state to false, closes the underlying socket if it
+ * is open, and writes a disconnection message to standard output.
  */
 void ClientNetworkManager::disconnect() {
   _running.store(false, std::memory_order_release);
@@ -89,13 +90,16 @@ void ClientNetworkManager::disconnect() {
 }
 
 /**
- * @brief Receive available UDP datagrams from the configured server and dispatch them to packet handlers.
+ * @brief Receive available UDP datagrams from the configured server and
+ * dispatch them to packet handlers.
  *
- * Continuously reads datagrams from the socket until no more data is available or the manager stops.
- * Packets not originating from the configured server endpoint are ignored. For each received datagram,
- * a PacketHeader is deserialized and the corresponding handler produced by the packet factory is invoked
- * with the raw packet data. Errors in receiving, deserialization, missing handlers, handler failures,
- * and exceptions are reported to standard error.
+ * Continuously reads datagrams from the socket until no more data is available
+ * or the manager stops. Packets not originating from the configured server
+ * endpoint are ignored. For each received datagram, a PacketHeader is
+ * deserialized and the corresponding handler produced by the packet factory is
+ * invoked with the raw packet data. Errors in receiving, deserialization,
+ * missing handlers, handler failures, and exceptions are reported to standard
+ * error.
  *
  * @param client Reference to the client instance passed to packet handlers.
  */

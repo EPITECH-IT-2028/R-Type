@@ -271,12 +271,15 @@ void server::Server::handleReceive(const char *data,
 }
 
 /**
- * @brief Register a new client from a received PlayerInfo packet and establish its network association.
+ * @brief Register a new client from a received PlayerInfo packet and establish
+ * its network association.
  *
- * If the remote endpoint is already associated with a connected client this returns without action.
- * Otherwise attempts to allocate an available client slot, assigns a new player ID, marks the client as connected,
- * registers the client endpoint with the network manager, and dispatches the PlayerInfo packet to the corresponding handler.
- * If no client slot is available, the connection is refused and a warning is logged.
+ * If the remote endpoint is already associated with a connected client this
+ * returns without action. Otherwise attempts to allocate an available client
+ * slot, assigns a new player ID, marks the client as connected, registers the
+ * client endpoint with the network manager, and dispatches the PlayerInfo
+ * packet to the corresponding handler. If no client slot is available, the
+ * connection is refused and a warning is logged.
  *
  * @param data Pointer to the received PlayerInfo packet buffer.
  * @param size Length in bytes of the packet buffer.
@@ -381,7 +384,8 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
 }
 
 /**
- * @brief Initialize a connected client as a player inside its assigned game room.
+ * @brief Initialize a connected client as a player inside its assigned game
+ * room.
  *
  * Validates the client's state, room assignment, and name; creates a player
  * entity in the room's game, stores the entity id on the client, sends the
@@ -389,7 +393,8 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
  * player to the room, and starts the room countdown when conditions are met.
  *
  * @param client Client instance to initialize (modified in-place).
- * @return true if the player was successfully initialized in the room, false otherwise.
+ * @return true if the player was successfully initialized in the room, false
+ * otherwise.
  */
 bool server::Server::initializePlayerInRoom(Client &client) {
   if (client._state == ClientState::CONNECTED_MENU) {
@@ -468,18 +473,23 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 }
 
 /**
- * @brief Runs and schedules the per-room countdown and starts the game when it reaches zero.
+ * @brief Runs and schedules the per-room countdown and starts the game when it
+ * reaches zero.
  *
- * If the supplied room is in STARTING state, this function checks the room's countdown value.
- * - When the countdown is <= 0: broadcasts a GameStart packet to the room, transitions the room
- *   to its running state, sets each connected client's state to IN_GAME, and logs the start.
- * - When the countdown is > 0: logs the current countdown, decrements it, and reschedules the
- *   provided timer to invoke this routine again after one second. If the timer wait is aborted,
- *   the cancellation is logged; other timer errors are logged to stderr.
+ * If the supplied room is in STARTING state, this function checks the room's
+ * countdown value.
+ * - When the countdown is <= 0: broadcasts a GameStart packet to the room,
+ * transitions the room to its running state, sets each connected client's state
+ * to IN_GAME, and logs the start.
+ * - When the countdown is > 0: logs the current countdown, decrements it, and
+ * reschedules the provided timer to invoke this routine again after one second.
+ * If the timer wait is aborted, the cancellation is logged; other timer errors
+ * are logged to stderr.
  *
- * @param room Shared pointer to the game room whose countdown should be driven. Must be non-null
- *             and in STARTING state for the function to take effect.
- * @param timer Shared pointer to an asio steady timer used to schedule the next countdown tick.
+ * @param room Shared pointer to the game room whose countdown should be driven.
+ * Must be non-null and in STARTING state for the function to take effect.
+ * @param timer Shared pointer to an asio steady timer used to schedule the next
+ * countdown tick.
  */
 void server::Server::handleCountdown(
     std::shared_ptr<game::GameRoom> room,
@@ -532,7 +542,8 @@ void server::Server::handleCountdown(
  * @brief Get the client at the specified client slot index.
  *
  * @param idx Index of the client slot to retrieve.
- * @return std::shared_ptr<server::Client> Shared pointer to the client at the given index, or `nullptr` if the index is out of range or the slot is empty.
+ * @return std::shared_ptr<server::Client> Shared pointer to the client at the
+ * given index, or `nullptr` if the index is out of range or the slot is empty.
  */
 std::shared_ptr<server::Client> server::Server::getClient(
     std::size_t idx) const {
@@ -546,7 +557,8 @@ std::shared_ptr<server::Client> server::Server::getClient(
  * @brief Finds a connected client by its player identifier.
  *
  * @param player_id The player identifier to search for.
- * @return std::shared_ptr<server::Client> Shared pointer to the matching client if found, nullptr otherwise.
+ * @return std::shared_ptr<server::Client> Shared pointer to the matching client
+ * if found, nullptr otherwise.
  */
 std::shared_ptr<server::Client> server::Server::getClientById(
     int player_id) const {
@@ -559,12 +571,15 @@ std::shared_ptr<server::Client> server::Server::getClientById(
 }
 
 /**
- * @brief Clears the server client slot for the specified player and removes them from their room if assigned.
+ * @brief Clears the server client slot for the specified player and removes
+ * them from their room if assigned.
  *
- * Instructs the game manager to have the client leave their room when the client's _room_id is not NO_ROOM,
- * then resets the stored client pointer to free the slot.
+ * Instructs the game manager to have the client leave their room when the
+ * client's _room_id is not NO_ROOM, then resets the stored client pointer to
+ * free the slot.
  *
- * @param player_id Identifier of the player whose client slot should be cleared.
+ * @param player_id Identifier of the player whose client slot should be
+ * cleared.
  */
 void server::Server::clearClientSlot(int player_id) {
   for (auto &client : _clients) {

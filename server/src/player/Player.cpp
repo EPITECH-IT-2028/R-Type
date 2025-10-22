@@ -12,7 +12,8 @@
  *
  * @param player_id Integer identifier for the player.
  * @param entity_id Entity identifier associated with this player.
- * @param ecsManager Reference to the ECS manager used to access and modify components for this player.
+ * @param ecsManager Reference to the ECS manager used to access and modify
+ * components for this player.
  */
 game::Player::Player(int player_id, std::uint32_t entity_id,
                      ecs::ECSManager &ecsManager)
@@ -108,7 +109,8 @@ std::pair<float, float> game::Player::getVelocity() const {
 }
 
 /**
- * @brief Sets the entity's velocity components when a VelocityComponent is present.
+ * @brief Sets the entity's velocity components when a VelocityComponent is
+ * present.
  *
  * Updates the VelocityComponent's horizontal and vertical velocity values.
  *
@@ -126,7 +128,8 @@ void game::Player::setVelocity(float vx, float vy) {
 /**
  * @brief Retrieve the player's network sequence number if available.
  *
- * @return std::optional<std::uint32_t> The player's sequence number when a PlayerComponent is present, otherwise `std::nullopt`.
+ * @return std::optional<std::uint32_t> The player's sequence number when a
+ * PlayerComponent is present, otherwise `std::nullopt`.
  */
 std::optional<std::uint32_t> game::Player::getSequenceNumber() const {
   if (hasComponent<ecs::PlayerComponent>()) {

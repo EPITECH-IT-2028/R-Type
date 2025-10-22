@@ -8,16 +8,21 @@
 
 namespace ecs {
   /**
-   * @brief Process keyboard input for matchmaking, player movement, shooting, and update per-entity vertical sprite animation state.
+   * @brief Process keyboard input for matchmaking, player movement, shooting,
+   * and update per-entity vertical sprite animation state.
    *
    * When a client is present, handles:
    * - CONNECTED_MENU: pressing 'M' sends a matchmaking request.
-   * - IN_GAME or IN_ROOM_WAITING: for each entity with a SpriteAnimationComponent,
-   *   sends a movement input bitmask if any directional keys are pressed,
-   *   updates the sprite's vertical animation state (UP plays forward from the neutral frame, DOWN plays backward from the neutral frame, neither or both stops and resets to the neutral frame with non-negative frameTime),
-   *   and sends a shoot request with the entity's position when SPACE is pressed.
+   * - IN_GAME or IN_ROOM_WAITING: for each entity with a
+   * SpriteAnimationComponent, sends a movement input bitmask if any directional
+   * keys are pressed, updates the sprite's vertical animation state (UP plays
+   * forward from the neutral frame, DOWN plays backward from the neutral frame,
+   * neither or both stops and resets to the neutral frame with non-negative
+   * frameTime), and sends a shoot request with the entity's position when SPACE
+   * is pressed.
    *
-   * @param deltaTime Time elapsed since the last update in seconds (provided by caller; not used by this implementation).
+   * @param deltaTime Time elapsed since the last update in seconds (provided by
+   * caller; not used by this implementation).
    */
   void InputSystem::update([[maybe_unused]] float deltaTime) {
     if (_client == nullptr)

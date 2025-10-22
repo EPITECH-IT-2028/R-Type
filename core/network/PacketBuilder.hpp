@@ -11,15 +11,20 @@
 
 struct PacketBuilder {
     /**
-     * @brief Constructs a MessagePacket containing the provided text, current timestamp, and player identifier.
+     * @brief Constructs a MessagePacket containing the provided text, current
+     * timestamp, and player identifier.
      *
-     * Copies up to sizeof(packet.message)-1 characters from `msg` into the packet's null-terminated message field (truncating if necessary),
-     * sets the header type to `Message`, header size to the packet size, timestamp to the current time, and assigns `player_id`.
+     * Copies up to sizeof(packet.message)-1 characters from `msg` into the
+     * packet's null-terminated message field (truncating if necessary), sets
+     * the header type to `Message`, header size to the packet size, timestamp
+     * to the current time, and assigns `player_id`.
      *
-     * @param msg Text to include in the message packet; may be truncated to fit the packet.
+     * @param msg Text to include in the message packet; may be truncated to fit
+     * the packet.
      * @param player_id Identifier of the player who sent the message.
-     * @return MessagePacket Packet with header.type == PacketType::Message, header.size set to sizeof(packet),
-     *         a null-terminated `message` field, current `timestamp`, and `player_id` set.
+     * @return MessagePacket Packet with header.type == PacketType::Message,
+     * header.size set to sizeof(packet), a null-terminated `message` field,
+     * current `timestamp`, and `player_id` set.
      */
     static MessagePacket makeMessage(const std::string &msg,
                                      std::uint32_t player_id) {
@@ -164,7 +169,8 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs an EnemyMovePacket representing an enemy's position and velocity update.
+     * @brief Constructs an EnemyMovePacket representing an enemy's position and
+     * velocity update.
      *
      * @param enemy_id Unique identifier of the enemy.
      * @param x X coordinate of the enemy's position.
@@ -172,7 +178,9 @@ struct PacketBuilder {
      * @param velocity_x Velocity of the enemy along the X axis.
      * @param velocity_y Velocity of the enemy along the Y axis.
      * @param seq Sequence number used to order movement updates.
-     * @return EnemyMovePacket Packet with header.type set to `PacketType::EnemyMove`, header.size set to the packet size, and fields populated with the provided values.
+     * @return EnemyMovePacket Packet with header.type set to
+     * `PacketType::EnemyMove`, header.size set to the packet size, and fields
+     * populated with the provided values.
      */
     static EnemyMovePacket makeEnemyMove(std::uint32_t enemy_id, float x,
                                          float y, float velocity_x,
@@ -243,13 +251,15 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs a PlayerShootPacket with shot position, projectile type, and sequence number.
+     * @brief Constructs a PlayerShootPacket with shot position, projectile
+     * type, and sequence number.
      *
      * @param x X coordinate of the shot.
      * @param y Y coordinate of the shot.
      * @param projectile_type Projectile type fired.
      * @param seq Sequence number used to order the shot.
-     * @return PlayerShootPacket Packet populated with position, projectile type, and sequence number.
+     * @return PlayerShootPacket Packet populated with position, projectile
+     * type, and sequence number.
      */
     static PlayerShootPacket makePlayerShoot(float x, float y,
                                              ProjectileType projectile_type,
@@ -265,7 +275,8 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs a ProjectileSpawnPacket with the provided projectile properties.
+     * @brief Constructs a ProjectileSpawnPacket with the provided projectile
+     * properties.
      *
      * @param projectile_id Unique identifier for the projectile.
      * @param type ProjectileType enum value specifying the projectile kind.
@@ -273,10 +284,13 @@ struct PacketBuilder {
      * @param y Initial y coordinate of the projectile.
      * @param vel_x Initial velocity along the x axis.
      * @param vel_y Initial velocity along the y axis.
-     * @param is_enemy True if the projectile was fired by an enemy, false if fired by a player.
+     * @param is_enemy True if the projectile was fired by an enemy, false if
+     * fired by a player.
      * @param damage Damage value carried by the projectile.
-     * @param owner_id Identifier of the entity that owns or fired the projectile.
-     * @return ProjectileSpawnPacket Packet populated with header type/size and the provided fields.
+     * @param owner_id Identifier of the entity that owns or fired the
+     * projectile.
+     * @return ProjectileSpawnPacket Packet populated with header type/size and
+     * the provided fields.
      */
     static ProjectileSpawnPacket makeProjectileSpawn(
         std::uint32_t projectile_id, ProjectileType type, float x, float y,
@@ -305,7 +319,9 @@ struct PacketBuilder {
      * @param hit_x X coordinate where the hit occurred.
      * @param hit_y Y coordinate where the hit occurred.
      * @param target_is_player `1` if the target is a player, `0` otherwise.
-     * @return ProjectileHitPacket Packet with header.type set to `ProjectileHit`, header.size set to the packet size, and all hit fields populated.
+     * @return ProjectileHitPacket Packet with header.type set to
+     * `ProjectileHit`, header.size set to the packet size, and all hit fields
+     * populated.
      */
     static ProjectileHitPacket makeProjectileHit(
         std::uint32_t projectile_id, std::uint32_t target_id, float hit_x,
@@ -327,7 +343,9 @@ struct PacketBuilder {
      * @param projectile_id ID of the destroyed projectile.
      * @param x X-coordinate of the destruction location.
      * @param y Y-coordinate of the destruction location.
-     * @return ProjectileDestroyPacket Packet whose header.type is ProjectileDestroy, whose header.size is set to the packet size, and whose projectile_id, x, and y fields are populated.
+     * @return ProjectileDestroyPacket Packet whose header.type is
+     * ProjectileDestroy, whose header.size is set to the packet size, and whose
+     * projectile_id, x, and y fields are populated.
      */
     static ProjectileDestroyPacket makeProjectileDestroy(
         std::uint32_t projectile_id, float x, float y) {
@@ -421,12 +439,18 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs a CreateRoomPacket populated with the given room parameters.
+     * @brief Constructs a CreateRoomPacket populated with the given room
+     * parameters.
      *
-     * @param room_name Name of the room; will be copied into the packet and truncated if longer than the packet field.
+     * @param room_name Name of the room; will be copied into the packet and
+     * truncated if longer than the packet field.
      * @param max_players Maximum number of players allowed in the room.
-     * @param password Optional room password. If non-empty the packet is marked private and the password is stored; if empty the password field is cleared.
-     * @return CreateRoomPacket Packet ready for sending to request room creation; its header size is set to sizeof(packet) and its type is set to CreateRoom.
+     * @param password Optional room password. If non-empty the packet is marked
+     * private and the password is stored; if empty the password field is
+     * cleared.
+     * @return CreateRoomPacket Packet ready for sending to request room
+     * creation; its header size is set to sizeof(packet) and its type is set to
+     * CreateRoom.
      */
     static CreateRoomPacket makeCreateRoom(const std::string &room_name,
                                            std::uint32_t max_players,
@@ -449,11 +473,15 @@ struct PacketBuilder {
     }
 
     /**
-     * Constructs a JoinRoomPacket populated with the specified room ID and password.
+     * Constructs a JoinRoomPacket populated with the specified room ID and
+     * password.
      *
      * @param room_id Identifier of the room to join.
-     * @param password Password for the room; provide an empty string for no password.
-     * @return JoinRoomPacket Packet with header.type set to PacketType::JoinRoom, header.size set to the packet size, and the room_id and password fields populated.
+     * @param password Password for the room; provide an empty string for no
+     * password.
+     * @return JoinRoomPacket Packet with header.type set to
+     * PacketType::JoinRoom, header.size set to the packet size, and the room_id
+     * and password fields populated.
      */
     static JoinRoomPacket makeJoinRoom(std::uint32_t room_id,
                                        const std::string &password) {
@@ -467,10 +495,14 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs a JoinRoomResponsePacket with the specified room error code.
+     * @brief Constructs a JoinRoomResponsePacket with the specified room error
+     * code.
      *
-     * @param error_code The RoomError value to set in the packet's error_code field.
-     * @return JoinRoomResponsePacket Packet with header.type set to JoinRoomResponse, header.size set to the packet size, and error_code set to the provided value.
+     * @param error_code The RoomError value to set in the packet's error_code
+     * field.
+     * @return JoinRoomResponsePacket Packet with header.type set to
+     * JoinRoomResponse, header.size set to the packet size, and error_code set
+     * to the provided value.
      */
     static JoinRoomResponsePacket makeJoinRoomResponse(
         const RoomError &error_code) {
@@ -485,7 +517,8 @@ struct PacketBuilder {
      * @brief Create a LeaveRoomPacket for the given room identifier.
      *
      * @param room_id Identifier of the room to leave.
-     * @return LeaveRoomPacket with its header type set to `LeaveRoom`, header size set to the packet size, and `room_id` set to the provided value.
+     * @return LeaveRoomPacket with its header type set to `LeaveRoom`, header
+     * size set to the packet size, and `room_id` set to the provided value.
      */
     static LeaveRoomPacket makeLeaveRoom(std::uint32_t room_id) {
       LeaveRoomPacket packet{};
@@ -498,7 +531,8 @@ struct PacketBuilder {
     /**
      * @brief Creates a ListRoomPacket with its header initialized.
      *
-     * @return ListRoomPacket whose header.type is set to PacketType::ListRoom and header.size is set to the packet's byte size.
+     * @return ListRoomPacket whose header.type is set to PacketType::ListRoom
+     * and header.size is set to the packet's byte size.
      */
     static ListRoomPacket makeListRoom() {
       ListRoomPacket packet{};
@@ -508,11 +542,15 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Construct a ListRoomResponsePacket populated from a vector of rooms.
+     * @brief Construct a ListRoomResponsePacket populated from a vector of
+     * rooms.
      *
-     * @param rooms Vector of RoomInfo entries to include in the response; up to MAX_ROOMS entries are copied.
-     * @return ListRoomResponsePacket Packet whose header type is set to ListRoomResponse, header size is set,
-     * and whose room_count is the minimum of rooms.size() and MAX_ROOMS with the first room_count entries copied into packet.rooms.
+     * @param rooms Vector of RoomInfo entries to include in the response; up to
+     * MAX_ROOMS entries are copied.
+     * @return ListRoomResponsePacket Packet whose header type is set to
+     * ListRoomResponse, header size is set, and whose room_count is the minimum
+     * of rooms.size() and MAX_ROOMS with the first room_count entries copied
+     * into packet.rooms.
      */
     static ListRoomResponsePacket makeListRoomResponse(
         const std::vector<RoomInfo> &rooms) {
@@ -531,11 +569,12 @@ struct PacketBuilder {
     /**
      * @brief Constructs a MatchmakingRequestPacket initialized with its header.
      *
-     * The packet's header type is set to PacketType::MatchmakingRequest and its size is set to the
-     * packet's sizeof value.
+     * The packet's header type is set to PacketType::MatchmakingRequest and its
+     * size is set to the packet's sizeof value.
      *
-     * @return MatchmakingRequestPacket packet whose `header.type` is `PacketType::MatchmakingRequest` and
-     * `header.size` equals `sizeof(MatchmakingRequestPacket)`.
+     * @return MatchmakingRequestPacket packet whose `header.type` is
+     * `PacketType::MatchmakingRequest` and `header.size` equals
+     * `sizeof(MatchmakingRequestPacket)`.
      */
     static MatchmakingRequestPacket makeMatchmakingRequest() {
       MatchmakingRequestPacket packet{};
@@ -547,8 +586,11 @@ struct PacketBuilder {
     /**
      * @brief Create a packet indicating the result of a matchmaking request.
      *
-     * @param error_code The RoomError value representing the outcome of the matchmaking request.
-     * @return MatchmakingResponsePacket The constructed packet whose header identifies it as a MatchmakingResponse and whose `error_code` field contains the provided `error_code`.
+     * @param error_code The RoomError value representing the outcome of the
+     * matchmaking request.
+     * @return MatchmakingResponsePacket The constructed packet whose header
+     * identifies it as a MatchmakingResponse and whose `error_code` field
+     * contains the provided `error_code`.
      */
     static MatchmakingResponsePacket makeMatchmakingResponse(
         const RoomError &error_code) {

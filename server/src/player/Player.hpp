@@ -13,9 +13,9 @@ namespace game {
       Player(int player_id, std::uint32_t entity_id,
              ecs::ECSManager &ecsManager);
       /**
- * @brief Destroys the Player.
- */
-~Player() = default;
+       * @brief Destroys the Player.
+       */
+      ~Player() = default;
 
       /**
        * @brief Retrieve the player's identifier.
