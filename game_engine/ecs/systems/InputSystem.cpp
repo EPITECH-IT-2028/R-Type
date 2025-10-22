@@ -3,10 +3,19 @@
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
+#include "RaylibUtils.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
+  static bool IsKeyPressedAZERTY(KeyboardKey key) {
+    return utils::Raylib::IsKeyPressedAZERTY(key);
+  }
+
+  static bool IsKeyDownAZERTY(KeyboardKey key) {
+    return utils::Raylib::IsKeyDownAZERTY(key);
+  }
+
   /**
    * @brief Process keyboard input for matchmaking, player movement, shooting,
    * and update per-entity vertical sprite animation state.
@@ -31,7 +40,7 @@ namespace ecs {
     client::ClientState clientState = _client->getClientState();
 
     if (clientState == client::ClientState::IN_CONNECTED_MENU) {
-      if (IsKeyPressed(KEY_M)) {
+      if (IsKeyPressedAZERTY(KEY_M)) {
         _client->sendMatchmakingRequest();
         TraceLog(LOG_INFO,
                  "[INPUT SYSTEM] M pressed - sending matchmaking request");
@@ -51,10 +60,10 @@ namespace ecs {
       auto &animation =
           _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-      bool upPressed = IsKeyDown(KEY_UP);
-      bool downPressed = IsKeyDown(KEY_DOWN);
-      bool leftPressed = IsKeyDown(KEY_LEFT);
-      bool rightPressed = IsKeyDown(KEY_RIGHT);
+      bool upPressed = IsKeyDownAZERTY(KEY_UP);
+      bool downPressed = IsKeyDownAZERTY(KEY_DOWN);
+      bool leftPressed = IsKeyDownAZERTY(KEY_LEFT);
+      bool rightPressed = IsKeyDownAZERTY(KEY_RIGHT);
 
       std::uint8_t inputs = 0;
       if (upPressed)
@@ -87,7 +96,7 @@ namespace ecs {
         animation.frameTime = std::abs(animation.frameTime);
       }
 
-      if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
+      if (IsKeyPressedAZERTY(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);
       }
