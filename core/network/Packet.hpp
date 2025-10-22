@@ -62,10 +62,10 @@ enum class MovementInputType : std::uint8_t {
   RIGHT = 1 << 3
 };
 
-#define ALIGNED alignas(4)
+#define ALIGNED alignas(8)
 
 /**
- * @brief Common 4-byte-aligned header present at the start of every network packet.
+ * @brief Common 8-byte-aligned header present at the start of every network packet.
  *
  * Contains the packet's kind and the size of its payload (in bytes), used to
  * route and validate incoming/outgoing packet data.
@@ -592,7 +592,7 @@ struct ALIGNED PlayerInputPacket {
  */
 struct ALIGNED PingPacket {
     PacketHeader header;
-    std::uint32_t timestamp;
+    std::uint64_t timestamp;
 };
 
 /**
@@ -602,5 +602,5 @@ struct ALIGNED PingPacket {
  */
 struct ALIGNED PongPacket {
     PacketHeader header;
-    std::uint32_t timestamp;
+    std::uint64_t timestamp;
 };
