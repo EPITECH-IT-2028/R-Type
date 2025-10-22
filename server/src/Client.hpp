@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <limits>
 #include "Macro.hpp"
-#include "ServerNetworkManager.hpp"
 #include "PacketUtils.hpp"
+#include "ServerNetworkManager.hpp"
 
 namespace server {
   enum class ClientState {
@@ -55,13 +55,15 @@ namespace server {
       std::uint32_t _last_ack = 0;
       std::uint32_t _sequence_number = 0;
 
-    std::unordered_map<std::uint32_t, UnacknowledgedPacket>
-        _unacknowledged_packets;
+      std::unordered_map<std::uint32_t, UnacknowledgedPacket>
+          _unacknowledged_packets;
 
-    void resendUnacknowledgedPackets(network::ServerNetworkManager &networkManager);
+      void resendUnacknowledgedPackets(
+          network::ServerNetworkManager &networkManager);
 
-    void addUnacknowledgedPacket(std::uint32_t sequence_number,
-                                std::shared_ptr<std::vector<uint8_t>> packetData);
-    void removeAcknowledgedPacket(std::uint32_t sequence_number);
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
   };
 }  // namespace server
