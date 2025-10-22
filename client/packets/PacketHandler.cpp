@@ -484,6 +484,17 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Handle a JoinRoomResponse packet from the server.
+ *
+ * Sets the client state to IN_ROOM_WAITING when the packet reports success;
+ * otherwise logs the received room error code.
+ *
+ * @param client Reference to the client instance whose state may be updated.
+ * @param data Pointer to the raw packet buffer.
+ * @param size Size of the raw packet buffer in bytes.
+ * @return int `OK` if the packet was processed, `KO` if the packet could not be deserialized.
+ */
 int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
                                                   const char *data,
                                                   std::size_t size) {
@@ -512,6 +523,19 @@ int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
   return OK;
 }
 
+/**
+ * @brief Handle a matchmaking response packet from the server.
+ *
+ * Deserializes a MatchmakingResponsePacket from the provided buffer and updates
+ * the client's state to IN_ROOM_WAITING when the packet's error_code indicates
+ * success. Logs the outcome.
+ *
+ * @param client Reference to the client whose state may be updated.
+ * @param data Pointer to the incoming packet data.
+ * @param size Size of the incoming packet data in bytes.
+ * @return int `OK` if the packet was deserialized and handled (even if the
+ * contained error code indicates failure), `KO` if deserialization failed.
+ */
 int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
                                                      const char *data,
                                                      std::size_t size) {

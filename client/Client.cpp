@@ -23,6 +23,15 @@
 #include "VelocityComponent.hpp"
 
 namespace client {
+  /**
+   * @brief Constructs a Client configured to connect to the given host and port.
+   *
+   * Initializes the network manager, sequence and packet counters, obtains the ECS manager singleton,
+   * sets the client's initial state to DISCONNECTED, and marks the running flag as false.
+   *
+   * @param host Server hostname or IP address.
+   * @param port Server port number.
+   */
   Client::Client(const std::string &host, const std::uint16_t &port)
       : _networkManager(host, port),
         _sequence_number{0},
@@ -83,20 +92,15 @@ namespace client {
   }
 
   /**
-   * @brief Configure required component signatures for each ECS system used by
-   * the client.
+   * @brief Assign ECS component signatures that determine which entities each system processes.
    *
-   * Sets which component types entities must have to be processed by each
-   * system:
-   * - BackgroundSystem: PositionComponent, RenderComponent,
-   * BackgroundTagComponent
+   * Sets the required component types for each system:
+   * - BackgroundSystem: PositionComponent, RenderComponent, BackgroundTagComponent
    * - MovementSystem: PositionComponent, VelocityComponent
    * - RenderSystem: PositionComponent, RenderComponent
-   * - InputSystem: VelocityComponent, LocalPlayerTagComponent,
-   * SpriteAnimationComponent
+   * - InputSystem: LocalPlayerTagComponent, SpriteAnimationComponent, PositionComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
-   * - ProjectileSystem: PositionComponent, VelocityComponent,
-   * ProjectileComponent
+   * - ProjectileSystem: PositionComponent, VelocityComponent, ProjectileComponent
    */
   void Client::signSystem() {
     {
@@ -184,20 +188,16 @@ namespace client {
   }
 
   /**
-   * @brief Create a player entity with visual, movement, and identification
-   * components.
+   * @brief Create and register an ECS entity representing a player with visual,
+   * positional, animation, and identification components.
    *
-   * Attaches a PositionComponent (from packet.x/packet.y), a zeroed
-   * VelocityComponent, a RenderComponent using the player render asset, a
-   * SpriteComponent and ScaleComponent using PlayerSpriteConfig values, and a
-   * configured SpriteAnimationComponent. Also attaches a PlayerTagComponent. If
-   * the client's local player ID is unassigned, assigns it from
-   * packet.player_id and attaches a LocalPlayerTagComponent. Records the
-   * created entity in the client's player-entity mapping in a thread-safe
-   * manner.
+   * The created entity is configured from values in the provided packet and
+   * player sprite configuration, and the entity is recorded in the client's
+   * player-entity mapping in a thread-safe manner. If the client's local player
+   * ID is not assigned, it is set from the packet and the entity is tagged as
+   * the local player.
    *
-   * @param packet NewPlayerPacket containing the player's id, initial position,
-   * and speed.
+   * @param packet Packet carrying the player's id and initial position.
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -232,6 +232,16 @@ namespace client {
     _playerEntities[packet.player_id] = player;
   }
 
+  /**
+   * @brief Creates and registers an enemy entity from spawn packet data.
+   *
+   * Creates an ECS entity populated with position, velocity, render, sprite,
+   * scale, and animation components, then records the mapping from the packet's
+   * enemy_id to the created entity. If an entity with the same enemy_id already
+   * exists, logs a warning and returns without creating a new entity.
+   *
+   * @param packet Spawn packet containing `enemy_id` and initial position `x`, `y`.
+   */
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
     if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
       TraceLog(LOG_WARNING, "[ENEMY SPAWN] Enemy ID: %u already exists",
@@ -265,11 +275,25 @@ namespace client {
     _enemyEntities[packet.enemy_id] = enemy;
   }
 
+  /**
+   * @brief Associate a projectile identifier with its ECS entity for later lookup.
+   *
+   * Stores the mapping in the client's projectile map in a thread-safe manner.
+   *
+   * @param projectileId Unique identifier for the projectile.
+   * @param entity ECS entity corresponding to the projectileId.
+   */
   void Client::addProjectileEntity(std::uint32_t projectileId, Entity entity) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectileEntities[projectileId] = entity;
   }
 
+  /**
+   * @brief Retrieves the ECS entity associated with a projectile identifier.
+   *
+   * @param projectileId Identifier of the projectile to look up.
+   * @return Entity The associated entity, or `(Entity)(-1)` if no mapping exists.
+   */
   Entity Client::getProjectileEntity(std::uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
     auto it = _projectileEntities.find(projectileId);
@@ -294,13 +318,11 @@ namespace client {
   }
 
   /**
-   * @brief Sends the local player's input state to the server.
+   * @brief Send the local player's input state to the server.
    *
    * If the client has not been assigned a local player ID, the call is ignored.
-   * Any exceptions raised while building or sending the packet are caught and
-   * not propagated.
    *
-   * @param input The player's input state encoded as a byte (input flags).
+   * @param input Player input flags encoded as a byte (bitmask).
    */
   void Client::sendInput(std::uint8_t input) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
@@ -346,6 +368,12 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Sends a matchmaking request to the connected server.
+   *
+   * If the request is successfully sent, an informational log entry is produced;
+   * if sending fails, an error is logged.
+   */
   void Client::sendMatchmakingRequest() {
     try {
       MatchmakingRequestPacket packet = PacketBuilder::makeMatchmakingRequest();
