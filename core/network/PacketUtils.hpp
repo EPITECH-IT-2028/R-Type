@@ -5,12 +5,11 @@
 #include "Packet.hpp"
 
 /**
- * @brief Convert a PacketType enum value to its human-readable name.
+ * @brief Convert a PacketType value to a human-readable name.
  *
- * @param type PacketType enum value to convert.
- * @return std::string The corresponding name (e.g., "Message", "Move",
- * "PlayerDeath"); if the value is not recognized, returns "Unknown(n)" where n
- * is the integer value of the enum.
+ * @param type The PacketType value to convert.
+ * @return The human-readable name for the packet type; "Unknown(n)" if the
+ * value is not recognized, where n is the integer value of the enum.
  */
 inline std::string packetTypeToString(PacketType type) {
   switch (type) {
@@ -50,6 +49,20 @@ inline std::string packetTypeToString(PacketType type) {
       return "PlayerHit";
     case PacketType::PlayerDeath:
       return "PlayerDeath";
+    case PacketType::CreateRoom:
+      return "CreateRoom";
+    case PacketType::JoinRoom:
+      return "JoinRoom";
+    case PacketType::JoinRoomResponse:
+      return "JoinRoomResponse";
+    case PacketType::ListRoom:
+      return "ListRoom";
+    case PacketType::ListRoomResponse:
+      return "ListRoomResponse";
+    case PacketType::MatchmakingRequest:
+      return "MatchmakingRequest";
+    case PacketType::MatchmakingResponse:
+      return "MatchmakingResponse";
     case PacketType::PlayerInput:
       return "PlayerInput";
     case PacketType::Ack:

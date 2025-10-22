@@ -569,7 +569,88 @@ int packet::AckPacketHandler::handlePacket(client::Client &client,
            packet.sequence_number);
 
   client.removeAcknowledgedPacket(packet.sequence_number);
-  
-  // CRITICAL: Don't send ACK for ACK packets to prevent feedback loops
   return packet::OK;
+}
+
+/**
+ * @brief Handle a JoinRoomResponse packet from the server.
+ *
+ * Sets the client state to IN_ROOM_WAITING when the packet reports success;
+ * otherwise logs the received room error code.
+ *
+ * @param client Reference to the client instance whose state may be updated.
+ * @param data Pointer to the raw packet buffer.
+ * @param size Size of the raw packet buffer in bytes.
+ * @return int `OK` if the packet was processed, `KO` if the packet could not be
+ * deserialized.
+ */
+int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
+                                                  const char *data,
+                                                  std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<JoinRoomResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[JOIN ROOM RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const JoinRoomResponsePacket &packet = deserializedPacket.value();
+
+  if (packet.error_code == RoomError::SUCCESS) {
+    client.setClientState(client::ClientState::IN_ROOM_WAITING);
+    TraceLog(LOG_INFO, "[JOIN ROOM RESPONSE] Successfully joined room");
+  } else {
+    TraceLog(LOG_WARNING,
+             "[JOIN ROOM RESPONSE] Failed to join room, error code: %d",
+             static_cast<int>(packet.error_code));
+  }
+
+  return OK;
+}
+
+/**
+ * @brief Handle a matchmaking response packet from the server.
+ *
+ * Deserializes a MatchmakingResponsePacket from the provided buffer and updates
+ * the client's state to IN_ROOM_WAITING when the packet's error_code indicates
+ * success. Logs the outcome.
+ *
+ * @param client Reference to the client whose state may be updated.
+ * @param data Pointer to the incoming packet data.
+ * @param size Size of the incoming packet data in bytes.
+ * @return int `OK` if the packet was deserialized and handled (even if the
+ * contained error code indicates failure), `KO` if deserialization failed.
+ */
+int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
+                                                     const char *data,
+                                                     std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<MatchmakingResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[MATCHMAKING RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const MatchmakingResponsePacket &packet = deserializedPacket.value();
+
+  if (packet.error_code == RoomError::SUCCESS) {
+    client.setClientState(client::ClientState::IN_ROOM_WAITING);
+    TraceLog(LOG_INFO,
+             "[MATCHMAKING RESPONSE] Successfully joined/created room");
+  } else {
+    TraceLog(
+        LOG_WARNING,
+        "[MATCHMAKING RESPONSE] Failed to join/create room, error code: %d",
+        static_cast<int>(packet.error_code));
+  }
+
+  return OK;
 }

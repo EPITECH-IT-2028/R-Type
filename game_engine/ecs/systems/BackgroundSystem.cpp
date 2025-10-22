@@ -1,7 +1,7 @@
 #include "BackgroundSystem.hpp"
+#include "AssetManager.hpp"
 #include "PositionComponent.hpp"
 #include "RenderManager.hpp"
-#include "AssetManager.hpp"
 #include "raylib.h"
 
 ecs::BackgroundSystem::~BackgroundSystem() noexcept {

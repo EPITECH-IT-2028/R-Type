@@ -11,7 +11,8 @@ namespace ecs {
     public:
       explicit BackgroundSystem(
           ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {}
+          : _ecsManager(ecsManager) {
+      }
       ~BackgroundSystem() noexcept;
 
       void update(float deltaTime) override;

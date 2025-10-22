@@ -76,7 +76,7 @@ namespace queue {
       int player_id;
       float x;
       float y;
-      uint32_t sequence_number;
+      std::uint32_t sequence_number;
   };
 
   struct ProjectileDestroyEvent {

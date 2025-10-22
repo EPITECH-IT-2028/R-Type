@@ -45,6 +45,11 @@ namespace packet {
               {PacketType::PlayerShoot,
                []() { return std::make_unique<PlayerShootHandler>(); }},
               {PacketType::Ack,
-               []() { return std::make_unique<AckPacketHandler>(); }}};
+               []() { return std::make_unique<AckPacketHandler>(); }},
+              {PacketType::JoinRoomResponse,
+               []() { return std::make_unique<JoinRoomResponseHandler>(); }},
+              {PacketType::MatchmakingResponse, []() {
+                 return std::make_unique<MatchmakingResponseHandler>();
+               }}};
   };
 }  // namespace packet

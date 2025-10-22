@@ -9,18 +9,23 @@ namespace ecs {
   class SpriteAnimationSystem : public System {
     public:
       /**
-           * @brief Constructs a SpriteAnimationSystem bound to a given ECS manager.
-           *
-           * The provided ECSManager reference is stored and used to access entity/component data.
-           *
-           * @param ecsManager Reference to the ECSManager to associate with this system. Defaults to ECSManager::getInstance().
-           */
-          explicit SpriteAnimationSystem(
+       * @brief Constructs a SpriteAnimationSystem bound to a given ECS manager.
+       *
+       * The provided ECSManager reference is stored and used to access
+       * entity/component data.
+       *
+       * @param ecsManager Reference to the ECSManager to associate with this
+       * system. Defaults to ECSManager::getInstance().
+       */
+      explicit SpriteAnimationSystem(
           ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager) {}
+          : _ecsManager(ecsManager) {
+      }
 
-      void initializeAnimation(Entity entity, const std::shared_ptr<Texture2D> &texture);
-      void initializeFromTexture(Entity entity, int textureWidth, int textureHeight);
+      void initializeAnimation(Entity entity,
+                               const std::shared_ptr<Texture2D> &texture);
+      void initializeFromTexture(Entity entity, int textureWidth,
+                                 int textureHeight);
       Rectangle getCurrentFrameRect(Entity entity) const;
 
       void update(float deltaTime) override;

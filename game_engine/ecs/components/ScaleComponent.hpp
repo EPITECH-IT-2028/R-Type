@@ -2,7 +2,7 @@
 
 namespace ecs {
   struct ScaleComponent {
-    float scaleX = 1.0f;
-    float scaleY = 1.0f;
+      float scaleX = 1.0f;
+      float scaleY = 1.0f;
   };
-}
+}  // namespace ecs

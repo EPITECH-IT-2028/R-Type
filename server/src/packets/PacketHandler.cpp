@@ -3,16 +3,67 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include "Broadcast.hpp"
+#include "Client.hpp"
 #include "GameManager.hpp"
-#include "GameRoom.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketSerialize.hpp"
 #include "PacketUtils.hpp"
 #include "Server.hpp"
 
+/**
+ * @brief Send a JoinRoomResponse to a specific client indicating the result of
+ * a join attempt.
+ *
+ * @param player_id ID of the client to receive the response.
+ * @param error Result code describing why the join succeeded or failed.
+ */
+void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
+                                                  std::uint32_t player_id,
+                                                  RoomError error) {
+  auto response = PacketBuilder::makeJoinRoomResponse(error);
+  auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  server.getNetworkManager().sendToClient(
+      player_id, reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+}
+
+/**
+ * @brief Send a MatchmakingResponse to the specified player indicating the
+ * result of a matchmaking request.
+ *
+ * @param player_id ID of the target player to receive the response.
+ * @param error Result code describing the matchmaking outcome.
+ */
+void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
+                                                     std::uint32_t player_id,
+                                                     RoomError error) {
+  auto response = PacketBuilder::makeMatchmakingResponse(error);
+  auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  server.getNetworkManager().sendToClient(
+      player_id, reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+}
+
+/**
+ * @brief Handle an incoming chat MessagePacket and broadcast it to the sender's
+ * room.
+ *
+ * Deserializes a MessagePacket from the provided buffer, replaces the packet's
+ * player_id with the sender's id, and broadcasts the validated packet to all
+ * clients in the sender's room.
+ *
+ * @param server The server instance used to access game and network managers.
+ * @param client The client that sent the packet; its player_id and room_id are
+ * used.
+ * @param data Pointer to the serialized MessagePacket bytes.
+ * @param size Number of bytes available at `data`.
+ * @return int `OK` on success, `KO` if deserialization fails or the client is
+ * not in a room.
+ */
 int packet::MessageHandler::handlePacket(server::Server &server,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
@@ -31,7 +82,7 @@ int packet::MessageHandler::handlePacket(server::Server &server,
             << packet.message << std::endl;
 
   MessagePacket validatedPacket = packet;
-  validatedPacket.player_id = static_cast<uint32_t>(client._player_id);
+  validatedPacket.player_id = static_cast<std::uint32_t>(client._player_id);
 
   auto room = server.getGameManager().getRoom(client._room_id);
   if (!room) {
@@ -55,17 +106,17 @@ int packet::MessageHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handles an incoming PlayerInfoPacket from a client, registers the
- * player in their room, sends the player's info back to the originating client,
- * and broadcasts existing and new-player information to room participants.
+ * @brief Process a PlayerInfoPacket from a client, update the client's player
+ * name, and initialize the player in a room when appropriate.
  *
- * @param server Server instance managing rooms, game state, and networking.
- * @param client Client that sent the packet; its player and entity IDs may be
- * updated.
- * @param data Pointer to the raw packet bytes containing a PlayerInfoPacket.
+ * @param server Server managing rooms, game state, and networking.
+ * @param client Client that sent the packet; its `_player_name` and
+ * room-related state may be updated.
+ * @param data Pointer to the raw PlayerInfoPacket bytes.
  * @param size Size of the data buffer in bytes.
- * @return int `OK` on successful handling (player created/broadcasts sent),
- * `KO` on failure such as deserialization error or missing room.
+ * @return int `OK` if the packet was handled successfully and any required
+ * player initialization completed, `KO` on deserialization failure, invalid
+ * client state, or other errors.
  */
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             server::Client &client,
@@ -90,55 +141,27 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   nameBuf[sizeof(packet.name)] = '\0';
   std::string name(nameBuf);
 
-  auto room = server.getGameManager().getRoom(client._room_id);
-  if (!room) {
-    std::cerr << "[ERROR] Client " << client._player_id << " is not in any room"
-              << std::endl;
-    return KO;
+  client._player_name = name;
+
+  switch (client._state) {
+    case server::ClientState::CONNECTED_MENU: {
+      std::cout << "[PLAYERINFO] Client " << client._player_id << " (" << name
+                << ") registered in menu" << std::endl;
+      auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
+                                                    client._player_id);
+      auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
+          serialization::BitserySerializer::serialize(ackPacket));
+      server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
+      return OK;
+    }
+    case server::ClientState::IN_ROOM_WAITING:
+    case server::ClientState::IN_GAME:
+      return server.initializePlayerInRoom(client) ? OK : KO;
+
+    default:
+      std::cerr << "[ERROR] Invalid client state for PlayerInfo" << std::endl;
+      return KO;
   }
-
-  auto player = room->getGame().createPlayer(client._player_id, name);
-  client._entity_id = player->getEntityId();
-  std::pair<float, float> pos = player->getPosition();
-  float speed = player->getSpeed();
-  int health = player->getHealth().value_or(0);
-
-  // Send own player info back to the client
-  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, health);
-
-  auto serializedBuffer =
-      serialization::BitserySerializer::serialize(ownPlayerPacket);
-
-  server.getNetworkManager().sendToClient(
-      client._player_id,
-      reinterpret_cast<const char *>(serializedBuffer.data()),
-      serializedBuffer.size());
-
-  auto roomClients = room->getClients();
-
-  // Broadcast existing players to the new client
-  broadcast::Broadcast::broadcastExistingPlayersToRoom(
-      server.getNetworkManager(), room->getGame(), client._player_id,
-      roomClients);
-
-  // Broadcast new player to all other clients
-  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, health);
-  broadcast::Broadcast::broadcastAncientPlayerToRoom(
-      server.getNetworkManager(), roomClients, newPlayerPacket);
-
-  if (roomClients.size() >= 2 &&
-      room->getState() == game::RoomStatus::WAITING) {
-    room->start();
-  }
-
-  auto ackPacket =
-      PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
-  auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
-      serialization::BitserySerializer::serialize(ackPacket));
-  server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
-  return OK;
 }
 
 /**
@@ -170,7 +193,7 @@ int packet::HeartbeatPlayerHandler::handlePacket(
   }
 
   const auto &hb = deserializedPacket.value();
-  if (hb.player_id != static_cast<uint32_t>(client._player_id)) {
+  if (hb.player_id != static_cast<std::uint32_t>(client._player_id)) {
     return KO;
   }
   client._last_heartbeat = std::chrono::steady_clock::now();
@@ -246,19 +269,21 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle an incoming PlayerDisconnectPacket and process the player's
+ * @brief Process an incoming PlayerDisconnectPacket and finalize the client's
  * disconnection.
  *
- * Processes a serialized PlayerDisconnectPacket from the provided buffer,
- * validates the packet's player id against the client, updates server and
- * client state, removes the player from their room and game (if present),
- * broadcasts the disconnect to remaining room clients, and clears the
- * client's server slot.
+ * Validates and applies a PlayerDisconnectPacket from the provided buffer,
+ * updates server and client connection state, removes the player from their
+ * room and game if present, broadcasts the disconnect to remaining room
+ * clients, and clears the client's server slot.
  *
- * @param data Pointer to the serialized PlayerDisconnectPacket.
+ * @param server Server instance handling clients and rooms.
+ * @param client Client instance corresponding to the sending connection.
+ * @param data Pointer to the serialized PlayerDisconnectPacket bytes.
  * @param size Size of the serialized data in bytes.
- * @return int `OK` on successful processing; `KO` if deserialization fails or
- * the packet's player_id does not match the client.
+ * @return int `OK` if the disconnection was processed successfully; `KO` if
+ * packet deserialization fails or the packet's player_id does not match the
+ * client.
  */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
@@ -278,7 +303,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
   }
 
   const auto &disc = deserializedPacket.value();
-  if (disc.player_id != static_cast<uint32_t>(client._player_id)) {
+  if (disc.player_id != static_cast<std::uint32_t>(client._player_id)) {
     return KO;
   }
   std::cout << "[WORLD] Player " << client._player_id << " disconnected."
@@ -291,7 +316,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
     server.setPlayerCount(server.getPlayerCount() - 1);
   }
 
-  if (client._room_id != -1) {
+  if (client._room_id != NO_ROOM) {
     auto room = server.getGameManager().getRoom(client._room_id);
     if (room) {
       auto player = room->getGame().getPlayer(client._player_id);
@@ -322,23 +347,396 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process a player's input packet, update the player's position, and
- * broadcast the resulting move to the room.
+ * @brief Process a CreateRoomPacket: create a room, join the requesting client,
+ * and initialize the player in that room.
  *
- * Deserializes a PlayerInputPacket from the provided buffer, validates the
- * room and player, updates the player's sequence number and position
- * according to the input and the game's delta time, clamps the position to
- * window bounds, and broadcasts a PlayerMove packet to all clients in the
- * room.
+ * Deserializes the incoming packet, creates a game room using the provided name
+ * and password, has the client join the newly created room, and initializes the
+ * player state inside the room. On failure the function performs necessary
+ * cleanup (leaving/destroying the room) and restores client state.
  *
- * @param server Server instance used to access the game manager and network
- * manager.
- * @param client Client that sent the input; used to identify the player and
- * room.
- * @param data Pointer to the raw packet data to deserialize.
- * @param size Size of the raw packet data in bytes.
- * @return int `OK` on success; `KO` on error (for example: deserialization
- * failure, missing or inactive room, or missing player).
+ * @param server Server instance handling game rooms and clients.
+ * @param client Client that sent the CreateRoomPacket.
+ * @param data Pointer to the serialized packet data.
+ * @param size Size in bytes of the serialized packet.
+ * @return int `OK` on success after room creation, join, and player
+ * initialization; `KO` on any failure.
+ */
+int packet::CreateRoomHandler::handlePacket(server::Server &server,
+                                            server::Client &client,
+                                            const char *data,
+                                            std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<CreateRoomPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize CreateRoomPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const CreateRoomPacket &packet = deserializedPacket.value();
+
+  const size_t roomLen = strnlen(packet.room_name, sizeof(packet.room_name));
+  const size_t passLen = strnlen(packet.password, sizeof(packet.password));
+
+  std::string roomName(packet.room_name, roomLen);
+  std::string password(packet.password, passLen);
+  auto newRoom = server.getGameManager().createRoom(roomName, password);
+
+  if (!newRoom) {
+    std::cerr << "[ERROR] Failed to create room for client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  auto sharedClient = server.getClientById(client._player_id);
+  if (!sharedClient) {
+    std::cerr << "[ERROR] Failed to get shared_ptr for client "
+              << client._player_id << std::endl;
+    server.getGameManager().destroyRoom(newRoom->getRoomId());
+    return KO;
+  }
+
+  bool joinSuccess = server.getGameManager().joinRoom(
+      newRoom->getRoomId(), server.getClientById(client._player_id));
+
+  if (!joinSuccess) {
+    std::cerr << "[ERROR] Client " << client._player_id
+              << " failed to join newly created room " << newRoom->getRoomId()
+              << std::endl;
+    if (!server.getGameManager().destroyRoom(newRoom->getRoomId())) {
+      std::cerr << "[ERROR] Failed to delete room " << newRoom->getRoomId()
+                << std::endl;
+    } else
+      std::cout << "[INFO] Room " << newRoom->getRoomId() << std::endl;
+    return KO;
+  }
+
+  client._state = server::ClientState::IN_ROOM_WAITING;
+
+  if (!server.initializePlayerInRoom(client)) {
+    std::cerr << "[ERROR] Failed to initialize player " << client._player_id
+              << " in room " << newRoom->getRoomId() << std::endl;
+    server.getGameManager().leaveRoom(sharedClient);
+    server.getGameManager().destroyRoom(newRoom->getRoomId());
+    client._state = server::ClientState::CONNECTED_MENU;
+    return KO;
+  }
+
+  std::cout << "[CREATE ROOM] Client " << client._player_id
+            << " created and joined room " << newRoom->getRoomId() << " ("
+            << roomName << ")" << std::endl;
+
+  return OK;
+}
+
+/**
+ * @brief Process a client's JoinRoom request and respond with the appropriate
+ * JoinRoomResponse.
+ *
+ * Deserializes a JoinRoomPacket from the provided buffer, validates room
+ * existence and password, attempts to join the room, initializes the player in
+ * the room on success, and sends a JoinRoomResponse indicating the resulting
+ * RoomError.
+ *
+ * @param data Pointer to the serialized JoinRoomPacket.
+ * @param size Size of the serialized data in bytes.
+ * @return int `OK` on success, `KO` on failure.
+ */
+int packet::JoinRoomHandler::handlePacket(server::Server &server,
+                                          server::Client &client,
+                                          const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<JoinRoomPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize JoinRoomPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const JoinRoomPacket &packet = deserializedPacket.value();
+
+  auto sharedClient = server.getClientById(client._player_id);
+  if (!sharedClient) {
+    std::cerr << "[ERROR] Failed to get shared_ptr for client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  auto room = server.getGameManager().getRoom(packet.room_id);
+  if (!room) {
+    ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                         RoomError::ROOM_NOT_FOUND);
+    return KO;
+  }
+
+  if (room->hasPassword()) {
+    const size_t passLen = strnlen(packet.password, sizeof(packet.password));
+    std::string providedPassword(packet.password, passLen);
+
+    if (!room->checkPassword(providedPassword)) {
+      ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                           RoomError::WRONG_PASSWORD);
+      return KO;
+    }
+  }
+
+  bool joinSuccess =
+      server.getGameManager().joinRoom(packet.room_id, sharedClient);
+
+  if (!joinSuccess) {
+    std::cout << "[JOIN ROOM] Client " << client._player_id
+              << " failed to join room " << packet.room_id << std::endl;
+
+    ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                         RoomError::ROOM_FULL);
+    return KO;
+  }
+
+  client._state = server::ClientState::IN_ROOM_WAITING;
+
+  if (!server.initializePlayerInRoom(client)) {
+    server.getGameManager().leaveRoom(sharedClient);
+    client._state = server::ClientState::CONNECTED_MENU;
+    ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                         RoomError::UNKNOWN_ERROR);
+    return KO;
+  }
+
+  ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                       RoomError::SUCCESS);
+
+  return OK;
+}
+
+/**
+ * @brief Handle a client's request to leave their current room.
+ *
+ * If the client is in a room, removes the client from that room and sets the
+ * client's state to CONNECTED_MENU. On success the client will no longer be
+ * associated with the previous room.
+ *
+ * @param data Pointer to the raw packet bytes containing the LeaveRoomPacket.
+ * @param size Number of bytes available at data.
+ * @return int OK on success (client left room or was not in a room), KO on
+ * failure (failed to deserialize the packet or failed to obtain the shared
+ * client).
+ */
+int packet::LeaveRoomHandler::handlePacket(server::Server &server,
+                                           server::Client &client,
+                                           const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<LeaveRoomPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize LeaveRoomPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  if (client._room_id == NO_ROOM) {
+    std::cout << "[LEAVE ROOM] Client " << client._player_id
+              << " is not in any room" << std::endl;
+    return OK;
+  }
+
+  auto sharedClient = server.getClientById(client._player_id);
+  if (!sharedClient) {
+    std::cerr << "[ERROR] Failed to get shared_ptr for client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  std::cout << "[LEAVE ROOM] Client " << client._player_id << " leaving room "
+            << client._room_id << std::endl;
+
+  server.getGameManager().leaveRoom(sharedClient);
+
+  client._state = server::ClientState::CONNECTED_MENU;
+
+  return OK;
+}
+
+/**
+ * @brief Handle a ListRoom request and send the current room list to the
+ * requesting client.
+ *
+ * Deserializes a ListRoomPacket from the provided buffer, gathers all active
+ * rooms, builds a ListRoomResponse containing each room's id, name, player
+ * count, and max players, serializes that response, and sends it to the
+ * requesting client.
+ *
+ * @param data Pointer to the incoming packet data.
+ * @param size Size of the incoming packet data in bytes.
+ * @return int `OK` on success, `KO` if deserialization fails or the request
+ * cannot be processed.
+ */
+int packet::ListRoomHandler::handlePacket(server::Server &server,
+                                          server::Client &client,
+                                          const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ListRoomPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize ListRoomPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  auto rooms = server.getGameManager().getAllRooms();
+  std::vector<RoomInfo> roomInfos;
+  for (const auto &room : rooms) {
+    RoomInfo info;
+    info.room_id = room->getRoomId();
+    std::strncpy(info.room_name, room->getRoomName().c_str(),
+                 sizeof(info.room_name) - 1);
+    info.room_name[sizeof(info.room_name) - 1] = '\0';
+    info.player_count = room->getPlayerCount();
+    info.max_players = room->getMaxPlayers();
+    roomInfos.push_back(info);
+  }
+
+  auto listRoomResponsePacket = PacketBuilder::makeListRoomResponse(roomInfos);
+
+  auto serializedBuffer =
+      serialization::BitserySerializer::serialize(listRoomResponsePacket);
+  server.getNetworkManager().sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+  return OK;
+}
+
+/**
+ * @brief Attempts to place the client into a matchmaking room and responds with
+ * the result.
+ *
+ * Deserializes a MatchmakingRequestPacket from the provided buffer, then either
+ * joins the client to an existing suitable room or creates and joins a new
+ * matchmaking room. On success the client is transitioned to IN_ROOM_WAITING,
+ * the server initializes the player in the room, and a success matchmaking
+ * response is sent to the client. On failure an appropriate matchmaking
+ * response (e.g., UNKNOWN_ERROR) is sent and the client's state is restored
+ * where applicable.
+ *
+ * @param server Reference to the server managing rooms, clients, and game
+ * state.
+ * @param client Reference to the client issuing the matchmaking request; may be
+ * updated.
+ * @param data Pointer to the serialized MatchmakingRequestPacket data.
+ * @param size Size in bytes of the serialized data buffer.
+ * @return int `OK` if matchmaking succeeded and the client was initialized in a
+ * room, `KO` otherwise.
+ */
+int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
+                                                    server::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<MatchmakingRequestPacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize MatchmakingRequestPacket "
+                 "from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const MatchmakingRequestPacket &packet = deserializedPacket.value();
+
+  auto sharedClient = server.getClientById(client._player_id);
+  if (!sharedClient) {
+    ResponseHelper::sendMatchmakingResponse(server, client._player_id,
+                                            RoomError::UNKNOWN_ERROR);
+    return KO;
+  }
+
+  bool joinSuccess = server.getGameManager().joinAnyRoom(sharedClient);
+
+  if (!joinSuccess) {
+    auto newRoom = server.getGameManager().createRoom("Matchmaking Room");
+    if (!newRoom) {
+      std::cerr << "[ERROR] Client " << client._player_id
+                << " failed to create new room for matchmaking" << std::endl;
+      ResponseHelper::sendMatchmakingResponse(server, client._player_id,
+                                              RoomError::UNKNOWN_ERROR);
+      return KO;
+    }
+    auto joinSuccess =
+        server.getGameManager().joinRoom(newRoom->getRoomId(), sharedClient);
+    if (newRoom && joinSuccess) {
+      std::cout << "[MATCHMAKING] Client " << client._player_id
+                << " created and joined new room " << newRoom->getRoomId()
+                << std::endl;
+
+      client._state = server::ClientState::IN_ROOM_WAITING;
+
+      if (!server.initializePlayerInRoom(client)) {
+        server.getGameManager().leaveRoom(sharedClient);
+        server.getGameManager().destroyRoom(newRoom->getRoomId());
+        client._state = server::ClientState::CONNECTED_MENU;
+        return KO;
+      }
+
+      ResponseHelper::sendMatchmakingResponse(server, client._player_id,
+                                              RoomError::SUCCESS);
+    } else {
+      std::cerr << "[ERROR] Client " << client._player_id
+                << " failed to create/join new room for matchmaking"
+                << std::endl;
+      ResponseHelper::sendMatchmakingResponse(server, client._player_id,
+                                              RoomError::UNKNOWN_ERROR);
+      return KO;
+    }
+  } else {
+    std::cout << "[MATCHMAKING] Client " << client._player_id
+              << " joined existing room" << std::endl;
+
+    client._state = server::ClientState::IN_ROOM_WAITING;
+
+    if (!server.initializePlayerInRoom(client)) {
+      std::cerr << "[MATCHMAKING] Failed to initialize player" << std::endl;
+      server.getGameManager().leaveRoom(sharedClient);
+      client._state = server::ClientState::CONNECTED_MENU;
+      return KO;
+    }
+
+    ResponseHelper::sendMatchmakingResponse(server, client._player_id,
+                                            RoomError::SUCCESS);
+  }
+
+  return OK;
+}
+
+/**
+ * @brief Apply a player's movement input to their in-room player state and
+ * broadcast the resulting PlayerMove to the room.
+ *
+ * Deserializes the incoming PlayerInput packet from the provided buffer,
+ * updates the player's sequence number and position according to the input and
+ * game delta time (clamped to window bounds), and broadcasts a PlayerMove
+ * packet to all clients in the same room.
+ *
+ * @param server Server instance used to access game and network managers.
+ * @param client Client that sent the input; identifies the player and room.
+ * @param data Pointer to the raw packet data buffer containing a
+ * PlayerInputPacket.
+ * @param size Size of the raw packet data buffer in bytes.
+ * @return int `OK` on success; `KO` on error (e.g., deserialization failure,
+ * missing or inactive room, or missing player).
  */
 int packet::PlayerInputHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -380,13 +778,13 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   float dirX = 0.0f;
   float dirY = 0.0f;
 
-  if (packet.input & static_cast<uint8_t>(MovementInputType::UP))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::UP))
     dirY -= 1.0f;
-  if (packet.input & static_cast<uint8_t>(MovementInputType::DOWN))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::DOWN))
     dirY += 1.0f;
-  if (packet.input & static_cast<uint8_t>(MovementInputType::LEFT))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::LEFT))
     dirX -= 1.0f;
-  if (packet.input & static_cast<uint8_t>(MovementInputType::RIGHT))
+  if (packet.input & static_cast<std::uint8_t>(MovementInputType::RIGHT))
     dirX += 1.0f;
 
   float length = std::sqrt(dirX * dirX + dirY * dirY);
@@ -411,7 +809,6 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
                                                   roomClients, movePacket);
-
   return OK;
 }
 

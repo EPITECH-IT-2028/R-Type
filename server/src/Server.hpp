@@ -14,7 +14,8 @@
 
 namespace game {
   class GameManager;
-}
+  class GameRoom;
+}  // namespace game
 
 namespace server {
 
@@ -22,7 +23,9 @@ namespace server {
     public:
       Server(std::uint16_t port, std::uint8_t max_clients,
              std::uint8_t max_clients_per_room);
-      ~Server() = default;
+      ~Server() {
+        stop();
+      }
 
       void start();
       void stop();
@@ -61,6 +64,10 @@ namespace server {
 
       void clearClientSlot(int player_id);
 
+      std::shared_ptr<Client> getClientById(int player_id) const;
+
+      bool initializePlayerInRoom(Client &client);
+
     private:
       void startReceive();
       void handleReceive(const char *data, std::size_t bytes_transferred);
@@ -70,7 +77,7 @@ namespace server {
 
       void scheduleEventProcessing();
       void processGameEvents();
-      void handleGameEvent(const queue::GameEvent &event, uint32_t roomId);
+      void handleGameEvent(const queue::GameEvent &event, std::uint32_t roomId);
 
       size_t findExistingClient();
       void handlePlayerInfoPacket(const char *data, std::size_t size);
@@ -84,13 +91,16 @@ namespace server {
       void resendThreadFunction();
 
     private:
+      void handleCountdown(std::shared_ptr<game::GameRoom> room,
+                           std::shared_ptr<asio::steady_timer> timer);
+
       network::ServerNetworkManager _networkManager;
 
       std::vector<std::shared_ptr<Client>> _clients;
       packet::PacketHandlerFactory _factory;
 
-      uint16_t screen_width = 800;
-      uint16_t screen_height = 1200;
+      std::uint16_t screen_width = 800;
+      std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
       std::unordered_map<std::uint32_t, std::uint32_t> _acknowledgements;
