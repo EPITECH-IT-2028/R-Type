@@ -93,10 +93,6 @@ namespace ecs {
       if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);
-        TraceLog(
-            LOG_INFO,
-            "[INPUT SYSTEM] Space pressed - shooting from position (%f, %f)",
-            position.x, position.y);
       }
     }
   }
