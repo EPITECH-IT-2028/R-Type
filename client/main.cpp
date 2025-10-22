@@ -54,9 +54,9 @@ void gameLoop(client::Client &client) {
 }
 
 /**
- * @brief Initialize renderer, configuration, ECS, and networked client; run the
- * main render loop and a background network thread, then cleanly shut down on
- * exit.
+ * @brief Initialize renderer, configuration, ECS, and networked client; run
+ * the main render loop and a background network thread, then cleanly shut
+ * down on exit.
  *
  * The function constructs and validates the window renderer, parses client
  * properties, initializes assets and the ECS, connects the network client,
