@@ -21,6 +21,8 @@ constexpr int CLIENT_TIMEOUT = 45;
 
 constexpr int HEARTBEAT_INTERVAL_CLIENT = 15;
 
+constexpr int PING_INTERVAL_CLIENT = 5;
+
 constexpr float TOLERANCE = 2.0f;
 
 constexpr float FPS = 60.0f;
