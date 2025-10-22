@@ -60,10 +60,10 @@ namespace ecs {
       auto &animation =
           _ecsManager.getComponent<SpriteAnimationComponent>(entity);
 
-      bool upPressed = IsKeyDownAZERTY(KEY_UP);
-      bool downPressed = IsKeyDownAZERTY(KEY_DOWN);
-      bool leftPressed = IsKeyDownAZERTY(KEY_LEFT);
-      bool rightPressed = IsKeyDownAZERTY(KEY_RIGHT);
+      bool upPressed = IsKeyDown(KEY_UP);
+      bool downPressed = IsKeyDown(KEY_DOWN);
+      bool leftPressed = IsKeyDown(KEY_LEFT);
+      bool rightPressed = IsKeyDown(KEY_RIGHT);
 
       std::uint8_t inputs = 0;
       if (upPressed)
@@ -96,7 +96,7 @@ namespace ecs {
         animation.frameTime = std::abs(animation.frameTime);
       }
 
-      if (IsKeyPressedAZERTY(KEY_SPACE) && _client != nullptr) {
+      if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);
       }
