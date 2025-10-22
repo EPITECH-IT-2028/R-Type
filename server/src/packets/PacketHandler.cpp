@@ -335,6 +335,11 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
     std::cerr << "[ERROR] Client " << client._player_id
               << " failed to join newly created room " << newRoom->getRoomId()
               << std::endl;
+    if (!server.getGameManager().destroyRoom(newRoom->getRoomId())) {
+      std::cerr << "[ERROR] Failed to delete room " << newRoom->getRoomId()
+                << std::endl;
+    } else
+      std::cout << "[INFO] Room " << newRoom->getRoomId() << std::endl;
     return KO;
   }
 
