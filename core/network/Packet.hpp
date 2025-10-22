@@ -130,6 +130,7 @@ struct ALIGNED HeartbeatPlayerPacket {
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
     char name[32];
+    std::uint32_t sequence_number;
 };
 
 /**

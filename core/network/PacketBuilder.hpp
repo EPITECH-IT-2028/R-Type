@@ -82,12 +82,14 @@ struct PacketBuilder {
      * PacketType::PlayerInfo, header.size populated, and the name field filled
      * from `name`.
      */
-    static PlayerInfoPacket makePlayerInfo(const std::string &name) {
+    static PlayerInfoPacket makePlayerInfo(const std::string &name,
+                                           std::uint32_t sequence_number) {
       PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
       packet.header.size = sizeof(packet);
       strncpy(packet.name, name.c_str(), sizeof(packet.name) - 1);
       packet.name[sizeof(packet.name) - 1] = '\0';
+      packet.sequence_number = sequence_number;
       return packet;
     }
 

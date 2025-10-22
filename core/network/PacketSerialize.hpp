@@ -51,6 +51,7 @@ void serialize(S& s, PlayerInfoPacket& packet) {
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(packet.name[i]);
   }
+  s.value4b(packet.sequence_number);
 }
 template <typename S>
 /**
