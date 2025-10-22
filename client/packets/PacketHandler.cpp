@@ -565,3 +565,25 @@ int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
 
   return OK;
 }
+
+int packet::PongHandler::handlePacket(client::Client &client,
+                                      const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<PongPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PONG] Failed to deserialize packet");
+    return packet::KO;
+  }
+
+  const PongPacket &packet = packetOpt.value();
+  uint64_t currentTimestamp =
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::steady_clock::now().time_since_epoch())
+          .count();
+  uint64_t ping = currentTimestamp - packet.timestamp;
+  client.updatePing(ping);
+  TraceLog(LOG_INFO, "[PONG] Received pong, RTT: %llu ms", ping);
+  return packet::OK;
+}

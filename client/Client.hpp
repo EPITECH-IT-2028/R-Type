@@ -283,6 +283,10 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
+      void updatePing(std::uint64_t ping) {
+        _ping.store(ping, std::memory_order_release);
+      }
+
     private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
@@ -297,6 +301,7 @@ namespace client {
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
+      std::atomic<std::uint64_t> _ping;
 
       void registerComponent();
       void registerSystem();
