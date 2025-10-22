@@ -28,8 +28,7 @@ void gameLoop(client::Client &client) {
       std::chrono::seconds(HEARTBEAT_INTERVAL_CLIENT);
 
   auto lastPing = std::chrono::steady_clock::now();
-  const auto pingInterval = 
-      std::chrono::seconds(PING_INTERVAL_CLIENT);
+  const auto pingInterval = std::chrono::seconds(PING_INTERVAL_CLIENT);
 
   while (client.isConnected()) {
     client.startReceive();
@@ -43,7 +42,10 @@ void gameLoop(client::Client &client) {
     }
 
     if (now - lastPing >= pingInterval) {
-      uint64_t pingTimestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+      uint32_t pingTimestamp = static_cast<uint32_t>(
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              now.time_since_epoch())
+              .count());
       PingPacket ping = PacketBuilder::makePing(pingTimestamp);
       client.send(ping);
       lastPing = now;

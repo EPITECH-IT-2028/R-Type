@@ -446,7 +446,7 @@ template<typename S>
 void serialize(S& s, PingPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.value8b(packet.timestamp);
+  s.value4b(packet.timestamp);
 }
 
 template<typename S>
@@ -459,5 +459,5 @@ template<typename S>
 void serialize(S& s, PongPacket& packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.value8b(packet.timestamp);
+  s.value4b(packet.timestamp);
 }

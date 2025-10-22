@@ -579,12 +579,12 @@ int packet::PongHandler::handlePacket(client::Client &client, const char *data,
   }
 
   const PongPacket &packet = packetOpt.value();
-  uint64_t currentTimestamp =
+  uint32_t currentTimestamp =
       std::chrono::duration_cast<std::chrono::milliseconds>(
           std::chrono::steady_clock::now().time_since_epoch())
           .count();
-  uint64_t ping = currentTimestamp - packet.timestamp;
+  uint32_t ping = currentTimestamp - packet.timestamp;
   client.updatePing(ping);
-  TraceLog(LOG_INFO, "[PONG] Received pong, RTT: %llu ms", ping);
+  TraceLog(LOG_INFO, "[PONG] Received pong, RTT: %u ms", ping);
   return packet::OK;
 }
