@@ -110,11 +110,6 @@ namespace game {
         RoomStatus expected = RoomStatus::STARTING;
         if (_state.compare_exchange_strong(expected, RoomStatus::RUNNING)) {
           _game->start();
-        } else {
-          expected = RoomStatus::WAITING;
-          if (_state.compare_exchange_strong(expected, RoomStatus::RUNNING)) {
-            _game->start();
-          }
         }
       }
 
