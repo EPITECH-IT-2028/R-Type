@@ -215,12 +215,6 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.game_started, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastGameStartToRoom(
               _networkManager, clients, gameStartPacket);
-          auto buffer = std::make_shared<std::vector<uint8_t>>(
-              serialization::BitserySerializer::serialize(gameStartPacket));
-          for (const auto &client : clients) {
-            client->addUnacknowledgedPacket(specificEvent.sequence_number,
-                                            buffer);
-          }
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           PlayerMovePacket positionPacket = PacketBuilder::makePlayerMove(
               specificEvent.player_id, specificEvent.sequence_number, specificEvent.x, specificEvent.y);
@@ -451,7 +445,7 @@ void server::Server::handleUnacknowledgedPackets() {
 
 void server::Server::resendThreadFunction() {
   while (_resendThreadRunning) {
-    std::this_thread::sleep_for(std::chrono::seconds(RESEND_PACKET_DELAY));
+    std::this_thread::sleep_for(std::chrono::milliseconds(RESEND_PACKET_DELAY));
 
     if (!_resendThreadRunning)
       break;

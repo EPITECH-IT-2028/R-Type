@@ -496,11 +496,11 @@ int packet::GameStartHandler::handlePacket(client::Client &client,
     return packet::KO;
   }
 
-
   const GameStartPacket &packet = packetOpt.value();
   TraceLog(LOG_INFO, "[GAME START] Game is starting!");
-  
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number, client.getPlayerId());
+
+  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
+                                                client.getPlayerId());
   client.send(ackPacket);
 
   return packet::OK;
