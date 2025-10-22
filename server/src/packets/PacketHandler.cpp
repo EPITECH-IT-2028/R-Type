@@ -132,6 +132,14 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
     room->start();
   }
 
+  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
+                                                client._player_id);
+  auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(ackPacket));
+  server.getNetworkManager().sendToClient(
+      client._player_id, reinterpret_cast<const char *>(ackBuffer->data()),
+      ackBuffer->size());
+
   return OK;
 }
 
