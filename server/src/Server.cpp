@@ -215,6 +215,11 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.game_started, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastGameStartToRoom(
               _networkManager, clients, gameStartPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(gameStartPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }

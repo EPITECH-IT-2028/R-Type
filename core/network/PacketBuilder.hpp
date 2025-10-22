@@ -8,7 +8,8 @@
 
 struct PacketBuilder {
     static MessagePacket makeMessage(const std::string &msg,
-                                     std::uint32_t player_id) {
+                                     std::uint32_t player_id,
+                                     std::uint32_t sequence_number) {
       MessagePacket packet{};
       packet.header.type = PacketType::Message;
       packet.header.size = sizeof(packet);
@@ -16,6 +17,7 @@ struct PacketBuilder {
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
       packet.message[sizeof(packet.message) - 1] = '\0';
       packet.player_id = player_id;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -284,7 +286,8 @@ struct PacketBuilder {
       return packet;
     }
 
-    static GameStartPacket makeGameStart(bool started, std::uint32_t sequence_number) {
+    static GameStartPacket makeGameStart(bool started,
+                                         std::uint32_t sequence_number) {
       GameStartPacket packet{};
       packet.header.type = PacketType::GameStart;
       packet.header.size = sizeof(packet);

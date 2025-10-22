@@ -75,6 +75,7 @@ struct ALIGNED MessagePacket {
     uint32_t timestamp;
     char message[256];
     uint32_t player_id;
+    std::uint32_t sequence_number;
 };
 
 /**

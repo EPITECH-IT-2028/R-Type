@@ -31,6 +31,7 @@ void serialize(S& s, MessagePacket& packet) {
     s.value1b(packet.message[i]);
   }
   s.value4b(packet.player_id);
+  s.value4b(packet.sequence_number);
 }
 
 /*

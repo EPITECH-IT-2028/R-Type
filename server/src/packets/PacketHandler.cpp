@@ -43,6 +43,13 @@ int packet::MessageHandler::handlePacket(server::Server &server,
 
   broadcast::Broadcast::broadcastMessageToRoom(server.getNetworkManager(),
                                                roomClients, validatedPacket);
+  auto ackPacket = PacketBuilder::makeAckPacket(validatedPacket.sequence_number,
+                                                client._player_id);
+  auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(ackPacket));
+  server.getNetworkManager().sendToClient(
+      client._player_id, reinterpret_cast<const char *>(ackBuffer->data()),
+      ackBuffer->size());
   return OK;
 }
 
@@ -394,8 +401,7 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
 int packet::AckPacketHandler::handlePacket(server::Server &server,
                                            server::Client &client,
-                                           const char *data,
-                                           std::size_t size) {
+                                           const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
@@ -409,8 +415,8 @@ int packet::AckPacketHandler::handlePacket(server::Server &server,
 
   const AckPacket &packet = deserializedPacket.value();
   std::cout << "[ACK] Received ACK for sequence number "
-            << packet.sequence_number << " from player "
-            << packet.player_id << std::endl;
+            << packet.sequence_number << " from player " << packet.player_id
+            << std::endl;
 
   for (auto &client : server.getClients()) {
     if (client && client->_player_id == static_cast<int>(packet.player_id)) {
