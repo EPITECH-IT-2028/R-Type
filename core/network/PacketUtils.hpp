@@ -1,7 +1,11 @@
 #pragma once
 
+#include <chrono>
+#include <cstdint>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "Packet.hpp"
 
 /**
