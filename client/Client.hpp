@@ -315,7 +315,7 @@ namespace client {
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
-      std::atomic<std::uint64_t> _ping;
+      std::atomic<std::uint64_t> _ping{0};
 
       void registerComponent();
       void registerSystem();
