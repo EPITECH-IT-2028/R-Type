@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
+#include "raylib.h"
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -128,9 +131,21 @@ namespace client {
         }
 
         try {
+          auto serializedData = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(packet));
+
           packet::PacketSender::sendPacket(_networkManager, packet);
           ++_packet_count;
-          ++_sequence_number;
+
+          if constexpr (requires { packet.sequence_number; }) {
+            if (shouldAcknowledgePacketType(packet.header.type)) {
+              addUnacknowledgedPacket(packet.sequence_number, serializedData);
+              TraceLog(LOG_INFO,
+                       "[SEND] Added packet %u to unacknowledged list",
+                       packet.sequence_number);
+            }
+          }
+          _sequence_number.fetch_add(1, std::memory_order_release);
         } catch (std::exception &e) {
           std::cerr << "Send error: " << e.what() << std::endl;
         }
@@ -192,6 +207,14 @@ namespace client {
 
       void sendInput(uint8_t input);
       void sendShoot(float x, float y);
+      void resendPackets();
+
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
+
+      void resendUnacknowledgedPackets();
 
     private:
       std::array<char, 2048> _recv_buffer;
@@ -206,6 +229,11 @@ namespace client {
       std::unordered_map<uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+
+      std::thread _resendThread;
+      std::atomic<bool> _resendThreadRunning{false};
+      std::unordered_map<std::uint32_t, UnacknowledgedPacket>
+          _unacknowledged_packets;
 
       void registerComponent();
       void registerSystem();

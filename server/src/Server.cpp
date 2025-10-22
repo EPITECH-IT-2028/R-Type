@@ -164,21 +164,38 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
           auto enemySpawnPacket = PacketBuilder::makeEnemySpawn(
               specificEvent.enemy_id, EnemyType::BASIC_FIGHTER, specificEvent.x,
               specificEvent.y, specificEvent.vx, specificEvent.vy,
-              specificEvent.health, specificEvent.max_health);
+              specificEvent.health, specificEvent.max_health,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemySpawnToRoom(
               _networkManager, clients, enemySpawnPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(enemySpawnPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
           auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
-              specificEvent.player_id, specificEvent.score);
+              specificEvent.player_id, specificEvent.score,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemyDeathToRoom(
               _networkManager, clients, enemyDeathPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(enemyDeathPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::EnemyHitEvent>) {
           auto enemyHitPacket = PacketBuilder::makeEnemyHit(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
               specificEvent.damage, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemyHitToRoom(
               _networkManager, clients, enemyHitPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(enemyHitPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::EnemyMoveEvent>) {
           auto enemyMovePacket = PacketBuilder::makeEnemyMove(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
@@ -191,25 +208,49 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.projectile_id, specificEvent.type, specificEvent.x,
               specificEvent.y, specificEvent.vx, specificEvent.vy,
               specificEvent.is_enemy_projectile, specificEvent.damage,
-              specificEvent.owner_id);
+              specificEvent.owner_id, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastProjectileSpawnToRoom(
               _networkManager, clients, projectileSpawnPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(
+                  projectileSpawnPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::PlayerHitEvent>) {
           auto playerHitPacket = PacketBuilder::makePlayerHit(
               specificEvent.player_id, specificEvent.damage, specificEvent.x,
               specificEvent.y, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastPlayerHitToRoom(
               _networkManager, clients, playerHitPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(playerHitPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::ProjectileDestroyEvent>) {
           auto projectileDestroyPacket = PacketBuilder::makeProjectileDestroy(
-              specificEvent.projectile_id, specificEvent.x, specificEvent.y);
+              specificEvent.projectile_id, specificEvent.x, specificEvent.y,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastProjectileDestroyToRoom(
               _networkManager, clients, projectileDestroyPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(
+                  projectileDestroyPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::PlayerDestroyEvent>) {
           auto playerDestroyPacket = PacketBuilder::makePlayerDeath(
-              specificEvent.player_id, specificEvent.x, specificEvent.y);
+              specificEvent.player_id, specificEvent.x, specificEvent.y,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastPlayerDeathToRoom(
               _networkManager, clients, playerDestroyPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(playerDestroyPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
           GameStartPacket gameStartPacket = PacketBuilder::makeGameStart(
               specificEvent.game_started, specificEvent.sequence_number);
@@ -217,9 +258,20 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               _networkManager, clients, gameStartPacket);
           auto buffer = std::make_shared<std::vector<uint8_t>>(
               serialization::BitserySerializer::serialize(gameStartPacket));
-          for (const auto &client : clients)
+          // In handleGameEvent for GameStart
+          for (const auto &client : clients) {
+            std::cout << "[DEBUG] Adding GameStart packet with sequence "
+                      << specificEvent.sequence_number
+                      << " to unacknowledged list for player "
+                      << client->_player_id << " (total packets before: "
+                      << client->_unacknowledged_packets.size() << ")"
+                      << std::endl;
             client->addUnacknowledgedPacket(specificEvent.sequence_number,
                                             buffer);
+            std::cout << "[DEBUG] Player " << client->_player_id << " now has "
+                      << client->_unacknowledged_packets.size()
+                      << " unacknowledged packets" << std::endl;
+          }
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }

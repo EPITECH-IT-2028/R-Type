@@ -10,6 +10,7 @@
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketSerialize.hpp"
+#include "PacketUtils.hpp"
 #include "Server.hpp"
 
 int packet::MessageHandler::handlePacket(server::Server &server,
@@ -132,14 +133,11 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
     room->start();
   }
 
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                client._player_id);
+  auto ackPacket =
+      PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(ackPacket));
-  server.getNetworkManager().sendToClient(
-      client._player_id, reinterpret_cast<const char *>(ackBuffer->data()),
-      ackBuffer->size());
-
+  server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
   return OK;
 }
 
@@ -228,9 +226,18 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
     return KO;
   }
 
-  auto playerShotPacket = PacketBuilder::makePlayerShoot(
-      pos.first, pos.second, projectileType, packet.sequence_number);
+  auto playerShotPacket =
+      PacketBuilder::makePlayerShoot(pos.first, pos.second, projectileType,
+                                     room->getGame().getSequenceNumber());
 
+  auto ackPacket =
+      PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
+  auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(ackPacket));
+  server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
+  std::cout << "Sending ACK to client " << client._player_id
+            << " for projectile " << projectileId << " with sequence number "
+            << room->getGame().getSequenceNumber() << std::endl;
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerShootToRoom(
       server.getNetworkManager(), roomClients, playerShotPacket);
@@ -245,8 +252,8 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
  * Processes a serialized PlayerDisconnectPacket from the provided buffer,
  * validates the packet's player id against the client, updates server and
  * client state, removes the player from their room and game (if present),
- * broadcasts the disconnect to remaining room clients, and clears the client's
- * server slot.
+ * broadcasts the disconnect to remaining room clients, and clears the
+ * client's server slot.
  *
  * @param data Pointer to the serialized PlayerDisconnectPacket.
  * @param size Size of the serialized data in bytes.
@@ -318,10 +325,11 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
  * @brief Process a player's input packet, update the player's position, and
  * broadcast the resulting move to the room.
  *
- * Deserializes a PlayerInputPacket from the provided buffer, validates the room
- * and player, updates the player's sequence number and position according to
- * the input and the game's delta time, clamps the position to window bounds,
- * and broadcasts a PlayerMove packet to all clients in the room.
+ * Deserializes a PlayerInputPacket from the provided buffer, validates the
+ * room and player, updates the player's sequence number and position
+ * according to the input and the game's delta time, clamps the position to
+ * window bounds, and broadcasts a PlayerMove packet to all clients in the
+ * room.
  *
  * @param server Server instance used to access the game manager and network
  * manager.
@@ -424,10 +432,19 @@ int packet::AckPacketHandler::handlePacket(server::Server &server,
   const AckPacket &packet = deserializedPacket.value();
   std::cout << "[ACK] Received ACK for sequence number "
             << packet.sequence_number << " from player " << packet.player_id
-            << std::endl;
-
+            << ": " << packetTypeToString(packet.header.type) << std::endl;
   for (auto &client : server.getClients()) {
     if (client && client->_player_id == static_cast<int>(packet.player_id)) {
+      auto it = client->_unacknowledged_packets.find(packet.sequence_number);
+      if (it != client->_unacknowledged_packets.end()) {
+        std::cout << "[DEBUG] Removing acknowledged packet with sequence "
+                  << packet.sequence_number << " for player "
+                  << packet.player_id << std::endl;
+      } else {
+        std::cout << "[WARNING] No unacknowledged packet found with sequence "
+                  << packet.sequence_number << " for player "
+                  << packet.player_id << std::endl;
+      }
       client->removeAcknowledgedPacket(packet.sequence_number);
       break;
     }

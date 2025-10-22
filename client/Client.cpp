@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include <atomic>
 #include <cstdint>
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
@@ -13,6 +14,7 @@
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
+#include "Serializer.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
@@ -28,6 +30,8 @@ namespace client {
         _sequence_number{0},
         _packet_count{0},
         _ecsManager(ecs::ECSManager::getInstance()) {
+    _resendThread = std::thread(&Client::resendPackets, this);
+    _resendThreadRunning.store(true, std::memory_order_release);
     _running.store(false, std::memory_order_release);
   }
 
@@ -335,12 +339,92 @@ namespace client {
       return;
     }
     try {
+      uint32_t currentSeq = _sequence_number.load(std::memory_order_acquire);
       PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
-          x, y, ProjectileType::PLAYER_BASIC,
-          _sequence_number.load(std::memory_order_acquire));
+          x, y, ProjectileType::PLAYER_BASIC, currentSeq);
+
       send(packet);
+
+      auto buffer = std::make_shared<std::vector<uint8_t>>(
+          serialization::BitserySerializer::serialize(packet));
+      addUnacknowledgedPacket(currentSeq, buffer);
+      _sequence_number.fetch_add(1, std::memory_order_release);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
     }
   }
+
+  void Client::addUnacknowledgedPacket(
+      std::uint32_t sequence_number,
+      std::shared_ptr<std::vector<uint8_t>> packetData) {
+    UnacknowledgedPacket packet;
+    packet.data = packetData;
+    packet.resend_count = 0;
+    packet.last_sent = std::chrono::steady_clock::now();
+    _unacknowledged_packets[sequence_number] = packet;
+  }
+
+  void Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
+    auto it = _unacknowledged_packets.find(sequence_number);
+    if (it != _unacknowledged_packets.end()) {
+      TraceLog(LOG_INFO,
+               "[ACK] Client removing acknowledged packet %u (had %zu unacked "
+               "packets)",
+               sequence_number, _unacknowledged_packets.size());
+      _unacknowledged_packets.erase(it);
+      TraceLog(LOG_INFO,
+               "[ACK] Client now has %zu unacknowledged packets remaining",
+               _unacknowledged_packets.size());
+    } else {
+      TraceLog(LOG_WARNING,
+               "[ACK] Client tried to remove non-existent packet %u",
+               sequence_number);
+    }
+  }
+
+  void Client::resendUnacknowledgedPackets() {
+    const int MAX_RESEND_ATTEMPTS = 5;
+    const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(500);
+    auto now = std::chrono::steady_clock::now();
+
+    std::vector<uint32_t> packets_to_remove;
+
+    for (auto &[seq, packet] : _unacknowledged_packets) {
+      if (now - packet.last_sent < MIN_RESEND_INTERVAL) {
+        continue;
+      }
+
+      if (packet.resend_count >= MAX_RESEND_ATTEMPTS) {
+        TraceLog(LOG_WARNING,
+                 "[RESEND] Packet %u exceeded max resend attempts, dropping",
+                 seq);
+        packets_to_remove.push_back(seq);
+        continue;
+      }
+
+      _networkManager.send(packet.data);
+      packet.resend_count++;
+      packet.last_sent = now;
+
+      TraceLog(LOG_INFO, "[RESEND] Resending packet %u (attempt %d/%d)", seq,
+               packet.resend_count, MAX_RESEND_ATTEMPTS);
+    }
+
+    for (uint32_t seq : packets_to_remove) {
+      _unacknowledged_packets.erase(seq);
+    }
+  }
+
+  void Client::resendPackets() {
+    while (_resendThreadRunning) {
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(RESEND_PACKET_DELAY));
+
+      if (!_resendThreadRunning)
+        break;
+
+      resendUnacknowledgedPackets();
+    }
+  }
+
 }  // namespace client

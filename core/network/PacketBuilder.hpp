@@ -36,8 +36,8 @@ struct PacketBuilder {
      * @return NewPlayerPacket Populated packet ready to be serialized and sent.
      */
     static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
-                                         float speed,
-                                         uint32_t max_health = 100) {
+                                         float speed, uint32_t max_health = 100,
+                                         std::uint32_t sequence_number = 0) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
@@ -46,6 +46,7 @@ struct PacketBuilder {
       packet.y = y;
       packet.speed = speed;
       packet.max_health = max_health;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -135,8 +136,8 @@ struct PacketBuilder {
      */
     static EnemySpawnPacket makeEnemySpawn(uint32_t enemy_id, EnemyType type,
                                            float x, float y, float vx, float vy,
-                                           uint32_t health,
-                                           uint32_t max_health) {
+                                           uint32_t health, uint32_t max_health,
+                                           std::uint32_t sequence_number = 0) {
       EnemySpawnPacket packet{};
       packet.header.type = PacketType::EnemySpawn;
       packet.header.size = sizeof(packet);
@@ -148,6 +149,7 @@ struct PacketBuilder {
       packet.velocity_y = vy;
       packet.health = health;
       packet.max_health = max_health;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -182,7 +184,8 @@ struct PacketBuilder {
     static EnemyDeathPacket makeEnemyDeath(uint32_t enemy_id, float death_x,
                                            float death_y,
                                            std::uint32_t player_id,
-                                           std::uint32_t score) {
+                                           std::uint32_t score,
+                                           std::uint32_t sequence_number) {
       EnemyDeathPacket packet{};
       packet.header.type = PacketType::EnemyDeath;
       packet.header.size = sizeof(packet);
@@ -191,6 +194,7 @@ struct PacketBuilder {
       packet.death_y = death_y;
       packet.player_id = player_id;
       packet.score = score;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -246,7 +250,7 @@ struct PacketBuilder {
     static ProjectileSpawnPacket makeProjectileSpawn(
         uint32_t projectile_id, ProjectileType type, float x, float y,
         float vel_x, float vel_y, bool is_enemy, uint32_t damage,
-        uint32_t owner_id) {
+        uint32_t owner_id, std::uint32_t sequence_number = 0) {
       ProjectileSpawnPacket packet{};
       packet.header.type = PacketType::ProjectileSpawn;
       packet.header.size = sizeof(packet);
@@ -259,6 +263,7 @@ struct PacketBuilder {
       packet.is_enemy_projectile = is_enemy;
       packet.damage = damage;
       packet.owner_id = owner_id;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -277,14 +282,16 @@ struct PacketBuilder {
       return packet;
     }
 
-    static ProjectileDestroyPacket makeProjectileDestroy(uint32_t projectile_id,
-                                                         float x, float y) {
+    static ProjectileDestroyPacket makeProjectileDestroy(
+        uint32_t projectile_id, float x, float y,
+        std::uint32_t sequence_number) {
       ProjectileDestroyPacket packet{};
       packet.header.type = PacketType::ProjectileDestroy;
       packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.x = x;
       packet.y = y;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -306,11 +313,13 @@ struct PacketBuilder {
      * @return GameEndPacket Packet with header fields populated and `game_end`
      * set to `ended`.
      */
-    static GameEndPacket makeGameEnd(bool ended) {
+    static GameEndPacket makeGameEnd(bool ended,
+                                     std::uint32_t sequence_number = 0) {
       GameEndPacket packet{};
       packet.header.type = PacketType::GameEnd;
       packet.header.size = sizeof(packet);
       packet.game_end = ended;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -326,14 +335,16 @@ struct PacketBuilder {
      * @param y World Y coordinate of the death location.
      * @return PlayerDeathPacket Populated packet ready for transmission.
      */
-    static PlayerDeathPacket makePlayerDeath(uint32_t player_id, float x,
-                                             float y) {
+    static PlayerDeathPacket makePlayerDeath(
+        uint32_t player_id, float x, float y,
+        std::uint32_t sequence_number = 0) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.x = x;
       packet.y = y;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 

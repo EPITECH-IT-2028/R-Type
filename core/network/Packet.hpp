@@ -103,6 +103,7 @@ struct ALIGNED NewPlayerPacket {
     float y;
     float speed;
     uint32_t max_health;
+    std::uint32_t sequence_number;
 };
 
 /* Client to server packets */
@@ -183,6 +184,7 @@ struct ALIGNED EnemySpawnPacket {
     float velocity_y;
     uint32_t health;
     uint32_t max_health;
+    std::uint32_t sequence_number;
 };
 
 /* Server to client packets */
@@ -216,6 +218,7 @@ struct ALIGNED EnemyDeathPacket {
     float death_y;
     std::uint32_t player_id;
     std::uint32_t score;
+    std::uint32_t sequence_number;
 };
 
 /* Projectile Packets */
@@ -225,7 +228,7 @@ struct ALIGNED PlayerShootPacket {
     float x;
     float y;
     ProjectileType projectile_type;
-    uint32_t sequence_number;
+    std::uint32_t sequence_number;
 };
 
 /* Server to client packets */
@@ -241,6 +244,7 @@ struct ALIGNED ProjectileSpawnPacket {
     float velocity_y;
     float speed;
     uint32_t damage;
+    std::uint32_t sequence_number;
 };
 
 /* Server to client packets */
@@ -259,6 +263,7 @@ struct ALIGNED ProjectileDestroyPacket {
     uint32_t projectile_id;
     float x;
     float y;
+    std::uint32_t sequence_number;
 };
 
 /* Server to client packets */
@@ -282,6 +287,7 @@ struct ALIGNED GameStartPacket {
 struct ALIGNED GameEndPacket {
     PacketHeader header;
     uint8_t game_end;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -339,6 +345,7 @@ struct ALIGNED PlayerDeathPacket {
     std::uint32_t player_id;
     float x;
     float y;
+    std::uint32_t sequence_number;
 };
 
 /**

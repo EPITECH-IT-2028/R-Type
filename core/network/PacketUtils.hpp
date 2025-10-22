@@ -60,3 +60,28 @@ inline std::string packetTypeToString(PacketType type) {
       return ss.str();
   }
 }
+
+inline bool shouldAcknowledgePacketType(PacketType type) {
+  switch (type) {
+    case PacketType::GameStart:
+    case PacketType::GameEnd:
+    case PacketType::PlayerInfo:
+    case PacketType::PlayerShoot:
+    case PacketType::PlayerDisconnected:
+    case PacketType::Message:
+      return true;
+    case PacketType::PlayerMove:
+    case PacketType::PlayerInput:
+    case PacketType::Heartbeat:
+    case PacketType::Ack:
+      return false;
+    default:
+      return false;
+  }
+}
+
+struct UnacknowledgedPacket {
+    std::shared_ptr<std::vector<uint8_t>> data;
+    int resend_count;
+    std::chrono::steady_clock::time_point last_sent;
+};

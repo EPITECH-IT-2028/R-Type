@@ -95,6 +95,9 @@ namespace game {
       void setSequenceNumber(std::uint32_t value) {
         _sequence_number = value;
       }
+      void incrementSequenceNumber() {
+        _sequence_number.fetch_add(1);
+      }
 
     private:
       void gameLoop();

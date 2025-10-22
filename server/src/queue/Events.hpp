@@ -14,6 +14,7 @@ namespace queue {
       float vy;
       int health;
       int max_health;
+      std::uint32_t sequence_number;
   };
 
   struct EnemyDestroyEvent {
@@ -22,6 +23,7 @@ namespace queue {
       float y;
       std::uint32_t player_id;
       std::uint32_t score;
+      std::uint32_t sequence_number;
   };
 
   struct EnemyHitEvent {
@@ -51,6 +53,7 @@ namespace queue {
       float speed;
       bool is_enemy_projectile;
       std::uint32_t damage;
+      std::uint32_t sequence_number;
       ProjectileType type;
   };
 
@@ -64,6 +67,7 @@ namespace queue {
 
   struct PlayerDestroyEvent {
       int player_id;
+      std::uint32_t sequence_number;
       float x;
       float y;
   };
@@ -77,6 +81,7 @@ namespace queue {
 
   struct ProjectileDestroyEvent {
       std::uint32_t projectile_id;
+      std::uint32_t sequence_number;
       float x;
       float y;
   };
@@ -89,6 +94,7 @@ namespace queue {
   using GameEvent =
       std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent,
                    ProjectileSpawnEvent, PlayerHitEvent, EnemyHitEvent,
-                   ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent, PositionEvent>;
+                   ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent,
+                   PositionEvent>;
 
 }  // namespace queue

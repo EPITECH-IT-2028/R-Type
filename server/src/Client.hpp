@@ -6,6 +6,7 @@
 #include <limits>
 #include "Macro.hpp"
 #include "ServerNetworkManager.hpp"
+#include "PacketUtils.hpp"
 
 namespace server {
   struct Client {
@@ -45,7 +46,7 @@ namespace server {
       std::chrono::steady_clock::time_point _last_position_update;
       uint32_t _entity_id = std::numeric_limits<uint32_t>::max();
 
-    std::unordered_map<std::uint32_t, std::shared_ptr<std::vector<uint8_t>>>
+    std::unordered_map<std::uint32_t, UnacknowledgedPacket>
         _unacknowledged_packets;
 
     void resendUnacknowledgedPackets(network::ServerNetworkManager &networkManager);
