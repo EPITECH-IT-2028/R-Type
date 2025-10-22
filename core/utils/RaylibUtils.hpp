@@ -27,6 +27,8 @@ namespace utils {
             return KEY_Z;
           case KEY_M:
             return KEY_SEMICOLON;
+          case KEY_SEMICOLON:
+            return KEY_M;
           default:
             return key;
         }
