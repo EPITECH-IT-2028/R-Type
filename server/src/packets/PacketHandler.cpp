@@ -756,3 +756,31 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
   return OK;
 }
+
+int packet::PingHandler::handlePacket([[maybe_unused]] server::Server &server,
+                                    server::Client &client,
+                                    const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<PingPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize PingPacket from client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const PingPacket &packet = deserializedPacket.value();
+
+  auto pongPacket = PacketBuilder::makePong(packet.timestamp);
+
+  auto serializedBuffer =
+      serialization::BitserySerializer::serialize(pongPacket);
+  server.getNetworkManager().sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
+
+  return OK;
+}
