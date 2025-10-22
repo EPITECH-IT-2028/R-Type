@@ -3,7 +3,7 @@
 #include <asio/steady_timer.hpp>
 #include <atomic>
 #include <memory>
-#include <mutex>
+#include <shared_mutex>
 #include <string>
 #include "Client.hpp"
 #include "Game.hpp"
@@ -38,27 +38,27 @@ namespace game {
       }
 
       std::string getRoomName() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _room_name;
       }
 
       void setRoomName(const std::string& name) {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::unique_lock<std::shared_mutex> lock(_mutex);
         _room_name = name;
       }
 
       bool isFull() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _clients.size() >= _max_players;
       }
 
       bool isEmpty() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _clients.empty();
       }
 
       size_t getPlayerCount() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _clients.size();
       }
 
@@ -74,7 +74,7 @@ namespace game {
       }
 
       bool addClient(std::shared_ptr<server::Client> client) {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::unique_lock<std::shared_mutex> lock(_mutex);
         if (!client || client->_connected == false) {
           return false;
         }
@@ -87,7 +87,7 @@ namespace game {
       }
 
       void removeClient(int player_id) {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::unique_lock<std::shared_mutex> lock(_mutex);
         for (auto it = _clients.begin(); it != _clients.end(); ++it) {
           if ((*it)->_player_id == player_id) {
             (*it)->_room_id = NO_ROOM;
@@ -98,7 +98,7 @@ namespace game {
       }
 
       std::vector<std::shared_ptr<server::Client>> getClients() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _clients;
       }
 
@@ -123,7 +123,7 @@ namespace game {
           return;
         }
         {
-          std::lock_guard<std::mutex> lock(_mutex);
+          std::unique_lock<std::shared_mutex> lock(_mutex);
           if (_countdown_timer) {
             _countdown_timer->cancel();
             _countdown_timer.reset();
@@ -140,38 +140,38 @@ namespace game {
       }
 
       void setPassword(const std::string& password) {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::unique_lock<std::shared_mutex> lock(_mutex);
         _password = password;
       }
 
       std::string getPassword() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _password;
       }
 
       bool checkPassword(const std::string& password) const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _password == password;
       }
 
       bool hasPassword() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return !_password.empty();
       }
 
       bool isPrivate() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _is_private;
       }
 
       bool setPrivate(bool is_private) {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::unique_lock<std::shared_mutex> lock(_mutex);
         _is_private = is_private;
         return _is_private;
       }
 
       std::uint16_t getMaxPlayers() const {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::shared_lock<std::shared_mutex> lock(_mutex);
         return _max_players;
       }
 
@@ -180,7 +180,7 @@ namespace game {
         RoomStatus expected = RoomStatus::WAITING;
         if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
           _countdown = seconds;
-          std::lock_guard<std::mutex> lock(_mutex);
+          std::unique_lock<std::shared_mutex> lock(_mutex);
           _countdown_timer = timer;
         }
       }
@@ -209,7 +209,7 @@ namespace game {
       std::atomic<int> _countdown;
       std::shared_ptr<asio::steady_timer> _countdown_timer;
       std::vector<std::shared_ptr<server::Client>> _clients;
-      mutable std::mutex _mutex;
+      mutable std::shared_mutex _mutex;
   };
 
 }  // namespace game
