@@ -2,9 +2,9 @@
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "ChatComponent.hpp"
-#include "Macro.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
+#include "RenderManager.hpp"
 #include "ScaleComponent.hpp"
 #include "SpriteComponent.hpp"
 #include "raylib.h"
@@ -117,8 +117,9 @@ void ecs::RenderSystem::update(float deltaTime) {
     if (_ecsManager.hasComponent<ChatComponent>(entity)) {
       auto &chat = _ecsManager.getComponent<ChatComponent>(entity);
       if (chat.isChatting)
-        DrawText((chat.playerName + ": " + chat.message + "_").c_str(), 10,
-                 WINDOW_HEIGHT - 20, 20, WHITE);
+        renderManager::Renderer::drawText(
+            (chat.playerName + ": " + chat.message + "_").c_str(), 10,
+            GetScreenHeight() - 20, 20, WHITE);
     }
   }
 }

@@ -2,8 +2,8 @@
 #include <raylib.h>
 #include <cstdio>
 #include <cstdlib>
-#include "RaylibUtils.hpp"
 #include "Macro.hpp"
+#include "RaylibUtils.hpp"
 
 namespace renderManager {
   /**
@@ -44,11 +44,6 @@ namespace renderManager {
     ClearBackground(color);
   }
 
-  void Renderer::drawText(const char *text, int posX, int posY, int fontSize,
-                          Color color) const {
-    DrawText(text, posX, posY, fontSize, color);
-  }
-
   void Renderer::endDrawing() const {
     EndDrawing();
   }
@@ -71,6 +66,11 @@ namespace renderManager {
       newWidth = static_cast<int>(newHeight * aspectRatio);
     }
     SetWindowSize(newWidth, newHeight);
+  }
+
+  void Renderer::drawText(const char *text, int posX, int posY, int fontSize,
+                          Color color) {
+    DrawText(text, posX, posY, fontSize, color);
   }
 
   void Renderer::coloredLog(int msgType, const char *text, va_list args) {
