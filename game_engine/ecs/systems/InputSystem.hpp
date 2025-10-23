@@ -11,7 +11,7 @@ namespace ecs {
   class InputSystem : public System {
     public:
       explicit InputSystem(ECSManager &ecsManager = ECSManager::getInstance())
-          : _ecsManager(ecsManager), _client(nullptr) {
+          : _ecsManager(ecsManager), _client(nullptr), _isChatting(false) {
       }
 
       void update(float deltaTime) override;
@@ -23,5 +23,7 @@ namespace ecs {
     private:
       ECSManager &_ecsManager;
       client::Client *_client;
+      bool _isChatting;
+      std::string _chatMessage;
   };
 }  // namespace ecs

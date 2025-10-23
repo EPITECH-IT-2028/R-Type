@@ -65,6 +65,33 @@ namespace ecs {
       return;
     }
 
+    if (_isChatting) {
+      char character = static_cast<char>(GetCharPressed());
+      if (character != 0) {
+        _chatMessage += character;
+        TraceLog(LOG_INFO, "[CHAT] Current message: %s", _chatMessage.c_str());
+      }
+      if (IsKeyPressed(KEY_BACKSPACE)) {
+        if (!_chatMessage.empty())
+          _chatMessage.pop_back();
+      }
+      if (IsKeyPressed(KEY_ENTER)) {
+        if (!_chatMessage.empty() && _client != nullptr)
+          TraceLog(LOG_INFO, "[CHAT] Sending message: %s",
+                   _chatMessage.c_str());
+        _chatMessage.clear();
+        _isChatting = false;
+        TraceLog(LOG_DEBUG, "[CHAT] Exiting chatting mode");
+        return;
+      }
+    }
+
+    if (IsKeyPressed(KEY_ENTER)) {
+      TraceLog(LOG_DEBUG, "[CHAT] Enter pressed - entering chatting mode");
+      _isChatting = true;
+      return;
+    }
+
     for (auto const &entity : _entities) {
       if (!_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
         continue;
