@@ -9,7 +9,8 @@
 
 namespace ecs {
   /**
-   * @brief Tests whether the specified key was pressed according to AZERTY keyboard mapping.
+   * @brief Tests whether the specified key was pressed according to AZERTY
+   * keyboard mapping.
    *
    * @param key Key to test.
    * @return true if the key was pressed, false otherwise.
@@ -19,10 +20,12 @@ namespace ecs {
   }
 
   /**
-   * @brief Checks whether the given keyboard key is currently held down using AZERTY layout semantics.
+   * @brief Checks whether the given keyboard key is currently held down using
+   * AZERTY layout semantics.
    *
    * @param key The key to test.
-   * @return bool `true` if the specified key is currently down, `false` otherwise.
+   * @return bool `true` if the specified key is currently down, `false`
+   * otherwise.
    */
   static bool IsKeyDownAZERTY(KeyboardKey key) {
     return utils::Raylib::IsKeyDownAZERTY(key);
@@ -77,8 +80,7 @@ namespace ecs {
       }
       if (IsKeyPressed(KEY_ENTER)) {
         if (!_chatMessage.empty() && _client != nullptr)
-          TraceLog(LOG_INFO, "[CHAT] Sending message: %s",
-                   _chatMessage.c_str());
+          _client->sendChatMessage(_chatMessage);
         _chatMessage.clear();
         _isChatting = false;
         TraceLog(LOG_DEBUG, "[CHAT] Exiting chatting mode");

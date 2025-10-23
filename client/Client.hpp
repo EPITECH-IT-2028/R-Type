@@ -276,6 +276,7 @@ namespace client {
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
+      void sendChatMessage(std::string &message);
 
       /**
        * @brief Retrieve the client's current connection/game state.

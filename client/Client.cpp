@@ -363,8 +363,7 @@ namespace client {
   void Client::sendShoot(float x, float y) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING,
-               "[WARN] Player ID not assigned yet, cannot send "
-               "shoot");
+               "[WARN] Player ID not assigned yet, cannot send shoot");
       return;
     }
     try {
@@ -390,6 +389,22 @@ namespace client {
       TraceLog(LOG_INFO, "[MATCHMAKING] Sent matchmaking request");
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[MATCHMAKING] Exception: %s", e.what());
+    }
+  }
+
+  void Client::sendChatMessage(std::string &message) {
+    if (_player_id == static_cast<std::uint32_t>(-1)) {
+      TraceLog(
+          LOG_WARNING,
+          "[SEND CHAT] Player ID not assigned yet, cannot send chat message");
+      return;
+    }
+    try {
+      ChatMessagePacket packet =
+          PacketBuilder::makeChatMessage(message, _player_id);
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SEND CHAT] Exception: %s", e.what());
     }
   }
 }  // namespace client
