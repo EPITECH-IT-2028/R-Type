@@ -3,6 +3,13 @@
 #include "raylib.h"
 
 namespace utils {
+  inline void setLogLevel() {
+#if DEBUG_MODE
+    SetTraceLogLevel(LOG_DEBUG);
+#else
+    SetTraceLogLevel(LOG_INFO);
+#endif
+  }
   class Raylib {
     private:
       /**
