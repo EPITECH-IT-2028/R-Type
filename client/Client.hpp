@@ -344,6 +344,7 @@ namespace client {
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 
       std::thread _resendThread;
+      mutable std::mutex _unacknowledgedPacketsMutex;
       std::atomic<bool> _resendThreadRunning{false};
       std::unordered_map<std::uint32_t, UnacknowledgedPacket>
           _unacknowledged_packets;

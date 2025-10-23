@@ -35,8 +35,6 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _projectile_count(0),
       _next_player_id(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
-  _resendThreadRunning = true;
-  _resendThread = std::thread(&Server::resendThreadFunction, this);
   _clients.resize(_max_clients);
 }
 
@@ -59,6 +57,8 @@ void server::Server::start() {
                                           [this]() { processGameEvents(); });
   _networkManager.scheduleTimeout(std::chrono::seconds(1),
                                   [this]() { handleTimeout(); });
+  _networkManager.scheduleUnacknowledgedPacketsCheck(std::chrono::milliseconds(1000),
+                                                     [this]() { handleUnacknowledgedPackets(); });
 
   _networkManager.run();
 }
@@ -85,10 +85,6 @@ void server::Server::stop() {
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
   _networkManager.closeSocket();
   _gameManager->shutdownRooms();
-  _resendThreadRunning = false;
-  if (_resendThread.joinable()) {
-    _resendThread.join();
-  }
 }
 
 void server::Server::handleTimeout() {
@@ -492,9 +488,11 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   std::pair<float, float> pos = player->getPosition();
   float speed = player->getSpeed();
   int max_health = player->getMaxHealth().value_or(100);
+  auto &game = room->getGame();
 
-  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, max_health);
+  auto ownPlayerPacket =
+      PacketBuilder::makeNewPlayer(client._player_id, pos.first, pos.second,
+                                   speed, game.getSequenceNumber(), max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
   _networkManager.sendToClient(
@@ -507,11 +505,13 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   broadcast::Broadcast::broadcastExistingPlayersToRoom(
       _networkManager, room->getGame(), client._player_id, roomClients);
 
-  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, max_health);
+  auto newPlayerPacket =
+      PacketBuilder::makeNewPlayer(client._player_id, pos.first, pos.second,
+                                   speed, game.getSequenceNumber(), max_health);
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
 
+  game.incrementSequenceNumber();
   if (roomClients.size() >= 2 &&
       room->getState() == game::RoomStatus::WAITING) {
     auto timer = std::make_shared<asio::steady_timer>(
@@ -662,16 +662,5 @@ void server::Server::handleUnacknowledgedPackets() {
     if (client && client->_connected) {
       client->resendUnacknowledgedPackets(_networkManager);
     }
-  }
-}
-
-void server::Server::resendThreadFunction() {
-  while (_resendThreadRunning) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(RESEND_PACKET_DELAY));
-
-    if (!_resendThreadRunning)
-      break;
-
-    handleUnacknowledgedPackets();
   }
 }

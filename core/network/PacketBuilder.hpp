@@ -56,8 +56,8 @@ struct PacketBuilder {
      */
     static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
                                          float speed,
-                                         std::uint32_t max_health = 100,
-                                         std::uint32_t sequence_number = 0) {
+                                         std::uint32_t sequence_number,
+                                         std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
@@ -159,7 +159,7 @@ struct PacketBuilder {
                                            float x, float y, float vx, float vy,
                                            std::uint32_t health,
                                            std::uint32_t max_health,
-                                           std::uint32_t sequence_number = 0) {
+                                           std::uint32_t sequence_number) {
       EnemySpawnPacket packet{};
       packet.header.type = PacketType::EnemySpawn;
       packet.header.size = sizeof(packet);
@@ -304,7 +304,7 @@ struct PacketBuilder {
     static ProjectileSpawnPacket makeProjectileSpawn(
         std::uint32_t projectile_id, ProjectileType type, float x, float y,
         float vel_x, float vel_y, bool is_enemy, std::uint32_t damage,
-        std::uint32_t owner_id, std::uint32_t sequence_number = 0) {
+        std::uint32_t owner_id, std::uint32_t sequence_number) {
       ProjectileSpawnPacket packet{};
       packet.header.type = PacketType::ProjectileSpawn;
       packet.header.size = sizeof(packet);
@@ -379,7 +379,7 @@ struct PacketBuilder {
      * set to `ended`.
      */
     static GameEndPacket makeGameEnd(bool ended,
-                                     std::uint32_t sequence_number = 0) {
+                                     std::uint32_t sequence_number) {
       GameEndPacket packet{};
       packet.header.type = PacketType::GameEnd;
       packet.header.size = sizeof(packet);
@@ -402,7 +402,7 @@ struct PacketBuilder {
      */
     static PlayerDeathPacket makePlayerDeath(
         std::uint32_t player_id, float x, float y,
-        std::uint32_t sequence_number = 0) {
+        std::uint32_t sequence_number) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
       packet.header.size = sizeof(packet);

@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 #include "Client.hpp"
@@ -73,9 +74,7 @@ namespace server {
       void handleReceive(const char *data, std::size_t bytes_transferred);
 
       void handleTimeout();
-      void scheduleTimeoutCheck();
 
-      void scheduleEventProcessing();
       void processGameEvents();
       void handleGameEvent(const queue::GameEvent &event, std::uint32_t roomId);
 
@@ -87,8 +86,6 @@ namespace server {
       std::shared_ptr<Client> getClient(std::size_t idx) const;
 
       void handleUnacknowledgedPackets();
-
-      void resendThreadFunction();
 
     private:
       void handleCountdown(std::shared_ptr<game::GameRoom> room,
@@ -103,10 +100,8 @@ namespace server {
       std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
-      std::unordered_map<std::uint32_t, std::uint32_t> _acknowledgements;
 
-      std::thread _resendThread;
-      std::atomic<bool> _resendThreadRunning{false};
+      mutable std::shared_mutex _clientsMutex;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;

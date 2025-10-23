@@ -1,7 +1,6 @@
 #pragma once
 
 #include <chrono>
-#include <cstdint>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -86,6 +85,11 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::PlayerShoot:
     case PacketType::PlayerDisconnected:
     case PacketType::Message:
+    case PacketType::NewPlayer:
+    case PacketType::EnemySpawn:
+    case PacketType::EnemyDeath:
+    case PacketType::ProjectileSpawn:
+    case PacketType::ProjectileDestroy:
       return true;
     case PacketType::PlayerMove:
     case PacketType::PlayerInput:

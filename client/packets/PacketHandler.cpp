@@ -17,6 +17,15 @@
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
+namespace {
+  inline void sendAckIfNeeded(client::Client &c, PacketType t,
+                              std::uint32_t seq) {
+    if (!shouldAcknowledgePacketType(t))
+      return;
+    c.send(PacketBuilder::makeAckPacket(seq, c.getPlayerId()));
+  }
+}  // namespace
+
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -30,16 +39,10 @@ int packet::MessageHandler::handlePacket(client::Client &client,
 
   const MessagePacket &packet = packetOpt.value();
   size_t len = strnlen(packet.message, sizeof(packet.message));
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
-
-  if (shouldAcknowledgePacketType(PacketType::Message)) {
-    auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                  client.getPlayerId());
-    std::cout << "Sending ACK to server for message with sequence number "
-              << packet.sequence_number << std::endl;
-    client.send(ackPacket);
-  }
-  return 0;
+  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", static_cast<int>(len),
+           packet.message);
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+  return packet::OK;
 }
 
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
@@ -60,9 +63,7 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
            packet.player_id, packet.x, packet.y, packet.speed);
 
   client.createPlayerEntity(packet);
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                client.getPlayerId());
-  client.send(ackPacket);
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
@@ -115,9 +116,7 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
       TraceLog(LOG_INFO, "[PLAYER DEATH] Our player ID %u died",
                packet.player_id);
     }
-    auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                  client.getPlayerId());
-    client.send(ackPacket);
+    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER DEATH] Failed to remove player %u: %s",
              packet.player_id, e.what());
@@ -250,9 +249,7 @@ int packet::EnemySpawnHandler::handlePacket(client::Client &client,
   const EnemySpawnPacket &packet = packetOpt.value();
 
   client.createEnemyEntity(packet);
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                client.getPlayerId());
-  client.send(ackPacket);
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
@@ -328,9 +325,7 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
     }
     ecsManager.destroyEntity(enemyEntity);
     client.destroyEnemyEntity(packet.enemy_id);
-    auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                  client.getPlayerId());
-    client.send(ackPacket);
+    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to destroy enemy %u: %s",
              packet.enemy_id, e.what());
@@ -406,9 +401,7 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
         entityProjectile, {renderManager::ProjectileSprite::DEFAULT_SCALE_X,
                            renderManager::ProjectileSprite::DEFAULT_SCALE_Y});
     client.addProjectileEntity(packet.projectile_id, entityProjectile);
-    auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                  client.getPlayerId());
-    client.send(ackPacket);
+    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "Failed to create projectile entity: %s", e.what());
     return packet::KO;
@@ -503,10 +496,7 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
              "[PROJECTILE DESTROY] projectile entity not found: %u",
              packet.projectile_id);
   }
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                client.getPlayerId());
-  client.send(ackPacket);
-
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
@@ -524,10 +514,7 @@ int packet::GameStartHandler::handlePacket(client::Client &client,
   const GameStartPacket &packet = packetOpt.value();
   TraceLog(LOG_INFO, "[DEBUG] Game is starting!");
 
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                client.getPlayerId());
-  client.send(ackPacket);
-
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
@@ -547,9 +534,7 @@ int packet::PlayerShootHandler::handlePacket(client::Client &client,
   TraceLog(LOG_INFO, "[PLAYER SHOOT] A player shot in %f %f is shooting!",
            packet.x, packet.y);
 
-  auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                client.getPlayerId());
-  client.send(ackPacket);
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
@@ -565,7 +550,7 @@ int packet::AckPacketHandler::handlePacket(client::Client &client,
   }
 
   const AckPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO, "[ACK] Received ack packet with sequence number %d",
+  TraceLog(LOG_INFO, "[ACK] Received ack packet with sequence number %u",
            packet.sequence_number);
 
   client.removeAcknowledgedPacket(packet.sequence_number);

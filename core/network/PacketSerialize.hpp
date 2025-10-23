@@ -31,8 +31,8 @@ void serialize(S &s, MessagePacket &packet) {
   for (size_t i = 0; i < 256; ++i) {
     s.value1b(packet.message[i]);
   }
-  s.value4b(packet.player_id);
   s.value4b(packet.sequence_number);
+  s.value4b(packet.player_id);
 }
 
 /*
@@ -118,8 +118,8 @@ void serialize(S &s, NewPlayerPacket &packet) {
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);
-  s.value4b(packet.max_health);
   s.value4b(packet.sequence_number);
+  s.value4b(packet.max_health);
 }
 
 /*
@@ -135,9 +135,9 @@ void serialize(S &s, EnemySpawnPacket &packet) {
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.velocity_x);
   s.template value<sizeof(float)>(packet.velocity_y);
+  s.value4b(packet.sequence_number);
   s.value4b(packet.health);
   s.value4b(packet.max_health);
-  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -186,12 +186,12 @@ void serialize(S &s, ProjectileSpawnPacket &packet) {
   s.value1b(packet.projectile_type);
   s.value4b(packet.owner_id);
   s.value1b(packet.is_enemy_projectile);
-  s.value4b(packet.sequence_number);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.velocity_x);
   s.template value<sizeof(float)>(packet.velocity_y);
   s.template value<sizeof(float)>(packet.speed);
+  s.value4b(packet.sequence_number);
   s.value4b(packet.damage);
 }
 
@@ -211,9 +211,9 @@ void serialize(S &s, ProjectileDestroyPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.projectile_id);
-  s.value4b(packet.sequence_number);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
+  s.value4b(packet.sequence_number);
 }
 
 /*
@@ -247,8 +247,8 @@ template <typename S>
 void serialize(S &s, GameStartPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.value1b(packet.game_start);
   s.value4b(packet.sequence_number);
+  s.value1b(packet.game_start);
 }
 
 template <typename S>

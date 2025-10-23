@@ -7,6 +7,7 @@
 void server::Client::addUnacknowledgedPacket(
     std::uint32_t sequence_number,
     std::shared_ptr<std::vector<uint8_t>> packetData) {
+  std::lock_guard<std::mutex> lock(_unacknowledgedPacketsMutex);
   UnacknowledgedPacket packet;
   packet.data = packetData;
   packet.resend_count = 0;
@@ -15,6 +16,7 @@ void server::Client::addUnacknowledgedPacket(
 }
 
 void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
+  std::lock_guard<std::mutex> lock(_unacknowledgedPacketsMutex);
   auto it = _unacknowledged_packets.find(sequence_number);
   if (it != _unacknowledged_packets.end()) {
     _unacknowledged_packets.erase(it);
@@ -30,24 +32,29 @@ void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
 void server::Client::resendUnacknowledgedPackets(
     network::ServerNetworkManager &networkManager) {
   const int MAX_RESEND_ATTEMPTS = 5;
-  auto now = std::chrono::steady_clock::now();
   const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(500);
+  const auto now = std::chrono::steady_clock::now();
 
-  std::vector<uint32_t> packets_to_remove;
-
-  for (auto &[seq, packetData] : _unacknowledged_packets) {
-    static std::unordered_map<uint32_t, int> resend_counts;
-
-    if (resend_counts[seq] >= MAX_RESEND_ATTEMPTS) {
-      packets_to_remove.push_back(seq);
-      continue;
+  std::vector<std::shared_ptr<std::vector<uint8_t>>> toSend;
+  std::vector<uint32_t> toDrop;
+  {
+    std::lock_guard<std::mutex> lock(_unacknowledgedPacketsMutex);
+    for (auto &[seq, packet] : _unacknowledged_packets) {
+      if (now - packet.last_sent < MIN_RESEND_INTERVAL)
+        continue;
+      if (packet.resend_count >= MAX_RESEND_ATTEMPTS) {
+        toDrop.push_back(seq);
+        continue;
+      }
+      packet.resend_count++;
+      packet.last_sent = now;
+      toSend.push_back(packet.data);
     }
-
-    networkManager.sendToClient(_player_id, packetData.data);
-    resend_counts[seq]++;
+    for (auto seq : toDrop) {
+      _unacknowledged_packets.erase(seq);
+    }
   }
-
-  for (uint32_t seq : packets_to_remove) {
-    _unacknowledged_packets.erase(seq);
+  for (auto &buf : toSend) {
+    networkManager.sendToClient(_player_id, buf);
   }
 }

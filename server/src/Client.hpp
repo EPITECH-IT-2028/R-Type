@@ -55,6 +55,8 @@ namespace server {
       std::uint32_t _last_ack = 0;
       std::uint32_t _sequence_number = 0;
 
+      mutable std::mutex _unacknowledgedPacketsMutex;
+
       std::unordered_map<std::uint32_t, UnacknowledgedPacket>
           _unacknowledged_packets;
 

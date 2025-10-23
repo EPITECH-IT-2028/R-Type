@@ -827,24 +827,11 @@ int packet::AckPacketHandler::handlePacket(server::Server &server,
   }
 
   const AckPacket &packet = deserializedPacket.value();
-  std::cout << "[ACK] Received ACK for sequence number "
-            << packet.sequence_number << " from player " << packet.player_id
-            << ": " << packetTypeToString(packet.header.type) << std::endl;
-  for (auto &client : server.getClients()) {
-    if (client && client->_player_id == static_cast<int>(packet.player_id)) {
-      auto it = client->_unacknowledged_packets.find(packet.sequence_number);
-      if (it != client->_unacknowledged_packets.end()) {
-        std::cout << "[DEBUG] Removing acknowledged packet with sequence "
-                  << packet.sequence_number << " for player "
-                  << packet.player_id << std::endl;
-      } else {
-        std::cout << "[WARNING] No unacknowledged packet found with sequence "
-                  << packet.sequence_number << " for player "
-                  << packet.player_id << std::endl;
-      }
-      client->removeAcknowledgedPacket(packet.sequence_number);
-      break;
-    }
+  if (packet.player_id != static_cast<std::uint32_t>(client._player_id)) {
+    std::cerr << "[WARNING] ACK player_id mismatch (packet=" << packet.player_id
+              << ", conn=" << client._player_id << ")" << std::endl;
+    return KO;
   }
+  client.removeAcknowledgedPacket(packet.sequence_number);
   return OK;
 }
