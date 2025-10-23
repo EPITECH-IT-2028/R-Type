@@ -1,5 +1,6 @@
 #include "InputSystem.hpp"
 #include <cmath>
+#include "ChatComponent.hpp"
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
@@ -68,31 +69,7 @@ namespace ecs {
       return;
     }
 
-    if (_isChatting) {
-      char character = static_cast<char>(GetCharPressed());
-      if (character != 0) {
-        _chatMessage += character;
-        TraceLog(LOG_INFO, "[CHAT] Current message: %s", _chatMessage.c_str());
-      }
-      if (IsKeyPressed(KEY_BACKSPACE)) {
-        if (!_chatMessage.empty())
-          _chatMessage.pop_back();
-      }
-      if (IsKeyPressed(KEY_ENTER)) {
-        if (!_chatMessage.empty() && _client != nullptr)
-          _client->sendChatMessage(_chatMessage);
-        _chatMessage.clear();
-        _isChatting = false;
-        TraceLog(LOG_DEBUG, "[CHAT] Exiting chatting mode");
-        return;
-      }
-    }
-
-    if (IsKeyPressed(KEY_ENTER)) {
-      TraceLog(LOG_DEBUG, "[CHAT] Enter pressed - entering chatting mode");
-      _isChatting = true;
-      return;
-    }
+    loadUIEntities();
 
     for (auto const &entity : _entities) {
       if (!_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
@@ -140,6 +117,44 @@ namespace ecs {
       if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);
+      }
+    }
+  }
+
+  void InputSystem::loadUIEntities() {
+    Entity uiEntity = -1;
+    for (auto const &entity : _ecsManager.getAllEntities()) {
+      if (_ecsManager.hasComponent<ChatComponent>(entity)) {
+        uiEntity = entity;
+        break;
+      }
+    }
+
+    if (uiEntity != -1) {
+      auto &chat = _ecsManager.getComponent<ChatComponent>(uiEntity);
+
+      if (chat.isChatting) {
+        chat.playerName = _client->getPlayerName();
+        char character = static_cast<char>(GetCharPressed());
+        if (character != 0) {
+          chat.message += character;
+        }
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+          if (!chat.message.empty())
+            chat.message.pop_back();
+        }
+        if (IsKeyPressed(KEY_ENTER)) {
+          if (!chat.message.empty() && _client != nullptr)
+            _client->sendChatMessage(chat.message);
+          chat.message.clear();
+          chat.isChatting = false;
+          return;
+        }
+      }
+
+      if (IsKeyPressed(KEY_ENTER)) {
+        chat.isChatting = true;
+        return;
       }
     }
   }

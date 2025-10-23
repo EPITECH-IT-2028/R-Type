@@ -3,6 +3,7 @@
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "ChatComponent.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -53,6 +54,7 @@ namespace client {
       inputSystem->setClient(this);
 
     createBackgroundEntities();
+    createChatMessageUIEntity();
   }
 
   /**
@@ -76,6 +78,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
     _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
+    _ecsManager.registerComponent<ecs::ChatComponent>();
   }
 
   /**
@@ -280,6 +283,11 @@ namespace client {
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(enemy, anim);
 
     _enemyEntities[packet.enemy_id] = enemy;
+  }
+
+  void Client::createChatMessageUIEntity() {
+    auto uiEntity = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::ChatComponent>(uiEntity, {});
   }
 
   /**

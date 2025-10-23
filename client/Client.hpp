@@ -242,6 +242,7 @@ namespace client {
 
       void createPlayerEntity(NewPlayerPacket packet);
       void createEnemyEntity(EnemySpawnPacket packet);
+      void createChatMessageUIEntity();
 
       void addProjectileEntity(std::uint32_t projectileId, Entity entity);
       Entity getProjectileEntity(std::uint32_t projectileId);
