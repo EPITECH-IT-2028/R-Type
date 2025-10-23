@@ -15,7 +15,7 @@
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
-int packet::MessageHandler::handlePacket(client::Client &client,
+int packet::ChatMessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
