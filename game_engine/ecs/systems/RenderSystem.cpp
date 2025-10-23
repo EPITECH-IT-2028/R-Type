@@ -116,10 +116,18 @@ void ecs::RenderSystem::update(float deltaTime) {
   for (auto const &entity : _ecsManager.getAllEntities()) {
     if (_ecsManager.hasComponent<ChatComponent>(entity)) {
       auto &chat = _ecsManager.getComponent<ChatComponent>(entity);
-      if (chat.isChatting)
+      if (chat.isChatting) {
+        Color rectColor = {255, 255, 255, 16};
+        renderManager::Renderer::drawRectangleRounded(
+            10, GetScreenHeight() - 400, (GetScreenWidth() / 3) * 2, 350, 0.05f,
+            rectColor);
+        renderManager::Renderer::drawRectangleRounded(
+            10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f,
+            rectColor);
         renderManager::Renderer::drawText(
-            (chat.playerName + ": " + chat.message + "_").c_str(), 10,
-            GetScreenHeight() - 20, 20, WHITE);
+            (chat.playerName + ": " + chat.message + "_").c_str(), 25,
+            GetScreenHeight() - 35, 20, WHITE);
+      }
     }
   }
 }
