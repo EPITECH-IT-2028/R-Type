@@ -258,6 +258,10 @@ namespace client {
         return _player_id;
       }
 
+      std::string getPlayerName() const {
+        return _playerName;
+      }
+
       /**
        * @brief Retrieves the current outgoing packet sequence number.
        *
@@ -316,6 +320,7 @@ namespace client {
       std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+      std::string _playerName;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 
       void registerComponent();

@@ -52,6 +52,9 @@ namespace client {
     auto inputSystem = _ecsManager.getSystem<ecs::InputSystem>();
     if (inputSystem)
       inputSystem->setClient(this);
+    auto renderSystem = _ecsManager.getSystem<ecs::RenderSystem>();
+    if (renderSystem)
+      renderSystem->setClient(this);
 
     createBackgroundEntities();
     createChatMessageUIEntity();
@@ -239,6 +242,7 @@ namespace client {
     }
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
+    _playerName = packet.player_name;
   }
 
   /**

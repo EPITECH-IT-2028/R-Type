@@ -16,7 +16,8 @@
 #include "raylib.h"
 
 int packet::ChatMessageHandler::handlePacket(client::Client &client,
-                                         const char *data, std::size_t size) {
+                                             const char *data,
+                                             std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
@@ -45,9 +46,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO,
-           "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
-           packet.player_id, packet.x, packet.y, packet.speed);
+  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
+           packet.player_name, packet.player_id, packet.x, packet.y,
+           packet.speed);
 
   client.createPlayerEntity(packet);
   return packet::OK;
