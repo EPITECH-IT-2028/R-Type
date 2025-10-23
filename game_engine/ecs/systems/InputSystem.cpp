@@ -150,15 +150,23 @@ namespace ecs {
           if (!chat.message.empty() && _client != nullptr)
             _client->sendChatMessage(chat.message);
           chat.message.clear();
-          chat.isChatting = false;
           return;
         }
       }
 
-      if (IsKeyPressed(KEY_ENTER)) {
+      if (IsKeyPressedAZERTY(KEY_T) && !chat.isChatting) {
         chat.isChatting = true;
         return;
+      } else if (IsKeyPressedAZERTY(KEY_ESCAPE) && chat.isChatting) {
+        chat.isChatting = false;
+        chat.message.clear();
+        return;
       }
+
+      if (chat.isChatting)
+        SetExitKey(KEY_NULL);
+      else if (!chat.isChatting)
+        SetExitKey(KEY_ESCAPE);
     }
   }
 }  // namespace ecs
