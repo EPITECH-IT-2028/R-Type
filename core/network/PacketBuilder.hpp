@@ -397,9 +397,9 @@ struct PacketBuilder {
      * @param sequence_number Optional sequence number associated with the packet.
      * @return PlayerDeathPacket Packet populated with player_id, x, y, and sequence_number.
      */
-    static PlayerDeathPacket makePlayerDeath(
-        std::uint32_t player_id, float x, float y,
-        std::uint32_t sequence_number) {
+    static PlayerDeathPacket makePlayerDeath(std::uint32_t player_id, float x,
+                                             float y,
+                                             std::uint32_t sequence_number) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
       packet.header.size = sizeof(packet);

@@ -8,12 +8,12 @@ namespace utils {
       /**
        * @brief Map an AZERTY keyboard key to its QWERTY equivalent.
        *
-       * Converts specific AZERTY keys (A↔Q, Z↔W, M→semicolon) to the corresponding
-       * QWERTY key so input checks can be performed uniformly.
+       * Converts specific AZERTY keys (A↔Q, Z↔W, M→semicolon) to the
+       * corresponding QWERTY key so input checks can be performed uniformly.
        *
        * @param key The original `KeyboardKey` to map.
-       * @return KeyboardKey The mapped QWERTY `KeyboardKey` for the given AZERTY key,
-       *         or the original `key` if no mapping exists.
+       * @return KeyboardKey The mapped QWERTY `KeyboardKey` for the given
+       * AZERTY key, or the original `key` if no mapping exists.
        */
       static KeyboardKey MapAZERTYKey(KeyboardKey key) {
         switch (key) {
@@ -39,16 +39,19 @@ namespace utils {
        * @brief Check whether an AZERTY-mapped keyboard key was pressed.
        *
        * @param key Keyboard key interpreted as an AZERTY key to test.
-       * @return true if the corresponding mapped key is pressed, false otherwise.
+       * @return true if the corresponding mapped key is pressed, false
+       * otherwise.
        */
       static bool IsKeyPressedAZERTY(KeyboardKey key) {
         return IsKeyPressed(MapAZERTYKey(key));
       }
 
       /**
-       * @brief Checks whether the key corresponding to the given AZERTY key is currently held down.
+       * @brief Checks whether the key corresponding to the given AZERTY key is
+       * currently held down.
        *
-       * Maps the provided AZERTY key to its QWERTY equivalent and queries the input state.
+       * Maps the provided AZERTY key to its QWERTY equivalent and queries the
+       * input state.
        *
        * @param key AZERTY keyboard key to check.
        * @return true if the mapped key is currently down, false otherwise.
@@ -58,9 +61,11 @@ namespace utils {
       }
 
       /**
-       * @brief Checks whether the given AZERTY key (mapped to its QWERTY equivalent) was released.
+       * @brief Checks whether the given AZERTY key (mapped to its QWERTY
+       * equivalent) was released.
        *
-       * Maps the provided AZERTY `key` to its QWERTY counterpart before querying release state.
+       * Maps the provided AZERTY `key` to its QWERTY counterpart before
+       * querying release state.
        *
        * @param key AZERTY-layout key to check.
        * @return `true` if the mapped key was released, `false` otherwise.
