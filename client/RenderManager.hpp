@@ -27,10 +27,10 @@ namespace renderManager {
       bool shouldClose() const;
       void beginDrawing() const;
       void clearBackground(Color color) const;
-      void drawText(const char *text, int posX, int posY, int fontSize,
-                    Color color) const;
       void endDrawing() const;
       void resizeWindow();
+      static void drawText(const char *text, int posX, int posY, int fontSize,
+                           Color color);
 
     private:
       bool _initSucceeded = false;
