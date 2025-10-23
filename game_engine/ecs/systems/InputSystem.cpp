@@ -142,6 +142,9 @@ namespace ecs {
         if (IsKeyPressed(KEY_BACKSPACE)) {
           if (!chat.message.empty())
             chat.message.pop_back();
+        } else if (IsKeyPressedRepeat(KEY_BACKSPACE)) {
+          if (!chat.message.empty())
+            chat.message.pop_back();
         }
         if (IsKeyPressed(KEY_ENTER)) {
           if (!chat.message.empty() && _client != nullptr)
