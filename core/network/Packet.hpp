@@ -5,7 +5,7 @@
 #include "Macro.hpp"
 
 enum class PacketType : std::uint8_t {
-  Message = 0x01,
+  ChatMessage = 0x01,
   PlayerMove = 0x02,
   NewPlayer = 0x03,
   PlayerInfo = 0x04,
@@ -93,7 +93,7 @@ struct ALIGNED PacketHeader {
  * @var player_id Identifier of the player that sent or is associated with this
  * message.
  */
-struct ALIGNED MessagePacket {
+struct ALIGNED ChatMessagePacket {
     PacketHeader header;
     std::uint32_t timestamp;
     char message[256];

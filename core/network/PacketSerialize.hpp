@@ -24,7 +24,7 @@ void serialize(S &s, PacketHeader &packet) {
 }
 
 template <typename S>
-void serialize(S &s, MessagePacket &packet) {
+void serialize(S &s, ChatMessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);

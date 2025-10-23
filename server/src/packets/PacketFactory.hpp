@@ -19,7 +19,7 @@ namespace packet {
       inline static const std::unordered_map<
           PacketType, std::function<std::unique_ptr<APacket>()>>
           _handlers = {
-              {PacketType::Message,
+              {PacketType::ChatMessage,
                []() { return std::make_unique<ChatMessageHandler>(); }},
               {PacketType::PlayerInfo,
                []() { return std::make_unique<PlayerInfoHandler>(); }},
