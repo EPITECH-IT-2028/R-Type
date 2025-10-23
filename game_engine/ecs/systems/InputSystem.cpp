@@ -3,10 +3,31 @@
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
+#include "RaylibUtils.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
+  /**
+   * @brief Tests whether the specified key was pressed according to AZERTY keyboard mapping.
+   *
+   * @param key Key to test.
+   * @return true if the key was pressed, false otherwise.
+   */
+  static bool IsKeyPressedAZERTY(KeyboardKey key) {
+    return utils::Raylib::IsKeyPressedAZERTY(key);
+  }
+
+  /**
+   * @brief Checks whether the given keyboard key is currently held down using AZERTY layout semantics.
+   *
+   * @param key The key to test.
+   * @return bool `true` if the specified key is currently down, `false` otherwise.
+   */
+  static bool IsKeyDownAZERTY(KeyboardKey key) {
+    return utils::Raylib::IsKeyDownAZERTY(key);
+  }
+
   /**
    * @brief Process keyboard input for matchmaking, player movement, shooting,
    * and update per-entity vertical sprite animation state.
@@ -31,7 +52,7 @@ namespace ecs {
     client::ClientState clientState = _client->getClientState();
 
     if (clientState == client::ClientState::IN_CONNECTED_MENU) {
-      if (IsKeyPressed(KEY_M)) {
+      if (IsKeyPressedAZERTY(KEY_M)) {
         _client->sendMatchmakingRequest();
         TraceLog(LOG_INFO,
                  "[INPUT SYSTEM] M pressed - sending matchmaking request");
