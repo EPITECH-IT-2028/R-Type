@@ -73,6 +73,18 @@ namespace renderManager {
     DrawText(text, posX, posY, fontSize, color);
   }
 
+  void Renderer::drawRectangle(int posX, int posY, int width, int height,
+                               Color color) {
+    DrawRectangle(posX, posY, width, height, color);
+  }
+
+  void Renderer::drawRectangleRounded(int posX, int posY, int width, int height,
+                                      float roundness, Color color) {
+    Rectangle rec = {static_cast<float>(posX), static_cast<float>(posY),
+                     static_cast<float>(width), static_cast<float>(height)};
+    DrawRectangleRounded(rec, roundness, 16, color);
+  }
+
   void Renderer::coloredLog(int msgType, const char *text, va_list args) {
     switch (msgType) {
       case LOG_INFO:
