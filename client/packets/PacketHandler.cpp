@@ -29,7 +29,7 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   size_t len = strnlen(packet.message, sizeof(packet.message));
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
+  client.storeChatMessage(packet.message);
   return 0;
 }
 

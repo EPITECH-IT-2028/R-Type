@@ -419,4 +419,10 @@ namespace client {
       TraceLog(LOG_ERROR, "[SEND CHAT] Exception: %s", e.what());
     }
   }
+
+  void Client::storeChatMessage(const std::string &message) {
+    _chatMessages.push_back(message);
+    if (_chatMessages.size() > 14)
+      _chatMessages.erase(_chatMessages.begin());
+  }
 }  // namespace client
