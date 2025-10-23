@@ -2,6 +2,7 @@
 #include <raylib.h>
 #include <cstdio>
 #include <cstdlib>
+#include "RaylibUtils.hpp"
 #include "Macro.hpp"
 
 namespace renderManager {
@@ -24,6 +25,7 @@ namespace renderManager {
     if (!IsWindowState(FLAG_VSYNC_HINT))
       SetTargetFPS(60);
     SetTraceLogCallback(coloredLog);
+    utils::setLogLevel();
   }
 
   Renderer::~Renderer() {
@@ -83,7 +85,7 @@ namespace renderManager {
         printf("[\e[1;33mWARN\e[0m] : ");
         break;
       case LOG_DEBUG:
-        printf("[DEBUG]: ");
+        printf("[\e[1;34mDEBUG\e[0m]: ");
         break;
       default:
         break;
