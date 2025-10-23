@@ -11,6 +11,8 @@
         #define _WIN32_WINNT 0x0601
     #endif
     #define NOGDI
+    #define NOUSER
+    #define NOMSG
 #endif
 
 #include <array>
