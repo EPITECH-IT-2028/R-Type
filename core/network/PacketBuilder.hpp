@@ -400,9 +400,9 @@ struct PacketBuilder {
      * @param y World Y coordinate of the death location.
      * @return PlayerDeathPacket Populated packet ready for transmission.
      */
-    static PlayerDeathPacket makePlayerDeath(
-        std::uint32_t player_id, float x, float y,
-        std::uint32_t sequence_number) {
+    static PlayerDeathPacket makePlayerDeath(std::uint32_t player_id, float x,
+                                             float y,
+                                             std::uint32_t sequence_number) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
       packet.header.size = sizeof(packet);

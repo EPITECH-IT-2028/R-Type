@@ -31,8 +31,9 @@ namespace network {
                                    const std::function<void()> &callback);
       void scheduleTimeout(std::chrono::seconds interval,
                            const std::function<void()> &callback);
-      void scheduleUnacknowledgedPacketsCheck(std::chrono::milliseconds interval,
-                                               const std::function<void()> &callback);
+      void scheduleUnacknowledgedPacketsCheck(
+          std::chrono::milliseconds interval,
+          const std::function<void()> &callback);
       void checkSignals();
 
       void setStopCallback(const std::function<void()> &callback) {

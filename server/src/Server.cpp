@@ -57,8 +57,9 @@ void server::Server::start() {
                                           [this]() { processGameEvents(); });
   _networkManager.scheduleTimeout(std::chrono::seconds(1),
                                   [this]() { handleTimeout(); });
-  _networkManager.scheduleUnacknowledgedPacketsCheck(std::chrono::milliseconds(1000),
-                                                     [this]() { handleUnacknowledgedPackets(); });
+  _networkManager.scheduleUnacknowledgedPacketsCheck(
+      std::chrono::milliseconds(1000),
+      [this]() { handleUnacknowledgedPackets(); });
 
   _networkManager.run();
 }
