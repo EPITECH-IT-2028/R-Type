@@ -1,6 +1,8 @@
 #include "RenderSystem.hpp"
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "ChatComponent.hpp"
+#include "Macro.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "ScaleComponent.hpp"
@@ -109,5 +111,14 @@ void ecs::RenderSystem::update(float deltaTime) {
     }
     Vector2 origin = {0.0f, 0.0f};
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
+  }
+
+  for (auto const &entity : _ecsManager.getAllEntities()) {
+    if (_ecsManager.hasComponent<ChatComponent>(entity)) {
+      auto &chat = _ecsManager.getComponent<ChatComponent>(entity);
+      if (chat.isChatting)
+        DrawText((chat.playerName + ": " + chat.message + "_").c_str(), 10,
+                 WINDOW_HEIGHT - 20, 20, WHITE);
+    }
   }
 }
