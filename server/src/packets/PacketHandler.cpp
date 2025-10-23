@@ -62,7 +62,7 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
  * @return int `OK` on success, `KO` if deserialization fails or the client is
  * not in a room.
  */
-int packet::MessageHandler::handlePacket(server::Server &server,
+int packet::ChatMessageHandler::handlePacket(server::Server &server,
                                          server::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);

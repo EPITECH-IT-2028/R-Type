@@ -19,7 +19,7 @@ namespace packet {
           PacketType, std::function<std::unique_ptr<IPacket>()>>
           _handlers = {
               {PacketType::Message,
-               []() { return std::make_unique<MessageHandler>(); }},
+               []() { return std::make_unique<ChatMessageHandler>(); }},
               {PacketType::EnemySpawn,
                []() { return std::make_unique<EnemySpawnHandler>(); }},
               {PacketType::ProjectileSpawn,
