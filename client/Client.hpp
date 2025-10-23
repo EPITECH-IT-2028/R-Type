@@ -1,13 +1,5 @@
 #pragma once
 
-#include <sys/stat.h>
-#include <cstdint>
-#include <unordered_map>
-#include "EntityManager.hpp"
-#include "Packet.hpp"
-#include "PacketUtils.hpp"
-#include "Serializer.hpp"
-#include "raylib.h"
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -18,12 +10,24 @@
   #ifndef ASIO_NO_WIN32_LEAN_AND_MEAN
     #define ASIO_NO_WIN32_LEAN_AND_MEAN
   #endif
+  #ifndef _WIN32_WINNT
+    #define _WIN32_WINNT 0x0601
+  #endif
   #define PLATFORM_DESKTOP
   #define NOGDI
   #define NOUSER
   #define _WINSOCK_DEPRECATED_NO_WARNINGS
   #define _CRT_SECURE_NO_WARNINGS
 #endif
+
+#include <sys/stat.h>
+#include <cstdint>
+#include <unordered_map>
+#include "EntityManager.hpp"
+#include "Packet.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
+#include "raylib.h"
 
 #include <array>
 #include <atomic>
