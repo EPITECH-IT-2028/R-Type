@@ -26,10 +26,10 @@ struct PacketBuilder {
      * header.size set to sizeof(packet), a null-terminated `message` field,
      * current `timestamp`, and `player_id` set.
      */
-    static MessagePacket makeMessage(const std::string &msg,
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
                                      std::uint32_t player_id) {
-      MessagePacket packet{};
-      packet.header.type = PacketType::Message;
+      ChatMessagePacket packet{};
+      packet.header.type = PacketType::ChatMessage;
       packet.header.size = sizeof(packet);
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);

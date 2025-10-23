@@ -68,18 +68,18 @@ int packet::ChatMessageHandler::handlePacket(server::Server &server,
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
-      serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
+      serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
 
   if (!deserializedPacket) {
     std::cerr << "[ERROR] Failed to deserialize MessagePacket from client "
               << client._player_id << std::endl;
     return KO;
   }
-  const MessagePacket &packet = deserializedPacket.value();
+  const ChatMessagePacket &packet = deserializedPacket.value();
   std::cout << "[MESSAGE] Player " << client._player_id << ": "
             << packet.message << std::endl;
 
-  MessagePacket validatedPacket = packet;
+  ChatMessagePacket validatedPacket = packet;
   validatedPacket.player_id = static_cast<std::uint32_t>(client._player_id);
 
   auto room = server.getGameManager().getRoom(client._room_id);

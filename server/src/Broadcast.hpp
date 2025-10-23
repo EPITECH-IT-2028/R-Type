@@ -297,7 +297,7 @@ namespace broadcast {
       static void broadcastMessageToRoom(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
-          const MessagePacket &packet) {
+          const ChatMessagePacket &packet) {
         broadcastToRoom(networkManager, roomClients, packet);
       };
   };
