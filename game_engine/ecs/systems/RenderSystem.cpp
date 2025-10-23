@@ -1,4 +1,5 @@
 #include "RenderSystem.hpp"
+#include <cstddef>
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "ChatComponent.hpp"
@@ -117,17 +118,59 @@ void ecs::RenderSystem::update(float deltaTime) {
     if (_ecsManager.hasComponent<ChatComponent>(entity)) {
       auto &chat = _ecsManager.getComponent<ChatComponent>(entity);
       if (chat.isChatting) {
-        Color rectColor = {255, 255, 255, 16};
-        renderManager::Renderer::drawRectangleRounded(
-            10, GetScreenHeight() - 400, (GetScreenWidth() / 3) * 2, 350, 0.05f,
-            rectColor);
-        renderManager::Renderer::drawRectangleRounded(
-            10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f,
-            rectColor);
-        renderManager::Renderer::drawText(
-            (chat.playerName + ": " + chat.message + "_").c_str(), 25,
-            GetScreenHeight() - 35, 20, WHITE);
+        std::size_t playerNameChars = chat.playerName.size();
+        drawMessagesBox();
+        drawMessages();
+        drawMessageInputField(chat);
       }
     }
   }
+}
+
+void ecs::RenderSystem::drawMessagesBox() {
+  Color rectColor = {255, 255, 255, 16};
+
+  renderManager::Renderer::drawRectangleRounded(10, GetScreenHeight() - 415,
+                                                (GetScreenWidth() / 3) * 2, 365,
+                                                0.05f, rectColor);
+}
+
+void ecs::RenderSystem::drawMessages() {
+  std::vector<std::string> chatMessages = _client->getChatMessages();
+  int lineHeight = 25;
+  int fontSize = 20;
+  int maxWidth = (GetScreenWidth() / 3) * 2 - 170;
+  Font font = GetFontDefault();
+  std::vector<std::string> allLines;
+
+  for (const auto &msg : chatMessages) {
+    std::string currentLine;
+    for (size_t i = 0; i < msg.size(); ++i) {
+      currentLine += msg[i];
+      int width = MeasureTextEx(font, currentLine.c_str(), fontSize, 0).x;
+      if (width > maxWidth && currentLine.size() > 1) {
+        allLines.push_back(currentLine.substr(0, currentLine.size() - 1));
+        currentLine = msg[i];
+      }
+    }
+    if (!currentLine.empty())
+      allLines.push_back(currentLine);
+  }
+  int totalLines = allLines.size();
+  int chatStartY = GetScreenHeight() - 80 - (totalLines - 1) * lineHeight;
+  int y = chatStartY;
+  for (const auto &line : allLines) {
+    renderManager::Renderer::drawText(line.c_str(), 25, y, fontSize, WHITE);
+    y += lineHeight;
+  }
+}
+
+void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
+  Color rectColor = {255, 255, 255, 16};
+
+  renderManager::Renderer::drawRectangleRounded(
+      10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f, rectColor);
+  renderManager::Renderer::drawText(
+      (chat.playerName + ": " + chat.message + "_").c_str(), 25,
+      GetScreenHeight() - 35, 20, WHITE);
 }
