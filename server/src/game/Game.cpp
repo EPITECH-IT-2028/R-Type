@@ -151,18 +151,18 @@ void game::Game::stop() {
 }
 
 /**
- * @brief Executes the main game loop, updating systems and handling enemy
- * spawns.
+ * @brief Run the game's main loop: advance time, update systems, and spawn enemies.
  *
- * Enqueues a GameStartEvent immediately, then repeatedly:
- * - calculates and stores frame delta time in `_deltaTime`,
- * - updates the enemy, projectile, and collision systems with the delta time,
- * - runs enemy spawn logic,
- * - sleeps approximately 16 milliseconds to cap frame pacing.
+ * Enqueues a GameStartEvent (sets its sequence number via getSequenceNumber() and
+ * increments the sequence) then repeatedly:
+ * - updates the stored frame delta time (_deltaTime),
+ * - calls update on enemy, projectile, and collision systems with the delta,
+ * - invokes enemy spawn logic,
+ * - and enforces approximate 16ms frame pacing.
  *
- * The loop exits when `_running` becomes false or when any required system
- * (enemy, projectile, collision) is not available, in which case the running
- * flag is cleared and the loop stops.
+ * The loop ends when `_running` becomes false or if any required system
+ * (enemy, projectile, collision) is unavailable, in which case `_running` is
+ * cleared and the loop stops.
  */
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;

@@ -106,6 +106,12 @@ namespace client {
   class Client {
     public:
       Client(const std::string &host, const std::uint16_t &port);
+      /**
+       * @brief Stops the resend thread and joins it during client destruction.
+       *
+       * Signals the resend thread to stop and joins the thread if it is joinable
+       * to ensure the background resend mechanism is terminated before destruction.
+       */
       ~Client() {
         _resendThreadRunning.store(false, std::memory_order_release);
         if (_resendThread.joinable()) {
@@ -113,6 +119,11 @@ namespace client {
         }
       }
 
+      /**
+       * @brief Check whether the client currently has an active network connection.
+       *
+       * @return `true` if the underlying network manager reports a connection, `false` otherwise.
+       */
       bool isConnected() const {
         return _networkManager.isConnected();
       }
@@ -123,14 +134,9 @@ namespace client {
       }
 
       /**
-       * @brief Attempts to establish a network connection and, on success,
-       * transitions the client to the menu state and announces the local
-       * player.
+       * @brief Attempts to connect; on success enters the connected menu and announces the local player.
        *
-       * Initiates a connection using the internal network manager. If the
-       * connection is established, sets the client state to
-       * ClientState::CONNECTED_MENU and sends a PlayerInfo packet for the local
-       * player named "Player".
+       * Attempts to establish a network connection. If the connection succeeds, sets the client state to ClientState::IN_CONNECTED_MENU and sends a PlayerInfoPacket for the local player using the current outgoing sequence number.
        */
       void connect() {
         _networkManager.connect();

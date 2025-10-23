@@ -13,12 +13,11 @@
 #include "Packet.hpp"
 
 /**
- * @brief Constructs a Server configured with the listening port and client
- * limits.
+ * @brief Initialize a Server bound to the given UDP port with client limits.
  *
- * Initializes internal counters, creates the GameManager with the specified
- * per-room client limit, and resizes internal client storage to accommodate
- * the maximum number of clients.
+ * Sets up network manager, counters, and game manager for per-room limits,
+ * resizes internal client storage, and starts a background resend thread
+ * responsible for periodically resending unacknowledged packets.
  *
  * @param port UDP port the server will bind to for network communication.
  * @param max_clients Maximum total concurrent clients the server will accept.
@@ -81,12 +80,26 @@ void server::Server::processGameEvents() {
   _gameManager->removeEmptyRooms();
 }
 
+/**
+ * @brief Gracefully stops the server and shuts down its networking and game subsystems.
+ *
+ * Closes the network socket, instructs the game manager to shut down all active rooms,
+ * and stops the resend background thread, waiting for it to finish.
+ */
 void server::Server::stop() {
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
   _networkManager.closeSocket();
   _gameManager->shutdownRooms();
 }
 
+/**
+ * @brief Check connected clients for inactivity and remove timed-out clients.
+ *
+ * If a client's last heartbeat is more than CLIENT_TIMEOUT seconds ago, the client
+ * is marked disconnected, the global player count is decremented, the client is
+ * removed from any assigned room (the player's entity is destroyed and a
+ * disconnect packet is broadcast to the room), and the client slot is cleared.
+ */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
 
@@ -129,17 +142,14 @@ void server::Server::handleTimeout() {
 }
 
 /**
- * @brief Convert a game event into its network packet and broadcast it to a
- * room.
+ * @brief Translate a queued game event into a network packet and broadcast it to all clients in the specified room.
  *
- * Converts the provided `queue::GameEvent` into the corresponding network
- * packet and broadcasts that packet to every client currently in the specified
- * room. If `roomId` equals `NO_ROOM` or the room is not found/active, the
- * function does nothing.
+ * Converts the provided queue::GameEvent into the corresponding network packet, broadcasts that packet to every client currently in the target room, and enqueues the serialized packet for reliable delivery when applicable.
+ *
+ * If @p roomId is NO_ROOM or the room cannot be found, the function performs no action.
  *
  * @param event Variant holding the specific game event to translate and send.
- * @param roomId Identifier of the target room whose clients will receive the
- * packet.
+ * @param roomId Identifier of the target room whose clients will receive the packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      std::uint32_t roomId) {
@@ -529,23 +539,20 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 }
 
 /**
- * @brief Runs and schedules the per-room countdown and starts the game when it
- * reaches zero.
+ * @brief Drive a room's countdown and start the game when it reaches zero.
  *
- * If the supplied room is in STARTING state, this function checks the room's
- * countdown value.
- * - When the countdown is <= 0: broadcasts a GameStart packet to the room,
- * transitions the room to its running state, sets each connected client's state
- * to IN_GAME, and logs the start.
- * - When the countdown is > 0: logs the current countdown, decrements it, and
- * reschedules the provided timer to invoke this routine again after one second.
- * If the timer wait is aborted, the cancellation is logged; other timer errors
- * are logged to stderr.
+ * When the room is in STARTING state and its countdown is <= 0, this function
+ * broadcasts a GameStart packet to the room, registers that packet as
+ * unacknowledged for each connected client (using the room game sequence
+ * number), transitions the room into its running state, and sets each
+ * connected client's state to IN_GAME. If the countdown is > 0, the function
+ * decrements the countdown and reschedules itself to run again after one
+ * second using the provided timer.
  *
  * @param room Shared pointer to the game room whose countdown should be driven.
- * Must be non-null and in STARTING state for the function to take effect.
- * @param timer Shared pointer to an asio steady timer used to schedule the next
- * countdown tick.
+ *             Must be non-null and in STARTING state for the function to take effect.
+ * @param timer Shared pointer to an asio steady_timer used to schedule the next
+ *              countdown tick.
  */
 void server::Server::handleCountdown(
     std::shared_ptr<game::GameRoom> room,
@@ -657,6 +664,12 @@ void server::Server::clearClientSlot(int player_id) {
   }
 }
 
+/**
+ * @brief Resend any outstanding unacknowledged packets for all connected clients.
+ *
+ * Iterates the server's client slots and invokes each connected client's resend routine,
+ * using the server's network manager to retransmit packets that have not yet been acknowledged.
+ */
 void server::Server::handleUnacknowledgedPackets() {
   for (auto &client : _clients) {
     if (client && client->_connected) {

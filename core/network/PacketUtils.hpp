@@ -77,6 +77,12 @@ inline std::string packetTypeToString(PacketType type) {
   }
 }
 
+/**
+ * @brief Determines whether a packet of the given type should be acknowledged.
+ *
+ * @param type PacketType value to check.
+ * @return `true` if packets of this type require an acknowledgement, `false` otherwise.
+ */
 inline bool shouldAcknowledgePacketType(PacketType type) {
   switch (type) {
     case PacketType::GameStart:

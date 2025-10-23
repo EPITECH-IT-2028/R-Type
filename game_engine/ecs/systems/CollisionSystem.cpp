@@ -201,18 +201,9 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 }
 
 /**
- * @brief Process a collision between a projectile and a player, apply damage,
- * emit events, and destroy involved entities.
+ * @brief Apply damage from an enemy projectile to a player, enqueue resulting player and projectile events, and destroy the affected entities.
  *
- * If the projectile is an enemy-owned projectile, subtract its damage from the
- * player's health, enqueue either a PlayerHitEvent or PlayerDestroyEvent as
- * appropriate, enqueue a ProjectileDestroyEvent for the projectile, and ensure
- * the projectile is destroyed. If the projectile or player is null, or the
- * projectile is a player-owned projectile, no action is taken.
- *
- * @param projectile Shared pointer to the projectile involved in the collision;
- * must have a corresponding ProjectileComponent.
- * @param player Shared pointer to the player struck by the projectile.
+ * If the projectile or player is null, the projectile is not present in the ECS, or the projectile is player-owned, no action is taken. Otherwise the projectile's damage is applied to the player's health; the function enqueues either a PlayerHitEvent or PlayerDestroyEvent for the player and a ProjectileDestroyEvent for the projectile (each populated with the current sequence number from the game and advancing the sequence), then destroys the projectile and, if applicable, the player.
  */
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
     std::shared_ptr<game::Projectile> projectile,

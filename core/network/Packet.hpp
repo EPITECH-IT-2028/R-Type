@@ -81,18 +81,17 @@ struct ALIGNED PacketHeader {
 };
 
 /**
- * @brief Carries a timestamped UTF-8 text message and the associated player ID.
+ * @brief Timestamped UTF-8 message with sender identity and sequence metadata.
  *
- * Contains a common packet header identifying the packet type and payload size,
- * a 32-bit timestamp, a fixed-size 256-byte null-terminated UTF-8 message
- * buffer, and the 32-bit identifier of the player that sent or is associated
- * with the message.
+ * Contains a packet header, a 32-bit timestamp, a 256-byte null-terminated UTF-8
+ * message buffer (up to 255 bytes of text), a 32-bit sequence_number used for
+ * per-packet ordering, and the 32-bit player_id associated with the message.
  *
- * @var header Common packet header (type and size).
- * @var timestamp Packet timestamp as a 32-bit unsigned integer.
+ * @var header Common packet header (type and payload size).
+ * @var timestamp 32-bit timestamp associated with the message.
  * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
- * @var player_id Identifier of the player that sent or is associated with this
- * message.
+ * @var sequence_number Per-packet ordering index.
+ * @var player_id Identifier of the player that sent or is associated with the message.
  */
 struct ALIGNED MessagePacket {
     PacketHeader header;
@@ -125,16 +124,17 @@ struct ALIGNED PlayerMovePacket {
 };
 
 /**
- * @brief Notifies clients of a newly spawned player.
+ * @brief Notifies clients that a new player has spawned on the server.
  *
- * Carries the new player's server-assigned ID, spawn position, movement speed,
- * and maximum health.
+ * Carries the spawned player's server-assigned ID, spawn coordinates, movement
+ * speed, per-packet sequence number, and maximum health.
  *
- * Fields:
- * - header: Common packet header.
+ * Members:
+ * - header: Common packet header (type and payload size).
  * - player_id: Server-assigned unique player identifier.
  * - x, y: Spawn world coordinates.
  * - speed: Movement speed scalar.
+ * - sequence_number: Per-packet ordering index for reliable processing.
  * - max_health: Player's maximum health points.
  */
 struct ALIGNED NewPlayerPacket {
@@ -214,17 +214,18 @@ struct ALIGNED PlayerHitPacket {
 
 /* Enemy Packets */
 /**
- * @brief Server-to-client packet announcing a spawned enemy.
+ * @brief Packet sent by the server to notify clients that an enemy has spawned.
  *
- * Contains the spawned enemy's identifier, type, position, velocity, and health
- * values as sent from the server to clients.
+ * Contains the spawned enemy's identifier, variant, position, velocity, sequencing index,
+ * and current/max health.
  *
  * Members:
- * - header: Common packet header (type and size).
- * - enemy_id: Unique identifier for the enemy.
- * - enemy_type: EnemyType value indicating the enemy variant.
+ * - header: Common packet header (type and payload size).
+ * - enemy_id: Unique identifier for the spawned enemy.
+ * - enemy_type: Variant of the enemy.
  * - x, y: Spawn position coordinates.
  * - velocity_x, velocity_y: Velocity components.
+ * - sequence_number: Per-packet ordering index for reliable sequencing.
  * - health: Current health of the enemy.
  * - max_health: Maximum health of the enemy.
  */
@@ -260,17 +261,19 @@ struct ALIGNED EnemyMovePacket {
 };
 
 /**
- * @brief Describes an enemy death event sent from server to client.
+ * @brief Server-to-client notification that an enemy has died.
  *
- * Starts with a PacketHeader identifying the packet type and payload size.
+ * Contains the header plus identifying, positional, scoring, and sequencing information
+ * for a single enemy death event.
  *
- * Fields:
+ * Members:
  * - header: PacketHeader present in all packets.
  * - enemy_id: Server-assigned identifier for the enemy that died.
  * - death_x: X coordinate of the death location in world space.
  * - death_y: Y coordinate of the death location in world space.
  * - player_id: Identifier of the player credited for the kill.
  * - score: Score awarded for the kill.
+ * - sequence_number: Per-packet ordering index used for tracking and acknowledgement.
  */
 struct ALIGNED EnemyDeathPacket {
     PacketHeader header;
@@ -305,24 +308,23 @@ struct ALIGNED PlayerShootPacket {
 };
 
 /**
- * @brief Notifies clients that a projectile has been spawned, including
- * ownership and motion data.
+ * @brief Notifies clients that a projectile has spawned and conveys its identity, ownership, motion, and damage.
  *
- * Carries the projectile's server-assigned identifier, variant, owner identity,
- * allegiance flag, world position, velocity components, scalar speed, and
- * damage amount.
+ * Carries the server-assigned projectile identifier, projectile variant, owner identity,
+ * allegiance flag, world position, velocity components, scalar speed, per-packet sequence number,
+ * and damage amount.
  *
- * @param header Packet header containing type and payload size.
+ * @param header Packet header containing the packet type and payload size.
  * @param projectile_id Server-assigned unique identifier for the projectile.
  * @param projectile_type Variant/type of the projectile.
  * @param owner_id Identifier of the entity that spawned the projectile.
- * @param is_enemy_projectile Nonzero if the projectile was spawned by an enemy,
- * zero otherwise.
+ * @param is_enemy_projectile Nonzero if the projectile was spawned by an enemy, zero otherwise.
  * @param x World X coordinate of the projectile spawn position.
  * @param y World Y coordinate of the projectile spawn position.
  * @param velocity_x X component of the projectile's velocity.
  * @param velocity_y Y component of the projectile's velocity.
  * @param speed Scalar speed magnitude of the projectile.
+ * @param sequence_number Per-packet ordering index associated with this spawn event.
  * @param damage Damage value applied by the projectile on hit.
  */
 struct ALIGNED ProjectileSpawnPacket {
@@ -363,16 +365,16 @@ struct ALIGNED ProjectileHitPacket {
 };
 
 /**
- * @brief Server-to-client notification that a projectile was removed or
- * expired.
+ * @brief Notifies clients that a projectile was destroyed or expired.
  *
- * Contains the projectile's identifier and its last known world position.
+ * Contains the projectile's identifier, its last known world position, and a
+ * sequence number for ordering.
  *
- * Fields:
- * - header: Packet header identifying the packet type and payload size.
- * - projectile_id: Unique identifier of the projectile being destroyed.
- * - x: X coordinate of the projectile at destruction.
- * - y: Y coordinate of the projectile at destruction.
+ * @var PacketHeader header Packet header identifying the packet type and payload size.
+ * @var std::uint32_t projectile_id Unique identifier of the projectile.
+ * @var float x X coordinate of the projectile at destruction.
+ * @var float y Y coordinate of the projectile at destruction.
+ * @var std::uint32_t sequence_number Per-packet ordering index.
  */
 struct ALIGNED ProjectileDestroyPacket {
     PacketHeader header;
@@ -383,13 +385,14 @@ struct ALIGNED ProjectileDestroyPacket {
 };
 
 /**
- * @brief Notifies a client of the game's start state.
+ * @brief Notifies a client of whether the game has started.
  *
- * Packet with a common PacketHeader and a single flag indicating whether the
- * game has started.
+ * Packet sent to clients containing a common PacketHeader, a per-packet
+ * ordering index, and a flag that indicates the game's start state.
  *
- * Fields:
- * - header: Common packet header containing type and payload size.
+ * Members:
+ * - header: Common packet header containing the packet type and payload size.
+ * - sequence_number: Per-packet ordering index for reliable sequencing.
  * - game_start: `1` if the game has started, `0` otherwise.
  */
 struct ALIGNED GameStartPacket {
@@ -401,12 +404,11 @@ struct ALIGNED GameStartPacket {
 /**
  * @brief Notifies a client that the game has ended.
  *
- * Contains the common packet header followed by a flag indicating game end.
+ * Packet containing a header, a per-packet sequence number, and a flag indicating game end.
  *
- * @var PacketHeader GameEndPacket::header Common packet header identifying
- * packet type and payload size.
- * @var std::uint8_t GameEndPacket::game_end `1` if the game has ended, `0`
- * otherwise.
+ * @var PacketHeader GameEndPacket::header Packet header identifying packet type and payload size.
+ * @var std::uint32_t GameEndPacket::sequence_number Per-packet ordering index.
+ * @var std::uint8_t GameEndPacket::game_end `1` if the game has ended, `0` otherwise.
  */
 struct ALIGNED GameEndPacket {
     PacketHeader header;
@@ -450,19 +452,14 @@ struct ALIGNED EnemyHitPacket {
 };
 
 /**
- * @brief Informs clients that a player has died and where the death occurred.
+ * @brief Notifies clients that a player died and provides the death location.
  *
- * @details Carries the player identifier and the world coordinates of the death
- * location.
+ * Carries the player identifier and world coordinates of the death location, and includes a per-packet sequence number for ordering.
  *
- * @var std::uint32_t PlayerDeathPacket::player_id
- * ID of the player who died.
- *
- * @var float PlayerDeathPacket::x
- * X coordinate of the death location.
- *
- * @var float PlayerDeathPacket::y
- * Y coordinate of the death location.
+ * @var std::uint32_t PlayerDeathPacket::player_id ID of the player who died.
+ * @var float PlayerDeathPacket::x X coordinate of the death location.
+ * @var float PlayerDeathPacket::y Y coordinate of the death location.
+ * @var std::uint32_t PlayerDeathPacket::sequence_number Per-packet ordering index.
  */
 struct ALIGNED PlayerDeathPacket {
     PacketHeader header;
@@ -612,17 +609,15 @@ struct ALIGNED MatchmakingResponsePacket {
 };
 
 /**
- * @brief Conveys the client's current directional input and its sequence
- * number.
+ * @brief Client directional input packet with a per-input sequence number.
  *
- * Contains the common packet header, an 8-bit bitfield of MovementInputType
- * flags indicating which movement directions are active, and a client-side
- * sequence number used to order inputs and correlate acknowledgements.
+ * Contains the packet header, an 8-bit bitfield of MovementInputType flags
+ * indicating which directions are active, and a client-side sequence number
+ * used to order inputs and correlate acknowledgements.
  *
- * Fields:
- * - input: Bitflags (MovementInputType) representing active directional inputs.
- * - sequence_number: Client-side sequence number for input ordering and
- * acknowledgement correlation.
+ * Members:
+ * - input: Bitflags representing active directional inputs.
+ * - sequence_number: Client-side sequence number for input ordering and acknowledgement correlation.
  */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
@@ -630,6 +625,16 @@ struct ALIGNED PlayerInputPacket {
     std::uint32_t sequence_number;
 };
 
+/**
+ * @brief Acknowledgement packet specifying which sequence number is being acknowledged and by whom.
+ *
+ * Carries the common packet header plus the acknowledged packet's sequence number and the player ID
+ * associated with that acknowledgement.
+ *
+ * @var PacketHeader header Packet header common to all packets.
+ * @var std::uint32_t sequence_number Sequence number being acknowledged.
+ * @var std::uint32_t player_id ID of the player that sent or is associated with the acknowledged packet.
+ */
 struct ALIGNED AckPacket {
     PacketHeader header;
     std::uint32_t sequence_number;

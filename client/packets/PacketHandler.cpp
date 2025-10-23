@@ -26,6 +26,18 @@ namespace {
   }
 }  // namespace
 
+/**
+ * @brief Handles an incoming server chat/message packet.
+ *
+ * Deserializes a MessagePacket from the provided buffer, logs the server message,
+ * and, if the packet type requires acknowledgment, sends an ACK containing the
+ * packet's sequence number and this client's player ID.
+ *
+ * @param client Client instance used for sending ACKs and accessing player ID.
+ * @param data Pointer to the received packet bytes.
+ * @param size Number of bytes in the buffer pointed to by `data`.
+ * @return int 0 on success, `packet::KO` if packet deserialization fails.
+ */
 int packet::MessageHandler::handlePacket(client::Client &client,
                                          const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -45,6 +57,20 @@ int packet::MessageHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Handle an incoming NewPlayer packet: spawn the player locally and acknowledge receipt.
+ *
+ * Deserializes a NewPlayerPacket from the provided raw packet bytes. On success,
+ * logs the spawned player's ID, position and speed, instructs the client to create
+ * the corresponding player entity, and sends an ACK containing the packet's
+ * sequence number and the client's player ID. If deserialization fails, logs an
+ * error and returns without side effects.
+ *
+ * @param client Reference to the client that should create the player entity and send the ACK.
+ * @param data Pointer to the raw packet bytes to deserialize.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` on successful processing and acknowledgement, `packet::KO` if deserialization fails.
+ */
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -222,17 +248,16 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Processes an EnemySpawnPacket and creates the corresponding enemy
- * entity on the client.
+ * @brief Handle an EnemySpawnPacket and create the corresponding enemy entity on the client.
  *
- * Deserializes an EnemySpawnPacket from the provided buffer and instructs the
- * client to create the enemy entity described by the packet.
+ * Deserializes an EnemySpawnPacket from the provided buffer, instructs the client to
+ * create the described enemy entity, and sends an ACK referencing the packet's
+ * sequence number and the client's player ID.
  *
- * @param client Client instance used to create the enemy entity.
  * @param data Pointer to the serialized packet bytes.
  * @param size Number of bytes available at `data`.
- * @return int `packet::OK` on successful deserialization and entity creation,
- * `packet::KO` if deserialization fails.
+ * @return int `packet::OK` on successful deserialization, entity creation, and ACK send;
+ * `packet::KO` if packet deserialization fails.
  */
 int packet::EnemySpawnHandler::handlePacket(client::Client &client,
                                             const char *data,
@@ -288,17 +313,9 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Handle an enemy death notification received from the server.
+ * @brief Process an enemy-death packet from the server, remove the corresponding enemy entity, and acknowledge the packet.
  *
- * Deserializes an EnemyDeathPacket from the provided buffer, destroys the
- * corresponding enemy entity in the ECS, and removes the client-side reference.
- *
- * @param client Client instance used to lookup and remove the enemy entity.
- * @param data Pointer to the serialized packet data.
- * @param size Size, in bytes, of the serialized packet data.
- * @return int `packet::OK` when the enemy was successfully removed,
- * `packet::KO` on failure (deserialization error, enemy not found, or failure
- * during destruction).
+ * @return int `packet::OK` if the enemy entity was removed and an ACK was sent, `packet::KO` on failure.
  */
 int packet::EnemyDeathHandler::handlePacket(client::Client &client,
                                             const char *data,
@@ -334,6 +351,18 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Processes a ProjectileSpawn packet by creating and registering a projectile entity and acknowledging the packet.
+ *
+ * Deserializes a ProjectileSpawnPacket from the provided buffer, creates an ECS entity for the projectile with appropriate components,
+ * registers the entity with the client's projectile mapping, and sends an ACK for the packet's sequence number.
+ *
+ * @param client The client instance that will receive the ACK and hold the projectile mapping.
+ * @param data Pointer to the serialized packet data.
+ * @param size Size of the serialized packet data in bytes.
+ * @return int `packet::OK` on successful processing (including when a projectile with the same ID already exists and the packet is ignored),
+ * `packet::KO` if deserialization fails or an exception occurs while creating the entity.
+ */
 int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
                                                  const char *data,
                                                  std::size_t size) {
@@ -500,6 +529,17 @@ int packet::ProjectileDestroyHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Processes a GameStartPacket, logs the game start, and acknowledges it.
+ *
+ * Deserializes a GameStartPacket from the provided data, logs that the game is starting,
+ * and sends an acknowledgement (ACK) containing the packet's sequence number and the client's player ID.
+ *
+ * @param client Client instance used to retrieve the player ID and send the ACK.
+ * @param data Pointer to the serialized packet data.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` on successful processing and ACK send, `packet::KO` if deserialization fails.
+ */
 int packet::GameStartHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -518,6 +558,17 @@ int packet::GameStartHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Process an incoming PlayerShoot packet by logging the shot coordinates and sending an acknowledgement.
+ *
+ * Deserializes a PlayerShootPacket from the provided byte buffer, logs the reported shot position, and sends an ACK
+ * containing the packet sequence number and this client's player ID.
+ *
+ * @param client Client used to send the acknowledgement and obtain the local player ID.
+ * @param data Pointer to the serialized packet data.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` on successful processing and acknowledgement, `packet::KO` if deserialization fails.
+ */
 int packet::PlayerShootHandler::handlePacket(client::Client &client,
                                              const char *data,
                                              std::size_t size) {
@@ -538,6 +589,14 @@ int packet::PlayerShootHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Processes an incoming ACK packet and removes the acknowledged packet from the client's tracking.
+ *
+ * Deserializes an AckPacket from the provided buffer, logs the received sequence number,
+ * and instructs the client to remove the acknowledged packet.
+ *
+ * @return int `packet::OK` on success, `packet::KO` if deserialization fails.
+ */
 int packet::AckPacketHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -598,17 +657,17 @@ int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Handle a matchmaking response packet from the server.
+ * @brief Processes a MatchmakingResponsePacket and updates client state when successful.
  *
- * Deserializes a MatchmakingResponsePacket from the provided buffer and updates
- * the client's state to IN_ROOM_WAITING when the packet's error_code indicates
- * success. Logs the outcome.
+ * Deserializes a MatchmakingResponsePacket from the provided buffer, sets the
+ * client's state to IN_ROOM_WAITING when `error_code` equals RoomError::SUCCESS,
+ * and logs the result.
  *
  * @param client Reference to the client whose state may be updated.
  * @param data Pointer to the incoming packet data.
  * @param size Size of the incoming packet data in bytes.
- * @return int `OK` if the packet was deserialized and handled (even if the
- * contained error code indicates failure), `KO` if deserialization failed.
+ * @return int `OK` if the packet was deserialized and handled (including when the
+ * contained `error_code` indicates failure), `KO` if deserialization failed.
  */
 int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
                                                      const char *data,

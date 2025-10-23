@@ -89,12 +89,27 @@ namespace game {
         return _deltaTime.load();
       }
 
+      /**
+       * @brief Access the game's sequence number used for ordering events and updates.
+       *
+       * @return Reference to the internal std::atomic<std::uint32_t> sequence number.
+       */
       std::atomic<std::uint32_t> &getSequenceNumber() {
         return _sequence_number;
       }
+      /**
+       * @brief Set the game's sequence number used for ordering events and updates.
+       *
+       * @param value New sequence number to assign.
+       */
       void setSequenceNumber(std::uint32_t value) {
         _sequence_number = value;
       }
+      /**
+       * @brief Atomically increments the internal sequence number by one.
+       *
+       * Advances the game's sequence number used for event and update ordering.
+       */
       void incrementSequenceNumber() {
         _sequence_number.fetch_add(1);
       }
