@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include <thread>
 #include "Client.hpp"
@@ -25,7 +26,9 @@ void gameLoop(client::Client &client) {
   auto lastHeartbeat = std::chrono::steady_clock::now();
   const auto heartbeatInterval =
       std::chrono::seconds(HEARTBEAT_INTERVAL_CLIENT);
-  const auto posInterval = std::chrono::milliseconds(50);
+
+  auto lastPing = std::chrono::steady_clock::now();
+  const auto pingInterval = std::chrono::seconds(PING_INTERVAL_CLIENT);
 
   while (client.isConnected()) {
     client.startReceive();
@@ -37,13 +40,23 @@ void gameLoop(client::Client &client) {
       client.send(heartbeat);
       lastHeartbeat = now;
     }
+
+    if (now - lastPing >= pingInterval) {
+      uint32_t pingTimestamp = static_cast<uint32_t>(
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              now.time_since_epoch())
+              .count());
+      PingPacket ping = PacketBuilder::makePing(pingTimestamp);
+      client.send(ping);
+      lastPing = now;
+    }
   }
 }
 
 /**
- * @brief Initialize renderer, configuration, ECS, and networked client; run the
- * main render loop and a background network thread, then cleanly shut down on
- * exit.
+ * @brief Initialize renderer, configuration, ECS, and networked client; run
+ * the main render loop and a background network thread, then cleanly shut
+ * down on exit.
  *
  * The function constructs and validates the window renderer, parses client
  * properties, initializes assets and the ECS, connects the network client,

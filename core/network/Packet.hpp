@@ -31,7 +31,9 @@ enum class PacketType : std::uint8_t {
   MatchmakingRequest = 0x18,
   MatchmakingResponse = 0x19,
   JoinRoomResponse = 0x1A,
-  PlayerInput = 0x1B
+  PlayerInput = 0x1B,
+  Ping = 0x1C,
+  Pong = 0x1D
 };
 
 enum class EnemyType : std::uint8_t {
@@ -63,8 +65,7 @@ enum class MovementInputType : std::uint8_t {
 #define ALIGNED alignas(4)
 
 /**
- * @brief Common 4-byte-aligned header present at the start of every network
- * packet.
+ * @brief Common 4-byte-aligned header present at the start of every network packet.
  *
  * Contains the packet's kind and the size of its payload (in bytes), used to
  * route and validate incoming/outgoing packet data.
@@ -617,4 +618,24 @@ struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     std::uint8_t input;
     std::uint32_t sequence_number;
+};
+
+/**
+ * @brief Ping packet sent from client to server to measure latency.
+ *
+ * Contains the common packet header and a timestamp representing when the ping was sent.
+ */
+struct ALIGNED PingPacket {
+    PacketHeader header;
+    std::uint32_t timestamp;
+};
+
+/**
+ * @brief Pong packet sent from server to client in response to a ping.
+ *
+ * Contains the common packet header and a timestamp representing when the original ping was received.
+ */
+struct ALIGNED PongPacket {
+    PacketHeader header;
+    std::uint32_t timestamp;
 };

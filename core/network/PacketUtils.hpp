@@ -65,6 +65,10 @@ inline std::string packetTypeToString(PacketType type) {
       return "MatchmakingResponse";
     case PacketType::PlayerInput:
       return "PlayerInput";
+    case PacketType::Ping:
+      return "Ping";
+    case PacketType::Pong:
+      return "Pong";
     default:
       std::stringstream ss;
       ss << "Unknown(" << static_cast<int>(type) << ")";
