@@ -37,10 +37,12 @@ namespace server {
       Server(std::uint16_t port, std::uint8_t max_clients,
              std::uint8_t max_clients_per_room);
       /**
-       * @brief Stops the server and releases networking and game resources when the Server is destroyed.
+       * @brief Stops the server and releases networking and game resources when
+       * the Server is destroyed.
        *
-       * Ensures the server is cleanly stopped — shutting down networking, timers, and any background resend
-       * activity — before the instance is destroyed.
+       * Ensures the server is cleanly stopped — shutting down networking,
+       * timers, and any background resend activity — before the instance is
+       * destroyed.
        */
       ~Server() {
         stop();

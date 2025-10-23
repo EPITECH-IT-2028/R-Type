@@ -11,10 +11,11 @@
  * can be retransmitted until acknowledged.
  *
  * @param sequence_number Sequence number that identifies the packet.
- * @param packetData Shared pointer to the packet bytes to retain for retransmission.
+ * @param packetData Shared pointer to the packet bytes to retain for
+ * retransmission.
  *
- * @note The entry's resend count is initialized to 0 and the last-sent timestamp
- * is recorded as the current steady clock time.
+ * @note The entry's resend count is initialized to 0 and the last-sent
+ * timestamp is recorded as the current steady clock time.
  */
 void server::Client::addUnacknowledgedPacket(
     std::uint32_t sequence_number,
@@ -28,10 +29,11 @@ void server::Client::addUnacknowledgedPacket(
 }
 
 /**
- * @brief Remove the stored unacknowledged packet with the given sequence number.
+ * @brief Remove the stored unacknowledged packet with the given sequence
+ * number.
  *
- * If the packet exists, it is erased from the client's unacknowledged-packet map;
- * otherwise a warning is emitted indicating the packet was not found.
+ * If the packet exists, it is erased from the client's unacknowledged-packet
+ * map; otherwise a warning is emitted indicating the packet was not found.
  *
  * @param sequence_number Sequence number of the packet to remove.
  */
@@ -50,14 +52,19 @@ void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
 }
 
 /**
- * @brief Retransmits stored unacknowledged packets to the client and removes packets that exceeded retry limits.
+ * @brief Retransmits stored unacknowledged packets to the client and removes
+ * packets that exceeded retry limits.
  *
- * Iterates the client's internal unacknowledged-packet map, retransmitting each packet and tracking per-sequence resend attempts.
- * Packets whose resend attempts reach the configured maximum are removed from the unacknowledged map after processing.
+ * Iterates the client's internal unacknowledged-packet map, retransmitting each
+ * packet and tracking per-sequence resend attempts. Packets whose resend
+ * attempts reach the configured maximum are removed from the unacknowledged map
+ * after processing.
  *
  * Notes:
- * - Resend attempts are tracked in a static map that persists across calls to this function.
- * - The function uses the provided network manager to send each packet to the client identified by this client's player ID.
+ * - Resend attempts are tracked in a static map that persists across calls to
+ * this function.
+ * - The function uses the provided network manager to send each packet to the
+ * client identified by this client's player ID.
  */
 void server::Client::resendUnacknowledgedPackets(
     network::ServerNetworkManager &networkManager) {

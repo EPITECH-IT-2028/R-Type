@@ -82,10 +82,11 @@ void server::Server::processGameEvents() {
 }
 
 /**
- * @brief Gracefully stops the server and shuts down its networking and game subsystems.
+ * @brief Gracefully stops the server and shuts down its networking and game
+ * subsystems.
  *
- * Closes the network socket, instructs the game manager to shut down all active rooms,
- * and stops the resend background thread, waiting for it to finish.
+ * Closes the network socket, instructs the game manager to shut down all active
+ * rooms, and stops the resend background thread, waiting for it to finish.
  */
 void server::Server::stop() {
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
@@ -96,10 +97,11 @@ void server::Server::stop() {
 /**
  * @brief Check connected clients for inactivity and remove timed-out clients.
  *
- * If a client's last heartbeat is more than CLIENT_TIMEOUT seconds ago, the client
- * is marked disconnected, the global player count is decremented, the client is
- * removed from any assigned room (the player's entity is destroyed and a
- * disconnect packet is broadcast to the room), and the client slot is cleared.
+ * If a client's last heartbeat is more than CLIENT_TIMEOUT seconds ago, the
+ * client is marked disconnected, the global player count is decremented, the
+ * client is removed from any assigned room (the player's entity is destroyed
+ * and a disconnect packet is broadcast to the room), and the client slot is
+ * cleared.
  */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
@@ -143,14 +145,19 @@ void server::Server::handleTimeout() {
 }
 
 /**
- * @brief Translate a queued game event into a network packet and broadcast it to all clients in the specified room.
+ * @brief Translate a queued game event into a network packet and broadcast it
+ * to all clients in the specified room.
  *
- * Converts the provided queue::GameEvent into the corresponding network packet, broadcasts that packet to every client currently in the target room, and enqueues the serialized packet for reliable delivery when applicable.
+ * Converts the provided queue::GameEvent into the corresponding network packet,
+ * broadcasts that packet to every client currently in the target room, and
+ * enqueues the serialized packet for reliable delivery when applicable.
  *
- * If @p roomId is NO_ROOM or the room cannot be found, the function performs no action.
+ * If @p roomId is NO_ROOM or the room cannot be found, the function performs no
+ * action.
  *
  * @param event Variant holding the specific game event to translate and send.
- * @param roomId Identifier of the target room whose clients will receive the packet.
+ * @param roomId Identifier of the target room whose clients will receive the
+ * packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      std::uint32_t roomId) {
@@ -551,7 +558,8 @@ bool server::Server::initializePlayerInRoom(Client &client) {
  * second using the provided timer.
  *
  * @param room Shared pointer to the game room whose countdown should be driven.
- *             Must be non-null and in STARTING state for the function to take effect.
+ *             Must be non-null and in STARTING state for the function to take
+ * effect.
  * @param timer Shared pointer to an asio steady_timer used to schedule the next
  *              countdown tick.
  */
@@ -666,10 +674,12 @@ void server::Server::clearClientSlot(int player_id) {
 }
 
 /**
- * @brief Resend any outstanding unacknowledged packets for all connected clients.
+ * @brief Resend any outstanding unacknowledged packets for all connected
+ * clients.
  *
- * Iterates the server's client slots and invokes each connected client's resend routine,
- * using the server's network manager to retransmit packets that have not yet been acknowledged.
+ * Iterates the server's client slots and invokes each connected client's resend
+ * routine, using the server's network manager to retransmit packets that have
+ * not yet been acknowledged.
  */
 void server::Server::handleUnacknowledgedPackets() {
   for (auto &client : _clients) {
