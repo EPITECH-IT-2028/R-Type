@@ -31,6 +31,11 @@ namespace renderManager {
       void resizeWindow();
       static void drawText(const char *text, int posX, int posY, int fontSize,
                            Color color);
+      static void drawRectangle(int posX, int posY, int width, int height,
+                                Color color);
+      static void drawRectangleRounded(int posX, int posY, int width,
+                                       int height, float roundness,
+                                       Color color);
 
     private:
       bool _initSucceeded = false;
