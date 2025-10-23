@@ -112,6 +112,9 @@ void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(packet.player_name[i]);
+  }
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);

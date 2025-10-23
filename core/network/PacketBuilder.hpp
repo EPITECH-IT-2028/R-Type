@@ -27,7 +27,7 @@ struct PacketBuilder {
      * current `timestamp`, and `player_id` set.
      */
     static ChatMessagePacket makeChatMessage(const std::string &msg,
-                                     std::uint32_t player_id) {
+                                             std::uint32_t player_id) {
       ChatMessagePacket packet{};
       packet.header.type = PacketType::ChatMessage;
       packet.header.size = sizeof(packet);
@@ -52,13 +52,17 @@ struct PacketBuilder {
      * @param max_health Maximum health for the player (default: 100).
      * @return NewPlayerPacket Populated packet ready to be serialized and sent.
      */
-    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id, float x,
+    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id,
+                                         std::string &player_name, float x,
                                          float y, float speed,
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+      strncpy(packet.player_name, player_name.c_str(),
+              sizeof(packet.player_name) - 1);
+      packet.player_name[sizeof(packet.player_name) - 1] = '\0';
       packet.x = x;
       packet.y = y;
       packet.speed = speed;

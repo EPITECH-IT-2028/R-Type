@@ -438,7 +438,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   int max_health = player->getMaxHealth().value_or(100);
 
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, max_health);
+      client._player_id, client._player_name, pos.first, pos.second, speed, max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
   _networkManager.sendToClient(
@@ -452,7 +452,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
       _networkManager, room->getGame(), client._player_id, roomClients);
 
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, max_health);
+      client._player_id, client._player_name, pos.first, pos.second, speed, max_health);
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
 

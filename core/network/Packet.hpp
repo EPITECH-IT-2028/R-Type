@@ -138,6 +138,7 @@ struct ALIGNED PlayerMovePacket {
 struct ALIGNED NewPlayerPacket {
     PacketHeader header;
     std::uint32_t player_id;
+    char player_name[32];
     float x;
     float y;
     float speed;
