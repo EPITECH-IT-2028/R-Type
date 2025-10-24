@@ -11,14 +11,22 @@
 
 struct PacketBuilder {
     /**
-     * @brief Constructs a MessagePacket containing the given text, timestamp, player identifier, and sequence number.
+     * @brief Constructs a MessagePacket containing the given text, timestamp,
+     * player identifier, and sequence number.
      *
-     * The packet's message field is filled with up to sizeof(packet.message)-1 characters from `msg` and is guaranteed to be null-terminated; if `msg` is longer it will be truncated to fit. The packet's timestamp is set to the current time.
+     * The packet's message field is filled with up to sizeof(packet.message)-1
+     * characters from `msg` and is guaranteed to be null-terminated; if `msg`
+     * is longer it will be truncated to fit. The packet's timestamp is set to
+     * the current time.
      *
-     * @param msg Text to include in the message packet; may be truncated to fit the packet's message buffer.
+     * @param msg Text to include in the message packet; may be truncated to fit
+     * the packet's message buffer.
      * @param player_id Identifier of the player who sent the message.
      * @param sequence_number Sequence number to include in the packet.
-     * @return MessagePacket Packet with header.type == PacketType::Message, header.size set to sizeof(MessagePacket), a null-terminated `message` field (truncated if necessary), `timestamp` set to the current time, `player_id` set, and `sequence_number` set.
+     * @return MessagePacket Packet with header.type == PacketType::Message,
+     * header.size set to sizeof(MessagePacket), a null-terminated `message`
+     * field (truncated if necessary), `timestamp` set to the current time,
+     * `player_id` set, and `sequence_number` set.
      */
     static MessagePacket makeMessage(const std::string &msg,
                                      std::uint32_t player_id,
@@ -35,17 +43,21 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create a NewPlayerPacket containing player identity, position, movement speed, maximum health, and sequence number.
+     * @brief Create a NewPlayerPacket containing player identity, position,
+     * movement speed, maximum health, and sequence number.
      *
-     * The packet's header.type is set to PacketType::NewPlayer and header.size to sizeof(packet).
+     * The packet's header.type is set to PacketType::NewPlayer and header.size
+     * to sizeof(packet).
      *
      * @param player_id Unique identifier for the player.
      * @param x Initial X position of the player.
      * @param y Initial Y position of the player.
      * @param speed Initial movement speed of the player.
      * @param max_health Maximum health for the player (default: 100).
-     * @param sequence_number Sequence number assigned to the packet (default: 0).
-     * @return NewPlayerPacket Populated packet with the provided fields and an initialized header.
+     * @param sequence_number Sequence number assigned to the packet (default:
+     * 0).
+     * @return NewPlayerPacket Populated packet with the provided fields and an
+     * initialized header.
      */
     static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
                                          float speed,
@@ -90,13 +102,15 @@ struct PacketBuilder {
     /**
      * @brief Build a PlayerInfo packet containing the player's display name.
      *
-     * The provided name is copied into the packet's fixed-size name field, truncated
-     * if necessary, and always null-terminated. The packet's header.type is set to
-     * PacketType::PlayerInfo and header.size is set to the packet's sizeof.
+     * The provided name is copied into the packet's fixed-size name field,
+     * truncated if necessary, and always null-terminated. The packet's
+     * header.type is set to PacketType::PlayerInfo and header.size is set to
+     * the packet's sizeof.
      *
      * @param name Player display name to store in the packet.
      * @param sequence_number Sequence number to assign to the packet.
-     * @return PlayerInfoPacket Packet with header, name, and sequence_number populated.
+     * @return PlayerInfoPacket Packet with header, name, and sequence_number
+     * populated.
      */
     static PlayerInfoPacket makePlayerInfo(const std::string &name,
                                            std::uint32_t sequence_number) {
@@ -135,10 +149,13 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create an EnemySpawnPacket containing the enemy's identity, type, position, velocity, health, and sequence metadata.
+     * @brief Create an EnemySpawnPacket containing the enemy's identity, type,
+     * position, velocity, health, and sequence metadata.
      *
-     * @param sequence_number Sequence number associated with this packet; 0 if not used.
-     * @return EnemySpawnPacket Packet with header.type set to EnemySpawn and relevant fields populated.
+     * @param sequence_number Sequence number associated with this packet; 0 if
+     * not used.
+     * @return EnemySpawnPacket Packet with header.type set to EnemySpawn and
+     * relevant fields populated.
      */
     static EnemySpawnPacket makeEnemySpawn(uint32_t enemy_id, EnemyType type,
                                            float x, float y, float vx, float vy,
@@ -190,7 +207,8 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create an EnemyDeath packet representing an enemy's death and the score awarded to a player.
+     * @brief Create an EnemyDeath packet representing an enemy's death and the
+     * score awarded to a player.
      *
      * @param enemy_id Identifier of the enemy that died.
      * @param death_x X coordinate where the enemy died.
@@ -198,7 +216,9 @@ struct PacketBuilder {
      * @param player_id Identifier of the player credited with the kill.
      * @param score Score awarded to the player for the kill.
      * @param sequence_number Sequence number associated with this packet.
-     * @return EnemyDeathPacket Packet with its fields set (enemy_id, death_x, death_y, player_id, score, sequence_number) and its header configured for PacketType::EnemyDeath with the packet size.
+     * @return EnemyDeathPacket Packet with its fields set (enemy_id, death_x,
+     * death_y, player_id, score, sequence_number) and its header configured for
+     * PacketType::EnemyDeath with the packet size.
      */
     static EnemyDeathPacket makeEnemyDeath(std::uint32_t enemy_id,
                                            float death_x, float death_y,
@@ -267,7 +287,8 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create a ProjectileSpawnPacket populated with the given projectile properties and sequence number.
+     * @brief Create a ProjectileSpawnPacket populated with the given projectile
+     * properties and sequence number.
      *
      * @param projectile_id Unique identifier for the projectile.
      * @param type ProjectileType value indicating the projectile kind.
@@ -277,8 +298,10 @@ struct PacketBuilder {
      * @param vel_y Initial velocity along the y axis.
      * @param is_enemy True if fired by an enemy, false if fired by a player.
      * @param damage Damage carried by the projectile.
-     * @param owner_id Identifier of the entity that owns or fired the projectile.
-     * @param sequence_number Sequence number associated with the packet (default 0).
+     * @param owner_id Identifier of the entity that owns or fired the
+     * projectile.
+     * @param sequence_number Sequence number associated with the packet
+     * (default 0).
      * @return ProjectileSpawnPacket Packet populated with the specified fields.
      */
     static ProjectileSpawnPacket makeProjectileSpawn(
@@ -328,13 +351,16 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Construct a ProjectileDestroy packet populated with identifiers and position.
+     * @brief Construct a ProjectileDestroy packet populated with identifiers
+     * and position.
      *
      * @param projectile_id Identifier of the projectile being destroyed.
      * @param x X coordinate where the projectile was destroyed.
      * @param y Y coordinate where the projectile was destroyed.
      * @param sequence_number Sequence number associated with this packet.
-     * @return ProjectileDestroyPacket Packet ready for sending with its header.type set to ProjectileDestroy and header.size set to the packet's sizeof.
+     * @return ProjectileDestroyPacket Packet ready for sending with its
+     * header.type set to ProjectileDestroy and header.size set to the packet's
+     * sizeof.
      */
     static ProjectileDestroyPacket makeProjectileDestroy(
         std::uint32_t projectile_id, float x, float y,
@@ -352,11 +378,13 @@ struct PacketBuilder {
     /**
      * @brief Constructs a packet that signals the game's start state.
      *
-     * Creates a GameStartPacket with the start flag and sequence number populated.
+     * Creates a GameStartPacket with the start flag and sequence number
+     * populated.
      *
      * @param started `true` if the game has started, `false` otherwise.
      * @param sequence_number Sequence identifier assigned to the packet.
-     * @return GameStartPacket Packet containing the game start flag and sequence number.
+     * @return GameStartPacket Packet containing the game start flag and
+     * sequence number.
      */
     static GameStartPacket makeGameStart(bool started,
                                          std::uint32_t sequence_number) {
@@ -372,8 +400,10 @@ struct PacketBuilder {
      * @brief Create a GameEndPacket indicating whether the game has ended.
      *
      * @param ended Whether the game has ended.
-     * @param sequence_number Sequence number to assign to the packet (default 0).
-     * @return GameEndPacket Packet with header populated, `game_end` set to `ended`, and `sequence_number` set to `sequence_number`.
+     * @param sequence_number Sequence number to assign to the packet (default
+     * 0).
+     * @return GameEndPacket Packet with header populated, `game_end` set to
+     * `ended`, and `sequence_number` set to `sequence_number`.
      */
     static GameEndPacket makeGameEnd(bool ended,
                                      std::uint32_t sequence_number) {
@@ -388,14 +418,16 @@ struct PacketBuilder {
     /**
      * @brief Create a PlayerDeathPacket describing a player's death location.
      *
-     * Constructs a packet populated with the player identifier, world coordinates
-     * of the death, and the optional sequence number.
+     * Constructs a packet populated with the player identifier, world
+     * coordinates of the death, and the optional sequence number.
      *
      * @param player_id Identifier of the player who died.
      * @param x World X coordinate of the death location.
      * @param y World Y coordinate of the death location.
-     * @param sequence_number Optional sequence number associated with the packet.
-     * @return PlayerDeathPacket Packet populated with player_id, x, y, and sequence_number.
+     * @param sequence_number Optional sequence number associated with the
+     * packet.
+     * @return PlayerDeathPacket Packet populated with player_id, x, y, and
+     * sequence_number.
      */
     static PlayerDeathPacket makePlayerDeath(std::uint32_t player_id, float x,
                                              float y,
@@ -609,13 +641,16 @@ struct PacketBuilder {
     /**
      * @brief Create a packet that encodes a player's input and sequence number.
      *
-     * The packet's header type and size are initialized so the packet is ready for
-     * transmission; the input flags and sequence_number are stored for ordering.
+     * The packet's header type and size are initialized so the packet is ready
+     * for transmission; the input flags and sequence_number are stored for
+     * ordering.
      *
      * @param input Bitmask of player input flags (buttons/actions).
-     * @param sequence_number Monotonically increasing sequence number for this input.
-     * @return PlayerInputPacket Packet with header.type set to PacketType::PlayerInput,
-     *         header.size set to the packet size, and input and sequence_number populated.
+     * @param sequence_number Monotonically increasing sequence number for this
+     * input.
+     * @return PlayerInputPacket Packet with header.type set to
+     * PacketType::PlayerInput, header.size set to the packet size, and input
+     * and sequence_number populated.
      */
     static PlayerInputPacket makePlayerInput(std::uint8_t input,
                                              std::uint32_t sequence_number) {
@@ -628,11 +663,14 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Constructs an acknowledgement packet for a specific sequence and player.
+     * @brief Constructs an acknowledgement packet for a specific sequence and
+     * player.
      *
      * @param sequence_number Sequence number being acknowledged.
-     * @param player_id Identifier of the player associated with this acknowledgement.
-     * @return AckPacket Packet with its header set to `PacketType::Ack`, `header.size` set, and `sequence_number` and `player_id` populated.
+     * @param player_id Identifier of the player associated with this
+     * acknowledgement.
+     * @return AckPacket Packet with its header set to `PacketType::Ack`,
+     * `header.size` set, and `sequence_number` and `player_id` populated.
      */
     static AckPacket makeAckPacket(uint32_t sequence_number,
                                    std::uint32_t player_id) {

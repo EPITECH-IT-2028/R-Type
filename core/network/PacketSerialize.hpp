@@ -27,8 +27,8 @@ template <typename S>
 /**
  * @brief Serializes a MessagePacket into the provided serializer.
  *
- * Writes the packet header (type and size), timestamp, the 256-byte message payload,
- * player identifier, and sequence number into the serializer stream.
+ * Writes the packet header (type and size), timestamp, the 256-byte message
+ * payload, player identifier, and sequence number into the serializer stream.
  *
  * @param packet Packet instance whose fields will be serialized into `s`.
  */
@@ -184,9 +184,9 @@ template <typename S>
 /**
  * @brief Serializes an EnemyDeathPacket into the provided serializer.
  *
- * Writes the packet fields in network order: header.type (1 byte), header.size (4 bytes),
- * enemy_id (4 bytes), death_x (raw float), death_y (raw float), player_id (4 bytes),
- * score (4 bytes), and sequence_number (4 bytes).
+ * Writes the packet fields in network order: header.type (1 byte), header.size
+ * (4 bytes), enemy_id (4 bytes), death_x (raw float), death_y (raw float),
+ * player_id (4 bytes), score (4 bytes), and sequence_number (4 bytes).
  */
 void serialize(S &s, EnemyDeathPacket &packet) {
   s.value1b(packet.header.type);
@@ -215,11 +215,12 @@ void serialize(S &s, EnemyHitPacket &packet) {
  */
 template <typename S>
 /**
- * @brief Serializes a ProjectileSpawnPacket into the provided serializer in wire order.
+ * @brief Serializes a ProjectileSpawnPacket into the provided serializer in
+ * wire order.
  *
- * Serializes the packet's header then the payload fields in the following order:
- * projectile_id, projectile_type, owner_id, is_enemy_projectile, sequence_number,
- * x, y, velocity_x, velocity_y, speed, and damage.
+ * Serializes the packet's header then the payload fields in the following
+ * order: projectile_id, projectile_type, owner_id, is_enemy_projectile,
+ * sequence_number, x, y, velocity_x, velocity_y, speed, and damage.
  *
  * @tparam S Serializer type.
  * @param s Serializer instance receiving the serialized data.
@@ -256,8 +257,9 @@ template <typename S>
 /**
  * @brief Serializes a ProjectileDestroyPacket into the provided serializer.
  *
- * Writes the packet's header.type (1 byte), header.size (4 bytes), projectile_id (4 bytes),
- * sequence_number (4 bytes), and the x and y coordinates as raw 32-bit floats.
+ * Writes the packet's header.type (1 byte), header.size (4 bytes),
+ * projectile_id (4 bytes), sequence_number (4 bytes), and the x and y
+ * coordinates as raw 32-bit floats.
  *
  * @param s Serializer adapter to write the packet data into.
  * @param packet ProjectileDestroyPacket instance to serialize.
@@ -311,7 +313,8 @@ template <typename S>
 /**
  * @brief Serializes a GameStartPacket into the provided serializer.
  *
- * Writes the packet header (type and size), the game_start flag, and the packet's sequence_number into the serializer stream.
+ * Writes the packet header (type and size), the game_start flag, and the
+ * packet's sequence_number into the serializer stream.
  *
  * @tparam S Serializer type.
  * @param s Serializer instance to write into.
@@ -328,7 +331,8 @@ template <typename S>
 /**
  * @brief Serialize a GameEndPacket into the provided serializer.
  *
- * Writes the packet header (type and size), the `game_end` flag, and the packet's `sequence_number`.
+ * Writes the packet header (type and size), the `game_end` flag, and the
+ * packet's `sequence_number`.
  *
  * @param packet The GameEndPacket to serialize into `s`.
  */
