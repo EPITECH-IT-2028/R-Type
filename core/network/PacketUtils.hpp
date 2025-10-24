@@ -1,7 +1,10 @@
 #pragma once
 
+#include <chrono>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 #include "Packet.hpp"
 
 /**
@@ -65,9 +68,48 @@ inline std::string packetTypeToString(PacketType type) {
       return "MatchmakingResponse";
     case PacketType::PlayerInput:
       return "PlayerInput";
+    case PacketType::Ack:
+      return "Ack";
     default:
       std::stringstream ss;
       ss << "Unknown(" << static_cast<int>(type) << ")";
       return ss.str();
   }
 }
+
+/**
+ * @brief Determines whether a packet of the given type should be acknowledged.
+ *
+ * @param type PacketType value to check.
+ * @return `true` if packets of this type require an acknowledgement, `false`
+ * otherwise.
+ */
+inline bool shouldAcknowledgePacketType(PacketType type) {
+  switch (type) {
+    case PacketType::GameStart:
+    case PacketType::GameEnd:
+    case PacketType::PlayerInfo:
+    case PacketType::PlayerShoot:
+    case PacketType::PlayerDisconnected:
+    case PacketType::Message:
+    case PacketType::NewPlayer:
+    case PacketType::EnemySpawn:
+    case PacketType::EnemyDeath:
+    case PacketType::ProjectileSpawn:
+    case PacketType::ProjectileDestroy:
+      return true;
+    case PacketType::PlayerMove:
+    case PacketType::PlayerInput:
+    case PacketType::Heartbeat:
+    case PacketType::Ack:
+      return false;
+    default:
+      return false;
+  }
+}
+
+struct UnacknowledgedPacket {
+    std::shared_ptr<std::vector<uint8_t>> data;
+    int resend_count;
+    std::chrono::steady_clock::time_point last_sent;
+};

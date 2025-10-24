@@ -1,10 +1,5 @@
 #pragma once
 
-#include <sys/stat.h>
-#include <cstdint>
-#include <unordered_map>
-#include "EntityManager.hpp"
-#include "Packet.hpp"
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -15,12 +10,24 @@
   #ifndef ASIO_NO_WIN32_LEAN_AND_MEAN
     #define ASIO_NO_WIN32_LEAN_AND_MEAN
   #endif
+  #ifndef _WIN32_WINNT
+    #define _WIN32_WINNT 0x0601
+  #endif
   #define PLATFORM_DESKTOP
   #define NOGDI
   #define NOUSER
   #define _WINSOCK_DEPRECATED_NO_WARNINGS
   #define _CRT_SECURE_NO_WARNINGS
 #endif
+
+#include <sys/stat.h>
+#include <cstdint>
+#include <unordered_map>
+#include "EntityManager.hpp"
+#include "Packet.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
+#include "raylib.h"
 
 #include <array>
 #include <atomic>
@@ -99,8 +106,24 @@ namespace client {
   class Client {
     public:
       Client(const std::string &host, const std::uint16_t &port);
-      ~Client() = default;
+      /**
+       * @brief Stops the resend thread and joins it during client destruction.
+       *
+       * Signals the resend thread to stop and joins the thread if it is joinable
+       * to ensure the background resend mechanism is terminated before destruction.
+       */
+      ~Client() {
+        _resendThreadRunning.store(false, std::memory_order_release);
+        if (_resendThread.joinable()) {
+          _resendThread.join();
+        }
+      }
 
+      /**
+       * @brief Check whether the client currently has an active network connection.
+       *
+       * @return `true` if the underlying network manager reports a connection, `false` otherwise.
+       */
       bool isConnected() const {
         return _networkManager.isConnected();
       }
@@ -111,21 +134,17 @@ namespace client {
       }
 
       /**
-       * @brief Attempts to establish a network connection and, on success,
-       * transitions the client to the menu state and announces the local
-       * player.
+       * @brief Attempts to connect; on success enters the connected menu and announces the local player.
        *
-       * Initiates a connection using the internal network manager. If the
-       * connection is established, sets the client state to
-       * ClientState::CONNECTED_MENU and sends a PlayerInfo packet for the local
-       * player named "Player".
+       * Attempts to establish a network connection. If the connection succeeds, sets the client state to ClientState::IN_CONNECTED_MENU and sends a PlayerInfoPacket for the local player using the current outgoing sequence number.
        */
       void connect() {
         _networkManager.connect();
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player");
+          PlayerInfoPacket packet =
+              PacketBuilder::makePlayerInfo("Player", _sequence_number.load());
           send(packet);
         }
       }
@@ -139,6 +158,8 @@ namespace client {
        * the network manager is disconnected and the running flag is cleared.
        */
       void disconnect() {
+        _resendThreadRunning.store(false, std::memory_order_release);
+
         if (_player_id == static_cast<std::uint32_t>(-1)) {
           _networkManager.disconnect();
           _running.store(false, std::memory_order_release);
@@ -171,9 +192,21 @@ namespace client {
         }
 
         try {
+          auto serializedData = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(packet));
+
           packet::PacketSender::sendPacket(_networkManager, packet);
           ++_packet_count;
-          ++_sequence_number;
+
+          if constexpr (requires { packet.sequence_number; }) {
+            if (shouldAcknowledgePacketType(packet.header.type)) {
+              addUnacknowledgedPacket(packet.sequence_number, serializedData);
+              TraceLog(LOG_INFO,
+                       "[SEND] Added packet %u to unacknowledged list",
+                       packet.sequence_number);
+            }
+          }
+          _sequence_number.fetch_add(1, std::memory_order_release);
         } catch (std::exception &e) {
           std::cerr << "Send error: " << e.what() << std::endl;
         }
@@ -275,6 +308,14 @@ namespace client {
 
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
+      void resendPackets();
+
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
+
+      void resendUnacknowledgedPackets();
       void sendMatchmakingRequest();
 
       /**
@@ -311,6 +352,12 @@ namespace client {
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
+
+      std::thread _resendThread;
+      mutable std::mutex _unacknowledgedPacketsMutex;
+      std::atomic<bool> _resendThreadRunning{false};
+      std::unordered_map<std::uint32_t, UnacknowledgedPacket>
+          _unacknowledged_packets;
 
       void registerComponent();
       void registerSystem();

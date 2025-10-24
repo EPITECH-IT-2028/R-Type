@@ -1,5 +1,17 @@
 #pragma once
 
+#ifdef _WIN32
+  #ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN
+  #endif
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+  #ifndef _WIN32_WINNT
+    #define _WIN32_WINNT 0x0601
+  #endif
+#endif
+
 #include <asio.hpp>
 #include <cstddef>
 #include <cstdint>
@@ -22,7 +34,17 @@ namespace server {
     public:
       Server(std::uint16_t port, std::uint8_t max_clients,
              std::uint8_t max_clients_per_room);
-      ~Server() = default;
+      /**
+       * @brief Stops the server and releases networking and game resources when
+       * the Server is destroyed.
+       *
+       * Ensures the server is cleanly stopped — shutting down networking,
+       * timers, and any background resend activity — before the instance is
+       * destroyed.
+       */
+      ~Server() {
+        stop();
+      }
 
       void start();
       void stop();
@@ -65,14 +87,16 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
+      std::unordered_map<std::uint32_t, std::uint64_t> &getLastProcessedSeq() {
+        return _lastProcessedSeq;
+      }
+
     private:
       void startReceive();
       void handleReceive(const char *data, std::size_t bytes_transferred);
 
       void handleTimeout();
-      void scheduleTimeoutCheck();
 
-      void scheduleEventProcessing();
       void processGameEvents();
       void handleGameEvent(const queue::GameEvent &event, std::uint32_t roomId);
 
@@ -83,6 +107,9 @@ namespace server {
 
       std::shared_ptr<Client> getClient(std::size_t idx) const;
 
+      void handleUnacknowledgedPackets();
+
+    private:
       void handleCountdown(std::shared_ptr<game::GameRoom> room,
                            std::shared_ptr<asio::steady_timer> timer);
 
@@ -95,6 +122,10 @@ namespace server {
       std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
+
+      mutable std::shared_mutex _clientsMutex;
+
+      std::unordered_map<uint32_t, uint64_t> _lastProcessedSeq;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;

@@ -201,18 +201,9 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 }
 
 /**
- * @brief Process a collision between a projectile and a player, apply damage,
- * emit events, and destroy involved entities.
+ * @brief Apply damage from an enemy projectile to a player, enqueue resulting player and projectile events, and destroy the affected entities.
  *
- * If the projectile is an enemy-owned projectile, subtract its damage from the
- * player's health, enqueue either a PlayerHitEvent or PlayerDestroyEvent as
- * appropriate, enqueue a ProjectileDestroyEvent for the projectile, and ensure
- * the projectile is destroyed. If the projectile or player is null, or the
- * projectile is a player-owned projectile, no action is taken.
- *
- * @param projectile Shared pointer to the projectile involved in the collision;
- * must have a corresponding ProjectileComponent.
- * @param player Shared pointer to the player struck by the projectile.
+ * If the projectile or player is null, the projectile is not present in the ECS, or the projectile is player-owned, no action is taken. Otherwise the projectile's damage is applied to the player's health; the function enqueues either a PlayerHitEvent or PlayerDestroyEvent for the player and a ProjectileDestroyEvent for the projectile (each populated with the current sequence number from the game and advancing the sequence), then destroys the projectile and, if applicable, the player.
  */
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
     std::shared_ptr<game::Projectile> projectile,
@@ -240,6 +231,7 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;
     playerDestroyEvent.y = player->getPosition().second;
+    playerDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerDestroyEvent);
     _game->destroyPlayer(player->getPlayerId());
   } else {
@@ -248,7 +240,7 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     playerHitEvent.x = player->getPosition().first;
     playerHitEvent.y = player->getPosition().second;
     playerHitEvent.damage = projectile->getDamage().value();
-    playerHitEvent.sequence_number = 0;
+    playerHitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerHitEvent);
   }
 
@@ -257,6 +249,7 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     projDestroyEvent.projectile_id = projectile->getProjectileId();
     projDestroyEvent.x = projectile->getPosition().first;
     projDestroyEvent.y = projectile->getPosition().second;
+    projDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(projDestroyEvent);
   } catch (const std::runtime_error &e) {
     std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
@@ -297,6 +290,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     enemyDestroyEvent.y = enemy->getPosition().second;
     enemyDestroyEvent.player_id = player->getPlayerId();
     enemyDestroyEvent.score = enemy->getScore();
+    enemyDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(enemyDestroyEvent);
     _game->destroyEnemy(enemy->getEnemyId());
     incrementPlayerScore(player->getPlayerId(), enemyDestroyEvent.score);
@@ -306,7 +300,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     enemyHitEvent.x = enemy->getPosition().first;
     enemyHitEvent.y = enemy->getPosition().second;
     enemyHitEvent.damage = collisionDamage;
-    enemyHitEvent.sequence_number = 0;
+    enemyHitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(enemyHitEvent);
   }
   if (player->getHealth().value() <= 0) {
@@ -314,6 +308,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;
     playerDestroyEvent.y = player->getPosition().second;
+    playerDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerDestroyEvent);
     _game->destroyPlayer(player->getPlayerId());
   } else {
@@ -322,7 +317,7 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     playerHitEvent.x = player->getPosition().first;
     playerHitEvent.y = player->getPosition().second;
     playerHitEvent.damage = collisionDamage;
-    playerHitEvent.sequence_number = 0;
+    playerHitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerHitEvent);
   }
 }
@@ -361,6 +356,7 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
     enemyDestroyEvent.y = enemy->getPosition().second;
     enemyDestroyEvent.player_id = projectile->getOwnerId();
     enemyDestroyEvent.score = enemy->getScore();
+    enemyDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(enemyDestroyEvent);
     _game->destroyEnemy(enemy->getEnemyId());
     incrementPlayerScore(projectile->getOwnerId(), enemyDestroyEvent.score);
@@ -370,7 +366,7 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
     hitEvent.x = enemy->getPosition().first;
     hitEvent.y = enemy->getPosition().second;
     hitEvent.damage = projectile->getDamage().value();
-    hitEvent.sequence_number = 0;
+    hitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(hitEvent);
   }
 
@@ -378,6 +374,7 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
   projDestroyEvent.projectile_id = projectile->getProjectileId();
   projDestroyEvent.x = projectile->getPosition().first;
   projDestroyEvent.y = projectile->getPosition().second;
+  projDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
   _eventQueue->addRequest(projDestroyEvent);
   _game->destroyProjectile(projectile->getProjectileId());
 }
@@ -445,6 +442,7 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
     projectileDestroyEvent.projectile_id = projectile.projectile_id;
     projectileDestroyEvent.x = position.x;
     projectileDestroyEvent.y = position.y;
+    projectileDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(projectileDestroyEvent);
   }
 

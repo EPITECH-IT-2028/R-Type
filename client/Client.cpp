@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include <atomic>
 #include <cstdint>
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
@@ -40,6 +41,8 @@ namespace client {
         _packet_count{0},
         _ecsManager(ecs::ECSManager::getInstance()),
         _state(ClientState::DISCONNECTED) {
+    _resendThreadRunning.store(true, std::memory_order_release);
+    _resendThread = std::thread(&Client::resendPackets, this);
     _running.store(false, std::memory_order_release);
   }
 
@@ -351,11 +354,12 @@ namespace client {
   }
 
   /**
-   * @brief Send a shoot action for the local player to the server at the given
-   * world coordinates.
+   * @brief Send a player shoot action to the server at the specified world coordinates.
    *
-   * If the local player ID is unassigned, no packet is sent and the function
-   * returns immediately.
+   * If the local player ID is not assigned, this function does nothing.
+   * On success, the function builds and transmits a PlayerShootPacket, records
+   * the serialized packet as unacknowledged for potential retransmission, and
+   * advances the client's outgoing sequence number.
    *
    * @param x World-space X coordinate where the player is shooting.
    * @param y World-space Y coordinate where the player is shooting.
@@ -368,9 +372,9 @@ namespace client {
       return;
     }
     try {
+      uint32_t currentSeq = _sequence_number.load(std::memory_order_acquire);
       PlayerShootPacket packet = PacketBuilder::makePlayerShoot(
-          x, y, ProjectileType::PLAYER_BASIC,
-          _sequence_number.load(std::memory_order_acquire));
+          x, y, ProjectileType::PLAYER_BASIC, currentSeq);
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SEND SHOOT] Exception: %s", e.what());
@@ -378,10 +382,125 @@ namespace client {
   }
 
   /**
-   * @brief Sends a matchmaking request to the connected server.
+   * @brief Record a sent packet for retransmission tracking keyed by its sequence number.
    *
-   * If the request is successfully sent, an informational log entry is
-   * produced; if sending fails, an error is logged.
+   * Creates an unacknowledged-packet entry containing the serialized packet bytes,
+   * initializes its resend count to zero, sets its last-sent timestamp to now,
+   * and stores it in the client's unacknowledged packet map using the provided sequence number.
+   *
+   * @param sequence_number Sequence identifier for the packet used as the map key.
+   * @param packetData Shared pointer to the serialized packet byte buffer to be resent if unacknowledged.
+   */
+  void Client::addUnacknowledgedPacket(
+      std::uint32_t sequence_number,
+      std::shared_ptr<std::vector<uint8_t>> packetData) {
+    std::lock_guard<std::mutex>lock(_unacknowledgedPacketsMutex);
+    UnacknowledgedPacket packet;
+    packet.data = packetData;
+    packet.resend_count = 0;
+    packet.last_sent = std::chrono::steady_clock::now();
+    _unacknowledged_packets[sequence_number] = packet;
+  }
+
+  /**
+   * @brief Remove the tracked unacknowledged packet with the given sequence number.
+   *
+   * Removes the entry for the acknowledged packet from the client's unacknowledged
+   * packet store. If no entry exists for the provided sequence number, a warning
+   * is logged and no change is made.
+   *
+   * @param sequence_number Sequence number of the packet to remove.
+   */
+  void Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
+    std::lock_guard<std::mutex>lock(_unacknowledgedPacketsMutex);
+    auto it = _unacknowledged_packets.find(sequence_number);
+    if (it != _unacknowledged_packets.end()) {
+      TraceLog(LOG_INFO,
+               "[ACK] Client removing acknowledged packet %u (had %zu unacked "
+               "packets)",
+               sequence_number, _unacknowledged_packets.size());
+      _unacknowledged_packets.erase(it);
+      TraceLog(LOG_INFO,
+               "[ACK] Client now has %zu unacknowledged packets remaining",
+               _unacknowledged_packets.size());
+    } else {
+      TraceLog(LOG_WARNING,
+               "[ACK] Client tried to remove non-existent packet %u",
+               sequence_number);
+    }
+  }
+
+  /**
+   * @brief Retries sending packets that have not been acknowledged.
+   *
+   * Scans the client's unacknowledged packet table and resends any packet whose
+   * last send time is older than the minimum resend interval. Each resend
+   * increments the packet's resend count and updates its last-sent timestamp.
+   * Packets that reach the maximum resend attempts (5) are removed and will not
+   * be retried.
+   *
+   * @details
+   * - Resend interval: 500 milliseconds.
+   * - Maximum resend attempts: 5.
+   * - Side effects:
+   *   - Sends packet data via the client's network manager.
+   *   - Updates each packet's `resend_count` and `last_sent`.
+   *   - Removes entries that exceeded the maximum resend attempts.
+   */
+  void Client::resendUnacknowledgedPackets() {
+    const int MAX_RESEND_ATTEMPTS = 5;
+    const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(500);
+    auto now = std::chrono::steady_clock::now();
+
+    std::vector<uint32_t> packets_to_remove;
+
+    {
+    std::lock_guard<std::mutex>lock(_unacknowledgedPacketsMutex);
+    for (auto &[seq, packet] : _unacknowledged_packets) {
+      if (now - packet.last_sent < MIN_RESEND_INTERVAL) {
+        continue;
+      }
+
+      if (packet.resend_count >= MAX_RESEND_ATTEMPTS) {
+        TraceLog(LOG_WARNING,
+                 "[RESEND] Packet %u exceeded max resend attempts, dropping",
+                 seq);
+        packets_to_remove.push_back(seq);
+        continue;
+      }
+
+      _networkManager.send(packet.data);
+      packet.resend_count++;
+      packet.last_sent = now;
+
+      TraceLog(LOG_INFO, "[RESEND] Resending packet %u (attempt %d/%d)", seq,
+               packet.resend_count, MAX_RESEND_ATTEMPTS);
+    }
+
+    for (uint32_t seq : packets_to_remove) {
+      _unacknowledged_packets.erase(seq);
+    }
+  }}
+
+  /**
+   * @brief Runs the background loop that periodically resends unacknowledged packets.
+   *
+   * Continuously sleeps for a fixed delay and invokes the resend routine while the resend thread running flag remains set; exits when the running flag is cleared.
+   */
+  void Client::resendPackets() {
+    while (_resendThreadRunning.load(std::memory_order_acquire)) {
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(RESEND_PACKET_DELAY));
+
+      if (!_resendThreadRunning.load(std::memory_order_acquire))
+        break;
+
+      resendUnacknowledgedPackets();
+    }
+  }
+
+  /**
+   * @brief Sends a matchmaking request to the connected server.
    */
   void Client::sendMatchmakingRequest() {
     try {

@@ -7,7 +7,8 @@ ServerNetworkManager::ServerNetworkManager(std::uint16_t port)
     : BaseNetworkManager(port),
       _signals(_io_context, SIGINT, SIGTERM),
       _eventTimer(std::make_shared<asio::steady_timer>(_io_context)),
-      _timeoutTimer(std::make_shared<asio::steady_timer>(_io_context)) {
+      _timeoutTimer(std::make_shared<asio::steady_timer>(_io_context)),
+      _unacknowledgedTimer(std::make_shared<asio::steady_timer>(_io_context)) {
 }
 
 void ServerNetworkManager::registerClient(
@@ -141,6 +142,34 @@ void ServerNetworkManager::scheduleTimeout(
         if (!error) {
           callback();
           scheduleTimeout(interval, callback);
+        }
+      });
+}
+
+void ServerNetworkManager::scheduleUnacknowledgedPacketsCheck(
+    std::chrono::milliseconds interval, const std::function<void()> &callback) {
+  if (_unacknowledgedScheduled)
+    return;
+  _unacknowledgedScheduled = true;
+  _unacknowledgedTimer->expires_after(interval);
+  _unacknowledgedTimer->async_wait(
+      [this, interval, callback](const asio::error_code &error) {
+        _unacknowledgedScheduled = false;
+        if (!error) {
+          callback();
+          scheduleUnacknowledgedPacketsCheck(interval, callback);
+        }
+      });
+}
+
+void ServerNetworkManager::scheduleClearLastProcessedSeq(
+    std::chrono::seconds interval, const std::function<void()> &callback) {
+  auto timer = std::make_shared<asio::steady_timer>(_io_context, interval);
+  timer->async_wait(
+      [this, timer, interval, callback](const asio::error_code &error) {
+        if (!error) {
+          callback();
+          scheduleClearLastProcessedSeq(interval, callback);
         }
       });
 }

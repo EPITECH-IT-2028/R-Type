@@ -31,6 +31,13 @@ namespace network {
                                    const std::function<void()> &callback);
       void scheduleTimeout(std::chrono::seconds interval,
                            const std::function<void()> &callback);
+      void scheduleUnacknowledgedPacketsCheck(
+          std::chrono::milliseconds interval,
+          const std::function<void()> &callback);
+
+      void scheduleClearLastProcessedSeq(std::chrono::seconds interval,
+                                         const std::function<void()> &callback);
+
       void checkSignals();
 
       void setStopCallback(const std::function<void()> &callback) {
@@ -58,9 +65,11 @@ namespace network {
       asio::signal_set _signals;
       std::shared_ptr<asio::steady_timer> _eventTimer;
       std::shared_ptr<asio::steady_timer> _timeoutTimer;
+      std::shared_ptr<asio::steady_timer> _unacknowledgedTimer;
       std::unordered_map<int, asio::ip::udp::endpoint> _clientEndpoints;
       std::function<void()> _stopCallback;
       bool _isRunning = true;
+      bool _unacknowledgedScheduled = false;
       bool _timeoutScheduled = false;
   };
 
