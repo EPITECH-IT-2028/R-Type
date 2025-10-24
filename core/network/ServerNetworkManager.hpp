@@ -34,6 +34,11 @@ namespace network {
       void scheduleUnacknowledgedPacketsCheck(
           std::chrono::milliseconds interval,
           const std::function<void()> &callback);
+
+      void scheduleClearLastProcessedSeq(
+          std::chrono::seconds interval,
+          const std::function<void()> &callback);
+
       void checkSignals();
 
       void setStopCallback(const std::function<void()> &callback) {
@@ -65,6 +70,7 @@ namespace network {
       std::unordered_map<int, asio::ip::udp::endpoint> _clientEndpoints;
       std::function<void()> _stopCallback;
       bool _isRunning = true;
+      bool _unacknowledgedScheduled = false;
       bool _timeoutScheduled = false;
   };
 

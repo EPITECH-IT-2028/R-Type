@@ -16,8 +16,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <mutex>
-#include <unordered_map>
 #include <vector>
 #include "Client.hpp"
 #include "Events.hpp"
@@ -37,10 +35,12 @@ namespace server {
       Server(std::uint16_t port, std::uint8_t max_clients,
              std::uint8_t max_clients_per_room);
       /**
-       * @brief Stops the server and releases networking and game resources when the Server is destroyed.
+       * @brief Stops the server and releases networking and game resources when
+       * the Server is destroyed.
        *
-       * Ensures the server is cleanly stopped — shutting down networking, timers, and any background resend
-       * activity — before the instance is destroyed.
+       * Ensures the server is cleanly stopped — shutting down networking,
+       * timers, and any background resend activity — before the instance is
+       * destroyed.
        */
       ~Server() {
         stop();
@@ -87,6 +87,10 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
+      std::unordered_map<std::uint32_t, std::uint64_t> &getLastProcessedSeq() {
+        return _lastProcessedSeq;
+      }
+
     private:
       void startReceive();
       void handleReceive(const char *data, std::size_t bytes_transferred);
@@ -120,6 +124,8 @@ namespace server {
       std::shared_ptr<game::GameManager> _gameManager;
 
       mutable std::shared_mutex _clientsMutex;
+
+      std::unordered_map<uint32_t, uint64_t> _lastProcessedSeq;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;

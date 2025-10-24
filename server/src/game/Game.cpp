@@ -167,8 +167,7 @@ void game::Game::stop() {
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
-  startEvent.sequence_number = getSequenceNumber();
-  incrementSequenceNumber();
+  startEvent.sequence_number = fetchAndIncrementSequenceNumber();
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();

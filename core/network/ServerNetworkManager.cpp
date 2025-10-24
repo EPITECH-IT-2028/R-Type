@@ -148,12 +148,28 @@ void ServerNetworkManager::scheduleTimeout(
 
 void ServerNetworkManager::scheduleUnacknowledgedPacketsCheck(
     std::chrono::milliseconds interval, const std::function<void()> &callback) {
+  if (_unacknowledgedScheduled)
+    return;
+  _unacknowledgedScheduled = true;
   _unacknowledgedTimer->expires_after(interval);
   _unacknowledgedTimer->async_wait(
       [this, interval, callback](const asio::error_code &error) {
+        _unacknowledgedScheduled = false;
         if (!error) {
           callback();
           scheduleUnacknowledgedPacketsCheck(interval, callback);
+        }
+      });
+}
+
+void ServerNetworkManager::scheduleClearLastProcessedSeq(
+    std::chrono::seconds interval, const std::function<void()> &callback) {
+  auto timer = std::make_shared<asio::steady_timer>(_io_context, interval);
+  timer->async_wait(
+      [this, timer, interval, callback](const asio::error_code &error) {
+        if (!error) {
+          callback();
+          scheduleClearLastProcessedSeq(interval, callback);
         }
       });
 }

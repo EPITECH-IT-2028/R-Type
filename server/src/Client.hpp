@@ -33,9 +33,7 @@ namespace server {
             _connected(true),
             _room_id(NO_ROOM),
             _last_heartbeat(std::chrono::steady_clock::now()),
-            _last_position_update(std::chrono::steady_clock::now()),
-            _last_ack(0),
-            _sequence_number(0) {
+            _last_position_update(std::chrono::steady_clock::now()) {
       }
       /**
        * @brief Destroys the Client object.
@@ -52,8 +50,6 @@ namespace server {
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;
       std::uint32_t _entity_id = std::numeric_limits<std::uint32_t>::max();
-      std::uint32_t _last_ack = 0;
-      std::uint32_t _sequence_number = 0;
 
       mutable std::mutex _unacknowledgedPacketsMutex;
 

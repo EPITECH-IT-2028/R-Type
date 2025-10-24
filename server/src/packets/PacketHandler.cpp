@@ -11,7 +11,6 @@
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketSerialize.hpp"
-#include "PacketUtils.hpp"
 #include "Server.hpp"
 
 /**
@@ -201,16 +200,21 @@ int packet::HeartbeatPlayerHandler::handlePacket(
 }
 
 /**
- * @brief Process an incoming PlayerShootPacket, spawn the projectile, acknowledge the sender, and broadcast the shot to the room.
+ * @brief Process an incoming PlayerShootPacket, spawn the projectile,
+ * acknowledge the sender, and broadcast the shot to the room.
  *
- * Deserializes the provided buffer as a PlayerShootPacket, validates the sender's room and player, creates a projectile in the room's game,
- * sends an AckPacket back to the originating client, and broadcasts the resulting PlayerShoot packet to all clients in the room.
+ * Deserializes the provided buffer as a PlayerShootPacket, validates the
+ * sender's room and player, creates a projectile in the room's game, sends an
+ * AckPacket back to the originating client, and broadcasts the resulting
+ * PlayerShoot packet to all clients in the room.
  *
- * @param server Server instance used to access game manager and network manager.
+ * @param server Server instance used to access game manager and network
+ * manager.
  * @param client Originating client sending the shoot packet.
  * @param data Pointer to the serialized PlayerShootPacket buffer.
  * @param size Size of the serialized buffer in bytes.
- * @return int `OK` on success; `KO` if deserialization fails, the room or player cannot be found, or projectile creation fails.
+ * @return int `OK` on success; `KO` if deserialization fails, the room or
+ * player cannot be found, or projectile creation fails.
  */
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -253,6 +257,21 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
     projectileType = ProjectileType::PLAYER_BASIC;
   }
 
+  std::uint64_t lastSeq = 0;
+  auto it = server.getLastProcessedSeq().find(client._player_id);
+  if (it != server.getLastProcessedSeq().end()) {
+    lastSeq = it->second;
+  }
+
+  if (packet.sequence_number <= lastSeq) {
+    server.getNetworkManager().sendToClient(
+        client._player_id,
+        std::make_shared<std::vector<uint8_t>>(
+            serialization::BitserySerializer::serialize(
+                PacketBuilder::makeAckPacket(packet.sequence_number,
+                                             client._player_id))));
+    return OK;
+  }
   auto projectile = room->getGame().createProjectile(
       projectileId, client._player_id, projectileType, pos.first, pos.second,
       vx, vy);
@@ -265,6 +284,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
       PacketBuilder::makePlayerShoot(pos.first, pos.second, projectileType,
                                      room->getGame().getSequenceNumber());
 
+  server.getLastProcessedSeq()[client._player_id] = packet.sequence_number;
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
@@ -825,11 +845,12 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process an incoming AckPacket and mark the referenced packet as acknowledged.
+ * @brief Process an incoming AckPacket and mark the referenced packet as
+ * acknowledged.
  *
- * Deserializes an AckPacket from the provided buffer, finds the corresponding client
- * on the server by player_id, and removes the acknowledged sequence number from that
- * client's unacknowledged packet set.
+ * Deserializes an AckPacket from the provided buffer, finds the corresponding
+ * client on the server by player_id, and removes the acknowledged sequence
+ * number from that client's unacknowledged packet set.
  *
  * @param server The server instance that owns the client list and packet state.
  * @param client The client that sent the ACK (used for logging/context).

@@ -18,7 +18,6 @@
 #include "RenderManager.hpp"
 #include "RenderSystem.hpp"
 #include "ScaleComponent.hpp"
-#include "Serializer.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
@@ -489,11 +488,11 @@ namespace client {
    * Continuously sleeps for a fixed delay and invokes the resend routine while the resend thread running flag remains set; exits when the running flag is cleared.
    */
   void Client::resendPackets() {
-    while (_resendThreadRunning) {
+    while (_resendThreadRunning.load(std::memory_order_acquire)) {
       std::this_thread::sleep_for(
           std::chrono::milliseconds(RESEND_PACKET_DELAY));
 
-      if (!_resendThreadRunning)
+      if (!_resendThreadRunning.load(std::memory_order_acquire))
         break;
 
       resendUnacknowledgedPackets();

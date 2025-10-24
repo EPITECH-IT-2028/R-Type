@@ -231,9 +231,8 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;
     playerDestroyEvent.y = player->getPosition().second;
-    playerDestroyEvent.sequence_number = _game->getSequenceNumber();
+    playerDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerDestroyEvent);
-    _game->incrementSequenceNumber();
     _game->destroyPlayer(player->getPlayerId());
   } else {
     queue::PlayerHitEvent playerHitEvent;
@@ -241,9 +240,8 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     playerHitEvent.x = player->getPosition().first;
     playerHitEvent.y = player->getPosition().second;
     playerHitEvent.damage = projectile->getDamage().value();
-    playerHitEvent.sequence_number = _game->getSequenceNumber();
+    playerHitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerHitEvent);
-    _game->incrementSequenceNumber();
   }
 
   queue::ProjectileDestroyEvent projDestroyEvent;
@@ -251,9 +249,8 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     projDestroyEvent.projectile_id = projectile->getProjectileId();
     projDestroyEvent.x = projectile->getPosition().first;
     projDestroyEvent.y = projectile->getPosition().second;
-    projDestroyEvent.sequence_number = _game->getSequenceNumber();
+    projDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(projDestroyEvent);
-    _game->incrementSequenceNumber();
   } catch (const std::runtime_error &e) {
     std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
               << std::endl;
@@ -293,10 +290,9 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     enemyDestroyEvent.y = enemy->getPosition().second;
     enemyDestroyEvent.player_id = player->getPlayerId();
     enemyDestroyEvent.score = enemy->getScore();
-    enemyDestroyEvent.sequence_number = _game->getSequenceNumber();
+    enemyDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(enemyDestroyEvent);
     _game->destroyEnemy(enemy->getEnemyId());
-    _game->incrementSequenceNumber();
     incrementPlayerScore(player->getPlayerId(), enemyDestroyEvent.score);
   } else {
     queue::EnemyHitEvent enemyHitEvent;
@@ -304,18 +300,16 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     enemyHitEvent.x = enemy->getPosition().first;
     enemyHitEvent.y = enemy->getPosition().second;
     enemyHitEvent.damage = collisionDamage;
-    enemyHitEvent.sequence_number = _game->getSequenceNumber();
+    enemyHitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(enemyHitEvent);
-    _game->incrementSequenceNumber();
   }
   if (player->getHealth().value() <= 0) {
     queue::PlayerDestroyEvent playerDestroyEvent;
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;
     playerDestroyEvent.y = player->getPosition().second;
-    playerDestroyEvent.sequence_number = _game->getSequenceNumber();
+    playerDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerDestroyEvent);
-    _game->incrementSequenceNumber();
     _game->destroyPlayer(player->getPlayerId());
   } else {
     queue::PlayerHitEvent playerHitEvent;
@@ -323,9 +317,8 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     playerHitEvent.x = player->getPosition().first;
     playerHitEvent.y = player->getPosition().second;
     playerHitEvent.damage = collisionDamage;
-    playerHitEvent.sequence_number = _game->getSequenceNumber();
+    playerHitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(playerHitEvent);
-    _game->incrementSequenceNumber();
   }
 }
 
@@ -363,10 +356,9 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
     enemyDestroyEvent.y = enemy->getPosition().second;
     enemyDestroyEvent.player_id = projectile->getOwnerId();
     enemyDestroyEvent.score = enemy->getScore();
-    enemyDestroyEvent.sequence_number = _game->getSequenceNumber();
+    enemyDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(enemyDestroyEvent);
     _game->destroyEnemy(enemy->getEnemyId());
-    _game->incrementSequenceNumber();
     incrementPlayerScore(projectile->getOwnerId(), enemyDestroyEvent.score);
   } else {
     queue::EnemyHitEvent hitEvent;
@@ -374,17 +366,15 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
     hitEvent.x = enemy->getPosition().first;
     hitEvent.y = enemy->getPosition().second;
     hitEvent.damage = projectile->getDamage().value();
-    hitEvent.sequence_number = _game->getSequenceNumber();
+    hitEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(hitEvent);
-    _game->incrementSequenceNumber();
   }
 
   queue::ProjectileDestroyEvent projDestroyEvent;
   projDestroyEvent.projectile_id = projectile->getProjectileId();
   projDestroyEvent.x = projectile->getPosition().first;
   projDestroyEvent.y = projectile->getPosition().second;
-  projDestroyEvent.sequence_number = _game->getSequenceNumber();
-  _game->incrementSequenceNumber();
+  projDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
   _eventQueue->addRequest(projDestroyEvent);
   _game->destroyProjectile(projectile->getProjectileId());
 }
@@ -452,9 +442,8 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
     projectileDestroyEvent.projectile_id = projectile.projectile_id;
     projectileDestroyEvent.x = position.x;
     projectileDestroyEvent.y = position.y;
-    projectileDestroyEvent.sequence_number = _game->getSequenceNumber();
+    projectileDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
     _eventQueue->addRequest(projectileDestroyEvent);
-    _game->incrementSequenceNumber();
   }
 
   _ecsManager->destroyEntity(entity);

@@ -90,15 +90,8 @@ namespace game {
       }
 
       /**
-       * @brief Access the game's sequence number used for ordering events and updates.
-       *
-       * @return Reference to the internal std::atomic<std::uint32_t> sequence number.
-       */
-      std::atomic<std::uint32_t> &getSequenceNumber() {
-        return _sequence_number;
-      }
-      /**
-       * @brief Set the game's sequence number used for ordering events and updates.
+       * @brief Set the game's sequence number used for ordering events and
+       * updates.
        *
        * @param value New sequence number to assign.
        */
@@ -106,12 +99,21 @@ namespace game {
         _sequence_number = value;
       }
       /**
-       * @brief Atomically increments the internal sequence number by one.
+       * @brief Atomically increments the internal sequence number by one and
+       * return the new value.
        *
        * Advances the game's sequence number used for event and update ordering.
        */
+      std::uint32_t fetchAndIncrementSequenceNumber() {
+        return _sequence_number.fetch_add(1, std::memory_order_relaxed);
+      }
+
       void incrementSequenceNumber() {
-        _sequence_number.fetch_add(1);
+        _sequence_number.fetch_add(1, std::memory_order_relaxed);
+      }
+
+      std::uint32_t getSequenceNumber() {
+        return _sequence_number.load(std::memory_order_acquire);
       }
 
     private:

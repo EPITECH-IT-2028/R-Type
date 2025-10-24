@@ -5,6 +5,8 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 #include "Broadcast.hpp"
 #include "Events.hpp"
 #include "GameManager.hpp"
@@ -60,6 +62,8 @@ void server::Server::start() {
       std::chrono::milliseconds(1000),
       [this]() { handleUnacknowledgedPackets(); });
 
+  _networkManager.scheduleClearLastProcessedSeq(
+      std::chrono::seconds(2), [this]() { _lastProcessedSeq.clear(); });
   _networkManager.run();
 }
 
@@ -82,10 +86,11 @@ void server::Server::processGameEvents() {
 }
 
 /**
- * @brief Gracefully stops the server and shuts down its networking and game subsystems.
+ * @brief Gracefully stops the server and shuts down its networking and game
+ * subsystems.
  *
- * Closes the network socket, instructs the game manager to shut down all active rooms,
- * and stops the resend background thread, waiting for it to finish.
+ * Closes the network socket, instructs the game manager to shut down all active
+ * rooms, and stops the resend background thread, waiting for it to finish.
  */
 void server::Server::stop() {
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
@@ -96,14 +101,16 @@ void server::Server::stop() {
 /**
  * @brief Check connected clients for inactivity and remove timed-out clients.
  *
- * If a client's last heartbeat is more than CLIENT_TIMEOUT seconds ago, the client
- * is marked disconnected, the global player count is decremented, the client is
- * removed from any assigned room (the player's entity is destroyed and a
- * disconnect packet is broadcast to the room), and the client slot is cleared.
+ * If a client's last heartbeat is more than CLIENT_TIMEOUT seconds ago, the
+ * client is marked disconnected, the global player count is decremented, the
+ * client is removed from any assigned room (the player's entity is destroyed
+ * and a disconnect packet is broadcast to the room), and the client slot is
+ * cleared.
  */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
 
+  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   if (_clients.empty()) {
     return;
   }
@@ -143,14 +150,19 @@ void server::Server::handleTimeout() {
 }
 
 /**
- * @brief Translate a queued game event into a network packet and broadcast it to all clients in the specified room.
+ * @brief Translate a queued game event into a network packet and broadcast it
+ * to all clients in the specified room.
  *
- * Converts the provided queue::GameEvent into the corresponding network packet, broadcasts that packet to every client currently in the target room, and enqueues the serialized packet for reliable delivery when applicable.
+ * Converts the provided queue::GameEvent into the corresponding network packet,
+ * broadcasts that packet to every client currently in the target room, and
+ * enqueues the serialized packet for reliable delivery when applicable.
  *
- * If @p roomId is NO_ROOM or the room cannot be found, the function performs no action.
+ * If @p roomId is NO_ROOM or the room cannot be found, the function performs no
+ * action.
  *
  * @param event Variant holding the specific game event to translate and send.
- * @param roomId Identifier of the target room whose clients will receive the packet.
+ * @param roomId Identifier of the target room whose clients will receive the
+ * packet.
  */
 void server::Server::handleGameEvent(const queue::GameEvent &event,
                                      std::uint32_t roomId) {
@@ -351,29 +363,33 @@ void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected &&
-        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
-            current_endpoint) {
-      return;
-    }
-  }
-
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (!_clients[i]) {
-      int id = _next_player_id++;
-      _clients[i] = std::make_shared<Client>(id);
-      _clients[i]->_connected = true;
-      _player_count++;
-      _networkManager.registerClient(id, current_endpoint);
-
-      std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
-
-      auto handler = _factory.createHandler(PacketType::PlayerInfo);
-      if (handler) {
-        handler->handlePacket(*this, *_clients[i], data, size);
+  {
+    std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
+    for (size_t i = 0; i < _clients.size(); ++i) {
+      if (_clients[i] && _clients[i]->_connected &&
+          _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
+              current_endpoint) {
+        return;
       }
-      return;
+    }
+
+    for (size_t i = 0; i < _clients.size(); ++i) {
+      if (!_clients[i]) {
+        int id = _next_player_id++;
+        _clients[i] = std::make_shared<Client>(id);
+        _clients[i]->_connected = true;
+        _player_count++;
+        _networkManager.registerClient(id, current_endpoint);
+
+        std::cout << "[WORLD] New player connecting with ID " << id
+                  << std::endl;
+
+        auto handler = _factory.createHandler(PacketType::PlayerInfo);
+        if (handler) {
+          handler->handlePacket(*this, *_clients[i], data, size);
+        }
+        return;
+      }
     }
   }
 
@@ -392,12 +408,15 @@ void server::Server::handlePlayerInfoPacket(const char *data,
 size_t server::Server::findExistingClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected &&
-        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
-            current_endpoint) {
-      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
-      return static_cast<int>(i);
+  {
+    std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
+    for (size_t i = 0; i < _clients.size(); ++i) {
+      if (_clients[i] && _clients[i]->_connected &&
+          _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
+              current_endpoint) {
+        _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
+        return static_cast<int>(i);
+      }
     }
   }
   return KO;
@@ -417,6 +436,7 @@ size_t server::Server::findExistingClient() {
  */
 void server::Server::handleClientData(std::size_t client_idx, const char *data,
                                       std::size_t size) {
+  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   if (client_idx < 0 || client_idx >= static_cast<size_t>(_clients.size()) ||
       !_clients[client_idx]) {
     return;
@@ -551,7 +571,8 @@ bool server::Server::initializePlayerInRoom(Client &client) {
  * second using the provided timer.
  *
  * @param room Shared pointer to the game room whose countdown should be driven.
- *             Must be non-null and in STARTING state for the function to take effect.
+ *             Must be non-null and in STARTING state for the function to take
+ * effect.
  * @param timer Shared pointer to an asio steady_timer used to schedule the next
  *              countdown tick.
  */
@@ -566,8 +587,8 @@ void server::Server::handleCountdown(
   auto roomClients = room->getClients();
 
   if (countdown <= 0) {
-    auto startPacket = PacketBuilder::makeGameStart(
-        true, room->getGame().getSequenceNumber().load());
+    auto startPacket =
+        PacketBuilder::makeGameStart(true, room->getGame().getSequenceNumber());
 
     broadcast::Broadcast::broadcastGameStartToRoom(_networkManager, roomClients,
                                                    startPacket);
@@ -575,9 +596,10 @@ void server::Server::handleCountdown(
     auto buffer = std::make_shared<std::vector<uint8_t>>(
         serialization::BitserySerializer::serialize(startPacket));
     for (const auto &client : roomClients) {
-      client->addUnacknowledgedPacket(
-          room->getGame().getSequenceNumber().load(), buffer);
+      client->addUnacknowledgedPacket(room->getGame().getSequenceNumber(),
+                                      buffer);
     }
+    room->getGame().incrementSequenceNumber();
     room->start();
     for (auto &roomClient : roomClients) {
       if (roomClient) {
@@ -620,6 +642,7 @@ void server::Server::handleCountdown(
  */
 std::shared_ptr<server::Client> server::Server::getClient(
     std::size_t idx) const {
+  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   if (idx < 0 || idx >= static_cast<std::size_t>(_clients.size())) {
     return nullptr;
   }
@@ -635,6 +658,7 @@ std::shared_ptr<server::Client> server::Server::getClient(
  */
 std::shared_ptr<server::Client> server::Server::getClientById(
     int player_id) const {
+  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   for (const auto &client : _clients) {
     if (client && client->_player_id == player_id) {
       return client;
@@ -655,6 +679,7 @@ std::shared_ptr<server::Client> server::Server::getClientById(
  * cleared.
  */
 void server::Server::clearClientSlot(int player_id) {
+  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
       if (client->_room_id != NO_ROOM)
@@ -666,12 +691,15 @@ void server::Server::clearClientSlot(int player_id) {
 }
 
 /**
- * @brief Resend any outstanding unacknowledged packets for all connected clients.
+ * @brief Resend any outstanding unacknowledged packets for all connected
+ * clients.
  *
- * Iterates the server's client slots and invokes each connected client's resend routine,
- * using the server's network manager to retransmit packets that have not yet been acknowledged.
+ * Iterates the server's client slots and invokes each connected client's resend
+ * routine, using the server's network manager to retransmit packets that have
+ * not yet been acknowledged.
  */
 void server::Server::handleUnacknowledgedPackets() {
+  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
     if (client && client->_connected) {
       client->resendUnacknowledgedPackets(_networkManager);

@@ -517,6 +517,6 @@ template <typename S>
 void serialize(S &s, AckPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.value4b(packet.player_id);
   s.value4b(packet.sequence_number);
+  s.value4b(packet.player_id);
 }
