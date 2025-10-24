@@ -35,9 +35,8 @@ namespace network {
           std::chrono::milliseconds interval,
           const std::function<void()> &callback);
 
-      void scheduleClearLastProcessedSeq(
-          std::chrono::seconds interval,
-          const std::function<void()> &callback);
+      void scheduleClearLastProcessedSeq(std::chrono::seconds interval,
+                                         const std::function<void()> &callback);
 
       void checkSignals();
 
