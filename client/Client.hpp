@@ -41,6 +41,7 @@
 namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
+  constexpr std::size_t CHAT_MAX_MESSAGES = 14;
 
   enum class ClientState {
     IN_CONNECTED_MENU,
@@ -289,9 +290,10 @@ namespace client {
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
 
-      void sendChatMessage(std::string &message);
+      void sendChatMessage(const std::string &message);
       void storeChatMessage(const std::string &message);
-      const std::vector<std::string> &getChatMessages() const {
+      std::vector<std::string> getChatMessages() const {
+        std::lock_guard<std::mutex> lock(_chatMutex);
         return _chatMessages;
       }
 
@@ -332,6 +334,7 @@ namespace client {
       std::string _playerName;
       mutable std::shared_mutex _playerNameMutex;
       std::vector<std::string> _chatMessages;
+      mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 
       void registerComponent();

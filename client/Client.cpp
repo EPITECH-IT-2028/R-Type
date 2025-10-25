@@ -406,7 +406,7 @@ namespace client {
     }
   }
 
-  void Client::sendChatMessage(std::string &message) {
+  void Client::sendChatMessage(const std::string &message) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(
           LOG_WARNING,
@@ -423,8 +423,9 @@ namespace client {
   }
 
   void Client::storeChatMessage(const std::string &message) {
+    std::lock_guard<std::mutex> lock(_chatMutex);
     _chatMessages.push_back(message);
-    if (_chatMessages.size() > 14)
+    if (_chatMessages.size() > CHAT_MAX_MESSAGES)
       _chatMessages.erase(_chatMessages.begin());
   }
 }  // namespace client
