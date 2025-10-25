@@ -140,10 +140,7 @@ namespace ecs {
         if (character != 0) {
           chat.message += character;
         }
-        if (IsKeyPressed(KEY_BACKSPACE)) {
-          if (!chat.message.empty())
-            chat.message.pop_back();
-        } else if (IsKeyPressedRepeat(KEY_BACKSPACE)) {
+        if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressedRepeat(KEY_BACKSPACE)) {
           if (!chat.message.empty())
             chat.message.pop_back();
         }
