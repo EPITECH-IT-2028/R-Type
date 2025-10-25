@@ -21,8 +21,6 @@ namespace game {
                             const std::string &provided_hash,
                             const std::string &original_password);
 
-      void cleanupChallenges();
-
     private:
       std::unordered_map<std::uint32_t, ChallengeStruct> _challenges;
       std::mutex _mutex;

@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <iostream>
 #include "Challenge.hpp"
 #include "crypto/Crypto.hpp"
 
