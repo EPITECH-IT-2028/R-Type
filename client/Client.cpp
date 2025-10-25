@@ -236,6 +236,7 @@ namespace client {
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
+    std::lock_guard<std::shared_mutex> idLock(_playerIdMutex);
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});

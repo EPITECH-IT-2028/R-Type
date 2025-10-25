@@ -256,6 +256,7 @@ namespace client {
        * if no player is assigned.
        */
       std::uint32_t getPlayerId() const {
+        std::shared_lock<std::shared_mutex> lock(_playerIdMutex);
         return _player_id;
       }
 
@@ -327,6 +328,7 @@ namespace client {
       std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+      mutable std::shared_mutex _playerIdMutex;
       std::string _playerName;
       mutable std::shared_mutex _playerNameMutex;
       std::vector<std::string> _chatMessages;
