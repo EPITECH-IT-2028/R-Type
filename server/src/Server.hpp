@@ -9,6 +9,7 @@
 #include "Events.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
+#include "game/Challenge.hpp"
 #include "game/GameManager.hpp"
 
 namespace game {
@@ -65,6 +66,10 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
+      game::Challenge &getChallengeManager() {
+        return _challenge;
+      }
+
     private:
       void startReceive();
       void handleReceive(const char *data, std::size_t bytes_transferred);
@@ -95,6 +100,7 @@ namespace server {
       std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
+      game::Challenge _challenge;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;

@@ -3,6 +3,7 @@
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "Crypto.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -392,4 +393,58 @@ namespace client {
       TraceLog(LOG_ERROR, "[MATCHMAKING] Exception: %s", e.what());
     }
   }
+
+  void Client::sendRequestChallenge(std::uint32_t room_id) {
+    try {
+      _challenge.setRoomId(room_id);
+      _challenge.setWaitingChallenge(true);
+
+      RequestChallengePacket packet =
+          PacketBuilder::makeRequestChallenge(room_id);
+      send(packet);
+      TraceLog(LOG_INFO,
+               "[REQUEST CHALLENGE] Sent challenge request for room %u",
+               room_id);
+
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[REQUEST CHALLENGE] Exception: %s", e.what());
+      _challenge.setWaitingChallenge(false);
+    }
+  }
+
+  void Client::sendJoinRoom(std::uint32_t room_id,
+                            const std::string &password) {
+    try {
+      std::string password_hash = crypto::Crypto::sha256(password);
+
+      if (_challenge.isChallengeReceived() &&
+          _challenge.getRoomId() == room_id) {
+        std::string both = _challenge.getChallenge() + password_hash;
+        password_hash = crypto::Crypto::sha256(both);
+      }
+
+      JoinRoomPacket packet =
+          PacketBuilder::makeJoinRoom(room_id, password_hash);
+      send(packet);
+      TraceLog(LOG_INFO, "[JOIN ROOM] Sent join room request for room %u",
+               room_id);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[JOIN ROOM] Exception: %s", e.what());
+    }
+  }
+
+  void Client::createRoom(const std::string &room_name,
+                          const std::string &password) {
+    try {
+      auto pwd_hash = crypto::Crypto::sha256(password);
+      CreateRoomPacket packet =
+          PacketBuilder::makeCreateRoom(room_name, 4, pwd_hash);
+      send(packet);
+      TraceLog(LOG_INFO, "[CREATE ROOM] Sent create room request for room '%s'",
+               room_name.c_str());
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());
+    }
+  }
+
 }  // namespace client

@@ -83,4 +83,16 @@ namespace packet {
                        std::size_t size) override;
   };
 
+  class ChallengeResponseHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class CreateRoomResponseHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
 }  // namespace packet

@@ -3,8 +3,10 @@
 #include <sys/stat.h>
 #include <cstdint>
 #include <unordered_map>
+#include "Challenge.hpp"
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -276,6 +278,10 @@ namespace client {
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
+      void sendRequestChallenge(std::uint32_t room_id);
+      void sendJoinRoom(std::uint32_t room_id, const std::string &password);
+      void createRoom(const std::string &room_name,
+                      const std::string &password);
 
       /**
        * @brief Retrieve the client's current connection/game state.
@@ -295,6 +301,10 @@ namespace client {
        */
       void setClientState(ClientState state) {
         _state.store(state, std::memory_order_release);
+      }
+
+      Challenge &getChallenge() {
+        return _challenge;
       }
 
     private:
@@ -317,6 +327,8 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
+
+      Challenge _challenge;
 
       ecs::ECSManager &_ecsManager;
   };

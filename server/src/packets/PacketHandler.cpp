@@ -360,13 +360,10 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   std::string roomName(packet.room_name, roomLen);
   std::string password(packet.password, passLen);
-  auto newRoom = server.getGameManager().createRoom(roomName, password);
 
-  if (!newRoom) {
-    std::cerr << "[ERROR] Failed to create room for client "
-              << client._player_id << std::endl;
-    return KO;
-  }
+  std::string actualPassword = packet.is_private ? password : "";
+
+  auto newRoom = server.getGameManager().createRoom(roomName, actualPassword);
 
   auto sharedClient = server.getClientById(client._player_id);
   if (!sharedClient) {
@@ -401,6 +398,14 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
     client._state = server::ClientState::CONNECTED_MENU;
     return KO;
   }
+
+  auto response = PacketBuilder::makeCreateRoomResponse(RoomError::SUCCESS,
+                                                        newRoom->getRoomId());
+  auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  server.getNetworkManager().sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
 
   std::cout << "[CREATE ROOM] Client " << client._player_id
             << " created and joined room " << newRoom->getRoomId() << " ("
@@ -438,13 +443,6 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
 
   const JoinRoomPacket &packet = deserializedPacket.value();
 
-  auto sharedClient = server.getClientById(client._player_id);
-  if (!sharedClient) {
-    std::cerr << "[ERROR] Failed to get shared_ptr for client "
-              << client._player_id << std::endl;
-    return KO;
-  }
-
   auto room = server.getGameManager().getRoom(packet.room_id);
   if (!room) {
     ResponseHelper::sendJoinRoomResponse(server, client._player_id,
@@ -453,40 +451,56 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   }
 
   if (room->hasPassword()) {
-    const size_t passLen = strnlen(packet.password, sizeof(packet.password));
-    std::string providedPassword(packet.password, passLen);
+    const size_t hashLen = strnlen(packet.password, sizeof(packet.password));
+    std::string providedHash(packet.password, hashLen);
+    std::string storedPassword = room->getPassword();
 
-    if (!room->checkPassword(providedPassword)) {
+    bool valid = server.getChallengeManager().validateJoinRoom(
+        client._player_id, providedHash, storedPassword);
+
+    if (!valid) {
+      std::cerr << "[WARN] Invalid password for room " << packet.room_id
+                << " from player " << client._player_id << std::endl;
       ResponseHelper::sendJoinRoomResponse(server, client._player_id,
                                            RoomError::WRONG_PASSWORD);
-      return KO;
+      return OK;
     }
+
+    std::cout << "[INFO] Password validated successfully for player "
+              << client._player_id << std::endl;
   }
 
-  bool joinSuccess =
-      server.getGameManager().joinRoom(packet.room_id, sharedClient);
-
-  if (!joinSuccess) {
-    std::cout << "[JOIN ROOM] Client " << client._player_id
-              << " failed to join room " << packet.room_id << std::endl;
-
-    ResponseHelper::sendJoinRoomResponse(server, client._player_id,
-                                         RoomError::ROOM_FULL);
-    return KO;
-  }
-
-  client._state = server::ClientState::IN_ROOM_WAITING;
-
-  if (!server.initializePlayerInRoom(client)) {
-    server.getGameManager().leaveRoom(sharedClient);
-    client._state = server::ClientState::CONNECTED_MENU;
+  auto sharedClient = server.getClientById(client._player_id);
+  if (!sharedClient) {
     ResponseHelper::sendJoinRoomResponse(server, client._player_id,
                                          RoomError::UNKNOWN_ERROR);
     return KO;
   }
 
+  bool joinSuccess =
+      server.getGameManager().joinRoom(packet.room_id, sharedClient);
+  if (!joinSuccess) {
+    ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                         RoomError::ROOM_FULL);
+    return OK;
+  }
+
+  client._state = server::ClientState::IN_ROOM_WAITING;
+
+  if (!server.initializePlayerInRoom(client)) {
+    std::cerr << "[ERROR] Failed to initialize player in room" << std::endl;
+    server.getGameManager().leaveRoom(sharedClient);
+    ResponseHelper::sendJoinRoomResponse(server, client._player_id,
+                                         RoomError::UNKNOWN_ERROR);
+    client._state = server::ClientState::CONNECTED_MENU;
+    return KO;
+  }
+
   ResponseHelper::sendJoinRoomResponse(server, client._player_id,
                                        RoomError::SUCCESS);
+
+  std::cout << "[SUCCESS] Player " << client._player_id << " joined room "
+            << packet.room_id << std::endl;
 
   return OK;
 }
@@ -785,6 +799,56 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
                                                   roomClients, movePacket);
+
+  return OK;
+}
+
+int packet::RequestChallengeHandler::handlePacket(server::Server &server,
+                                                  server::Client &client,
+                                                  const char *data,
+                                                  std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<RequestChallengePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize RequestChallengePacket from "
+                 "client "
+              << client._player_id << std::endl;
+    return KO;
+  }
+
+  const RequestChallengePacket &packet = deserializedPacket.value();
+
+  auto room = server.getGameManager().getRoom(packet.room_id);
+  if (!room) {
+    std::cerr << "[ERROR] Client " << client._player_id << " is not in any room"
+              << std::endl;
+    return KO;
+  }
+
+  std::string password = room->getPassword();
+
+  std::string challenge =
+      server.getChallengeManager().createChallenge(client._player_id);
+
+  auto time = static_cast<std::uint32_t>(
+      std::chrono::duration_cast<std::chrono::seconds>(
+          std::chrono::system_clock::now().time_since_epoch())
+          .count());
+
+  auto responsePacket =
+      PacketBuilder::makeChallengeResponse(challenge.c_str(), time);
+
+  auto serializedBuffer =
+      serialization::BitserySerializer::serialize(responsePacket);
+
+  server.getNetworkManager().sendToClient(
+      client._player_id,
+      reinterpret_cast<const char *>(serializedBuffer.data()),
+      serializedBuffer.size());
 
   return OK;
 }

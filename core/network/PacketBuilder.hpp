@@ -473,6 +473,27 @@ struct PacketBuilder {
     }
 
     /**
+     * @brief Constructs a CreateRoomResponsePacket with the specified error
+     * code and room ID.
+     *
+     * @param error_code The RoomError value to set in the packet's error_code
+     * field.
+     * @param room_id The unique identifier of the created room.
+     * @return CreateRoomResponsePacket Packet with header.type set to
+     * CreateRoomResponse, header.size set to the packet size, error_code set
+     * to the provided value, and room_id set to the provided room ID.
+     */
+    static CreateRoomResponsePacket makeCreateRoomResponse(
+        const RoomError &error_code, std::uint32_t room_id) {
+      CreateRoomResponsePacket packet{};
+      packet.header.type = PacketType::CreateRoomResponse;
+      packet.header.size = sizeof(packet);
+      packet.error_code = error_code;
+      packet.room_id = room_id;
+      return packet;
+    }
+
+    /**
      * Constructs a JoinRoomPacket populated with the specified room ID and
      * password.
      *
@@ -620,6 +641,42 @@ struct PacketBuilder {
       packet.header.size = sizeof(packet);
       packet.input = input;
       packet.sequence_number = sequence_number;
+      return packet;
+    }
+
+    /**
+     * @brief Constructs a RequestChallengePacket for the specified room ID.
+     *
+     * @param room_id Identifier of the room for which to request a challenge.
+     * @return RequestChallengePacket Packet with header type set to
+     * PacketType::RequestChallenge, header size set to the packet size,
+     * and room_id set.
+     */
+    static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id) {
+      RequestChallengePacket packet{};
+      packet.header.type = PacketType::RequestChallenge;
+      packet.header.size = sizeof(packet);
+      packet.room_id = room_id;
+      return packet;
+    }
+
+    /**
+     * @brief Constructs a ChallengeResponsePacket with the given challenge and
+     * timestamp.
+     * @param challenge Character array containing the challenge response (must
+     * be at least 64 bytes).
+     * @param timestamp Timestamp associated with the challenge response.
+     * @return ChallengeResponsePacket Packet with header type set to
+     * PacketType::ChallengeResponse, header size set to the packet size,
+     * challenge copied into the packet, and timestamp set.
+     */
+    static ChallengeResponsePacket makeChallengeResponse(
+        const char challenge[64], std::uint32_t timestamp) {
+      ChallengeResponsePacket packet{};
+      packet.header.type = PacketType::ChallengeResponse;
+      packet.header.size = sizeof(packet);
+      std::memcpy(packet.challenge, challenge, sizeof(packet.challenge));
+      packet.timestamp = timestamp;
       return packet;
     }
 };

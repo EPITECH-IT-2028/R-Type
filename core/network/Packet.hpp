@@ -31,7 +31,10 @@ enum class PacketType : std::uint8_t {
   MatchmakingRequest = 0x18,
   MatchmakingResponse = 0x19,
   JoinRoomResponse = 0x1A,
-  PlayerInput = 0x1B
+  PlayerInput = 0x1B,
+  RequestChallenge = 0x1C,
+  ChallengeResponse = 0x1D,
+  CreateRoomResponse = 0x1E
 };
 
 enum class EnemyType : std::uint8_t {
@@ -476,8 +479,14 @@ struct ALIGNED CreateRoomPacket {
     PacketHeader header;
     char room_name[32];
     std::uint8_t is_private;
-    char password[32];
+    char password[128];
     std::uint8_t max_players;
+};
+
+struct ALIGNED CreateRoomResponsePacket {
+    PacketHeader header;
+    RoomError error_code;
+    std::uint32_t room_id;
 };
 
 /**
@@ -496,7 +505,7 @@ struct ALIGNED CreateRoomPacket {
 struct ALIGNED JoinRoomPacket {
     PacketHeader header;
     std::uint32_t room_id;
-    char password[32];
+    char password[128];
 };
 
 /**
@@ -617,4 +626,15 @@ struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     std::uint8_t input;
     std::uint32_t sequence_number;
+};
+
+struct ALIGNED RequestChallengePacket {
+    PacketHeader header;
+    std::uint32_t room_id;
+};
+
+struct ALIGNED ChallengeResponsePacket {
+    PacketHeader header;
+    char challenge[65];
+    std::uint32_t timestamp;
 };
