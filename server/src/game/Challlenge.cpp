@@ -40,9 +40,6 @@ bool game::Challenge::validateJoinRoom(std::uint32_t player_id,
   std::string expected_hash =
       crypto::Crypto::sha256(it->second.nonce + original_password);
 
-  std::cout << "Expected Hash: " << expected_hash << std::endl;
-  std::cout << "Provided Hash: " << provided_hash << std::endl;
-
   bool is_valid = (expected_hash == provided_hash);
   _challenges.erase(it);
   return is_valid;

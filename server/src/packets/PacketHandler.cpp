@@ -463,7 +463,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
                 << " from player " << client._player_id << std::endl;
       ResponseHelper::sendJoinRoomResponse(server, client._player_id,
                                            RoomError::WRONG_PASSWORD);
-      return OK;
+      return KO;
     }
 
     std::cout << "[INFO] Password validated successfully for player "
@@ -482,7 +482,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   if (!joinSuccess) {
     ResponseHelper::sendJoinRoomResponse(server, client._player_id,
                                          RoomError::ROOM_FULL);
-    return OK;
+    return KO;
   }
 
   client._state = server::ClientState::IN_ROOM_WAITING;
