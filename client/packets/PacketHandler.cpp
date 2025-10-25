@@ -15,20 +15,21 @@
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
-int packet::MessageHandler::handlePacket(client::Client &client,
-                                         const char *data, std::size_t size) {
+int packet::ChatMessageHandler::handlePacket(client::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
-      serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
+      serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
   if (!packetOpt) {
     TraceLog(LOG_ERROR, "[MESSAGE] Failed to deserialize packet");
     return packet::KO;
   }
 
-  const MessagePacket &packet = packetOpt.value();
+  const ChatMessagePacket &packet = packetOpt.value();
   size_t len = strnlen(packet.message, sizeof(packet.message));
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
+  client.storeChatMessage(packet.message);
   return 0;
 }
 
@@ -45,9 +46,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO,
-           "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
-           packet.player_id, packet.x, packet.y, packet.speed);
+  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
+           packet.player_name, packet.player_id, packet.x, packet.y,
+           packet.speed);
 
   client.createPlayerEntity(packet);
   return packet::OK;

@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <cstdint>
 #include <unordered_map>
+#include <vector>
 #include "EntityManager.hpp"
 #include "Packet.hpp"
 #if defined(_WIN32)
@@ -238,6 +239,7 @@ namespace client {
 
       void createPlayerEntity(NewPlayerPacket packet);
       void createEnemyEntity(EnemySpawnPacket packet);
+      void createChatMessageUIEntity();
 
       void addProjectileEntity(std::uint32_t projectileId, Entity entity);
       Entity getProjectileEntity(std::uint32_t projectileId);
@@ -251,6 +253,10 @@ namespace client {
        */
       std::uint32_t getPlayerId() const {
         return _player_id;
+      }
+
+      std::string getPlayerName() const {
+        return _playerName;
       }
 
       /**
@@ -276,6 +282,12 @@ namespace client {
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
+
+      void sendChatMessage(std::string &message);
+      void storeChatMessage(const std::string &message);
+      const std::vector<std::string> &getChatMessages() const {
+        return _chatMessages;
+      }
 
       /**
        * @brief Retrieve the client's current connection/game state.
@@ -310,6 +322,8 @@ namespace client {
       std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+      std::string _playerName;
+      std::vector<std::string> _chatMessages;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 
       void registerComponent();

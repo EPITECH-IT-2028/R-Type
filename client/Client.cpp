@@ -3,6 +3,7 @@
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
+#include "ChatComponent.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -51,8 +52,12 @@ namespace client {
     auto inputSystem = _ecsManager.getSystem<ecs::InputSystem>();
     if (inputSystem)
       inputSystem->setClient(this);
+    auto renderSystem = _ecsManager.getSystem<ecs::RenderSystem>();
+    if (renderSystem)
+      renderSystem->setClient(this);
 
     createBackgroundEntities();
+    createChatMessageUIEntity();
   }
 
   /**
@@ -76,6 +81,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
     _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
+    _ecsManager.registerComponent<ecs::ChatComponent>();
   }
 
   /**
@@ -236,6 +242,7 @@ namespace client {
     }
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
+    _playerName = packet.player_name;
   }
 
   /**
@@ -280,6 +287,11 @@ namespace client {
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(enemy, anim);
 
     _enemyEntities[packet.enemy_id] = enemy;
+  }
+
+  void Client::createChatMessageUIEntity() {
+    auto uiEntity = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::ChatComponent>(uiEntity, {});
   }
 
   /**
@@ -363,8 +375,7 @@ namespace client {
   void Client::sendShoot(float x, float y) {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING,
-               "[WARN] Player ID not assigned yet, cannot send "
-               "shoot");
+               "[WARN] Player ID not assigned yet, cannot send shoot");
       return;
     }
     try {
@@ -391,5 +402,27 @@ namespace client {
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[MATCHMAKING] Exception: %s", e.what());
     }
+  }
+
+  void Client::sendChatMessage(std::string &message) {
+    if (_player_id == static_cast<std::uint32_t>(-1)) {
+      TraceLog(
+          LOG_WARNING,
+          "[SEND CHAT] Player ID not assigned yet, cannot send chat message");
+      return;
+    }
+    try {
+      ChatMessagePacket packet =
+          PacketBuilder::makeChatMessage(message, _player_id);
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SEND CHAT] Exception: %s", e.what());
+    }
+  }
+
+  void Client::storeChatMessage(const std::string &message) {
+    _chatMessages.push_back(message);
+    if (_chatMessages.size() > 14)
+      _chatMessages.erase(_chatMessages.begin());
   }
 }  // namespace client

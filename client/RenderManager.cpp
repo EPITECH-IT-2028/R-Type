@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "Macro.hpp"
+#include "RaylibUtils.hpp"
 
 namespace renderManager {
   /**
@@ -24,6 +25,7 @@ namespace renderManager {
     if (!IsWindowState(FLAG_VSYNC_HINT))
       SetTargetFPS(60);
     SetTraceLogCallback(coloredLog);
+    utils::setLogLevel();
   }
 
   Renderer::~Renderer() {
@@ -40,11 +42,6 @@ namespace renderManager {
 
   void Renderer::clearBackground(Color color) const {
     ClearBackground(color);
-  }
-
-  void Renderer::drawText(const char *text, int posX, int posY, int fontSize,
-                          Color color) const {
-    DrawText(text, posX, posY, fontSize, color);
   }
 
   void Renderer::endDrawing() const {
@@ -71,6 +68,23 @@ namespace renderManager {
     SetWindowSize(newWidth, newHeight);
   }
 
+  void Renderer::drawText(const char *text, int posX, int posY, int fontSize,
+                          Color color) {
+    DrawText(text, posX, posY, fontSize, color);
+  }
+
+  void Renderer::drawRectangle(int posX, int posY, int width, int height,
+                               Color color) {
+    DrawRectangle(posX, posY, width, height, color);
+  }
+
+  void Renderer::drawRectangleRounded(int posX, int posY, int width, int height,
+                                      float roundness, Color color) {
+    Rectangle rec = {static_cast<float>(posX), static_cast<float>(posY),
+                     static_cast<float>(width), static_cast<float>(height)};
+    DrawRectangleRounded(rec, roundness, 16, color);
+  }
+
   void Renderer::coloredLog(int msgType, const char *text, va_list args) {
     switch (msgType) {
       case LOG_INFO:
@@ -83,7 +97,7 @@ namespace renderManager {
         printf("[\e[1;33mWARN\e[0m] : ");
         break;
       case LOG_DEBUG:
-        printf("[DEBUG]: ");
+        printf("[\e[1;34mDEBUG\e[0m]: ");
         break;
       default:
         break;

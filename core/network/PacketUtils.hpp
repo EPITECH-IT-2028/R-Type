@@ -13,7 +13,7 @@
  */
 inline std::string packetTypeToString(PacketType type) {
   switch (type) {
-    case PacketType::Message:
+    case PacketType::ChatMessage:
       return "Message";
     case PacketType::PlayerMove:
       return "Move";

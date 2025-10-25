@@ -1,5 +1,6 @@
 #include "InputSystem.hpp"
 #include <cmath>
+#include "ChatComponent.hpp"
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
@@ -9,7 +10,8 @@
 
 namespace ecs {
   /**
-   * @brief Tests whether the specified key was pressed according to AZERTY keyboard mapping.
+   * @brief Tests whether the specified key was pressed according to AZERTY
+   * keyboard mapping.
    *
    * @param key Key to test.
    * @return true if the key was pressed, false otherwise.
@@ -19,10 +21,12 @@ namespace ecs {
   }
 
   /**
-   * @brief Checks whether the given keyboard key is currently held down using AZERTY layout semantics.
+   * @brief Checks whether the given keyboard key is currently held down using
+   * AZERTY layout semantics.
    *
    * @param key The key to test.
-   * @return bool `true` if the specified key is currently down, `false` otherwise.
+   * @return bool `true` if the specified key is currently down, `false`
+   * otherwise.
    */
   static bool IsKeyDownAZERTY(KeyboardKey key) {
     return utils::Raylib::IsKeyDownAZERTY(key);
@@ -64,6 +68,8 @@ namespace ecs {
         clientState != client::ClientState::IN_ROOM_WAITING) {
       return;
     }
+
+    loadUIEntities();
 
     for (auto const &entity : _entities) {
       if (!_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
@@ -112,6 +118,55 @@ namespace ecs {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);
       }
+    }
+  }
+
+  void InputSystem::loadUIEntities() {
+    Entity uiEntity = -1;
+    for (auto const &entity : _ecsManager.getAllEntities()) {
+      if (_ecsManager.hasComponent<ChatComponent>(entity)) {
+        uiEntity = entity;
+        break;
+      }
+    }
+
+    if (uiEntity != -1) {
+      auto &chat = _ecsManager.getComponent<ChatComponent>(uiEntity);
+
+      if (chat.isChatting) {
+        chat.playerName = _client->getPlayerName();
+        char character = static_cast<char>(GetCharPressed());
+        if (character != 0) {
+          chat.message += character;
+        }
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+          if (!chat.message.empty())
+            chat.message.pop_back();
+        } else if (IsKeyPressedRepeat(KEY_BACKSPACE)) {
+          if (!chat.message.empty())
+            chat.message.pop_back();
+        }
+        if (IsKeyPressed(KEY_ENTER)) {
+          if (!chat.message.empty() && _client != nullptr)
+            _client->sendChatMessage(chat.message);
+          chat.message.clear();
+          return;
+        }
+      }
+
+      if (IsKeyPressedAZERTY(KEY_T) && !chat.isChatting) {
+        chat.isChatting = true;
+        return;
+      } else if (IsKeyPressedAZERTY(KEY_ESCAPE) && chat.isChatting) {
+        chat.isChatting = false;
+        chat.message.clear();
+        return;
+      }
+
+      if (chat.isChatting)
+        SetExitKey(KEY_NULL);
+      else if (!chat.isChatting)
+        SetExitKey(KEY_ESCAPE);
     }
   }
 }  // namespace ecs

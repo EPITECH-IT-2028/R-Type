@@ -84,9 +84,11 @@ namespace broadcast {
             std::pair<float, float> pos = player->getPosition();
             float speed = player->getSpeed();
             int maxHealth = player->getMaxHealth().value_or(100);
+            std::string playerName = player->getName();
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
-                player->getPlayerId(), pos.first, pos.second, speed, maxHealth);
+                player->getPlayerId(), playerName, pos.first, pos.second, speed,
+                maxHealth);
 
             auto buffer = std::make_shared<std::vector<std::uint8_t>>(
                 serialization::BitserySerializer::serialize(existPlayerPacket));
@@ -297,7 +299,7 @@ namespace broadcast {
       static void broadcastMessageToRoom(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,
-          const MessagePacket &packet) {
+          const ChatMessagePacket &packet) {
         broadcastToRoom(networkManager, roomClients, packet);
       };
   };
