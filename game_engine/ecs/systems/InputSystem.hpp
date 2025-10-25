@@ -21,7 +21,7 @@ namespace ecs {
       }
 
     private:
-      void loadUIEntities();
+      bool loadUIEntities();
       ECSManager &_ecsManager;
       client::Client *_client;
   };

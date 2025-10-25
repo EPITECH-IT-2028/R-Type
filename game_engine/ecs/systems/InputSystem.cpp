@@ -69,7 +69,8 @@ namespace ecs {
       return;
     }
 
-    loadUIEntities();
+    if (loadUIEntities())
+      return;
 
     for (auto const &entity : _entities) {
       if (!_ecsManager.hasComponent<SpriteAnimationComponent>(entity)) {
@@ -121,7 +122,7 @@ namespace ecs {
     }
   }
 
-  void InputSystem::loadUIEntities() {
+  bool InputSystem::loadUIEntities() {
     Entity uiEntity = -1;
     for (auto const &entity : _ecsManager.getAllEntities()) {
       if (_ecsManager.hasComponent<ChatComponent>(entity)) {
@@ -150,23 +151,26 @@ namespace ecs {
           if (!chat.message.empty() && _client != nullptr)
             _client->sendChatMessage(chat.message);
           chat.message.clear();
-          return;
+          return true;
         }
       }
 
       if (IsKeyPressedAZERTY(KEY_T) && !chat.isChatting) {
         chat.isChatting = true;
-        return;
+        return true;
       } else if (IsKeyPressedAZERTY(KEY_ESCAPE) && chat.isChatting) {
         chat.isChatting = false;
         chat.message.clear();
-        return;
+        return false;
       }
 
       if (chat.isChatting)
         SetExitKey(KEY_NULL);
       else if (!chat.isChatting)
         SetExitKey(KEY_ESCAPE);
+
+      return chat.isChatting;
     }
+    return false;
   }
 }  // namespace ecs
