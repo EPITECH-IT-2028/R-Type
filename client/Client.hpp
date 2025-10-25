@@ -260,6 +260,7 @@ namespace client {
       }
 
       std::string getPlayerName() const {
+        std::shared_lock<std::shared_mutex> lock(_playerNameMutex);
         return _playerName;
       }
 
@@ -327,6 +328,7 @@ namespace client {
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::string _playerName;
+      mutable std::shared_mutex _playerNameMutex;
       std::vector<std::string> _chatMessages;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 

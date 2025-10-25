@@ -240,8 +240,9 @@ namespace client {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
     }
-    std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
+    std::lock_guard<std::shared_mutex> entitiesLock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
+    std::lock_guard<std::shared_mutex> nameLock(_playerNameMutex);
     _playerName = packet.player_name;
   }
 
