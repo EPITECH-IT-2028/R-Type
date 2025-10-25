@@ -136,6 +136,8 @@ void ecs::RenderSystem::drawMessagesBox() {
 }
 
 void ecs::RenderSystem::drawMessages() {
+  if (_client == nullptr)
+    return;
   std::vector<std::string> chatMessages = _client->getChatMessages();
   int lineHeight = 25;
   int fontSize = 20;
