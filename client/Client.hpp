@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -106,8 +107,11 @@ namespace client {
       }
 
       void initializeECS();
+
       void startReceive() {
-        _networkManager.receivePackets(*this);
+        _networkManager.receivePackets();
+
+        _networkManager.processReceivedPackets(*this);
       }
 
       /**
