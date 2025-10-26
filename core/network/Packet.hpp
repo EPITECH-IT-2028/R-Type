@@ -98,6 +98,7 @@ struct ALIGNED ChatMessagePacket {
     std::uint32_t timestamp;
     char message[256];
     std::uint32_t player_id;
+    std::uint8_t r, g, b, a;
 };
 
 /**

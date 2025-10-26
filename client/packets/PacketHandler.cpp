@@ -29,9 +29,7 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   const std::string playerName = client.getPlayerNameById(packet.player_id);
-  Color color = WHITE;
-  if (playerName == "Server")
-    color = RED;
+  Color color = {packet.r, packet.g, packet.b, packet.a};
   client.storeChatMessage(playerName, packet.message, color);
   return packet::OK;
 }

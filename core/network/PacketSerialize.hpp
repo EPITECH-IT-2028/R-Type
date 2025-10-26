@@ -32,6 +32,10 @@ void serialize(S &s, ChatMessagePacket &packet) {
     s.value1b(packet.message[i]);
   }
   s.value4b(packet.player_id);
+  s.value1b(packet.r);
+  s.value1b(packet.g);
+  s.value1b(packet.b);
+  s.value1b(packet.a);
 }
 
 /*

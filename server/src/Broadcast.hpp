@@ -302,5 +302,15 @@ namespace broadcast {
           const ChatMessagePacket &packet) {
         broadcastToRoom(networkManager, roomClients, packet);
       };
+
+      static void broadcastMessageToRoomExcept(
+          network::ServerNetworkManager &networkManager,
+          const std::vector<std::shared_ptr<server::Client>> &roomClients,
+          const ChatMessagePacket &packet, int excluded_player_id) {
+        broadcastTo(networkManager, roomClients, packet,
+                    [excluded_player_id](const auto &client) {
+                      return client._player_id != excluded_player_id;
+                    });
+      }
   };
 }  // namespace broadcast

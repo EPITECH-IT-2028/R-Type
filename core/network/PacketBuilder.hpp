@@ -35,6 +35,28 @@ struct PacketBuilder {
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
       packet.message[sizeof(packet.message) - 1] = '\0';
       packet.player_id = player_id;
+      packet.r = 255;
+      packet.g = 255;
+      packet.b = 255;
+      packet.a = 255;
+      return packet;
+    }
+
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id,
+                                             std::uint8_t r, std::uint8_t g,
+                                             std::uint8_t b, std::uint8_t a) {
+      ChatMessagePacket packet{};
+      packet.header.type = PacketType::ChatMessage;
+      packet.header.size = sizeof(packet);
+      packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
+      strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
+      packet.message[sizeof(packet.message) - 1] = '\0';
+      packet.player_id = player_id;
+      packet.r = r;
+      packet.g = g;
+      packet.b = b;
+      packet.a = a;
       return packet;
     }
 
