@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include <cstdint>
+#include <cstring>
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
@@ -242,7 +243,8 @@ namespace client {
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
     }
     _playerEntities[packet.player_id] = player;
-    _playerName = packet.player_name;
+    size_t len = strnlen(packet.player_name, 32);
+    _playerName.assign(packet.player_name, len);
   }
 
   /**
