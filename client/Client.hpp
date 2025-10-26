@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
+#include "ChatComponent.hpp"
 #include "EntityManager.hpp"
 #include "Packet.hpp"
 
@@ -48,6 +49,11 @@ namespace client {
     IN_ROOM_WAITING,
     IN_GAME,
     DISCONNECTED
+  };
+
+  struct ChatMessage {
+      std::string author;
+      std::string message;
   };
 
   /**
@@ -266,6 +272,14 @@ namespace client {
         return _playerName;
       }
 
+      std::string getPlayerNameById(const std::uint32_t playerId) const {
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
+        auto it = _playerEntities.find(playerId);
+        if (it != _playerEntities.end())
+          return _playerName;
+        return "Unknown";
+      }
+
       /**
        * @brief Retrieves the current outgoing packet sequence number.
        *
@@ -291,8 +305,9 @@ namespace client {
       void sendMatchmakingRequest();
 
       void sendChatMessage(const std::string &message);
-      void storeChatMessage(const std::string &message);
-      std::vector<std::string> getChatMessages() const {
+      void storeChatMessage(const std::string &author,
+                            const std::string &message);
+      std::vector<ChatMessage> getChatMessages() const {
         std::lock_guard<std::mutex> lock(_chatMutex);
         return _chatMessages;
       }
@@ -331,7 +346,7 @@ namespace client {
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::string _playerName;
       mutable std::shared_mutex _playerStateMutex;
-      std::vector<std::string> _chatMessages;
+      std::vector<ChatMessage> _chatMessages;
       mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 

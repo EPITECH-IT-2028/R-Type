@@ -28,7 +28,8 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
   }
 
   const ChatMessagePacket &packet = packetOpt.value();
-  client.storeChatMessage(packet.message);
+  const std::string playerName = client.getPlayerNameById(packet.player_id);
+  client.storeChatMessage(playerName, packet.message);
   return packet::OK;
 }
 

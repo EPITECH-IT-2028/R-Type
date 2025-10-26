@@ -422,9 +422,9 @@ namespace client {
     }
   }
 
-  void Client::storeChatMessage(const std::string &message) {
+  void Client::storeChatMessage(const std::string &author, const std::string &message) {
     std::lock_guard<std::mutex> lock(_chatMutex);
-    _chatMessages.push_back(message);
+    _chatMessages.push_back({author, message});
     if (_chatMessages.size() > CHAT_MAX_MESSAGES)
       _chatMessages.erase(_chatMessages.begin());
   }

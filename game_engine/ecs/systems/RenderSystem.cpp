@@ -115,8 +115,8 @@ void ecs::RenderSystem::update(float deltaTime) {
   }
 
   for (auto const &entity : _ecsManager.getAllEntities()) {
-    if (_ecsManager.hasComponent<ChatComponent>(entity)) {
-      auto &chat = _ecsManager.getComponent<ChatComponent>(entity);
+    if (_ecsManager.hasComponent<ecs::ChatComponent>(entity)) {
+      auto &chat = _ecsManager.getComponent<ecs::ChatComponent>(entity);
       if (chat.isChatting) {
         drawMessagesBox();
         drawMessages();
@@ -137,14 +137,15 @@ void ecs::RenderSystem::drawMessagesBox() {
 void ecs::RenderSystem::drawMessages() {
   if (_client == nullptr)
     return;
-  std::vector<std::string> chatMessages = _client->getChatMessages();
+  std::vector<client::ChatMessage> chatMessages = _client->getChatMessages();
   int lineHeight = 25;
   int fontSize = 20;
   int maxWidth = (GetScreenWidth() / 3) * 2 - 170;
   Font font = GetFontDefault();
   std::vector<std::string> allLines;
 
-  for (const auto &msg : chatMessages) {
+  for (const auto &chatMessage : chatMessages) {
+    std::string msg = "<" + chatMessage.author + "> " + chatMessage.message;
     std::string currentLine;
     for (size_t i = 0; i < msg.size(); ++i) {
       currentLine += msg[i];
@@ -172,6 +173,6 @@ void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
   renderManager::Renderer::drawRectangleRounded(
       10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f, rectColor);
   renderManager::Renderer::drawText(
-      (chat.playerName + ": " + chat.message + "_").c_str(), 25,
+      (chat.message + "_").c_str(), 25,
       GetScreenHeight() - 35, 20, WHITE);
 }

@@ -135,7 +135,6 @@ namespace ecs {
       auto &chat = _ecsManager.getComponent<ChatComponent>(uiEntity);
 
       if (chat.isChatting) {
-        chat.playerName = _client->getPlayerName();
         char character = static_cast<char>(GetCharPressed());
         if (character != 0 && (character >= 32 && character != 127))
           chat.message += character;
