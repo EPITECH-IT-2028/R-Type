@@ -38,6 +38,7 @@ namespace client {
    */
   Client::Client(const std::string &host, const std::uint16_t &port)
       : _networkManager(host, port),
+        _playerName("Unknown"),
         _sequence_number{0},
         _packet_count{0},
         _ecsManager(ecs::ECSManager::getInstance()),
@@ -422,7 +423,8 @@ namespace client {
     }
   }
 
-  void Client::storeChatMessage(const std::string &author, const std::string &message) {
+  void Client::storeChatMessage(const std::string &author,
+                                const std::string &message) {
     std::lock_guard<std::mutex> lock(_chatMutex);
     _chatMessages.push_back({author, message});
     if (_chatMessages.size() > CHAT_MAX_MESSAGES)

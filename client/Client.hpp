@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
-#include "ChatComponent.hpp"
 #include "EntityManager.hpp"
 #include "Packet.hpp"
 
@@ -137,7 +136,7 @@ namespace client {
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player");
+          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo(_playerName);
           send(packet);
         }
       }
@@ -189,6 +188,10 @@ namespace client {
         } catch (std::exception &e) {
           std::cerr << "Send error: " << e.what() << std::endl;
         }
+      }
+
+      void setPlayerName(const std::string &name) {
+        _playerName = name;
       }
 
       /**

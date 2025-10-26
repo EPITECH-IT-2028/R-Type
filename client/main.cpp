@@ -54,7 +54,7 @@ void gameLoop(client::Client &client) {
  * @return int `client::OK` on normal exit; `client::KO` if window
  * initialization fails.
  */
-int main(void) {
+int main(int ac, char **av) {
   renderManager::Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT,
                                    "R-Type Client");
   if (!renderer.InitSucceeded()) {
@@ -69,12 +69,13 @@ int main(void) {
   client::Client client(parser.getHost(), parser.getPort());
   asset::initEmbeddedAssets();
   client.initializeECS();
+
+  std::string playerName = "Player";
+  if (ac > 1)
+    client.setPlayerName(av[1]);
   client.connect();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-  PlayerInfoPacket infoPacket = PacketBuilder::makePlayerInfo("Player1");
-  client.send(infoPacket);
 
   std::thread networkThread(gameLoop, std::ref(client));
 
