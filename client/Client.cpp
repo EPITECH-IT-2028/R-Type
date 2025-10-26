@@ -242,7 +242,7 @@ namespace client {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      size_t len = strnlen(packet.player_name, 32);
+      size_t len = strnlen(packet.player_name, sizeof(packet.player_name));
       _playerName.assign(packet.player_name, len);
     }
     _playerEntities[packet.player_id] = player;
