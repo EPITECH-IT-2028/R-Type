@@ -23,14 +23,13 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
   auto packetOpt =
       serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
   if (!packetOpt) {
-    TraceLog(LOG_ERROR, "[MESSAGE] Failed to deserialize packet");
+    TraceLog(LOG_ERROR, "[CHAT MESSAGE] Failed to deserialize packet");
     return packet::KO;
   }
 
   const ChatMessagePacket &packet = packetOpt.value();
-  size_t len = strnlen(packet.message, sizeof(packet.message));
   client.storeChatMessage(packet.message);
-  return 0;
+  return packet::OK;
 }
 
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
