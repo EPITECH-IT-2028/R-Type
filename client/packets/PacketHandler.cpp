@@ -45,8 +45,11 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
+  char name_buffer[33];
+  std::memcpy(name_buffer, packet.player_name, 32);
+  name_buffer[32] = '\0';
   TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
-           packet.player_name, packet.player_id, packet.x, packet.y,
+           name_buffer, packet.player_id, packet.x, packet.y,
            packet.speed);
 
   client.createPlayerEntity(packet);
