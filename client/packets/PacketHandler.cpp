@@ -29,7 +29,10 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   const std::string playerName = client.getPlayerNameById(packet.player_id);
-  client.storeChatMessage(playerName, packet.message);
+  Color color = WHITE;
+  if (playerName == "Server")
+    color = RED;
+  client.storeChatMessage(playerName, packet.message, color);
   return packet::OK;
 }
 
@@ -50,8 +53,7 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   std::memcpy(name_buffer, packet.player_name, sizeof(packet.player_name));
   name_buffer[32] = '\0';
   TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
-           name_buffer, packet.player_id, packet.x, packet.y,
-           packet.speed);
+           name_buffer, packet.player_id, packet.x, packet.y, packet.speed);
 
   client.createPlayerEntity(packet);
   return packet::OK;

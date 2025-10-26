@@ -236,6 +236,11 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
   player->setHealth(player->getHealth().value() -
                     projectile->getDamage().value());
   if (player->getHealth().value() <= 0) {
+    queue::PlayerDiedEvent playerDiedEvent;
+    playerDiedEvent.player_id = player->getPlayerId();
+    playerDiedEvent.player_name = player->getName();
+    _eventQueue->addRequest(playerDiedEvent);
+
     queue::PlayerDestroyEvent playerDestroyEvent;
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;
@@ -310,6 +315,11 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     _eventQueue->addRequest(enemyHitEvent);
   }
   if (player->getHealth().value() <= 0) {
+    queue::PlayerDiedEvent playerDiedEvent;
+    playerDiedEvent.player_id = player->getPlayerId();
+    playerDiedEvent.player_name = player->getName();
+    _eventQueue->addRequest(playerDiedEvent);
+
     queue::PlayerDestroyEvent playerDestroyEvent;
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;

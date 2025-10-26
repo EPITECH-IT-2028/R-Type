@@ -425,9 +425,9 @@ namespace client {
   }
 
   void Client::storeChatMessage(const std::string &author,
-                                const std::string &message) {
+                                const std::string &message, const Color color) {
     std::lock_guard<std::mutex> lock(_chatMutex);
-    _chatMessages.push_back({author, message});
+    _chatMessages.push_back({author, message, color});
     if (_chatMessages.size() > CHAT_MAX_MESSAGES)
       _chatMessages.erase(_chatMessages.begin());
   }

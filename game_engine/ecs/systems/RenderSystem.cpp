@@ -145,7 +145,11 @@ void ecs::RenderSystem::drawMessages() {
   std::vector<std::string> allLines;
 
   for (const auto &chatMessage : chatMessages) {
-    std::string msg = "<" + chatMessage.author + "> " + chatMessage.message;
+    std::string msg;
+    if (chatMessage.author == "Server")
+      msg = chatMessage.message;
+    else
+      msg = "<" + chatMessage.author + "> " + chatMessage.message;
     std::string currentLine;
     for (size_t i = 0; i < msg.size(); ++i) {
       currentLine += msg[i];
@@ -167,8 +171,10 @@ void ecs::RenderSystem::drawMessages() {
   int y = chatStartY;
 
   for (size_t i = start_index; i < allLines.size(); ++i) {
+    auto msg =
+        chatMessages[i < chatMessages.size() ? i : chatMessages.size() - 1];
     renderManager::Renderer::drawText(allLines[i].c_str(), 25, y, fontSize,
-                                      WHITE);
+                                      msg.color);
     y += lineHeight;
   }
 }

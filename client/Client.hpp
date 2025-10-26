@@ -1,5 +1,6 @@
 #pragma once
 
+#include <raylib.h>
 #include <sys/stat.h>
 #include <cstdint>
 #include <unordered_map>
@@ -53,6 +54,7 @@ namespace client {
   struct ChatMessage {
       std::string author;
       std::string message;
+      Color color;
   };
 
   /**
@@ -280,6 +282,8 @@ namespace client {
         auto it = _playerNames.find(playerId);
         if (it != _playerNames.end())
           return it->second;
+        if (playerId == -1)
+          return "Server";
         return "Unknown";
       }
 
@@ -309,7 +313,7 @@ namespace client {
 
       void sendChatMessage(const std::string &message);
       void storeChatMessage(const std::string &author,
-                            const std::string &message);
+                            const std::string &message, const Color color);
       std::vector<ChatMessage> getChatMessages() const {
         std::lock_guard<std::mutex> lock(_chatMutex);
         return _chatMessages;

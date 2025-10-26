@@ -205,6 +205,12 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.player_id, specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerDeathToRoom(
               _networkManager, clients, playerDestroyPacket);
+        } else if constexpr (std::is_same_v<T, queue::PlayerDiedEvent>) {
+          std::string msg = specificEvent.player_name + " has died tragically.";
+          auto chatMessagePacket =
+              PacketBuilder::makeChatMessage(msg.c_str(), -1);
+          broadcast::Broadcast::broadcastMessageToRoom(_networkManager, clients,
+                                                       chatMessagePacket);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
           auto gameStartPacket =
               PacketBuilder::makeGameStart(specificEvent.game_started);
@@ -437,8 +443,9 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   float speed = player->getSpeed();
   int max_health = player->getMaxHealth().value_or(100);
 
-  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, client._player_name, pos.first, pos.second, speed, max_health);
+  auto ownPlayerPacket =
+      PacketBuilder::makeNewPlayer(client._player_id, client._player_name,
+                                   pos.first, pos.second, speed, max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
   _networkManager.sendToClient(
@@ -451,8 +458,9 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   broadcast::Broadcast::broadcastExistingPlayersToRoom(
       _networkManager, room->getGame(), client._player_id, roomClients);
 
-  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, client._player_name, pos.first, pos.second, speed, max_health);
+  auto newPlayerPacket =
+      PacketBuilder::makeNewPlayer(client._player_id, client._player_name,
+                                   pos.first, pos.second, speed, max_health);
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
 
