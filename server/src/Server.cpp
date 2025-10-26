@@ -116,6 +116,12 @@ void server::Server::handleTimeout() {
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
               _networkManager, roomClients, disconnectPacket);
 
+          std::string msg = client->_player_name + " has timed out.";
+          auto chatMessagePacket =
+              PacketBuilder::makeChatMessage(msg, -1, 255, 0, 0, 255);
+          broadcast::Broadcast::broadcastMessageToRoom(_networkManager, roomClients,
+                                                       chatMessagePacket);
+
           room->getGame().destroyPlayer(pid);
           _gameManager->leaveRoom(client);
         }
@@ -206,9 +212,9 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
           broadcast::Broadcast::broadcastPlayerDeathToRoom(
               _networkManager, clients, playerDestroyPacket);
         } else if constexpr (std::is_same_v<T, queue::PlayerDiedEvent>) {
-          std::string msg = specificEvent.player_name + " has died tragically.";
-          auto chatMessagePacket =
-              PacketBuilder::makeChatMessage(msg.c_str(), -1);
+          std::string msg = specificEvent.player_name + " has died.";
+          auto chatMessagePacket = PacketBuilder::makeChatMessage(
+              msg, -1, 255, 0, 0, 255);
           broadcast::Broadcast::broadcastMessageToRoom(_networkManager, clients,
                                                        chatMessagePacket);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
@@ -463,6 +469,12 @@ bool server::Server::initializePlayerInRoom(Client &client) {
                                    pos.first, pos.second, speed, max_health);
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
+
+  std::string msg = client._player_name + " has joined the game.";
+  auto chatMessagePacket =
+      PacketBuilder::makeChatMessage(msg, -1, 255, 255, 0, 255);
+  broadcast::Broadcast::broadcastMessageToRoomExcept(
+      _networkManager, roomClients, chatMessagePacket, client._player_id);
 
   if (roomClients.size() >= 2 &&
       room->getState() == game::RoomStatus::WAITING) {

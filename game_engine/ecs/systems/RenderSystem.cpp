@@ -142,7 +142,7 @@ void ecs::RenderSystem::drawMessages() {
   int fontSize = 20;
   int maxWidth = (GetScreenWidth() / 3) * 2 - 170;
   Font font = GetFontDefault();
-  std::vector<std::string> allLines;
+  std::vector<std::pair<std::string, Color>> allLines;
 
   for (const auto &chatMessage : chatMessages) {
     std::string msg;
@@ -155,12 +155,13 @@ void ecs::RenderSystem::drawMessages() {
       currentLine += msg[i];
       int width = MeasureTextEx(font, currentLine.c_str(), fontSize, 0).x;
       if (width > maxWidth && currentLine.size() > 1) {
-        allLines.push_back(currentLine.substr(0, currentLine.size() - 1));
+        allLines.push_back({currentLine.substr(0, currentLine.size() - 1),
+                               chatMessage.color});
         currentLine = msg[i];
       }
     }
     if (!currentLine.empty())
-      allLines.push_back(currentLine);
+      allLines.push_back({currentLine, chatMessage.color});
   }
   const int maxLines = 14;
   size_t start_index = 0;
@@ -171,10 +172,8 @@ void ecs::RenderSystem::drawMessages() {
   int y = chatStartY;
 
   for (size_t i = start_index; i < allLines.size(); ++i) {
-    auto msg =
-        chatMessages[i < chatMessages.size() ? i : chatMessages.size() - 1];
-    renderManager::Renderer::drawText(allLines[i].c_str(), 25, y, fontSize,
-                                      msg.color);
+    renderManager::Renderer::drawText(allLines[i].first.c_str(), 25, y, fontSize,
+                                      allLines[i].second);
     y += lineHeight;
   }
 }

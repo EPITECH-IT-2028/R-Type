@@ -319,6 +319,13 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
           PacketBuilder::makePlayerDisconnect(client._player_id);
       broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
           server.getNetworkManager(), roomClients, disconnectPacket);
+
+      std::string msg = client._player_name + " has disconnected.";
+      auto chatMessagePacket = PacketBuilder::makeChatMessage(
+          msg, -1, 255, 255, 0, 255);
+      broadcast::Broadcast::broadcastMessageToRoom(server.getNetworkManager(),
+                                                   roomClients,
+                                                   chatMessagePacket);
     }
   }
   server.clearClientSlot(client._player_id);
