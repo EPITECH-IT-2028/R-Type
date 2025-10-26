@@ -207,7 +207,7 @@ namespace client {
        * if no mapping exists.
        */
       std::uint32_t getPlayerEntity(std::uint32_t player_id) const {
-        std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         auto it = _playerEntities.find(player_id);
         if (it != _playerEntities.end()) {
           return it->second;
@@ -226,7 +226,7 @@ namespace client {
        * removed.
        */
       void destroyPlayerEntity(std::uint32_t playerId) {
-        std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
+        std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
         _playerEntities.erase(playerId);
       }
 
@@ -257,12 +257,12 @@ namespace client {
        * if no player is assigned.
        */
       std::uint32_t getPlayerId() const {
-        std::shared_lock<std::shared_mutex> lock(_playerIdMutex);
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         return _player_id;
       }
 
       std::string getPlayerName() const {
-        std::shared_lock<std::shared_mutex> lock(_playerNameMutex);
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         return _playerName;
       }
 
@@ -325,14 +325,12 @@ namespace client {
       std::atomic<std::uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
       std::unordered_map<std::uint32_t, Entity> _playerEntities;
-      mutable std::shared_mutex _playerEntitiesMutex;
       std::unordered_map<std::uint32_t, Entity> _enemyEntities;
       std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
-      mutable std::shared_mutex _playerIdMutex;
       std::string _playerName;
-      mutable std::shared_mutex _playerNameMutex;
+      mutable std::shared_mutex _playerStateMutex;
       std::vector<std::string> _chatMessages;
       mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
