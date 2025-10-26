@@ -277,9 +277,9 @@ namespace client {
 
       std::string getPlayerNameById(const std::uint32_t playerId) const {
         std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
-        auto it = _playerEntities.find(playerId);
-        if (it != _playerEntities.end())
-          return _playerName;
+        auto it = _playerNames.find(playerId);
+        if (it != _playerNames.end())
+          return it->second;
         return "Unknown";
       }
 
@@ -348,6 +348,7 @@ namespace client {
       std::mutex _projectileMutex;
       std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
       std::string _playerName;
+      std::unordered_map<std::uint32_t, std::string> _playerNames;
       mutable std::shared_mutex _playerStateMutex;
       std::vector<ChatMessage> _chatMessages;
       mutable std::mutex _chatMutex;
