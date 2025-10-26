@@ -158,11 +158,17 @@ void ecs::RenderSystem::drawMessages() {
     if (!currentLine.empty())
       allLines.push_back(currentLine);
   }
-  int totalLines = allLines.size();
-  int chatStartY = GetScreenHeight() - 80 - (totalLines - 1) * lineHeight;
+  const int maxLines = 14;
+  size_t start_index = 0;
+  if (allLines.size() > maxLines)
+    start_index = allLines.size() - maxLines;
+  int numVisibleLines = allLines.size() - start_index;
+  int chatStartY = GetScreenHeight() - 80 - (numVisibleLines - 1) * lineHeight;
   int y = chatStartY;
-  for (const auto &line : allLines) {
-    renderManager::Renderer::drawText(line.c_str(), 25, y, fontSize, WHITE);
+
+  for (size_t i = start_index; i < allLines.size(); ++i) {
+    renderManager::Renderer::drawText(allLines[i].c_str(), 25, y, fontSize,
+                                      WHITE);
     y += lineHeight;
   }
 }
@@ -172,7 +178,6 @@ void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
 
   renderManager::Renderer::drawRectangleRounded(
       10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f, rectColor);
-  renderManager::Renderer::drawText(
-      (chat.message + "_").c_str(), 25,
-      GetScreenHeight() - 35, 20, WHITE);
+  renderManager::Renderer::drawText((chat.message + "_").c_str(), 25,
+                                    GetScreenHeight() - 35, 20, WHITE);
 }
