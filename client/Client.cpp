@@ -346,7 +346,7 @@ namespace client {
    * @param input Player input flags encoded as a byte (bitmask).
    */
   void Client::sendInput(std::uint8_t input) {
-    if (_player_id == static_cast<std::uint32_t>(-1)) {
+    if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
       return;
     }
@@ -373,7 +373,7 @@ namespace client {
    * @param y World-space Y coordinate where the player is shooting.
    */
   void Client::sendShoot(float x, float y) {
-    if (_player_id == static_cast<std::uint32_t>(-1)) {
+    if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
       TraceLog(LOG_WARNING,
                "[WARN] Player ID not assigned yet, cannot send shoot");
       return;
@@ -405,7 +405,7 @@ namespace client {
   }
 
   void Client::sendChatMessage(const std::string &message) {
-    if (_player_id == static_cast<std::uint32_t>(-1)) {
+    if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
       TraceLog(
           LOG_WARNING,
           "[SEND CHAT] Player ID not assigned yet, cannot send chat message");
@@ -413,7 +413,7 @@ namespace client {
     }
     try {
       ChatMessagePacket packet =
-          PacketBuilder::makeChatMessage(message, _player_id);
+          PacketBuilder::makeChatMessage(message, getPlayerId());
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SEND CHAT] Exception: %s", e.what());

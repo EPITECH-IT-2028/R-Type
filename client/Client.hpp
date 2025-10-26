@@ -145,13 +145,13 @@ namespace client {
        * the network manager is disconnected and the running flag is cleared.
        */
       void disconnect() {
-        if (_player_id == static_cast<std::uint32_t>(-1)) {
+        if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
           _networkManager.disconnect();
           _running.store(false, std::memory_order_release);
           return;
         }
         PlayerDisconnectPacket packet =
-            PacketBuilder::makePlayerDisconnect(_player_id);
+            PacketBuilder::makePlayerDisconnect(getPlayerId());
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
