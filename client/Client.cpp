@@ -292,8 +292,8 @@ namespace client {
   }
 
   void Client::createChatMessageUIEntity() {
-    auto uiEntity = _ecsManager.createEntity();
-    _ecsManager.addComponent<ecs::ChatComponent>(uiEntity, {});
+    auto chatEntity = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::ChatComponent>(chatEntity, {});
   }
 
   /**
