@@ -63,21 +63,24 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
  * not in a room.
  */
 int packet::ChatMessageHandler::handlePacket(server::Server &server,
-                                         server::Client &client,
-                                         const char *data, std::size_t size) {
+                                             server::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
       serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
 
   if (!deserializedPacket) {
-    std::cerr << "[ERROR] Failed to deserialize MessagePacket from client "
+    std::cerr << "[ERROR] Failed to deserialize ChatMessagePacket from client "
               << client._player_id << std::endl;
     return KO;
   }
   const ChatMessagePacket &packet = deserializedPacket.value();
-  std::cout << "[MESSAGE] Player " << client._player_id << ": "
-            << packet.message << std::endl;
+  std::string message(packet.message,
+                      strnlen(packet.message, sizeof(packet.message)));
+  std::cout << "[MESSAGE] Player " << client._player_id << ": " << message
+            << std::endl;
 
   ChatMessagePacket validatedPacket = packet;
   validatedPacket.player_id = static_cast<std::uint32_t>(client._player_id);
