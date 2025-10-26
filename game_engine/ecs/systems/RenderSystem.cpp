@@ -118,7 +118,6 @@ void ecs::RenderSystem::update(float deltaTime) {
     if (_ecsManager.hasComponent<ChatComponent>(entity)) {
       auto &chat = _ecsManager.getComponent<ChatComponent>(entity);
       if (chat.isChatting) {
-        std::size_t playerNameChars = chat.playerName.size();
         drawMessagesBox();
         drawMessages();
         drawMessageInputField(chat);
