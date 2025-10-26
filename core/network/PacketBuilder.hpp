@@ -46,6 +46,7 @@ struct PacketBuilder {
      * NewPlayer.
      *
      * @param player_id Unique identifier for the player.
+     * @param player_name Name of the player.
      * @param x Initial X position of the player.
      * @param y Initial Y position of the player.
      * @param speed Initial movement speed of the player.
@@ -53,8 +54,8 @@ struct PacketBuilder {
      * @return NewPlayerPacket Populated packet ready to be serialized and sent.
      */
     static NewPlayerPacket makeNewPlayer(std::uint32_t player_id,
-                                         std::string &player_name, float x,
-                                         float y, float speed,
+                                         const std::string &player_name,
+                                         float x, float y, float speed,
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
