@@ -26,9 +26,17 @@ namespace crypto {
       }
 
       static std::string generateChallenge(size_t length = 32) {
-        std::string challenge(length, '\0');
-        RAND_bytes(reinterpret_cast<unsigned char *>(challenge.data()), length);
-        return challenge;
+        std::vector<unsigned char> buffer(length);
+        if (RAND_bytes(buffer.data(), length) != 1) {
+          throw std::runtime_error("RAND_bytes failed");
+        }
+
+        std::stringstream ss;
+        for (unsigned char byte : buffer) {
+          ss << std::hex << std::setw(2) << std::setfill('0')
+             << static_cast<int>(byte);
+        }
+        return ss.str();
       }
   };
 

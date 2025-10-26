@@ -49,3 +49,5 @@ constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
 constexpr int COUNTDOWN_TIME = 5;
 
 constexpr int MAX_ROOMS = 10;
+
+constexpr int CHALLENGE_HEX_LEN = 128;

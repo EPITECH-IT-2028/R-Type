@@ -8,7 +8,7 @@ namespace client {
     public:
       Challenge() = default;
 
-      void setChallenge(const std::string &challenge, std::uint64_t timestamp) {
+      void setChallenge(const std::string &challenge, std::uint32_t timestamp) {
         _currentChallenge = challenge;
         _challengeTimestamp = timestamp;
         _challengeReceived = true;
@@ -33,6 +33,14 @@ namespace client {
 
       bool isChallengeReceived() const {
         return _challengeReceived;
+      }
+
+      void reset() {
+        _currentChallenge = "";
+        _challengeTimestamp = 0;
+        _roomId = 0;
+        _waitingChallenge = false;
+        _challengeReceived = false;
       }
 
     private:

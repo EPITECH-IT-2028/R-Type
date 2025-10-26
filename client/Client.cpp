@@ -396,6 +396,7 @@ namespace client {
 
   void Client::sendRequestChallenge(std::uint32_t room_id) {
     try {
+      _challenge.reset();
       _challenge.setRoomId(room_id);
       _challenge.setWaitingChallenge(true);
 

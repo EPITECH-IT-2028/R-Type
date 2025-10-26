@@ -14,6 +14,10 @@ namespace game {
 
     public:
       Challenge() = default;
+      Challenge(const Challenge &) = delete;
+      Challenge &operator=(const Challenge &) = delete;
+      Challenge(Challenge &&) = delete;
+      Challenge &operator=(Challenge &&) = delete;
 
       std::string createChallenge(std::uint32_t playerId);
 

@@ -824,12 +824,10 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
 
   auto room = server.getGameManager().getRoom(packet.room_id);
   if (!room) {
-    std::cerr << "[ERROR] Client " << client._player_id << " is not in any room"
-              << std::endl;
+    std::cerr << "[ERROR] Room " << packet.room_id << " not found for "
+              << "client " << client._player_id << std::endl;
     return KO;
   }
-
-  std::string password = room->getPassword();
 
   std::string challenge =
       server.getChallengeManager().createChallenge(client._player_id);

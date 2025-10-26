@@ -671,7 +671,7 @@ struct PacketBuilder {
      * challenge copied into the packet, and timestamp set.
      */
     static ChallengeResponsePacket makeChallengeResponse(
-        const char challenge[64], std::uint32_t timestamp) {
+        const char challenge[CHALLENGE_HEX_LEN], std::uint32_t timestamp) {
       ChallengeResponsePacket packet{};
       packet.header.type = PacketType::ChallengeResponse;
       packet.header.size = sizeof(packet);
