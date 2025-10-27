@@ -17,21 +17,20 @@
 
 #include <raylib.h>
 #include <sys/stat.h>
-#include <cstdint>
-#include <unordered_map>
-#include <vector>
-#include "EntityManager.hpp"
-#include "Packet.hpp"
-
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <iostream>
 #include <mutex>
 #include <shared_mutex>
 #include <string>
+#include <unordered_map>
+#include <vector>
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
+#include "EntityManager.hpp"
+#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
 
@@ -280,7 +279,7 @@ namespace client {
         auto it = _playerNames.find(playerId);
         if (it != _playerNames.end())
           return it->second;
-        if (playerId == -1)
+        if (playerId == static_cast<std::uint32_t>(-1))
           return "Server";
         return "Unknown";
       }
