@@ -19,9 +19,11 @@ namespace ecs {
       /**
        * @brief Sets the client used by this input system.
        *
-       * Associates the provided client pointer with the InputSystem. Passing `nullptr` disassociates any previously set client.
+       * Associates the provided client pointer with the InputSystem. Passing
+       * `nullptr` disassociates any previously set client.
        *
-       * @param client Pointer to the client to associate with the system, or `nullptr` to clear it.
+       * @param client Pointer to the client to associate with the system, or
+       * `nullptr` to clear it.
        */
       void setClient(client::Client *client) {
         _client = client;

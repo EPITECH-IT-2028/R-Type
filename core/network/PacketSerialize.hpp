@@ -21,7 +21,8 @@ template <typename S>
 /**
  * @brief Serializes a PacketHeader into the provided serializer.
  *
- * Writes the header's `type` as a one-byte value and `size` as a four-byte value.
+ * Writes the header's `type` as a one-byte value and `size` as a four-byte
+ * value.
  *
  * @param packet PacketHeader whose `type` and `size` fields will be written.
  */
@@ -131,10 +132,12 @@ template <typename S>
 /**
  * @brief Serializes a NewPlayerPacket into the provided serializer.
  *
- * Serializes the packet header, player identifier, 32-byte player name, position (x, y),
- * movement speed, and maximum health in the protocol's binary layout.
+ * Serializes the packet header, player identifier, 32-byte player name,
+ * position (x, y), movement speed, and maximum health in the protocol's binary
+ * layout.
  *
- * @param packet The NewPlayerPacket whose fields will be written to the serializer.
+ * @param packet The NewPlayerPacket whose fields will be written to the
+ * serializer.
  */
 void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);

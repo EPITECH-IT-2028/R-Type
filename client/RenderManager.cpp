@@ -7,11 +7,13 @@
 
 namespace renderManager {
   /**
-   * @brief Configure graphics, create the application window, and initialize renderer state.
+   * @brief Configure graphics, create the application window, and initialize
+   * renderer state.
    *
-   * Initializes windowing flags and attempts to create a window with the provided dimensions and title.
-   * Records whether initialization succeeded, sets a 60 FPS target if vertical sync is not active,
-   * registers the renderer's colored log callback, and applies the configured log level.
+   * Initializes windowing flags and attempts to create a window with the
+   * provided dimensions and title. Records whether initialization succeeded,
+   * sets a 60 FPS target if vertical sync is not active, registers the
+   * renderer's colored log callback, and applies the configured log level.
    *
    * @param width Initial window width in pixels.
    * @param height Initial window height in pixels.
@@ -28,9 +30,11 @@ namespace renderManager {
   }
 
   /**
-   * @brief Closes the renderer's window and releases associated graphics resources.
+   * @brief Closes the renderer's window and releases associated graphics
+   * resources.
    *
-   * Ensures the underlying window created by the renderer is closed before teardown.
+   * Ensures the underlying window created by the renderer is closed before
+   * teardown.
    */
   Renderer::~Renderer() {
     CloseWindow();
@@ -54,9 +58,11 @@ namespace renderManager {
   }
 
   /**
-   * @brief Ends the current frame's drawing phase and presents the rendered frame to the display.
+   * @brief Ends the current frame's drawing phase and presents the rendered
+   * frame to the display.
    *
-   * Finalizes all drawing for the current frame and submits the result to be shown on screen.
+   * Finalizes all drawing for the current frame and submits the result to be
+   * shown on screen.
    */
   void Renderer::endDrawing() const {
     EndDrawing();
@@ -65,9 +71,9 @@ namespace renderManager {
   /**
    * @brief Adjusts the application window to preserve the target aspect ratio.
    *
-   * Computes a new window width and height that maintain the aspect ratio defined
-   * by WINDOW_WIDTH and WINDOW_HEIGHT based on the current screen size, then
-   * applies the computed dimensions to the window.
+   * Computes a new window width and height that maintain the aspect ratio
+   * defined by WINDOW_WIDTH and WINDOW_HEIGHT based on the current screen size,
+   * then applies the computed dimensions to the window.
    *
    * @note Chooses whether to preserve width or height by comparing the absolute
    * difference between the current screen dimensions and the target dimensions,
@@ -94,7 +100,8 @@ namespace renderManager {
   }
 
   /**
-   * @brief Draws a string of text at the specified screen coordinates using the given font size and color.
+   * @brief Draws a string of text at the specified screen coordinates using the
+   * given font size and color.
    *
    * @param text Null-terminated UTF-8 string to draw.
    * @param posX X coordinate in pixels for the text baseline start.
@@ -124,13 +131,15 @@ namespace renderManager {
   /**
    * @brief Draws a filled rectangle with rounded corners.
    *
-   * Draws a filled rectangle at the given pixel position and size using the specified corner roundness and color.
+   * Draws a filled rectangle at the given pixel position and size using the
+   * specified corner roundness and color.
    *
    * @param posX X coordinate of the rectangle's top-left corner in pixels.
    * @param posY Y coordinate of the rectangle's top-left corner in pixels.
    * @param width Width of the rectangle in pixels.
    * @param height Height of the rectangle in pixels.
-   * @param roundness Corner roundness as a value between 0.0 (square corners) and 1.0 (maximum rounding).
+   * @param roundness Corner roundness as a value between 0.0 (square corners)
+   * and 1.0 (maximum rounding).
    * @param color Fill color for the rectangle.
    */
   void Renderer::drawRectangleRounded(int posX, int posY, int width, int height,
@@ -143,10 +152,12 @@ namespace renderManager {
   /**
    * @brief Logs a formatted message to stdout with a colored level prefix.
    *
-   * Prints a level tag (colorized for INFO, ERROR, WARNING, DEBUG) followed by the message formatted
-   * using the provided printf-style format string and arguments, then a newline.
+   * Prints a level tag (colorized for INFO, ERROR, WARNING, DEBUG) followed by
+   * the message formatted using the provided printf-style format string and
+   * arguments, then a newline.
    *
-   * @param msgType Message level selector; expected values include LOG_INFO, LOG_ERROR, LOG_WARNING, LOG_DEBUG.
+   * @param msgType Message level selector; expected values include LOG_INFO,
+   * LOG_ERROR, LOG_WARNING, LOG_DEBUG.
    * @param text printf-style format string for the message body.
    * @param args va_list of arguments matching `text`.
    */

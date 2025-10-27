@@ -7,9 +7,9 @@ namespace utils {
   /**
    * @brief Produces a random two-part name by combining a prefix and an animal.
    *
-   * Each invocation selects one prefix and one animal at random and returns them
-   * concatenated with a single space (e.g., "Rocket Fox"). The selection uses an
-   * internal PRNG whose state persists across calls.
+   * Each invocation selects one prefix and one animal at random and returns
+   * them concatenated with a single space (e.g., "Rocket Fox"). The selection
+   * uses an internal PRNG whose state persists across calls.
    *
    * @return std::string A name in the form "Prefix Animal".
    */

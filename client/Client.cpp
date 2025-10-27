@@ -51,8 +51,9 @@ namespace client {
    * @brief Initializes the entity-component-system for the client.
    *
    * Performs component and system registration, configures system signatures,
-   * injects this client instance into the input and render systems (if present),
-   * and creates initial world entities such as background layers and the chat UI.
+   * injects this client instance into the input and render systems (if
+   * present), and creates initial world entities such as background layers and
+   * the chat UI.
    */
   void Client::initializeECS() {
     registerComponent();
@@ -210,13 +211,17 @@ namespace client {
   }
 
   /**
-   * @brief Create a player entity with position, render, sprite, scale, animation, and identification components.
+   * @brief Create a player entity with position, render, sprite, scale,
+   * animation, and identification components.
    *
-   * Configures the entity from the provided packet and player sprite configuration, records the entity in the client's
-   * player ID → entity and player ID → name mappings, and — if the client has no local player assigned — sets the
-   * local player ID, stores the local player name, and tags the entity as the local player.
+   * Configures the entity from the provided packet and player sprite
+   * configuration, records the entity in the client's player ID → entity and
+   * player ID → name mappings, and — if the client has no local player assigned
+   * — sets the local player ID, stores the local player name, and tags the
+   * entity as the local player.
    *
-   * @param packet Packet containing the player's ID, name, and initial position (x, y).
+   * @param packet Packet containing the player's ID, name, and initial position
+   * (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -301,8 +306,8 @@ namespace client {
   /**
    * @brief Creates an entity that hosts the chat UI.
    *
-   * Creates and registers a new ECS entity containing a default-initialized ChatComponent
-   * used by the client's chat user interface.
+   * Creates and registers a new ECS entity containing a default-initialized
+   * ChatComponent used by the client's chat user interface.
    */
   void Client::createChatMessageUIEntity() {
     auto chatEntity = _ecsManager.createEntity();
@@ -327,8 +332,8 @@ namespace client {
    * @brief Retrieves the ECS entity associated with a projectile identifier.
    *
    * @param projectileId Identifier of the projectile to look up.
-   * @return Entity The associated entity, or `(Entity)(INVALID_ID)` if no mapping
-   * exists.
+   * @return Entity The associated entity, or `(Entity)(INVALID_ID)` if no
+   * mapping exists.
    */
   Entity Client::getProjectileEntity(std::uint32_t projectileId) {
     std::lock_guard<std::mutex> lock(_projectileMutex);
@@ -358,7 +363,8 @@ namespace client {
    *
    * If the client has not been assigned a local player ID, the call is ignored.
    *
-   * @param input Bitmask of player input flags (each bit represents an input action).
+   * @param input Bitmask of player input flags (each bit represents an input
+   * action).
    */
   void Client::sendInput(std::uint8_t input) {
     if (getPlayerId() == static_cast<std::uint32_t>(INVALID_ID)) {
@@ -422,8 +428,9 @@ namespace client {
   /**
    * Sends a chat message from the local player to the server.
    *
-   * If the local player ID is not assigned, the function logs a warning and does nothing.
-   * On failure to build or send the packet, the function logs an error.
+   * If the local player ID is not assigned, the function logs a warning and
+   * does nothing. On failure to build or send the packet, the function logs an
+   * error.
    *
    * @param message The text of the chat message to send.
    */
@@ -444,7 +451,8 @@ namespace client {
   }
 
   /**
-   * @brief Appends a chat message to the client's chat history and trims the oldest entries to keep the history at or below CHAT_MAX_MESSAGES.
+   * @brief Appends a chat message to the client's chat history and trims the
+   * oldest entries to keep the history at or below CHAT_MAX_MESSAGES.
    *
    * Acquires the internal chat mutex before modifying the stored messages.
    *

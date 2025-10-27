@@ -49,15 +49,17 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
 /**
  * @brief Handle an incoming chat message and broadcast it to the sender's room.
  *
- * Deserializes a ChatMessagePacket from the provided buffer, replaces the packet's
- * player_id with the sender's id, and broadcasts the validated packet to all
- * clients in the sender's room.
+ * Deserializes a ChatMessagePacket from the provided buffer, replaces the
+ * packet's player_id with the sender's id, and broadcasts the validated packet
+ * to all clients in the sender's room.
  *
  * @param server Server instance used to access game and network managers.
- * @param client Client that sent the packet; its player_id and room_id are used.
+ * @param client Client that sent the packet; its player_id and room_id are
+ * used.
  * @param data Pointer to the serialized ChatMessagePacket bytes.
  * @param size Number of bytes available at `data`.
- * @return int `OK` on success, `KO` if deserialization fails or the client is not in a room.
+ * @return int `OK` on success, `KO` if deserialization fails or the client is
+ * not in a room.
  */
 int packet::ChatMessageHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -245,13 +247,16 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a PlayerDisconnectPacket from a client and finalize that client's disconnection.
+ * @brief Handle a PlayerDisconnectPacket from a client and finalize that
+ * client's disconnection.
  *
- * Updates server and client state, removes the player from their room and game when present,
- * broadcasts the disconnect and an announcement chat message to remaining room clients, and
- * clears the client's server slot.
+ * Updates server and client state, removes the player from their room and game
+ * when present, broadcasts the disconnect and an announcement chat message to
+ * remaining room clients, and clears the client's server slot.
  *
- * @returns int `OK` if the disconnection was processed successfully; `KO` if packet deserialization fails or the packet's `player_id` does not match the client.
+ * @returns int `OK` if the disconnection was processed successfully; `KO` if
+ * packet deserialization fails or the packet's `player_id` does not match the
+ * client.
  */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
@@ -310,11 +315,10 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
           server.getNetworkManager(), roomClients, disconnectPacket);
 
       std::string msg = client._player_name + " has disconnected.";
-      auto chatMessagePacket = PacketBuilder::makeChatMessage(
-          msg, -1, 255, 255, 0, 255);
-      broadcast::Broadcast::broadcastMessageToRoom(server.getNetworkManager(),
-                                                   roomClients,
-                                                   chatMessagePacket);
+      auto chatMessagePacket =
+          PacketBuilder::makeChatMessage(msg, -1, 255, 255, 0, 255);
+      broadcast::Broadcast::broadcastMessageToRoom(
+          server.getNetworkManager(), roomClients, chatMessagePacket);
     }
   }
   server.clearClientSlot(client._player_id);

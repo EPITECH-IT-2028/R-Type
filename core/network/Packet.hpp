@@ -80,12 +80,14 @@ struct ALIGNED PacketHeader {
 };
 
 /**
- * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and RGBA color.
+ * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and
+ * RGBA color.
  *
  * @var header Common packet header (type and payload size).
  * @var timestamp 32-bit timestamp associated with the message.
  * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
- * @var player_id 32-bit identifier of the player who sent or is associated with the message.
+ * @var player_id 32-bit identifier of the player who sent or is associated with
+ * the message.
  * @var r Red color component for the message (0–255).
  * @var g Green color component for the message (0–255).
  * @var b Blue color component for the message (0–255).
@@ -130,7 +132,8 @@ struct ALIGNED PlayerMovePacket {
  * @details
  * - header: Common packet header present at the start of every packet.
  * - player_id: Server-assigned unique player identifier.
- * - player_name: Null-terminated UTF-8 display name (fixed-size buffer of 32 bytes).
+ * - player_name: Null-terminated UTF-8 display name (fixed-size buffer of 32
+ * bytes).
  * - x, y: Spawn world coordinates.
  * - speed: Movement speed scalar.
  * - max_health: Player's maximum health points.

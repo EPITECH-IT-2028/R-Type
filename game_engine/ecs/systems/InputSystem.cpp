@@ -34,13 +34,17 @@ namespace ecs {
   }
 
   /**
-   * @brief Handle player and UI keyboard input: matchmaking, chat UI, movement, vertical sprite animation, and shooting.
+   * @brief Handle player and UI keyboard input: matchmaking, chat UI, movement,
+   * vertical sprite animation, and shooting.
    *
    * Processes client state and input:
    * - In the connected menu, pressing 'M' sends a matchmaking request.
-   * - In game or room-waiting states, iterates entities with a SpriteAnimationComponent to:
+   * - In game or room-waiting states, iterates entities with a
+   * SpriteAnimationComponent to:
    *   - send a movement input bitmask when arrow keys are pressed,
-   *   - update the sprite's vertical animation state (UP plays forward from the neutral frame, DOWN plays backward from the neutral frame, neither or both stops and resets to the neutral frame with non-negative frameTime),
+   *   - update the sprite's vertical animation state (UP plays forward from the
+   * neutral frame, DOWN plays backward from the neutral frame, neither or both
+   * stops and resets to the neutral frame with non-negative frameTime),
    *   - send a shoot request with the entity's position when SPACE is pressed.
    *
    * @param deltaTime Time elapsed since the last update in seconds (unused).
@@ -119,16 +123,19 @@ namespace ecs {
   }
 
   /**
-   * @brief Locates a UI entity with a ChatComponent and processes chat input and state.
+   * @brief Locates a UI entity with a ChatComponent and processes chat input
+   * and state.
    *
-   * Searches all entities for the first ChatComponent. If found, updates its chat state:
-   * when chatting, appends valid typed characters, handles backspace (including repeat),
-   * and on Enter sends the accumulated message via the client (if available) and clears it.
-   * While not chatting, pressing AZERTY T enters chat mode; pressing Escape while chatting
-   * exits chat mode and clears the message. Adjusts the global exit key to disable it
-   * while chatting and re-enable Escape when not.
+   * Searches all entities for the first ChatComponent. If found, updates its
+   * chat state: when chatting, appends valid typed characters, handles
+   * backspace (including repeat), and on Enter sends the accumulated message
+   * via the client (if available) and clears it. While not chatting, pressing
+   * AZERTY T enters chat mode; pressing Escape while chatting exits chat mode
+   * and clears the message. Adjusts the global exit key to disable it while
+   * chatting and re-enable Escape when not.
    *
-   * @return true if chat input handling consumed the frame (e.g., message was sent or chat mode was entered), `false` otherwise.
+   * @return true if chat input handling consumed the frame (e.g., message was
+   * sent or chat mode was entered), `false` otherwise.
    */
   bool InputSystem::loadUIEntities() {
     Entity uiEntity = INVALID_ENTITY;

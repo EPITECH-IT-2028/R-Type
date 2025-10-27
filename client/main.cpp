@@ -42,11 +42,18 @@ void gameLoop(client::Client &client) {
 }
 
 /**
- * @brief Initialize subsystems, run the main render/update loop with a background network thread, and perform a clean shutdown.
+ * @brief Initialize subsystems, run the main render/update loop with a
+ * background network thread, and perform a clean shutdown.
  *
- * Initializes the renderer, parses configuration, initializes assets and the ECS, creates and connects the network client (setting the player name from argv or generating one when not provided), launches a background thread for network processing, drives the frame loop that updates the ECS and renders until the window should close, then disconnects the client and joins the network thread.
+ * Initializes the renderer, parses configuration, initializes assets and the
+ * ECS, creates and connects the network client (setting the player name from
+ * argv or generating one when not provided), launches a background thread for
+ * network processing, drives the frame loop that updates the ECS and renders
+ * until the window should close, then disconnects the client and joins the
+ * network thread.
  *
- * @return int `client::OK` on normal exit; `client::KO` if window initialization fails.
+ * @return int `client::OK` on normal exit; `client::KO` if window
+ * initialization fails.
  */
 int main(int ac, char **av) {
   renderManager::Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT,

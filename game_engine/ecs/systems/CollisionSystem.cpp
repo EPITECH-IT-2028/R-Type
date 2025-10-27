@@ -201,13 +201,23 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 }
 
 /**
- * @brief Handle a collision where a projectile strikes a player: apply damage, emit events, and destroy affected entities.
+ * @brief Handle a collision where a projectile strikes a player: apply damage,
+ * emit events, and destroy affected entities.
  *
- * If the projectile is enemy-owned and both the player's health and the projectile's damage are available, subtract the projectile's damage from the player's health. If the player's health becomes less than or equal to zero, enqueue a PlayerDiedEvent (with player_id and player_name) followed by a PlayerDestroyEvent and destroy the player; otherwise enqueue a PlayerHitEvent with damage and position. In all processed collisions enqueue a ProjectileDestroyEvent and destroy the projectile.
+ * If the projectile is enemy-owned and both the player's health and the
+ * projectile's damage are available, subtract the projectile's damage from the
+ * player's health. If the player's health becomes less than or equal to zero,
+ * enqueue a PlayerDiedEvent (with player_id and player_name) followed by a
+ * PlayerDestroyEvent and destroy the player; otherwise enqueue a PlayerHitEvent
+ * with damage and position. In all processed collisions enqueue a
+ * ProjectileDestroyEvent and destroy the projectile.
  *
- * The function returns without action if the projectile or player is null, the projectile lacks a ProjectileComponent, the projectile is player-owned, or either required health/damage is missing.
+ * The function returns without action if the projectile or player is null, the
+ * projectile lacks a ProjectileComponent, the projectile is player-owned, or
+ * either required health/damage is missing.
  *
- * @param projectile Shared pointer to the projectile involved; must correspond to an entity with a ProjectileComponent.
+ * @param projectile Shared pointer to the projectile involved; must correspond
+ * to an entity with a ProjectileComponent.
  * @param player Shared pointer to the player struck by the projectile.
  */
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
@@ -278,8 +288,10 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
  * Preconditions: both `enemy` and `player` must have a defined health value;
  * the function returns immediately if either health is absent.
  *
- * @param enemy The enemy involved in the collision (must provide health, id, position, and score).
- * @param player The player involved in the collision (must provide health, id, name, and position).
+ * @param enemy The enemy involved in the collision (must provide health, id,
+ * position, and score).
+ * @param player The player involved in the collision (must provide health, id,
+ * name, and position).
  */
 void ecs::CollisionSystem::handlePlayerEnemyCollision(
     std::shared_ptr<game::Enemy> enemy, std::shared_ptr<game::Player> player) {

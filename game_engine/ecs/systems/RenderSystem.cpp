@@ -134,9 +134,10 @@ void ecs::RenderSystem::update(float deltaTime) {
 /**
  * @brief Draws the chat messages background box on screen.
  *
- * Renders a translucent white rounded rectangle positioned near the bottom-left of
- * the screen to serve as the chat messages backdrop. The rectangle uses a fixed
- * size (two-thirds of the screen width by 365 pixels) and a subtle corner radius.
+ * Renders a translucent white rounded rectangle positioned near the bottom-left
+ * of the screen to serve as the chat messages backdrop. The rectangle uses a
+ * fixed size (two-thirds of the screen width by 365 pixels) and a subtle corner
+ * radius.
  */
 void ecs::RenderSystem::drawMessagesBox() {
   Color rectColor = {255, 255, 255, 16};
@@ -147,12 +148,13 @@ void ecs::RenderSystem::drawMessagesBox() {
 }
 
 /**
- * @brief Render the chat message history onto the screen when a client is available.
+ * @brief Render the chat message history onto the screen when a client is
+ * available.
  *
- * Collects chat messages from the connected client, formats each message with an
- * author prefix (omits the prefix for messages from "Server"), performs word-wrapping
- * to fit within the chat area using font metrics, and renders up to the most recent
- * CHAT_MAX_MESSAGES lines with their associated colors.
+ * Collects chat messages from the connected client, formats each message with
+ * an author prefix (omits the prefix for messages from "Server"), performs
+ * word-wrapping to fit within the chat area using font metrics, and renders up
+ * to the most recent CHAT_MAX_MESSAGES lines with their associated colors.
  *
  * The function does nothing if no client is connected.
  */
@@ -205,10 +207,11 @@ void ecs::RenderSystem::drawMessages() {
 /**
  * @brief Render the chat input field and the user's current input.
  *
- * Draws a translucent rounded rectangle at the bottom of the screen as the input field
- * and renders the chat's current message with a trailing cursor underscore.
- * If the message width exceeds the available input width, the displayed text is
- * truncated from the left so the rightmost characters (most recent input) remain visible.
+ * Draws a translucent rounded rectangle at the bottom of the screen as the
+ * input field and renders the chat's current message with a trailing cursor
+ * underscore. If the message width exceeds the available input width, the
+ * displayed text is truncated from the left so the rightmost characters (most
+ * recent input) remain visible.
  *
  * @param chat ChatComponent whose `message` is displayed in the input field.
  */
@@ -216,7 +219,8 @@ void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
   Color rectColor = {255, 255, 255, 16};
 
   renderManager::Renderer::drawRectangleRounded(
-      chatUI::INPUT_LEFT_OFFSET, GetScreenHeight() - chatUI::INPUT_BOTTOM_OFFSET,
+      chatUI::INPUT_LEFT_OFFSET,
+      GetScreenHeight() - chatUI::INPUT_BOTTOM_OFFSET,
       GetScreenWidth() - chatUI::INPUT_RIGHT_MARGIN, chatUI::INPUT_HEIGHT,
       chatUI::INPUT_ROUNDNESS, rectColor);
   std::string displayText = chat.message + "_";

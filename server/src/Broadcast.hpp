@@ -57,16 +57,19 @@ namespace broadcast {
       }
 
       /**
-       * @brief Send current connected players' state to a newly connected client.
+       * @brief Send current connected players' state to a newly connected
+       * client.
        *
-       * Sends a NewPlayer packet for each existing, connected player (excluding the
-       * client identified by newPlayerID) to that newly connected client.
+       * Sends a NewPlayer packet for each existing, connected player (excluding
+       * the client identified by newPlayerID) to that newly connected client.
        *
        * @param networkManager Server network manager used to send packets.
        * @param game Source of current player state.
-       * @param newPlayerID ID of the newly connected client that should receive the player data.
-       * @param roomClients List of clients in the room (provided for context; this function
-       *        uses game state and does not iterate roomClients when sending).
+       * @param newPlayerID ID of the newly connected client that should receive
+       * the player data.
+       * @param roomClients List of clients in the room (provided for context;
+       * this function uses game state and does not iterate roomClients when
+       * sending).
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,
@@ -285,7 +288,8 @@ namespace broadcast {
       /**
        * @brief Broadcasts a chat message to every connected client in a room.
        *
-       * Only non-null, connected clients from the provided room client list will receive the packet.
+       * Only non-null, connected clients from the provided room client list
+       * will receive the packet.
        *
        * @param packet ChatMessagePacket containing the message to broadcast.
        */
@@ -297,14 +301,17 @@ namespace broadcast {
       };
 
       /**
-       * @brief Broadcasts a chat message to every client in the room except a specified player.
+       * @brief Broadcasts a chat message to every client in the room except a
+       * specified player.
        *
-       * Iterates the provided client list and sends `packet` to each non-null, connected client whose `_player_id`
-       * does not equal `excluded_player_id`.
+       * Iterates the provided client list and sends `packet` to each non-null,
+       * connected client whose `_player_id` does not equal
+       * `excluded_player_id`.
        *
        * @param roomClients List of room clients to consider for delivery.
        * @param packet The chat message packet to broadcast.
-       * @param excluded_player_id Player ID to exclude from receiving the packet.
+       * @param excluded_player_id Player ID to exclude from receiving the
+       * packet.
        */
       static void broadcastMessageToRoomExcept(
           network::ServerNetworkManager &networkManager,
