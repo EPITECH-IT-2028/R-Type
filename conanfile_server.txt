@@ -1,7 +1,7 @@
 [requires]
 asio/1.36.0
 bitsery/5.2.4
-openssl/3.6.0
+openssl/3.3.2
 
 [generators]
 CMakeDeps
