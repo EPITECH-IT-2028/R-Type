@@ -155,7 +155,7 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
     }
     case server::ClientState::IN_ROOM_WAITING:
     case server::ClientState::IN_GAME:
-      return server.initializePlayerInRoom(client) ? OK : KO;
+      return server.initializePlayerInRoom(client, packet) ? OK : KO;
 
     default:
       std::cerr << "[ERROR] Invalid client state for PlayerInfo" << std::endl;
@@ -449,7 +449,7 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   client._state = server::ClientState::IN_ROOM_WAITING;
 
-  if (!server.initializePlayerInRoom(client)) {
+  if (!server.initializePlayerInRoom(client, packet)) {
     std::cerr << "[ERROR] Failed to initialize player " << client._player_id
               << " in room " << newRoom->getRoomId() << std::endl;
     server.getGameManager().leaveRoom(sharedClient);
@@ -533,7 +533,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
 
   client._state = server::ClientState::IN_ROOM_WAITING;
 
-  if (!server.initializePlayerInRoom(client)) {
+  if (!server.initializePlayerInRoom(client, packet)) {
     server.getGameManager().leaveRoom(sharedClient);
     client._state = server::ClientState::CONNECTED_MENU;
     ResponseHelper::sendJoinRoomResponse(server, client._player_id,
@@ -721,7 +721,7 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
       client._state = server::ClientState::IN_ROOM_WAITING;
 
-      if (!server.initializePlayerInRoom(client)) {
+      if (!server.initializePlayerInRoom(client, packet)) {
         server.getGameManager().leaveRoom(sharedClient);
         server.getGameManager().destroyRoom(newRoom->getRoomId());
         client._state = server::ClientState::CONNECTED_MENU;
@@ -744,7 +744,7 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
     client._state = server::ClientState::IN_ROOM_WAITING;
 
-    if (!server.initializePlayerInRoom(client)) {
+    if (!server.initializePlayerInRoom(client, packet)) {
       std::cerr << "[MATCHMAKING] Failed to initialize player" << std::endl;
       server.getGameManager().leaveRoom(sharedClient);
       client._state = server::ClientState::CONNECTED_MENU;

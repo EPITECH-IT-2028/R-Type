@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #ifdef _WIN32
   #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
@@ -21,7 +22,9 @@
 #include "Events.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
-#include "game/GameManager.hpp"
+#include "GameManager.hpp"
+#include "PacketBuilder.hpp"
+#include "Broadcast.hpp"
 
 namespace game {
   class GameManager;
@@ -85,7 +88,107 @@ namespace server {
 
       std::shared_ptr<Client> getClientById(int player_id) const;
 
-      bool initializePlayerInRoom(Client &client);
+      /**
+       * @brief Initialize a connected client as a player inside its assigned
+       * game room.
+       *
+       * Validates the client's state, room assignment, and name; creates a
+       * player entity in the room's game, stores the entity id on the client,
+       * sends the new-player state to the client, broadcasts existing players
+       * and the new player to the room, and starts the room countdown when
+       * conditions are met.
+       *
+       * @param client Client instance to initialize (modified in-place).
+       * @return true if the player was successfully initialized in the room,
+       * false otherwise.
+       */
+
+      template <typename T>
+      bool initializePlayerInRoom(Client &client, const T &packet) {
+        if (client._state == ClientState::CONNECTED_MENU) {
+          std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+                    << " - still in menu" << std::endl;
+          return false;
+        }
+
+        if (client._room_id == NO_ROOM) {
+          std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+                    << " not in any room" << std::endl;
+          return false;
+        }
+
+        if (client._player_name.empty()) {
+          std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+                    << " no name set" << std::endl;
+          return false;
+        }
+
+        auto room = _gameManager->getRoom(client._room_id);
+        if (!room) {
+          std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+                    << " room " << client._room_id << " not found" << std::endl;
+          return false;
+        }
+
+        auto player = room->getGame().createPlayer(client._player_id,
+                                                   client._player_name);
+        if (!player) {
+          std::cerr << "[ERROR] Cannot initialize player " << client._player_id
+                    << " failed to create player entity in room "
+                    << client._room_id << std::endl;
+          return false;
+        }
+
+        client._entity_id = player->getEntityId();
+
+        std::pair<float, float> pos = player->getPosition();
+        float speed = player->getSpeed();
+        int max_health = player->getMaxHealth().value_or(100);
+        auto &game = room->getGame();
+
+        auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
+            client._player_id, pos.first, pos.second, speed,
+            game.getSequenceNumber(), max_health);
+        auto serializedBuffer =
+            serialization::BitserySerializer::serialize(ownPlayerPacket);
+        _networkManager.sendToClient(
+            client._player_id,
+            reinterpret_cast<const char *>(serializedBuffer.data()),
+            serializedBuffer.size());
+
+        auto roomClients = room->getClients();
+
+        broadcast::Broadcast::broadcastExistingPlayersToRoom(
+            _networkManager, room->getGame(), client._player_id, roomClients);
+
+        auto newPlayerPacket = PacketBuilder::makeNewPlayer(
+            client._player_id, pos.first, pos.second, speed,
+            game.getSequenceNumber(), max_health);
+        broadcast::Broadcast::broadcastAncientPlayerToRoom(
+            _networkManager, roomClients, newPlayerPacket);
+
+        game.incrementSequenceNumber();
+        if (roomClients.size() >= 2 &&
+            room->getState() == game::RoomStatus::WAITING) {
+          auto timer = std::make_shared<asio::steady_timer>(
+              _networkManager.getIoContext(), std::chrono::seconds(1));
+
+          room->startCountdown(COUNTDOWN_TIME, timer);
+          handleCountdown(room, timer);
+        }
+
+        std::cout << "[WORLD] Player " << client._player_id << " ("
+                  << client._player_name << ") initialized in room "
+                  << client._room_id << std::endl;
+
+        auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
+                                                      client._player_id);
+        auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
+            serialization::BitserySerializer::serialize(ackPacket));
+        _networkManager.sendToClient(client._player_id, ackBuffer);
+
+        return true;
+      }
 
       std::unordered_map<std::uint32_t, std::uint64_t> &getLastProcessedSeq() {
         return _lastProcessedSeq;
