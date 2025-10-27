@@ -178,11 +178,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 
   const PlayerMovePacket &packet = packetOpt.value();
 
-  client.calculatePacketLoss(packet.sequence_number);
-
-  TraceLog(LOG_INFO, "[LOSS] Server→Client: %.1f%%",
-           client.getPacketLoss() * 100.0);
-
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto playerEntity = client.getPlayerEntity(packet.player_id);
@@ -197,6 +192,8 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 
     if (client.getPlayerId() == packet.player_id) {
       client.updateSequenceNumber(packet.sequence_number);
+
+      client.calculatePacketLoss(packet.sequence_number);
     }
 
   } catch (const std::exception &e) {
