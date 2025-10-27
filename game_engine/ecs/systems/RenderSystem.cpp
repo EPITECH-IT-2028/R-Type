@@ -187,6 +187,11 @@ void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
 
   renderManager::Renderer::drawRectangleRounded(
       10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f, rectColor);
-  renderManager::Renderer::drawText((chat.message + "_").c_str(), 25,
+  std::string displayText = chat.message + "_";
+  int maxInputWidth = GetScreenWidth() - 50;
+  while (MeasureText(displayText.c_str(), 20) > maxInputWidth &&
+         displayText.size() > 1)
+    displayText = displayText.substr(1);
+  renderManager::Renderer::drawText(displayText.c_str(), 25,
                                     GetScreenHeight() - 35, 20, WHITE);
 }
