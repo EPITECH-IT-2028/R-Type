@@ -40,8 +40,10 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   const std::string playerName = client.getPlayerNameById(packet.player_id);
+  size_t msgLen = strnlen(packet.message, sizeof(packet.message));
+  std::string message(packet.message, msgLen);
   Color color = {packet.r, packet.g, packet.b, packet.a};
-  client.storeChatMessage(playerName, packet.message, color);
+  client.storeChatMessage(playerName, message, color);
   return packet::OK;
 }
 
