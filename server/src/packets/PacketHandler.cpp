@@ -250,8 +250,11 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   }
 
   std::uint64_t lastSeq = 0;
-  auto lastProcessedMap = server.getLastProcessedSeq(client._player_id);
+  auto lastProcessedOpt = server.getLastProcessedSeq(client._player_id);
 
+  if (lastProcessedOpt.has_value()) {
+    lastSeq = lastProcessedOpt.value();
+  }
   if (packet.sequence_number <= lastSeq) {
     server.getNetworkManager().sendToClient(
         client._player_id,
