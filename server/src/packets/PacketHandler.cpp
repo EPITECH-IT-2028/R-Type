@@ -687,7 +687,13 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
     return KO;
   }
 
-  const MatchmakingRequestPacket &packet = deserializedPacket.value();
+  MatchmakingRequestPacket packet;
+  try {
+    packet = deserializedPacket.value();
+  } catch (std::bad_optional_access &e) {
+    std::cerr << "Can't retrieve packet" << std::endl;
+    return KO;
+  }
 
   auto sharedClient = server.getClientById(client._player_id);
   if (!sharedClient) {
@@ -695,7 +701,6 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
                                             RoomError::UNKNOWN_ERROR);
     return KO;
   }
-
   bool joinSuccess = server.getGameManager().joinAnyRoom(sharedClient);
 
   if (!joinSuccess) {
