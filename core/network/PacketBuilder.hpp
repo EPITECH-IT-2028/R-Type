@@ -67,6 +67,24 @@ struct PacketBuilder {
     }
 
     /**
+     * @brief Constructs a ChatMessagePacket with default white color.
+     *
+     * This overload of makeChatMessage sets the message color to white
+     * (RGBA: 255, 255, 255, 255) by default.
+     *
+     * @param msg Text to include in the message packet; may be truncated to fit
+     * the packet.
+     * @param player_id Identifier of the player who sent the message.
+     * @return ChatMessagePacket Packet with header.type == PacketType::ChatMessage,
+     * header.size set to sizeof(packet), a null-terminated `message` field,
+     * current `timestamp`, and `player_id` set. Message color is white.
+     */
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id) {
+      return makeChatMessage(msg, player_id, 255, 255, 255, 255);
+    }
+
+    /**
      * @brief Creates a NewPlayerPacket for a newly joined player.
      *
      * The returned packet contains the player's identity, position, movement
