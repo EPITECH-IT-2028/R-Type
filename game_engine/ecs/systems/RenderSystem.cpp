@@ -141,9 +141,9 @@ void ecs::RenderSystem::drawMessages() {
   if (_client == nullptr)
     return;
   std::vector<client::ChatMessage> chatMessages = _client->getChatMessages();
-  int lineHeight = 25;
-  int fontSize = 20;
-  int maxWidth = (GetScreenWidth() / 3) * 2 - CHAT_BOX_MAX_TEXT_LEN;
+  int lineHeight = chatUI::LINE_HEIGHT;
+  int fontSize = chatUI::FONT_SIZE;
+  int maxWidth = (GetScreenWidth() / 3) * 2 - chatUI::BOX_MAX_TEXT_LEN;
   Font font = GetFontDefault();
   std::vector<std::pair<std::string, Color>> allLines;
 
@@ -171,13 +171,14 @@ void ecs::RenderSystem::drawMessages() {
   if (allLines.size() > maxLines)
     start_index = allLines.size() - maxLines;
   int numVisibleLines = allLines.size() - start_index;
-  int chatStartY = GetScreenHeight() - CHAT_BOX_BOTTOM_OFFSET -
+  int chatStartY = GetScreenHeight() - chatUI::BOX_BOTTOM_OFFSET -
                    (numVisibleLines - 1) * lineHeight;
   int y = chatStartY;
 
   for (size_t i = start_index; i < allLines.size(); ++i) {
-    renderManager::Renderer::drawText(allLines[i].first.c_str(), 25, y,
-                                      fontSize, allLines[i].second);
+    renderManager::Renderer::drawText(allLines[i].first.c_str(),
+                                      chatUI::BOX_MAX_TEXT_LEN / 7, y, fontSize,
+                                      allLines[i].second);
     y += lineHeight;
   }
 }
@@ -186,7 +187,9 @@ void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
   Color rectColor = {255, 255, 255, 16};
 
   renderManager::Renderer::drawRectangleRounded(
-      10, GetScreenHeight() - 40, GetScreenWidth() - 20, 30, 0.5f, rectColor);
+      chatUI::INPUT_LEFT_OFFSET, GetScreenHeight() - chatUI::INPUT_BOTTOM_OFFSET,
+      GetScreenWidth() - chatUI::INPUT_RIGHT_MARGIN, chatUI::INPUT_HEIGHT,
+      chatUI::INPUT_ROUNDNESS, rectColor);
   std::string displayText = chat.message + "_";
   int maxInputWidth = GetScreenWidth() - 50;
   while (MeasureText(displayText.c_str(), 20) > maxInputWidth &&

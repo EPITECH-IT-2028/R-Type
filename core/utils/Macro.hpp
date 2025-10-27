@@ -54,8 +54,21 @@ constexpr int MAX_ROOMS = 10;
 constexpr int INVALID_ID = -1;
 
 /* UI constants */
-constexpr int CHAT_BOX_MAX_TEXT_LEN = 170;
-constexpr int CHAT_BOX_BOTTOM_OFFSET = 80;
+namespace chatUI {
+  constexpr int BOX_MAX_TEXT_LEN = 170;
+  constexpr int BOX_BOTTOM_OFFSET = 80;
+
+  constexpr int LINE_HEIGHT = 25;
+  constexpr int FONT_SIZE = 20;
+
+  constexpr int INPUT_LEFT_OFFSET = 10;
+  constexpr int INPUT_BOTTOM_OFFSET = 40;
+  constexpr int INPUT_RIGHT_MARGIN = 20;
+  constexpr int INPUT_HEIGHT = 30;
+  constexpr float INPUT_ROUNDNESS = 0.5f;
+  constexpr int INPUT_TEXT_OFFSET = 15;
+  constexpr int INPUT_TEXT_Y_OFFSET = 35;
+}  // namespace chatUI
 
 /* ASCII characters */
 constexpr char ASCII_NULL = 0;
