@@ -664,6 +664,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
+  game.incrementSequenceNumber();
 
   auto roomClients = room->getClients();
 
@@ -673,6 +674,15 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   auto newPlayerPacket =
       PacketBuilder::makeNewPlayer(client._player_id, pos.first, pos.second,
                                    speed, game.getSequenceNumber(), max_health);
+  auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(newPlayerPacket));
+  for (const auto &roomClient : roomClients) {
+    if (roomClient && roomClient->_player_id != client._player_id) {
+      roomClient->addUnacknowledgedPacket(game.getSequenceNumber(),
+                                          newPlayerBuffer);
+    }
+  }
+
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
 
