@@ -2,9 +2,134 @@
 
 # Usage: ./build.sh [debug|release] (defaults to both)
 #        ./build.sh [client|server|both] [debug|release]
+#        ./build.sh --install-deps
 #        ./build.sh clean
 
 set -e
+
+INSTALL_DEPS=false
+
+if [[ " $* " == *" --install-deps "* ]]; then
+    INSTALL_DEPS=true
+    new_args=()
+    for arg in "$@"; do
+        if [[ "$arg" != "--install-deps" ]]; then
+            new_args+=("$arg")
+        fi
+    done
+    set -- "${new_args[@]}"
+fi
+
+REQUIRED_PACKAGES=(
+    build-essential
+    cmake
+    ninja-build
+    pkg-config
+    libgl-dev
+    libgl1-mesa-dev
+    libx11-dev
+    libx11-xcb-dev
+    libfontenc-dev
+    libice-dev
+    libsm-dev
+    libxau-dev
+    libxaw7-dev
+    libxcomposite-dev
+    libxcursor-dev
+    libxdamage-dev
+    libxext-dev
+    libxfixes-dev
+    libxi-dev
+    libxinerama-dev
+    libxkbfile-dev
+    libxmu-dev
+    libxmuu-dev
+    libxpm-dev
+    libxrandr-dev
+    libxrender-dev
+    libxres-dev
+    libxss-dev
+    libxt-dev
+    libxtst-dev
+    libxv-dev
+    libxxf86vm-dev
+    libxcb-glx0-dev
+    libxcb-render0-dev
+    libxcb-render-util0-dev
+    libxcb-xkb-dev
+    libxcb-icccm4-dev
+    libxcb-image0-dev
+    libxcb-keysyms1-dev
+    libxcb-randr0-dev
+    libxcb-shape0-dev
+    libxcb-sync-dev
+    libxcb-xfixes0-dev
+    libxcb-xinerama0-dev
+    uuid-dev
+    libxcb-cursor-dev
+    libxcb-dri2-0-dev
+    libxcb-dri3-dev
+    libxcb-present-dev
+    libxcb-composite0-dev
+    libxcb-ewmh-dev
+    libxcb-res0-dev
+    libxcb-util-dev
+    libxcb-util0-dev
+    clang
+)
+
+UNAME_OUT="$(uname -s)"
+case "${UNAME_OUT}" in
+    Linux*)
+        OS_TYPE=Linux
+        ;;
+    Darwin*)
+        OS_TYPE=Mac
+        ;;
+    CYGWIN*|MINGW*|MSYS*)
+        OS_TYPE=Windows
+        ;;
+    *)
+        OS_TYPE="Unknown"
+        ;;
+esac
+
+CMAKE_LINKER_FLAGS_ARG=""
+if [[ "$OS_TYPE" == "Windows" ]]; then
+    export LDFLAGS="-static-libgcc -static-libstdc++ -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic"
+    CMAKE_LINKER_FLAGS_ARG="-DCMAKE_EXE_LINKER_FLAGS=-static"
+else
+    unset LDFLAGS
+fi
+
+if [[ "$OS_TYPE" == "Linux" ]]; then
+    if [ "$INSTALL_DEPS" = "true" ]; then
+        echo "Linux detected, ensuring required packages are installed..."
+        missing_packages=()
+        for pkg in "${REQUIRED_PACKAGES[@]}"; do
+            if ! dpkg -s "$pkg" &> /dev/null; then
+                missing_packages+=("$pkg")
+            fi
+        done
+
+        if [ ${#missing_packages[@]} -gt 0 ]; then
+            if [[ $EUID -ne 0 ]]; then
+                echo "Installing missing dependencies requires root privileges."
+                echo "Please re-run with: sudo ./build.sh --install-deps"
+                exit 1
+            fi
+            echo "[...] Installing ${#missing_packages[@]} package(s)..."
+            apt-get update
+            apt-get install -y "${missing_packages[@]}"
+        else
+            echo "All required packages are already installed."
+        fi
+    fi
+else
+    if [ "$INSTALL_DEPS" = "true" ]; then
+        echo "Non-Linux OS detected ($OS_TYPE), skipping system package installation."
+    fi
+fi
 
 if [ $# -eq 0 ]; then
     TARGET="both"
@@ -123,36 +248,54 @@ fi
 echo "Building R-Type with target: $TARGET, build type: $BUILD_TYPE"
 
 echo "Installing conan dependencies..."
-if ! conan profile show default > /dev/null 2>&1; then
-    echo "[INFO] Conan default profile not found. Detecting..."
-    conan profile detect --force > /dev/null 2>&1
+if ! command -v conan &> /dev/null
+then
+    if [[ $EUID -eq 0 ]]; then
+        echo "Warning: conan command not found. This might happen when running with sudo."
+        echo "The script will continue, but it might fail if conan is not installed."
+    else
+        echo "conan could not be found, please install it"
+        exit 1
+    fi
 fi
 
-CONAN_EXTRA_ARGS=""
-if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/os-release ]]; then
-    CONAN_EXTRA_ARGS="-c tools.system.package_manager:mode=install"
-fi
+echo "[INFO] Detecting conan profile..."
+conan profile detect --force > /dev/null 2>&1
 
 if [ "$TARGET" == "server" ]; then
-    conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+    if ! conan install ./conanfile_server.txt --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"; then
+        echo "Conan install failed. If you are on Linux, you may need to install system dependencies."
+        echo "Try running: sudo ./build.sh --install-deps"
+        exit 1
+    fi
 else
-    conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"
+    if ! conan install . --output-folder=.build --build=missing --profile:build=default --profile:host=default --settings "build_type=$BUILD_TYPE"; then
+        echo "Conan install failed. If you are on Linux, you may need to install system dependencies."
+        echo "Try running: sudo ./build.sh --install-deps"
+        exit 1
+    fi
 fi
 
 case $TARGET in
     "client")
         echo "Building client only..."
-        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" \
+              -DBUILD_CLIENT=ON -DBUILD_SERVER=OFF -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+              $CMAKE_LINKER_FLAGS_ARG
         cmake --build .build --config $BUILD_TYPE
         ;;
     "server")
         echo "Building server only..."
-        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=OFF -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" \
+              -DBUILD_CLIENT=OFF -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+              $CMAKE_LINKER_FLAGS_ARG
         cmake --build .build --config $BUILD_TYPE
         ;;
     "both")
         echo "Building both client and server..."
-        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+        cmake -B .build -DCMAKE_TOOLCHAIN_FILE=".build/conan_toolchain.cmake" \
+              -DBUILD_CLIENT=ON -DBUILD_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+              $CMAKE_LINKER_FLAGS_ARG
         cmake --build .build --config $BUILD_TYPE
         ;;
     *)
