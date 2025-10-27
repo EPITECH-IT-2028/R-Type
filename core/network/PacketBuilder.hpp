@@ -675,8 +675,8 @@ struct PacketBuilder {
       ChallengeResponsePacket packet{};
       packet.header.type = PacketType::ChallengeResponse;
       packet.header.size = sizeof(packet);
-      std::memcpy(packet.challenge, challenge, sizeof(packet.challenge));
       strncpy(packet.challenge, challenge, sizeof(packet.challenge) - 1);
+      packet.challenge[sizeof(packet.challenge) - 1] = '\0';
       packet.timestamp = timestamp;
       return packet;
     }
