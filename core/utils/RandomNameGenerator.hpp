@@ -4,7 +4,7 @@
 #include <string>
 
 namespace utils {
-  static std::string generateRandomName() {
+  inline std::string generateRandomName() {
     static const char *prefixes[] = {"Rocket", "Space",   "Star",  "Laser",
                                      "Nova",   "Astro",   "Turbo", "Quantum",
                                      "Pixel",  "Phantom", "Blitz", "Neo"};
