@@ -1,5 +1,6 @@
 #include "Challenge.hpp"
 #include <openssl/crypto.h>
+#include <chrono>
 #include <cstdint>
 #include "crypto/Crypto.hpp"
 
