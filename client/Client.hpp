@@ -302,7 +302,7 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
-      void updatePing(std::uint64_t ping) {
+      void updatePing(std::uint32_t ping) {
         _ping.store(ping, std::memory_order_release);
       }
 

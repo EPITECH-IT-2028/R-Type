@@ -629,7 +629,7 @@ struct PacketBuilder {
      * @param timestamp Timestamp to include in the ping packet.
      * @return PingPacket Packet with header.type set to Ping, header.size set to the packet size, and timestamp set to the provided value.
      */
-    static PingPacket makePing(std::uint64_t timestamp) {
+    static PingPacket makePing(std::uint32_t timestamp) {
       PingPacket packet{};
       packet.header.type = PacketType::Ping;
       packet.header.size = sizeof(packet);
@@ -643,7 +643,7 @@ struct PacketBuilder {
      * @param timestamp Timestamp to include in the pong packet.
      * @return PongPacket Packet with header.type set to Pong, header.size set to the packet size, and timestamp set to the provided value.
      */
-    static PongPacket makePong(std::uint64_t timestamp) {
+    static PongPacket makePong(std::uint32_t timestamp) {
       PongPacket packet{};
       packet.header.type = PacketType::Pong;
       packet.header.size = sizeof(packet);
