@@ -163,7 +163,7 @@ void ecs::RenderSystem::drawMessages() {
     if (!currentLine.empty())
       allLines.push_back({currentLine, chatMessage.color});
   }
-  const int maxLines = 14;
+  const int maxLines = client::CHAT_MAX_MESSAGES;
   size_t start_index = 0;
   if (allLines.size() > maxLines)
     start_index = allLines.size() - maxLines;
