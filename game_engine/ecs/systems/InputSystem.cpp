@@ -131,7 +131,7 @@ namespace ecs {
    * @return true if chat input handling consumed the frame (e.g., message was sent or chat mode was entered), `false` otherwise.
    */
   bool InputSystem::loadUIEntities() {
-    Entity uiEntity = INVALID_ID;
+    Entity uiEntity = INVALID_ENTITY;
     for (auto const &entity : _ecsManager.getAllEntities()) {
       if (_ecsManager.hasComponent<ChatComponent>(entity)) {
         uiEntity = entity;
@@ -139,7 +139,7 @@ namespace ecs {
       }
     }
 
-    if (uiEntity != INVALID_ID) {
+    if (uiEntity != INVALID_ENTITY) {
       auto &chat = _ecsManager.getComponent<ChatComponent>(uiEntity);
 
       if (chat.isChatting) {
