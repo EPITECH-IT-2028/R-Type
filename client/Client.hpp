@@ -1,11 +1,5 @@
 #pragma once
 
-#include <sys/stat.h>
-#include <cstdint>
-#include <unordered_map>
-#include "EntityManager.hpp"
-#include "Packet.hpp"
-
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -27,25 +21,24 @@
 #endif
 
 #include <sys/stat.h>
-#include <cstdint>
-#include <unordered_map>
-#include "EntityManager.hpp"
-#include "Packet.hpp"
-#include "PacketUtils.hpp"
-#include "Serializer.hpp"
-#include "raylib.h"
-
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <iostream>
 #include <mutex>
 #include <shared_mutex>
 #include <string>
+#include <unordered_map>
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
+#include "EntityManager.hpp"
+#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
+#include "raylib.h"
 
 #define TIMEOUT_MS 100
 
@@ -115,8 +108,9 @@ namespace client {
       /**
        * @brief Stops the resend thread and joins it during client destruction.
        *
-       * Signals the resend thread to stop and joins the thread if it is joinable
-       * to ensure the background resend mechanism is terminated before destruction.
+       * Signals the resend thread to stop and joins the thread if it is
+       * joinable to ensure the background resend mechanism is terminated before
+       * destruction.
        */
       ~Client() {
         _resendThreadRunning.store(false, std::memory_order_release);
@@ -126,9 +120,11 @@ namespace client {
       }
 
       /**
-       * @brief Check whether the client currently has an active network connection.
+       * @brief Check whether the client currently has an active network
+       * connection.
        *
-       * @return `true` if the underlying network manager reports a connection, `false` otherwise.
+       * @return `true` if the underlying network manager reports a connection,
+       * `false` otherwise.
        */
       bool isConnected() const {
         return _networkManager.isConnected();
@@ -143,9 +139,13 @@ namespace client {
       }
 
       /**
-       * @brief Attempts to connect; on success enters the connected menu and announces the local player.
+       * @brief Attempts to connect; on success enters the connected menu and
+       * announces the local player.
        *
-       * Attempts to establish a network connection. If the connection succeeds, sets the client state to ClientState::IN_CONNECTED_MENU and sends a PlayerInfoPacket for the local player using the current outgoing sequence number.
+       * Attempts to establish a network connection. If the connection succeeds,
+       * sets the client state to ClientState::IN_CONNECTED_MENU and sends a
+       * PlayerInfoPacket for the local player using the current outgoing
+       * sequence number.
        */
       void connect() {
         _networkManager.connect();
@@ -222,7 +222,7 @@ namespace client {
       }
 
       /**
-       * @brief Retrieve the ECS entity ID associated with an enemy identifier.
+       * @brief Retrieves the ECS entity ID associated with an enemy identifier.
        *
        * @returns std::uint32_t The entity ID mapped to the given enemy_id, or
        * `KO` if no mapping exists.
@@ -286,7 +286,7 @@ namespace client {
       void removeProjectileEntity(std::uint32_t projectileId);
 
       /**
-       * @brief Retrieve the local player's identifier.
+       * @brief Retrieves the local player's identifier.
        *
        * @return std::uint32_t The local player ID; returns `(std::uint32_t)-1`
        * if no player is assigned.
@@ -317,18 +317,10 @@ namespace client {
 
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
-      void resendPackets();
-
-      void addUnacknowledgedPacket(
-          std::uint32_t sequence_number,
-          std::shared_ptr<std::vector<uint8_t>> packetData);
-      void removeAcknowledgedPacket(std::uint32_t sequence_number);
-
-      void resendUnacknowledgedPackets();
       void sendMatchmakingRequest();
 
       /**
-       * @brief Retrieve the client's current connection/game state.
+       * @brief Retrieves the client's current connection/game state.
        *
        * @return ClientState The current client state.
        */
@@ -346,6 +338,16 @@ namespace client {
       void setClientState(ClientState state) {
         _state.store(state, std::memory_order_release);
       }
+
+    private:
+      void resendPackets();
+
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
+
+      void resendUnacknowledgedPackets();
 
     private:
       std::array<char, 2048> _recv_buffer;
