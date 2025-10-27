@@ -1,5 +1,4 @@
 #include "Challenge.hpp"
-#include <openssl/crypto.h>
 #include <chrono>
 #include <cstdint>
 #include "crypto/Crypto.hpp"
@@ -42,11 +41,7 @@ bool game::Challenge::validateJoinRoom(std::uint32_t player_id,
   std::string expected_hash =
       crypto::Crypto::sha256(it->second.nonce + original_password);
 
-  bool is_valid = false;
-  if (expected_hash.size() == provided_hash.size()) {
-    is_valid = (CRYPTO_memcmp(expected_hash.data(), provided_hash.data(),
-                              expected_hash.size()) == 0);
-  }
+  bool is_valid = (expected_hash == provided_hash);
   _challenges.erase(it);
   return is_valid;
 }

@@ -1,7 +1,7 @@
 find_package(asio REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Bitsery REQUIRED CONFIG)
-FIND_PACKAGE(OpenSSL REQUIRED)
+find_package(PicoSHA2 REQUIRED CONFIG)
 
 set(PROJECT_NAME r_type_server)
 
@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME}
 )
 
 add_compile_options(-W -Wall -Wextra)
-target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads Bitsery::bitsery OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads Bitsery::bitsery picosha2::picosha2)
 target_include_directories(${PROJECT_NAME} PRIVATE
   src/
   src/errors/

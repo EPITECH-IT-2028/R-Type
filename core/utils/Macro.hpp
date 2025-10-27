@@ -50,4 +50,4 @@ constexpr int COUNTDOWN_TIME = 5;
 
 constexpr int MAX_ROOMS = 10;
 
-constexpr int CHALLENGE_HEX_LEN = 128;
+constexpr int CHALLENGE_HEX_LEN = 129;

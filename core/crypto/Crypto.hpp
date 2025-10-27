@@ -1,9 +1,8 @@
 #pragma once
 
-#include <openssl/evp.h>
-#include <openssl/rand.h>
-#include <openssl/sha.h>
+#include <picosha2.h>
 #include <iomanip>
+#include <random>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -13,23 +12,27 @@ namespace crypto {
   class Crypto {
     public:
       static std::string sha256(const std::string &input) {
-        unsigned char hash[SHA256_DIGEST_LENGTH];
-
-        SHA256(reinterpret_cast<const unsigned char *>(input.c_str()),
-               input.length(), hash);
-
-        std::stringstream ss;
-        for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-          ss << std::hex << std::setw(2) << std::setfill('0')
-             << static_cast<int>(hash[i]);
-        }
-        return ss.str();
+        std::string hash_hex;
+        picosha2::hash256_hex_string(input, hash_hex);
+        return hash_hex;
       }
 
+      /**
+       * @brief Generates a random hexadecimal challenge string.
+       *
+       * Generates a random sequence of bytes of the specified length,
+       * then encodes it as a hexadecimal string.
+       * @param length Length of the challenge in bytes (default is 64).
+       * @return std::string Hexadecimal representation of the random challenge.
+       */
       static std::string generateChallenge(size_t length = 64) {
+        std::random_device rd;
+        std::mt19937_64 gen(rd());
+        std::uniform_int_distribution<unsigned int> dis(0, 255);
+
         std::vector<unsigned char> buffer(length);
-        if (RAND_bytes(buffer.data(), length) != 1) {
-          throw std::runtime_error("RAND_bytes failed");
+        for (size_t i = 0; i < length; i++) {
+          buffer[i] = static_cast<unsigned char>(dis(gen));
         }
 
         std::stringstream ss;
