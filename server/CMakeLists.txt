@@ -33,7 +33,7 @@ add_executable(${PROJECT_NAME}
   ${CORE_NETWORK_SOURCES}
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0601)
+target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0A00)
 
 add_compile_options(-W -Wall -Wextra)
 target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads Bitsery::bitsery)
