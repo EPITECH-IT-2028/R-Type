@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Macro.hpp"
 #if defined(_WIN32)
   #ifndef NOMINMAX
     #define NOMINMAX
@@ -193,7 +194,10 @@ namespace client {
        * @param name The player name to store.
        */
       void setPlayerName(const std::string &name) {
+        std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
         _playerName = name;
+        if (_player_id != static_cast<std::uint32_t>(INVALID_ID))
+          _playerNames[_player_id] = name;
       }
 
       /**
