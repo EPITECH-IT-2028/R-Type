@@ -11,8 +11,7 @@ namespace utils {
     static const char *animals[] = {"Fox",   "Wolf", "Hawk", "Tiger", "Falcon",
                                     "Eagle", "Lion", "Bear", "Shark", "Cat",
                                     "Dog",   "Owl",  "Bat"};
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::mt19937 gen(std::random_device{}());
     std::uniform_int_distribution<> prefixDist(
         0, sizeof(prefixes) / sizeof(prefixes[0]) - 1);
     std::uniform_int_distribution<> animalDist(
