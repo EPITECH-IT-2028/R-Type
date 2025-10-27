@@ -281,9 +281,9 @@ void serialize(S &s, PlayerHitPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
-  s.value4b(packet.damage);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
+  s.value4b(packet.damage);
   s.value4b(packet.sequence_number);
 }
 
@@ -301,9 +301,9 @@ void serialize(S &s, PlayerDeathPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
-  s.value4b(packet.sequence_number);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
+  s.value4b(packet.sequence_number);
 }
 
 /*
@@ -339,8 +339,8 @@ template <typename S>
 void serialize(S &s, GameEndPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.value1b(packet.game_end);
   s.value4b(packet.sequence_number);
+  s.value1b(packet.game_end);
 }
 
 /*
@@ -361,11 +361,11 @@ void serialize(S &s, CreateRoomPacket &packet) {
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(packet.room_name[i]);
   }
-  s.value1b(packet.max_players);
   s.value1b(packet.is_private);
   for (size_t i = 0; i < 32; ++i) {
     s.value1b(packet.password[i]);
   }
+  s.value1b(packet.max_players);
 }
 
 template <typename S>
