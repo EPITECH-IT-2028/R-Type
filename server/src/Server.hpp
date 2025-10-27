@@ -16,6 +16,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <shared_mutex>
+#include <unordered_map>
 #include <vector>
 #include "Client.hpp"
 #include "Events.hpp"
@@ -102,8 +104,18 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
-      std::unordered_map<std::uint32_t, std::uint64_t> &getLastProcessedSeq() {
-        return _lastProcessedSeq;
+      std::optional<std::uint64_t> getLastProcessedSeq(
+          std::uint32_t player_id) const {
+        std::lock_guard<std::mutex> g(_lastProcessedSeqMutex);
+        if (auto it = _lastProcessedSeq.find(player_id);
+            it != _lastProcessedSeq.end())
+          return it->second;
+        return std::nullopt;
+      }
+      void setLastProcessedSeq(std::uint32_t player_id,
+                               std::uint64_t sequence_number) {
+        std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
+        _lastProcessedSeq[player_id] = sequence_number;
       }
 
     private:
@@ -124,6 +136,8 @@ namespace server {
 
       void handleUnacknowledgedPackets();
 
+      void clearLastProcessedSeq();
+
     private:
       void handleCountdown(std::shared_ptr<game::GameRoom> room,
                            std::shared_ptr<asio::steady_timer> timer);
@@ -140,6 +154,7 @@ namespace server {
 
       mutable std::shared_mutex _clientsMutex;
 
+      mutable std::mutex _lastProcessedSeqMutex;
       std::unordered_map<uint32_t, uint64_t> _lastProcessedSeq;
 
       std::uint8_t _max_clients;

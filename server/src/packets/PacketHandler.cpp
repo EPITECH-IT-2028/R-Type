@@ -250,10 +250,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   }
 
   std::uint64_t lastSeq = 0;
-  auto it = server.getLastProcessedSeq().find(client._player_id);
-  if (it != server.getLastProcessedSeq().end()) {
-    lastSeq = it->second;
-  }
+  auto lastProcessedMap = server.getLastProcessedSeq(client._player_id);
 
   if (packet.sequence_number <= lastSeq) {
     server.getNetworkManager().sendToClient(
@@ -276,7 +273,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
       PacketBuilder::makePlayerShoot(pos.first, pos.second, projectileType,
                                      room->getGame().getSequenceNumber());
 
-  server.getLastProcessedSeq()[client._player_id] = packet.sequence_number;
+  server.setLastProcessedSeq(client._player_id, packet.sequence_number);
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(

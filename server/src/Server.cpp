@@ -63,7 +63,7 @@ void server::Server::start() {
       [this]() { handleUnacknowledgedPackets(); });
 
   _networkManager.scheduleClearLastProcessedSeq(
-      std::chrono::seconds(2), [this]() { _lastProcessedSeq.clear(); });
+      std::chrono::seconds(2), [this]() { this->clearLastProcessedSeq(); });
   _networkManager.run();
 }
 
@@ -690,4 +690,9 @@ bool server::Server::initializePlayerInRoom(Client &client) {
             << client._player_name << ") initialized in room "
             << client._room_id << std::endl;
   return true;
+}
+
+void server::Server::clearLastProcessedSeq() {
+  std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
+  _lastProcessedSeq.clear();
 }
