@@ -658,7 +658,6 @@ std::shared_ptr<server::Client> server::Server::getClient(
  */
 std::shared_ptr<server::Client> server::Server::getClientById(
     int player_id) const {
-  std::scoped_lock<std::shared_mutex> lock(_clientsMutex);
   for (const auto &client : _clients) {
     if (client && client->_player_id == player_id) {
       return client;
