@@ -143,7 +143,7 @@ void ecs::RenderSystem::drawMessages() {
   std::vector<client::ChatMessage> chatMessages = _client->getChatMessages();
   int lineHeight = 25;
   int fontSize = 20;
-  int maxWidth = (GetScreenWidth() / 3) * 2 - 170;
+  int maxWidth = (GetScreenWidth() / 3) * 2 - CHAT_BOX_MAX_TEXT_LEN;
   Font font = GetFontDefault();
   std::vector<std::pair<std::string, Color>> allLines;
 
@@ -171,7 +171,8 @@ void ecs::RenderSystem::drawMessages() {
   if (allLines.size() > maxLines)
     start_index = allLines.size() - maxLines;
   int numVisibleLines = allLines.size() - start_index;
-  int chatStartY = GetScreenHeight() - 80 - (numVisibleLines - 1) * lineHeight;
+  int chatStartY = GetScreenHeight() - CHAT_BOX_BOTTOM_OFFSET -
+                   (numVisibleLines - 1) * lineHeight;
   int y = chatStartY;
 
   for (size_t i = start_index; i < allLines.size(); ++i) {

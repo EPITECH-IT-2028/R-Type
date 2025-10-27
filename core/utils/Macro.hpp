@@ -53,6 +53,10 @@ constexpr int MAX_ROOMS = 10;
 
 constexpr int INVALID_ID = -1;
 
+/* UI constants */
+constexpr int CHAT_BOX_MAX_TEXT_LEN = 170;
+constexpr int CHAT_BOX_BOTTOM_OFFSET = 80;
+
 /* ASCII characters */
 constexpr char ASCII_NULL = 0;
 constexpr char ASCII_SPACE = 32;
