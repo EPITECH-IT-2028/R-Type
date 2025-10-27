@@ -362,6 +362,7 @@ void server::Server::handleReceive(const char *data,
 void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
+  std::shared_ptr<Client> newClient;
 
   {
     std::unique_lock<std::shared_mutex> lock(_clientsMutex);
@@ -384,13 +385,18 @@ void server::Server::handlePlayerInfoPacket(const char *data,
         std::cout << "[WORLD] New player connecting with ID " << id
                   << std::endl;
 
-        auto handler = _factory.createHandler(PacketType::PlayerInfo);
-        if (handler) {
-          handler->handlePacket(*this, *_clients[i], data, size);
-        }
-        return;
+        newClient = _clients[i];
+        break;
       }
     }
+  }
+
+  if (newClient) {
+    auto handler = _factory.createHandler(PacketType::PlayerInfo);
+    if (handler) {
+      handler->handlePacket(*this, *newClient, data, size);
+    }
+    return;
   }
 
   std::cerr << "[WARNING] Max clients reached. Refused connection from "
