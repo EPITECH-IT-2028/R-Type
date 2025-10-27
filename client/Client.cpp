@@ -38,6 +38,7 @@ namespace client {
       : _networkManager(host, port),
         _sequence_number{0},
         _packet_count{0},
+        _packetLossMonitor(),
         _ecsManager(ecs::ECSManager::getInstance()),
         _state(ClientState::DISCONNECTED) {
     _running.store(false, std::memory_order_release);

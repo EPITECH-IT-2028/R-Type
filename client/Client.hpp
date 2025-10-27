@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+#include "PacketLossMonitor.hpp"
 
 #if defined(_WIN32)
   #ifndef NOMINMAX
@@ -305,6 +306,15 @@ namespace client {
         _ping.store(ping, std::memory_order_release);
       }
 
+      void calculatePacketLoss(uint32_t seq) {
+        _packetLossMonitor.onReceived(seq);
+        _packetLoss = _packetLossMonitor.lossRatio();
+      }
+
+      double getPacketLoss() {
+        return _packetLoss;
+      }
+
     private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
@@ -326,6 +336,9 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
+
+      double _packetLoss;
+      network::PacketLossMonitor _packetLossMonitor;
 
       ecs::ECSManager &_ecsManager;
   };
