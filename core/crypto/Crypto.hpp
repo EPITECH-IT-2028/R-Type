@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace crypto {
 
@@ -25,7 +26,7 @@ namespace crypto {
         return ss.str();
       }
 
-      static std::string generateChallenge(size_t length = 32) {
+      static std::string generateChallenge(size_t length = 64) {
         std::vector<unsigned char> buffer(length);
         if (RAND_bytes(buffer.data(), length) != 1) {
           throw std::runtime_error("RAND_bytes failed");

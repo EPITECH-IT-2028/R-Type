@@ -13,7 +13,7 @@ std::uint32_t game::Challenge::getCurrentTimestamp() const {
 std::string game::Challenge::createChallenge(std::uint32_t playerId) {
   std::lock_guard<std::mutex> lock(_mutex);
 
-  std::string nonce = crypto::Crypto::generateChallenge(32);
+  std::string nonce = crypto::Crypto::generateChallenge(64);
   std::uint32_t timestamp = getCurrentTimestamp();
 
   _challenges[playerId] = {nonce, timestamp};
@@ -32,7 +32,8 @@ bool game::Challenge::validateJoinRoom(std::uint32_t player_id,
   }
 
   std::uint32_t current_time = getCurrentTimestamp();
-  if (current_time - it->second.timestamp > CHALLENGE_TIMEOUT) {
+  if (current_time < it->second.timestamp ||
+      current_time - it->second.timestamp > CHALLENGE_TIMEOUT) {
     _challenges.erase(it);
     return false;
   }
