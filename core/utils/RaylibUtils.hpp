@@ -3,6 +3,12 @@
 #include "raylib.h"
 
 namespace utils {
+  /**
+   * @brief Configure Raylib's global trace/log level based on compile-time debug mode.
+   *
+   * Sets the global trace log level to LOG_DEBUG when DEBUG_MODE is enabled at compile time;
+   * otherwise sets it to LOG_INFO.
+   */
   inline void setLogLevel() {
 #if DEBUG_MODE
     SetTraceLogLevel(LOG_DEBUG);

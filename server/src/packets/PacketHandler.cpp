@@ -47,20 +47,17 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
 }
 
 /**
- * @brief Handle an incoming chat MessagePacket and broadcast it to the sender's
- * room.
+ * @brief Handle an incoming chat message and broadcast it to the sender's room.
  *
- * Deserializes a MessagePacket from the provided buffer, replaces the packet's
+ * Deserializes a ChatMessagePacket from the provided buffer, replaces the packet's
  * player_id with the sender's id, and broadcasts the validated packet to all
  * clients in the sender's room.
  *
- * @param server The server instance used to access game and network managers.
- * @param client The client that sent the packet; its player_id and room_id are
- * used.
- * @param data Pointer to the serialized MessagePacket bytes.
+ * @param server Server instance used to access game and network managers.
+ * @param client Client that sent the packet; its player_id and room_id are used.
+ * @param data Pointer to the serialized ChatMessagePacket bytes.
  * @param size Number of bytes available at `data`.
- * @return int `OK` on success, `KO` if deserialization fails or the client is
- * not in a room.
+ * @return int `OK` on success, `KO` if deserialization fails or the client is not in a room.
  */
 int packet::ChatMessageHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -248,21 +245,13 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process an incoming PlayerDisconnectPacket and finalize the client's
- * disconnection.
+ * @brief Handle a PlayerDisconnectPacket from a client and finalize that client's disconnection.
  *
- * Validates and applies a PlayerDisconnectPacket from the provided buffer,
- * updates server and client connection state, removes the player from their
- * room and game if present, broadcasts the disconnect to remaining room
- * clients, and clears the client's server slot.
+ * Updates server and client state, removes the player from their room and game when present,
+ * broadcasts the disconnect and an announcement chat message to remaining room clients, and
+ * clears the client's server slot.
  *
- * @param server Server instance handling clients and rooms.
- * @param client Client instance corresponding to the sending connection.
- * @param data Pointer to the serialized PlayerDisconnectPacket bytes.
- * @param size Size of the serialized data in bytes.
- * @return int `OK` if the disconnection was processed successfully; `KO` if
- * packet deserialization fails or the packet's player_id does not match the
- * client.
+ * @returns int `OK` if the disconnection was processed successfully; `KO` if packet deserialization fails or the packet's `player_id` does not match the client.
  */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
                                                     server::Client &client,

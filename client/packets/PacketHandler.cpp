@@ -15,6 +15,17 @@
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
+/**
+ * @brief Process a chat message packet and store the message for the corresponding player.
+ *
+ * Deserializes a ChatMessagePacket from the provided byte buffer and, on success,
+ * stores the chat message for the player identified by the packet using the packet's
+ * RGBA color fields.
+ *
+ * @param data Pointer to the serialized packet bytes.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` if the packet was deserialized and the message stored, `packet::KO` if deserialization failed.
+ */
 int packet::ChatMessageHandler::handlePacket(client::Client &client,
                                              const char *data,
                                              std::size_t size) {
@@ -34,6 +45,18 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
   return packet::OK;
 }
 
+/**
+ * @brief Handle a "new player" packet and create the corresponding player entity.
+ *
+ * Deserializes the provided byte buffer into a NewPlayerPacket. If deserialization fails,
+ * logs an error and returns packet::KO. On success, logs the spawned player's details
+ * and instructs the client to create a new player entity using the packet data.
+ *
+ * @param client Client instance used to create the player entity.
+ * @param data Pointer to the packet payload bytes.
+ * @param size Length of the packet payload in bytes.
+ * @return int `packet::OK` on successful handling and entity creation, `packet::KO` if deserialization fails.
+ */
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);

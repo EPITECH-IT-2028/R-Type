@@ -47,6 +47,13 @@ namespace client {
     _running.store(false, std::memory_order_release);
   }
 
+  /**
+   * @brief Initializes the entity-component-system for the client.
+   *
+   * Performs component and system registration, configures system signatures,
+   * injects this client instance into the input and render systems (if present),
+   * and creates initial world entities such as background layers and the chat UI.
+   */
   void Client::initializeECS() {
     registerComponent();
     registerSystem();
@@ -64,13 +71,13 @@ namespace client {
   }
 
   /**
-   * @brief Registers all component types used by the client with the ECS
-   * manager.
+   * @brief Register all ECS component types used by the client.
    *
-   * Registers the following components so they can be attached to entities and
-   * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
-   * SpriteComponent, ScaleComponent, BackgroundTagComponent,
-   * PlayerTagComponent, and SpriteAnimationComponent.
+   * Makes the following component types available to entities and systems:
+   * PositionComponent, VelocityComponent, RenderComponent, SpriteComponent,
+   * ScaleComponent, BackgroundTagComponent, PlayerTagComponent,
+   * LocalPlayerTagComponent, SpriteAnimationComponent, ProjectileComponent,
+   * EnemyComponent, and ChatComponent.
    */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
@@ -203,16 +210,13 @@ namespace client {
   }
 
   /**
-   * @brief Create and register an ECS entity representing a player with visual,
-   * positional, animation, and identification components.
+   * @brief Create a player entity with position, render, sprite, scale, animation, and identification components.
    *
-   * The created entity is configured from values in the provided packet and
-   * player sprite configuration, and the entity is recorded in the client's
-   * player-entity mapping in a thread-safe manner. If the client's local player
-   * ID is not assigned, it is set from the packet and the entity is tagged as
-   * the local player.
+   * Configures the entity from the provided packet and player sprite configuration, records the entity in the client's
+   * player ID → entity and player ID → name mappings, and — if the client has no local player assigned — sets the
+   * local player ID, stores the local player name, and tags the entity as the local player.
    *
-   * @param packet Packet carrying the player's id and initial position.
+   * @param packet Packet containing the player's ID, name, and initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -294,6 +298,12 @@ namespace client {
     _enemyEntities[packet.enemy_id] = enemy;
   }
 
+  /**
+   * @brief Creates an entity that hosts the chat UI.
+   *
+   * Creates and registers a new ECS entity containing a default-initialized ChatComponent
+   * used by the client's chat user interface.
+   */
   void Client::createChatMessageUIEntity() {
     auto chatEntity = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::ChatComponent>(chatEntity, {});
@@ -344,11 +354,11 @@ namespace client {
   }
 
   /**
-   * @brief Send the local player's input state to the server.
+   * @brief Transmit the local player's current input flags to the server.
    *
    * If the client has not been assigned a local player ID, the call is ignored.
    *
-   * @param input Player input flags encoded as a byte (bitmask).
+   * @param input Bitmask of player input flags (each bit represents an input action).
    */
   void Client::sendInput(std::uint8_t input) {
     if (getPlayerId() == static_cast<std::uint32_t>(INVALID_ID)) {
@@ -409,6 +419,14 @@ namespace client {
     }
   }
 
+  /**
+   * Sends a chat message from the local player to the server.
+   *
+   * If the local player ID is not assigned, the function logs a warning and does nothing.
+   * On failure to build or send the packet, the function logs an error.
+   *
+   * @param message The text of the chat message to send.
+   */
   void Client::sendChatMessage(const std::string &message) {
     if (getPlayerId() == static_cast<std::uint32_t>(INVALID_ID)) {
       TraceLog(
@@ -425,6 +443,15 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Appends a chat message to the client's chat history and trims the oldest entries to keep the history at or below CHAT_MAX_MESSAGES.
+   *
+   * Acquires the internal chat mutex before modifying the stored messages.
+   *
+   * @param author Name of the message author.
+   * @param message Message text to store.
+   * @param color Display color for the message.
+   */
   void Client::storeChatMessage(const std::string &author,
                                 const std::string &message, const Color color) {
     std::lock_guard<std::mutex> lock(_chatMutex);

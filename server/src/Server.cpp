@@ -85,6 +85,15 @@ void server::Server::stop() {
   _gameManager->shutdownRooms();
 }
 
+/**
+ * @brief Detects and handles client inactivity timeouts.
+ *
+ * Checks each connected client’s last heartbeat against CLIENT_TIMEOUT and, for
+ * clients exceeding that threshold, marks them disconnected, decrements the
+ * active player count, removes them from their room (if any), destroys their
+ * in-room player entity, broadcasts a player-disconnect packet and a chat
+ * message to the room, and clears the server slot for that client.
+ */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
 
