@@ -52,3 +52,8 @@ constexpr int COUNTDOWN_TIME = 5;
 constexpr int MAX_ROOMS = 10;
 
 constexpr int INVALID_ID = -1;
+
+/* ASCII characters */
+constexpr char ASCII_NULL = 0;
+constexpr char ASCII_SPACE = 32;
+constexpr char ASCII_DEL = 127;

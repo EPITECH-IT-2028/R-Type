@@ -137,7 +137,8 @@ namespace ecs {
 
       if (chat.isChatting) {
         char character = static_cast<char>(GetCharPressed());
-        if (character != 0 && (character >= 32 && character != 127))
+        if (character != ASCII_NULL && character >= ASCII_SPACE &&
+            character != ASCII_DEL)
           chat.message += character;
         if (IsKeyPressed(KEY_BACKSPACE) || IsKeyPressedRepeat(KEY_BACKSPACE)) {
           if (!chat.message.empty())
