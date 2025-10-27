@@ -19,9 +19,9 @@
 #include <vector>
 #include "Client.hpp"
 #include "Events.hpp"
+#include "GameManager.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
-#include "GameManager.hpp"
 
 namespace game {
   class GameManager;
