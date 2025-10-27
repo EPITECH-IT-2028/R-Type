@@ -142,25 +142,17 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   client._player_name = name;
 
-  switch (client._state) {
-    case server::ClientState::CONNECTED_MENU: {
-      std::cout << "[PLAYERINFO] Client " << client._player_id << " (" << name
-                << ") registered in menu" << std::endl;
-      auto ackPacket = PacketBuilder::makeAckPacket(packet.sequence_number,
-                                                    client._player_id);
-      auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
-          serialization::BitserySerializer::serialize(ackPacket));
-      server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
-      return OK;
-    }
-    case server::ClientState::IN_ROOM_WAITING:
-    case server::ClientState::IN_GAME:
-      return server.initializePlayerInRoom(client, packet) ? OK : KO;
-
-    default:
-      std::cerr << "[ERROR] Invalid client state for PlayerInfo" << std::endl;
-      return KO;
+  if (server::ClientState::CONNECTED_MENU == client._state) {
+    std::cout << "[INFO] Player " << client._player_id << "registered in menu"
+              << std::endl;
+    auto ackPacket =
+        PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
+    auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
+        serialization::BitserySerializer::serialize(ackPacket));
+    server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
+    return OK;
   }
+  return KO;
 }
 
 /**
@@ -449,7 +441,7 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   client._state = server::ClientState::IN_ROOM_WAITING;
 
-  if (!server.initializePlayerInRoom(client, packet)) {
+  if (!server.initializePlayerInRoom(client)) {
     std::cerr << "[ERROR] Failed to initialize player " << client._player_id
               << " in room " << newRoom->getRoomId() << std::endl;
     server.getGameManager().leaveRoom(sharedClient);
@@ -533,7 +525,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
 
   client._state = server::ClientState::IN_ROOM_WAITING;
 
-  if (!server.initializePlayerInRoom(client, packet)) {
+  if (!server.initializePlayerInRoom(client)) {
     server.getGameManager().leaveRoom(sharedClient);
     client._state = server::ClientState::CONNECTED_MENU;
     ResponseHelper::sendJoinRoomResponse(server, client._player_id,
@@ -721,7 +713,7 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
       client._state = server::ClientState::IN_ROOM_WAITING;
 
-      if (!server.initializePlayerInRoom(client, packet)) {
+      if (!server.initializePlayerInRoom(client)) {
         server.getGameManager().leaveRoom(sharedClient);
         server.getGameManager().destroyRoom(newRoom->getRoomId());
         client._state = server::ClientState::CONNECTED_MENU;
@@ -744,7 +736,7 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
     client._state = server::ClientState::IN_ROOM_WAITING;
 
-    if (!server.initializePlayerInRoom(client, packet)) {
+    if (!server.initializePlayerInRoom(client)) {
       std::cerr << "[MATCHMAKING] Failed to initialize player" << std::endl;
       server.getGameManager().leaveRoom(sharedClient);
       client._state = server::ClientState::CONNECTED_MENU;
