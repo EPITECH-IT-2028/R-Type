@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <unordered_map>
 #include "ChatComponent.hpp"
 #include "Client.hpp"
@@ -34,5 +35,6 @@ namespace ecs {
       ECSManager &_ecsManager;
       std::unordered_map<std::string, Texture2D> _textureCache;
       client::Client *_client;
+      std::optional<Entity> _chatEntity;
   };
 }  // namespace ecs

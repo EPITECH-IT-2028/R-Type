@@ -116,12 +116,15 @@ void ecs::RenderSystem::update(float deltaTime) {
 
   for (auto const &entity : _ecsManager.getAllEntities()) {
     if (_ecsManager.hasComponent<ecs::ChatComponent>(entity)) {
-      auto &chat = _ecsManager.getComponent<ecs::ChatComponent>(entity);
+      _chatEntity = entity;
+      auto &chat =
+          _ecsManager.getComponent<ecs::ChatComponent>(_chatEntity.value());
       if (chat.isChatting) {
         drawMessagesBox();
         drawMessages();
         drawMessageInputField(chat);
       }
+      break;
     }
   }
 }
@@ -155,8 +158,8 @@ void ecs::RenderSystem::drawMessages() {
       currentLine += msg[i];
       int width = MeasureTextEx(font, currentLine.c_str(), fontSize, 0).x;
       if (width > maxWidth && currentLine.size() > 1) {
-        allLines.push_back({currentLine.substr(0, currentLine.size() - 1),
-                               chatMessage.color});
+        allLines.push_back(
+            {currentLine.substr(0, currentLine.size() - 1), chatMessage.color});
         currentLine = msg[i];
       }
     }
@@ -172,8 +175,8 @@ void ecs::RenderSystem::drawMessages() {
   int y = chatStartY;
 
   for (size_t i = start_index; i < allLines.size(); ++i) {
-    renderManager::Renderer::drawText(allLines[i].first.c_str(), 25, y, fontSize,
-                                      allLines[i].second);
+    renderManager::Renderer::drawText(allLines[i].first.c_str(), 25, y,
+                                      fontSize, allLines[i].second);
     y += lineHeight;
   }
 }
