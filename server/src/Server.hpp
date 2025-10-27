@@ -18,13 +18,13 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include "Broadcast.hpp"
 #include "Client.hpp"
 #include "Events.hpp"
-#include "PacketFactory.hpp"
-#include "ServerNetworkManager.hpp"
 #include "GameManager.hpp"
 #include "PacketBuilder.hpp"
-#include "Broadcast.hpp"
+#include "PacketFactory.hpp"
+#include "ServerNetworkManager.hpp"
 
 namespace game {
   class GameManager;
