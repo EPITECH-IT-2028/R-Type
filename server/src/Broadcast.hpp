@@ -57,20 +57,16 @@ namespace broadcast {
       }
 
       /**
-       * @brief Send information about all currently connected players to a
-       * newly connected client.
+       * @brief Send current connected players' state to a newly connected client.
        *
-       * For each existing, connected player (excluding the new player),
-       * constructs a NewPlayer packet containing that player's position, speed,
-       * and maximum health, serializes it, and sends it to the client
-       * identified by newPlayerID.
+       * Sends a NewPlayer packet for each existing, connected player (excluding the
+       * client identified by newPlayerID) to that newly connected client.
        *
        * @param networkManager Server network manager used to send packets.
        * @param game Source of current player state.
-       * @param newPlayerID ID of the newly connected client that should receive
-       * the player data.
-       * @param roomClients List of clients in the room (not directly iterated
-       * for sending here but provided for context).
+       * @param newPlayerID ID of the newly connected client that should receive the player data.
+       * @param roomClients List of clients in the room (provided for context; this function
+       *        uses game state and does not iterate roomClients when sending).
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,
@@ -287,14 +283,11 @@ namespace broadcast {
       }
 
       /**
-       * @brief Broadcasts a message packet to all clients in the specified
-       * room.
+       * @brief Broadcasts a chat message to every connected client in a room.
        *
-       * @param networkManager Server network manager used to send packets to
-       * clients.
-       * @param roomClients Vector of room clients; only non-null, connected
-       * clients will be targeted.
-       * @param packet MessagePacket to broadcast to the room.
+       * Only non-null, connected clients from the provided room client list will receive the packet.
+       *
+       * @param packet ChatMessagePacket containing the message to broadcast.
        */
       static void broadcastMessageToRoom(
           network::ServerNetworkManager &networkManager,
@@ -303,6 +296,16 @@ namespace broadcast {
         broadcastToRoom(networkManager, roomClients, packet);
       };
 
+      /**
+       * @brief Broadcasts a chat message to every client in the room except a specified player.
+       *
+       * Iterates the provided client list and sends `packet` to each non-null, connected client whose `_player_id`
+       * does not equal `excluded_player_id`.
+       *
+       * @param roomClients List of room clients to consider for delivery.
+       * @param packet The chat message packet to broadcast.
+       * @param excluded_player_id Player ID to exclude from receiving the packet.
+       */
       static void broadcastMessageToRoomExcept(
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &roomClients,

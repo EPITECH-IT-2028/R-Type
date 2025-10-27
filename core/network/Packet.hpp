@@ -80,18 +80,16 @@ struct ALIGNED PacketHeader {
 };
 
 /**
- * @brief Carries a timestamped UTF-8 text message and the associated player ID.
+ * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and RGBA color.
  *
- * Contains a common packet header identifying the packet type and payload size,
- * a 32-bit timestamp, a fixed-size 256-byte null-terminated UTF-8 message
- * buffer, and the 32-bit identifier of the player that sent or is associated
- * with the message.
- *
- * @var header Common packet header (type and size).
- * @var timestamp Packet timestamp as a 32-bit unsigned integer.
+ * @var header Common packet header (type and payload size).
+ * @var timestamp 32-bit timestamp associated with the message.
  * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
- * @var player_id Identifier of the player that sent or is associated with this
- * message.
+ * @var player_id 32-bit identifier of the player who sent or is associated with the message.
+ * @var r Red color component for the message (0–255).
+ * @var g Green color component for the message (0–255).
+ * @var b Blue color component for the message (0–255).
+ * @var a Alpha (opacity) component for the message (0–255).
  */
 struct ALIGNED ChatMessagePacket {
     PacketHeader header;
@@ -124,14 +122,15 @@ struct ALIGNED PlayerMovePacket {
 };
 
 /**
- * @brief Notifies clients of a newly spawned player.
+ * @brief Notifies clients that a new player has spawned.
  *
- * Carries the new player's server-assigned ID, spawn position, movement speed,
- * and maximum health.
+ * Contains the server-assigned player ID, the player's display name, spawn
+ * position, movement speed, and maximum health.
  *
- * Fields:
- * - header: Common packet header.
+ * @details
+ * - header: Common packet header present at the start of every packet.
  * - player_id: Server-assigned unique player identifier.
+ * - player_name: Null-terminated UTF-8 display name (fixed-size buffer of 32 bytes).
  * - x, y: Spawn world coordinates.
  * - speed: Movement speed scalar.
  * - max_health: Player's maximum health points.

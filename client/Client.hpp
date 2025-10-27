@@ -121,14 +121,10 @@ namespace client {
       }
 
       /**
-       * @brief Attempts to establish a network connection and, on success,
-       * transitions the client to the menu state and announces the local
-       * player.
+       * @brief Connects to the server, transitions the client to the connected menu state, and announces the local player.
        *
-       * Initiates a connection using the internal network manager. If the
-       * connection is established, sets the client state to
-       * ClientState::CONNECTED_MENU and sends a PlayerInfo packet for the local
-       * player named "Player".
+       * Initiates a network connection; if the connection is established, sets the client state to ClientState::IN_CONNECTED_MENU
+       * and sends a PlayerInfo packet containing the current local player name.
        */
       void connect() {
         _networkManager.connect();
@@ -189,6 +185,13 @@ namespace client {
         }
       }
 
+      /**
+       * @brief Sets the local player's display name.
+       *
+       * Stores the provided string as the client's local player name, which is used for display and outgoing player-identifying messages.
+       *
+       * @param name The player name to store.
+       */
       void setPlayerName(const std::string &name) {
         _playerName = name;
       }
@@ -224,14 +227,9 @@ namespace client {
       }
 
       /**
-       * @brief Remove the entity associated with a player ID from the client
-       * registry.
+       * @brief Removes the entity mapping for the specified player ID.
        *
-       * Removes any mapping for the given playerId from the internal
-       * player-entity map.
-       *
-       * @param playerId ID of the player whose entity mapping should be
-       * removed.
+       * @param playerId Player identifier whose entity mapping will be removed.
        */
       void destroyPlayerEntity(std::uint32_t playerId) {
         std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
@@ -269,11 +267,28 @@ namespace client {
         return _player_id;
       }
 
+      /**
+       * @brief Retrieves the local client's current player name.
+       *
+       * This accessor is thread-safe.
+       *
+       * @return std::string The local player's name; empty string if not set.
+       */
       std::string getPlayerName() const {
         std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         return _playerName;
       }
 
+      /**
+       * @brief Retrieve the display name associated with a player identifier.
+       *
+       * Looks up the name mapped to the given playerId. If no mapping exists and
+       * playerId equals (std::uint32_t)-1, returns "Server". If no mapping exists
+       * for any other id, returns "Unknown".
+       *
+       * @param playerId Player identifier to look up; the sentinel value `(std::uint32_t)-1` represents the server.
+       * @return std::string The player name, "Server" for the sentinel id, or "Unknown" if the id is not found.
+       */
       std::string getPlayerNameById(const std::uint32_t playerId) const {
         std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         auto it = _playerNames.find(playerId);
@@ -311,6 +326,11 @@ namespace client {
       void sendChatMessage(const std::string &message);
       void storeChatMessage(const std::string &author,
                             const std::string &message, const Color color);
+      /**
+       * @brief Get a snapshot of stored chat messages.
+       *
+       * @return std::vector<ChatMessage> A vector containing a copy of all chat messages as they existed at the time of the call.
+       */
       std::vector<ChatMessage> getChatMessages() const {
         std::lock_guard<std::mutex> lock(_chatMutex);
         return _chatMessages;
