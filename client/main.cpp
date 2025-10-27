@@ -6,6 +6,7 @@
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Parser.hpp"
+#include "RandomNameGenerator.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
 
@@ -70,9 +71,10 @@ int main(int ac, char **av) {
   asset::initEmbeddedAssets();
   client.initializeECS();
 
-  std::string playerName = "Player";
   if (ac > 1)
     client.setPlayerName(av[1]);
+  else
+    client.setPlayerName(utils::generateRandomName());
   client.connect();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
