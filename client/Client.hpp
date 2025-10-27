@@ -339,13 +339,13 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
     private:
       void resendPackets();
 
       void addUnacknowledgedPacket(
           std::uint32_t sequence_number,
           std::shared_ptr<std::vector<uint8_t>> packetData);
-      void removeAcknowledgedPacket(std::uint32_t sequence_number);
 
       void resendUnacknowledgedPackets();
 
