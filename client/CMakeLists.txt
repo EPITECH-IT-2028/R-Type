@@ -32,7 +32,7 @@ add_executable(${PROJECT_NAME}
   ${CORE_SOURCES}
   ${CORE_NETWORK_SOURCES}
 )
-target_compile_definitions(r_type_client PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
 add_dependencies(${PROJECT_NAME} generate_embedded_assets)
 
 add_compile_options(-W -Wall -Wextra)

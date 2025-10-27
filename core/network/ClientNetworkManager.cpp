@@ -1,8 +1,8 @@
+#include "Client.hpp"
 #include "ClientNetworkManager.hpp"
 #include <atomic>
 #include <iostream>
 #include <queue>
-#include "Client.hpp"
 #include "Packet.hpp"
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
