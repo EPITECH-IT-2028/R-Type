@@ -9,6 +9,7 @@
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
 #include "LocalPlayerTagComponent.hpp"
+#include "Macro.hpp"
 #include "MovementSystem.hpp"
 #include "Packet.hpp"
 #include "PlayerTagComponent.hpp"
@@ -240,7 +241,7 @@ namespace client {
 
     std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
     size_t len = strnlen(packet.player_name, sizeof(packet.player_name));
-    if (_player_id == static_cast<std::uint32_t>(-1)) {
+    if (_player_id == static_cast<std::uint32_t>(INVALID_ID)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
       _playerName.assign(packet.player_name, len);
@@ -316,7 +317,7 @@ namespace client {
    * @brief Retrieves the ECS entity associated with a projectile identifier.
    *
    * @param projectileId Identifier of the projectile to look up.
-   * @return Entity The associated entity, or `(Entity)(-1)` if no mapping
+   * @return Entity The associated entity, or `(Entity)(INVALID_ID)` if no mapping
    * exists.
    */
   Entity Client::getProjectileEntity(std::uint32_t projectileId) {
@@ -325,7 +326,7 @@ namespace client {
     if (it != _projectileEntities.end()) {
       return it->second;
     }
-    return static_cast<Entity>(-1);
+    return static_cast<Entity>(INVALID_ID);
   }
 
   /**
@@ -350,7 +351,7 @@ namespace client {
    * @param input Player input flags encoded as a byte (bitmask).
    */
   void Client::sendInput(std::uint8_t input) {
-    if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
+    if (getPlayerId() == static_cast<std::uint32_t>(INVALID_ID)) {
       TraceLog(LOG_WARNING, "[SEND INPUT] Player ID not assigned yet");
       return;
     }
@@ -377,7 +378,7 @@ namespace client {
    * @param y World-space Y coordinate where the player is shooting.
    */
   void Client::sendShoot(float x, float y) {
-    if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
+    if (getPlayerId() == static_cast<std::uint32_t>(INVALID_ID)) {
       TraceLog(LOG_WARNING,
                "[WARN] Player ID not assigned yet, cannot send shoot");
       return;
@@ -409,7 +410,7 @@ namespace client {
   }
 
   void Client::sendChatMessage(const std::string &message) {
-    if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
+    if (getPlayerId() == static_cast<std::uint32_t>(INVALID_ID)) {
       TraceLog(
           LOG_WARNING,
           "[SEND CHAT] Player ID not assigned yet, cannot send chat message");

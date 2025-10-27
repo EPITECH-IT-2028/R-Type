@@ -8,6 +8,7 @@
 #endif
 
 constexpr std::size_t BUFFER_SIZE = 2048;
+
 /* Macros for function's returns */
 constexpr int OK = 0;
 constexpr int KO = -1;
@@ -49,3 +50,5 @@ constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
 constexpr int COUNTDOWN_TIME = 5;
 
 constexpr int MAX_ROOMS = 10;
+
+constexpr int INVALID_ID = -1;

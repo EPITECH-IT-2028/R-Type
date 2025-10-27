@@ -2,6 +2,7 @@
 #include <cmath>
 #include "ChatComponent.hpp"
 #include "Client.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
 #include "RaylibUtils.hpp"
@@ -123,7 +124,7 @@ namespace ecs {
   }
 
   bool InputSystem::loadUIEntities() {
-    Entity uiEntity = -1;
+    Entity uiEntity = INVALID_ID;
     for (auto const &entity : _ecsManager.getAllEntities()) {
       if (_ecsManager.hasComponent<ChatComponent>(entity)) {
         uiEntity = entity;
@@ -131,7 +132,7 @@ namespace ecs {
       }
     }
 
-    if (uiEntity != -1) {
+    if (uiEntity != INVALID_ID) {
       auto &chat = _ecsManager.getComponent<ChatComponent>(uiEntity);
 
       if (chat.isChatting) {
