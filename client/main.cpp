@@ -71,7 +71,7 @@ int main(int ac, char **av) {
   asset::initEmbeddedAssets();
   client.initializeECS();
 
-  if (ac > 1)
+  if (ac > 1 && av[1] != nullptr && (strlen(av[1]) > 0))
     client.setPlayerName(av[1]);
   else
     client.setPlayerName(utils::generateRandomName());
