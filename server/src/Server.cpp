@@ -481,7 +481,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   std::string msg = client._player_name + " has joined the game.";
   auto chatMessagePacket =
-      PacketBuilder::makeChatMessage(msg, -1, 255, 255, 0, 255);
+      PacketBuilder::makeChatMessage(msg, SERVER_SENDER_ID, 255, 255, 0, 255);
   broadcast::Broadcast::broadcastMessageToRoomExcept(
       _networkManager, roomClients, chatMessagePacket, client._player_id);
 
