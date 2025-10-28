@@ -54,4 +54,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_BINARY_DIR}/embedded_assets
 )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ASIO_STANDALONE)
+target_compile_definitions(${PROJECT_NAME} PRIVATE ASIO_STANDALONE NOGDI NOUSER)

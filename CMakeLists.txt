@@ -38,7 +38,7 @@ endif()
 
 if(WIN32)
     set(WINDOWS_LIBS ws2_32 wsock32 mswsock)
-    add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX)
+    add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0A00)
     link_libraries(${WINDOWS_LIBS})
 endif()
 
