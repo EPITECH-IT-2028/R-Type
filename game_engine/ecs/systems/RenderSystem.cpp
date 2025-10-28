@@ -3,6 +3,7 @@
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "ChatComponent.hpp"
+#include "Macro.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
@@ -224,10 +225,12 @@ void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
       GetScreenWidth() - chatUI::INPUT_RIGHT_MARGIN, chatUI::INPUT_HEIGHT,
       chatUI::INPUT_ROUNDNESS, rectColor);
   std::string displayText = chat.message + "_";
-  int maxInputWidth = GetScreenWidth() - 50;
+  int maxInputWidth = GetScreenWidth() - chatUI::INPUT_TEXT_RIGHT_MARGIN;
   while (MeasureText(displayText.c_str(), 20) > maxInputWidth &&
          displayText.size() > 1)
     displayText = displayText.substr(1);
-  renderManager::Renderer::drawText(displayText.c_str(), 25,
-                                    GetScreenHeight() - 35, 20, WHITE);
+  renderManager::Renderer::drawText(
+      displayText.c_str(), chatUI::LINE_HEIGHT,
+      GetScreenHeight() - chatUI::INPUT_TEXT_Y_OFFSET, chatUI::FONT_SIZE,
+      WHITE);
 }

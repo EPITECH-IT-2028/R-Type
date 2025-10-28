@@ -315,8 +315,8 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
           server.getNetworkManager(), roomClients, disconnectPacket);
 
       std::string msg = client._player_name + " has disconnected.";
-      auto chatMessagePacket =
-          PacketBuilder::makeChatMessage(msg, -1, 255, 255, 0, 255);
+      auto chatMessagePacket = PacketBuilder::makeChatMessage(
+          msg, SERVER_SENDER_ID, 255, 255, 0, 255);
       broadcast::Broadcast::broadcastMessageToRoom(
           server.getNetworkManager(), roomClients, chatMessagePacket);
     }

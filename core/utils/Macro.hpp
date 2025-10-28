@@ -56,6 +56,8 @@ constexpr int MAX_ROOMS = 10;
 constexpr int INVALID_ID = -1;
 constexpr Entity INVALID_ENTITY = std::numeric_limits<std::uint32_t>::max();
 
+constexpr int SERVER_SENDER_ID = -1;
+
 /* UI constants */
 namespace chatUI {
   constexpr int BOX_MAX_TEXT_LEN = 170;
@@ -71,9 +73,10 @@ namespace chatUI {
   constexpr float INPUT_ROUNDNESS = 0.5f;
   constexpr int INPUT_TEXT_OFFSET = 15;
   constexpr int INPUT_TEXT_Y_OFFSET = 35;
+  constexpr int INPUT_TEXT_RIGHT_MARGIN = 50;
 }  // namespace chatUI
 
 /* ASCII characters */
-constexpr char ASCII_NULL = 0;
-constexpr char ASCII_SPACE = 32;
-constexpr char ASCII_DEL = 127;
+constexpr int ASCII_NULL = 0;
+constexpr int ASCII_SPACE = 32;
+constexpr int ASCII_DEL = 127;

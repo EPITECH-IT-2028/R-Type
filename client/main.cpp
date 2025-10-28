@@ -26,7 +26,6 @@ void gameLoop(client::Client &client) {
   auto lastHeartbeat = std::chrono::steady_clock::now();
   const auto heartbeatInterval =
       std::chrono::seconds(HEARTBEAT_INTERVAL_CLIENT);
-  const auto posInterval = std::chrono::milliseconds(50);
 
   while (client.isConnected()) {
     client.startReceive();

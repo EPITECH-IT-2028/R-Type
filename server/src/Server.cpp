@@ -32,8 +32,8 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _max_clients_per_room(max_clients_per_room),
       _port(port),
       _player_count(0),
-      _projectile_count(0),
-      _next_player_id(0) {
+      _next_player_id(0),
+      _projectile_count(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
   _clients.resize(_max_clients);
 }
@@ -109,7 +109,7 @@ void server::Server::handleTimeout() {
         now - client->_last_heartbeat);
     if (duration.count() > CLIENT_TIMEOUT) {
       const int pid = client->_player_id;
-      const int roomId = client->_room_id;
+      const std::uint32_t roomId = client->_room_id;
       std::cout << "[WORLD] Player " << pid << " timed out due to inactivity."
                 << std::endl;
       client->_connected = false;
@@ -126,8 +126,8 @@ void server::Server::handleTimeout() {
               _networkManager, roomClients, disconnectPacket);
 
           std::string msg = client->_player_name + " has timed out.";
-          auto chatMessagePacket =
-              PacketBuilder::makeChatMessage(msg, -1, 255, 0, 0, 255);
+          auto chatMessagePacket = PacketBuilder::makeChatMessage(
+              msg, SERVER_SENDER_ID, 255, 0, 0, 255);
           broadcast::Broadcast::broadcastMessageToRoom(
               _networkManager, roomClients, chatMessagePacket);
 
@@ -576,7 +576,7 @@ void server::Server::handleCountdown(
  */
 std::shared_ptr<server::Client> server::Server::getClient(
     std::size_t idx) const {
-  if (idx < 0 || idx >= static_cast<std::size_t>(_clients.size())) {
+  if (idx >= static_cast<std::size_t>(_clients.size())) {
     return nullptr;
   }
   return _clients[idx];

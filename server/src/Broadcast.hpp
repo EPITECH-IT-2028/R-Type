@@ -3,6 +3,7 @@
 #include <asio.hpp>
 #include "Client.hpp"
 #include "Game.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Serializer.hpp"
@@ -33,7 +34,8 @@ namespace broadcast {
             serialization::BitserySerializer::serialize(packet));
 
         for (const auto &client : clients) {
-          if (client && client->_connected && pred(*client)) {
+          if (client && client->_connected &&
+              client->_player_id != INVALID_ID && pred(*client)) {
             networkManager.sendToClient(client->_player_id, buffer);
           }
         }
