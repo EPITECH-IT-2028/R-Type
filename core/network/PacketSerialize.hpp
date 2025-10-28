@@ -18,13 +18,30 @@ namespace serialization {
  * Common Packets
  */
 template <typename S>
+/**
+ * @brief Serializes a PacketHeader into the provided serializer.
+ *
+ * Writes the header's `type` as a one-byte value and `size` as a four-byte
+ * value.
+ *
+ * @param packet PacketHeader whose `type` and `size` fields will be written.
+ */
 void serialize(S &s, PacketHeader &packet) {
   s.value1b(packet.type);
   s.value4b(packet.size);
 }
 
 template <typename S>
-void serialize(S &s, MessagePacket &packet) {
+/**
+ * @brief Serializes a ChatMessagePacket into the given serializer.
+ *
+ * Writes the packet fields in order: header type and size, timestamp,
+ * 256-byte message buffer, player ID, and RGBA color components.
+ *
+ * @param s Serializer adapter used to write the packet data.
+ * @param packet ChatMessagePacket to serialize.
+ */
+void serialize(S &s, ChatMessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
@@ -32,6 +49,10 @@ void serialize(S &s, MessagePacket &packet) {
     s.value1b(packet.message[i]);
   }
   s.value4b(packet.player_id);
+  s.value1b(packet.r);
+  s.value1b(packet.g);
+  s.value1b(packet.b);
+  s.value1b(packet.a);
 }
 
 /*
@@ -108,10 +129,23 @@ void serialize(S &s, PlayerMovePacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes a NewPlayerPacket into the provided serializer.
+ *
+ * Serializes the packet header, player identifier, 32-byte player name,
+ * position (x, y), movement speed, and maximum health in the protocol's binary
+ * layout.
+ *
+ * @param packet The NewPlayerPacket whose fields will be written to the
+ * serializer.
+ */
 void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(packet.player_name[i]);
+  }
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);

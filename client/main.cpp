@@ -6,6 +6,7 @@
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "Parser.hpp"
+#include "RandomNameGenerator.hpp"
 #include "RenderManager.hpp"
 #include "raylib.h"
 
@@ -40,20 +41,20 @@ void gameLoop(client::Client &client) {
 }
 
 /**
- * @brief Initialize renderer, configuration, ECS, and networked client; run the
- * main render loop and a background network thread, then cleanly shut down on
- * exit.
+ * @brief Initialize subsystems, run the main render/update loop with a
+ * background network thread, and perform a clean shutdown.
  *
- * The function constructs and validates the window renderer, parses client
- * properties, initializes assets and the ECS, connects the network client,
- * sends initial player information, starts a background thread for network
- * tasks, and drives the application update/draw loop until the window is
- * closed. On exit it disconnects the client and joins the network thread.
+ * Initializes the renderer, parses configuration, initializes assets and the
+ * ECS, creates and connects the network client (setting the player name from
+ * argv or generating one when not provided), launches a background thread for
+ * network processing, drives the frame loop that updates the ECS and renders
+ * until the window should close, then disconnects the client and joins the
+ * network thread.
  *
  * @return int `client::OK` on normal exit; `client::KO` if window
  * initialization fails.
  */
-int main(void) {
+int main(int ac, char **av) {
   renderManager::Renderer renderer(WINDOW_WIDTH, WINDOW_HEIGHT,
                                    "R-Type Client");
   if (!renderer.InitSucceeded()) {
@@ -68,12 +69,14 @@ int main(void) {
   client::Client client(parser.getHost(), parser.getPort());
   asset::initEmbeddedAssets();
   client.initializeECS();
+
+  if (ac > 1 && av[1] != nullptr && (strlen(av[1]) > 0))
+    client.setPlayerName(av[1]);
+  else
+    client.setPlayerName(utils::generateRandomName());
   client.connect();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-  PlayerInfoPacket infoPacket = PacketBuilder::makePlayerInfo("Player1");
-  client.send(infoPacket);
 
   std::thread networkThread(gameLoop, std::ref(client));
 

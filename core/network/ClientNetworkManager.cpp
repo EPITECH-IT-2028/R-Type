@@ -1,9 +1,11 @@
 #include "ClientNetworkManager.hpp"
 #include <atomic>
 #include <iostream>
+#include <queue>
 #include "Client.hpp"
 #include "Packet.hpp"
 #include "PacketUtils.hpp"
+#include "Serializer.hpp"
 
 using namespace network;
 
@@ -64,9 +66,10 @@ void ClientNetworkManager::connect() {
       _socket.open(_server_endpoint.protocol());
     }
 
-    _socket.non_blocking(true);
-
     _running.store(true, std::memory_order_release);
+
+    startAsyncReceive();
+
     std::cout << "Connected to " << _host << ":" << _port << std::endl;
   } catch (std::exception &e) {
     std::cerr << "Connection error: " << e.what() << std::endl;
@@ -83,89 +86,112 @@ void ClientNetworkManager::connect() {
  */
 void ClientNetworkManager::disconnect() {
   _running.store(false, std::memory_order_release);
+
   if (_socket.is_open()) {
     _socket.close();
   }
+
+  std::lock_guard<std::mutex> lock(_mutex);
+  while (!_packet_queue.empty()) {
+    _packet_queue.pop();
+  }
+
   std::cout << "Disconnected from server." << std::endl;
 }
 
-/**
- * @brief Receive available UDP datagrams from the configured server and
- * dispatch them to packet handlers.
- *
- * Continuously reads datagrams from the socket until no more data is available
- * or the manager stops. Packets not originating from the configured server
- * endpoint are ignored. For each received datagram, a PacketHeader is
- * deserialized and the corresponding handler produced by the packet factory is
- * invoked with the raw packet data. Errors in receiving, deserialization,
- * missing handlers, handler failures, and exceptions are reported to standard
- * error.
- *
- * @param client Reference to the client instance passed to packet handlers.
- */
-void ClientNetworkManager::receivePackets(client::Client &client) {
+void ClientNetworkManager::startAsyncReceive() {
   if (!_running.load(std::memory_order_acquire)) {
     return;
   }
 
-  try {
-    while (true) {
-      asio::ip::udp::endpoint sender_endpoint;
-      asio::error_code ec;
+  _socket.async_receive_from(
+      asio::buffer(_recv_buffer), _sender_endpoint,
+      [this](const asio::error_code &ec, std::size_t length) {
+        handleReceive(ec, length);
+      });
+}
 
-      std::size_t length = _socket.receive_from(asio::buffer(_recv_buffer),
-                                                sender_endpoint, 0, ec);
+void ClientNetworkManager::handleReceive(const asio::error_code &ec,
+                                         std::size_t length) {
+  if (!_running.load(std::memory_order_acquire)) {
+    return;
+  }
 
-      if (ec == asio::error::would_block) {
-        break;
-      }
-
-      if (ec) {
-        std::cerr << "Receive error: " << ec.message() << std::endl;
-        return;
-      }
-
-      if (sender_endpoint != _server_endpoint) {
-        std::cerr << "Received packet from unknown sender: "
-                  << sender_endpoint.address().to_string() << ":"
-                  << sender_endpoint.port() << std::endl;
-        continue;
-      }
-
-      if (length > 0) {
-        serialization::Buffer buffer(
-            reinterpret_cast<const std::uint8_t *>(_recv_buffer.data()),
-            reinterpret_cast<const std::uint8_t *>(_recv_buffer.data()) +
-                length);
-
-        auto headerOpt =
-            serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
-
-        if (!headerOpt) {
-          std::cerr << "[ERROR] Failed to deserialize packet header"
-                    << std::endl;
-          continue;
-        }
-
-        PacketHeader header = headerOpt.value();
-        PacketType packet_type = header.type;
-
-        auto handler = _packetFactory.createHandler(packet_type);
-        if (handler) {
-          int result =
-              handler->handlePacket(client, _recv_buffer.data(), length);
-          if (result != 0) {
-            std::cerr << "Error handling packet of type "
-                      << packetTypeToString(packet_type) << ": " << result
-                      << std::endl;
-          }
-        } else {
-          std::cerr << "No handler for packet type "
-                    << packetTypeToString(packet_type) << std::endl;
-        }
-      }
+  if (ec) {
+    if (ec != asio::error::operation_aborted) {
+      std::cerr << "Receive error: " << ec.message() << std::endl;
     }
-  } catch (std::exception &e) {
-    std::cerr << "Receive error: " << e.what() << std::endl;
+    return;
+  }
+
+  if (_sender_endpoint != _server_endpoint) {
+    std::cerr << "Received packet from unknown sender: "
+              << _sender_endpoint.address().to_string() << ":"
+              << _sender_endpoint.port() << std::endl;
+    startAsyncReceive();
+    return;
+  }
+
+  if (length > 0) {
+    if (_packet_queue.size() < MAX_QUEUE_SIZE) {
+      ReceivedPacket packet;
+      packet.data.resize(length);
+      std::memcpy(packet.data.data(), _recv_buffer.data(), length);
+      packet.sender = _sender_endpoint;
+      _packet_queue.push(std::move(packet));
+    } else {
+      std::cerr << "Packet queue full, dropping packet." << std::endl;
+    }
+  }
+
+  startAsyncReceive();
+}
+
+void ClientNetworkManager::receivePackets() {
+  _io_context.poll();
+}
+
+void ClientNetworkManager::processReceivedPackets(client::Client &client) {
+  std::queue<ReceivedPacket> packet_queue_to_process;
+
+  std::lock_guard<std::mutex> lock(_mutex);
+  std::swap(packet_queue_to_process, _packet_queue);
+
+  while (!packet_queue_to_process.empty()) {
+    const ReceivedPacket &packet = packet_queue_to_process.front();
+    processPacket(packet.data.data(), packet.data.size(), client);
+    packet_queue_to_process.pop();
+  }
+}
+
+void ClientNetworkManager::processPacket(const char *data, std::size_t size,
+                                         client::Client &client) {
+  serialization::Buffer buffer(
+      reinterpret_cast<const std::uint8_t *>(data),
+      reinterpret_cast<const std::uint8_t *>(data) + size);
+  auto headerOpt =
+      serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
+
+  if (!headerOpt) {
+    std::cerr << "[WARNING] Failed to deserialize packet header" << std::endl;
+    return;
+  }
+
+  PacketHeader header = headerOpt.value();
+
+  std::memcpy(&header, data, sizeof(PacketHeader));
+  PacketType packet_type = static_cast<PacketType>(header.type);
+
+  auto handler = _packetFactory.createHandler(packet_type);
+  if (handler) {
+    int result = handler->handlePacket(client, data, size);
+    if (result != 0) {
+      std::cerr << "Error handling packet of type "
+                << packetTypeToString(packet_type) << ": " << result
+                << std::endl;
+    }
+  } else {
+    std::cerr << "No handler for packet type "
+              << packetTypeToString(packet_type) << std::endl;
   }
 }

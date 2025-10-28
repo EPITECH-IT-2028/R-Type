@@ -3,11 +3,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+
 #ifdef ERROR
   #undef ERROR
 #endif
 
 constexpr std::size_t BUFFER_SIZE = 2048;
+
 /* Macros for function's returns */
 constexpr int OK = 0;
 constexpr int KO = -1;
@@ -51,3 +53,32 @@ constexpr int COUNTDOWN_TIME = 5;
 constexpr int MAX_ROOMS = 10;
 
 constexpr int CHALLENGE_HEX_LEN = 129;
+constexpr std::uint32_t INVALID_ID = std::numeric_limits<std::uint32_t>::max();
+constexpr std::uint32_t INVALID_ENTITY =
+    std::numeric_limits<std::uint32_t>::max();
+
+constexpr std::uint32_t SERVER_SENDER_ID =
+    std::numeric_limits<std::uint32_t>::max();
+
+/* UI constants */
+namespace chatUI {
+  constexpr int BOX_MAX_TEXT_LEN = 170;
+  constexpr int BOX_BOTTOM_OFFSET = 80;
+
+  constexpr int LINE_HEIGHT = 25;
+  constexpr int FONT_SIZE = 20;
+
+  constexpr int INPUT_LEFT_OFFSET = 10;
+  constexpr int INPUT_BOTTOM_OFFSET = 40;
+  constexpr int INPUT_RIGHT_MARGIN = 20;
+  constexpr int INPUT_HEIGHT = 30;
+  constexpr float INPUT_ROUNDNESS = 0.5f;
+  constexpr int INPUT_TEXT_OFFSET = 15;
+  constexpr int INPUT_TEXT_Y_OFFSET = 35;
+  constexpr int INPUT_TEXT_RIGHT_MARGIN = 50;
+}  // namespace chatUI
+
+/* ASCII characters */
+constexpr unsigned char ASCII_NULL = 0x00;
+constexpr unsigned char ASCII_SPACE = 0x20;
+constexpr unsigned char ASCII_DEL = 0x7f;
