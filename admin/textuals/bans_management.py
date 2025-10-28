@@ -126,7 +126,7 @@ class BansManagement(Screen):
         self.selected_row = None
 
     def compose(self) -> ComposeResult:
-        yield Static("🚫 Bans Management", id="title")
+        yield Static("Bans Management", id="title")
         yield Container(DataTable(id="bans_table"), id="table_container")
 
         yield Container(
