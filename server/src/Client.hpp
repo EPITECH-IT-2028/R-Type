@@ -41,7 +41,7 @@ namespace server {
       ~Client() = default;
 
       bool _connected = false;
-      int _player_id = -1;
+      int _player_id = INVALID_ID;
       std::uint32_t _room_id = NO_ROOM;
       std::string _player_name = "";
       std::string _ip_address = "";
