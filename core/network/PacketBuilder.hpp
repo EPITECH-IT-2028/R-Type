@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "Macro.hpp"
@@ -46,7 +47,6 @@ struct PacketBuilder {
                                              std::uint8_t b, std::uint8_t a) {
       ChatMessagePacket packet{};
       packet.header.type = PacketType::ChatMessage;
-      packet.header.size = 0;
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
       packet.message = truncateToBytes(msg, 512);
       packet.player_id = player_id;
@@ -56,10 +56,18 @@ struct PacketBuilder {
       packet.a = a;
 
       ChatMessagePacket temp_packet = packet;
+      temp_packet.header.size = 0;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
-      if (serializedBuffer.empty())
-        return packet;
+
+      if (serializedBuffer.empty()) {
+        std::cerr << "[ERROR] Failed to serialize ChatMessagePacket (type: "
+                  << static_cast<int>(PacketType::ChatMessage)
+                  << ") for dynamic size calculation. Returning empty packet."
+                  << std::endl;
+        return {};
+      }
+
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -105,7 +113,6 @@ struct PacketBuilder {
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
-      packet.header.size = 0;
       packet.player_id = player_id;
       packet.player_name = truncateToBytes(player_name, 32);
       packet.x = x;
@@ -114,10 +121,18 @@ struct PacketBuilder {
       packet.max_health = max_health;
 
       NewPlayerPacket temp_packet = packet;
+      temp_packet.header.size = 0;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
-      if (serializedBuffer.empty())
-        return packet;
+
+      if (serializedBuffer.empty()) {
+        std::cerr << "[ERROR] Failed to serialize NewPlayerPacket (type: "
+                  << static_cast<int>(PacketType::NewPlayer)
+                  << ") for dynamic size calculation. Returning empty packet."
+                  << std::endl;
+        return {};
+      }
+
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -160,14 +175,21 @@ struct PacketBuilder {
     static PlayerInfoPacket makePlayerInfo(const std::string &name) {
       PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
-      packet.header.size = 0;
       packet.name = truncateToBytes(name, 32);
 
       PlayerInfoPacket temp_packet = packet;
+      temp_packet.header.size = 0;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
-      if (serializedBuffer.empty())
-        return packet;
+
+      if (serializedBuffer.empty()) {
+        std::cerr << "[ERROR] Failed to serialize PlayerInfoPacket (type: "
+                  << static_cast<int>(PacketType::PlayerInfo)
+                  << ") for dynamic size calculation. Returning empty packet."
+                  << std::endl;
+        return {};
+      }
+
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -521,7 +543,6 @@ struct PacketBuilder {
                                            const std::string &password = "") {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
-      packet.header.size = 0;
       packet.room_name = truncateToBytes(room_name, 32);
       packet.max_players = max_players;
       packet.is_private = !password.empty();
@@ -531,10 +552,18 @@ struct PacketBuilder {
         packet.password.clear();
 
       CreateRoomPacket temp_packet = packet;
+      temp_packet.header.size = 0;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
-      if (serializedBuffer.empty())
-        return packet;
+
+      if (serializedBuffer.empty()) {
+        std::cerr << "[ERROR] Failed to serialize CreateRoomPacket (type: "
+                  << static_cast<int>(PacketType::CreateRoom)
+                  << ") for dynamic size calculation. Returning empty packet."
+                  << std::endl;
+        return {};
+      }
+
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -555,15 +584,22 @@ struct PacketBuilder {
                                        const std::string &password) {
       JoinRoomPacket packet{};
       packet.header.type = PacketType::JoinRoom;
-      packet.header.size = 0;
       packet.room_id = room_id;
       packet.password = truncateToBytes(password, 32);
 
       JoinRoomPacket temp_packet = packet;
+      temp_packet.header.size = 0;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
-      if (serializedBuffer.empty())
-        return packet;
+
+      if (serializedBuffer.empty()) {
+        std::cerr << "[ERROR] Failed to serialize JoinRoomPacket (type: "
+                  << static_cast<int>(PacketType::JoinRoom)
+                  << ") for dynamic size calculation. Returning empty packet."
+                  << std::endl;
+        return {};
+      }
+
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -631,7 +667,6 @@ struct PacketBuilder {
         const std::vector<RoomInfo> &rooms) {
       ListRoomResponsePacket packet{};
       packet.header.type = PacketType::ListRoomResponse;
-      packet.header.size = 0;
       packet.room_count = static_cast<std::uint32_t>(
           std::min<std::size_t>(rooms.size(), MAX_ROOMS));
 
@@ -640,10 +675,19 @@ struct PacketBuilder {
       }
 
       ListRoomResponsePacket temp_packet = packet;
+      temp_packet.header.size = 0;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
-      if (serializedBuffer.empty())
-        return packet;
+
+      if (serializedBuffer.empty()) {
+        std::cerr
+            << "[ERROR] Failed to serialize ListRoomResponsePacket (type: "
+            << static_cast<int>(PacketType::ListRoomResponse)
+            << ") for dynamic size calculation. Returning empty packet."
+            << std::endl;
+        return {};
+      }
+
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
