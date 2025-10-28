@@ -136,7 +136,11 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   client._player_name = name;
   server.getDatabaseManager().addPlayer(name, client._ip_address);
-  auto players = server.getDatabaseManager().getAllPlayers();
+  if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
+                                                      true)) {
+    std::cerr << "[ERROR] Failed to update player status for player "
+              << client._player_id << std::endl;
+  }
 
   switch (client._state) {
     case server::ClientState::CONNECTED_MENU:
@@ -297,6 +301,12 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
       auto player = room->getGame().getPlayer(client._player_id);
       if (player) {
         room->getGame().destroyPlayer(client._player_id);
+      }
+
+      if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
+                                                          false)) {
+        std::cerr << "[ERROR] Failed to update player status for player "
+                  << client._player_id << std::endl;
       }
 
       std::shared_ptr<server::Client> sharedClient;

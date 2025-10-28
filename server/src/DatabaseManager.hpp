@@ -32,7 +32,7 @@ namespace database {
 
       bool addPlayer(const std::string &username, const std::string &ipAddress);
       bool removePlayer(int playerId);
-      bool updatePlayerStatus(int playerId, bool isOnline);
+      bool updatePlayerStatus(const std::string &, bool isOnline);
       std::optional<PlayerData> getPlayerByUsername(
           const std::string &username);
       std::optional<PlayerData> getPlayerByIP(const std::string &ip_address);

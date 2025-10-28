@@ -3,7 +3,7 @@ from textual.widgets import Header, Footer, Button, Static
 from textual.containers import Container, Vertical
 from textual.binding import Binding
 from database import DatabaseManager
-from textuals import PlayersManagement
+from textuals import PlayersManagement, BansManagement
 
 
 class AdminPanel(App):
@@ -59,8 +59,8 @@ class AdminPanel(App):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "btn_players":
             self.push_screen(PlayersManagement(self.db))
-        # elif event.button.id == "btn_bans":
-            # self.push_screen(BansScreen(self.db))
+        elif event.button.id == "btn_bans":
+            self.push_screen(BansManagement(self.db))
         elif event.button.id == "btn_exit":
             self.exit()
 

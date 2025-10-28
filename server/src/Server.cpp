@@ -120,6 +120,12 @@ void server::Server::handleTimeout() {
       if (_player_count > 0)
         --_player_count;
 
+      if (!getDatabaseManager().updatePlayerStatus(client->_player_name,
+                                                   false)) {
+        std::cerr << "[ERROR] Failed to update online status for player "
+                  << client->_player_id << std::endl;
+      }
+
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
         if (room) {

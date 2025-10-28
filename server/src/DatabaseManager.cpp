@@ -99,11 +99,11 @@ bool database::DatabaseManager::removePlayer(int playerId) {
   return executeQuery(query);
 }
 
-bool database::DatabaseManager::updatePlayerStatus(int playerId,
+bool database::DatabaseManager::updatePlayerStatus(const std::string &username,
                                                    bool isOnline) {
   std::string query =
       "UPDATE players SET is_online = " + std::to_string(isOnline ? 1 : 0) +
-      " WHERE id = " + std::to_string(playerId) + ";";
+      " WHERE username = '" + username + "';";
   return executeQuery(query);
 }
 
