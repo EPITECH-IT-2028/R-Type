@@ -49,7 +49,10 @@ namespace network {
       void stop() override;
 
       void closeSocket() {
-        return;
+        if (_socket.is_open()) {
+          _socket.cancel();
+          _socket.close();
+        }
       };
 
       asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
@@ -66,11 +69,14 @@ namespace network {
       std::shared_ptr<asio::steady_timer> _eventTimer;
       std::shared_ptr<asio::steady_timer> _timeoutTimer;
       std::shared_ptr<asio::steady_timer> _unacknowledgedTimer;
+      std::shared_ptr<asio::steady_timer> _clearSeqTimer;
       std::unordered_map<int, asio::ip::udp::endpoint> _clientEndpoints;
       std::function<void()> _stopCallback;
-      bool _isRunning = true;
+      bool _isRunning = false;
       bool _unacknowledgedScheduled = false;
       bool _timeoutScheduled = false;
+      bool _eventScheduled = false;
+      bool _clearSeqScheduled = false;
   };
 
 }  // namespace network

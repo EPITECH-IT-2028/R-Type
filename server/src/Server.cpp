@@ -93,9 +93,10 @@ void server::Server::processGameEvents() {
  * rooms, and stops the resend background thread, waiting for it to finish.
  */
 void server::Server::stop() {
+  if (_gameManager)
+    _gameManager->shutdownRooms();
+  _networkManager.stop();
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
-  _networkManager.closeSocket();
-  _gameManager->shutdownRooms();
 }
 
 /**
