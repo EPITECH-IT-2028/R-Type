@@ -185,7 +185,7 @@ namespace client {
       void setPlayerName(const std::string &name) {
         std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
         _playerName = name;
-        if (_player_id != static_cast<std::uint32_t>(INVALID_ID))
+        if (_player_id != INVALID_ID)
           _playerNames[_player_id] = name;
       }
 
@@ -289,7 +289,7 @@ namespace client {
         auto it = _playerNames.find(playerId);
         if (it != _playerNames.end())
           return it->second;
-        if (playerId == static_cast<std::uint32_t>(-1))
+        if (playerId == INVALID_ID)
           return "Server";
         return "Unknown";
       }
@@ -363,7 +363,7 @@ namespace client {
       std::unordered_map<std::uint32_t, Entity> _enemyEntities;
       std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
-      std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+      std::uint32_t _player_id = INVALID_ID;
       std::string _playerName;
       std::unordered_map<std::uint32_t, std::string> _playerNames;
       mutable std::shared_mutex _playerStateMutex;

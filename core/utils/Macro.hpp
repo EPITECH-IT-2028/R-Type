@@ -52,7 +52,7 @@ constexpr int COUNTDOWN_TIME = 5;
 
 constexpr int MAX_ROOMS = 10;
 
-constexpr int INVALID_ID = -1;
+constexpr std::uint32_t INVALID_ID = std::numeric_limits<std::uint32_t>::max();
 constexpr std::uint32_t INVALID_ENTITY =
     std::numeric_limits<std::uint32_t>::max();
 
