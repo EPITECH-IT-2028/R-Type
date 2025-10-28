@@ -141,11 +141,9 @@ std::vector<database::PlayerData> database::DatabaseManager::getAllPlayers() {
   return getResultQuery(query);
 }
 
-bool database::DatabaseManager::isPlayerBanned(int playerId) {
+bool database::DatabaseManager::isIpBanned(const std::string &ip_address) {
   const std::string query =
-      "SELECT COUNT(*) FROM banned_players WHERE player_id = " +
-      std::to_string(playerId) + ";";
-
+      "SELECT COUNT(*) FROM bans WHERE ip_address = '" + ip_address + "';";
   sqlite3_stmt *stmt;
   if (sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
     return false;
@@ -156,7 +154,28 @@ bool database::DatabaseManager::isPlayerBanned(int playerId) {
     int count = sqlite3_column_int(stmt, 0);
     isBanned = (count > 0);
   }
-
   sqlite3_finalize(stmt);
   return isBanned;
+}
+
+std::vector<database::BanData> database::DatabaseManager::getAllBans() {
+  std::vector<BanData> bans;
+  sqlite3_stmt *stmt;
+  const std::string query = "SELECT id, ip_address, reason FROM bans;";
+
+  if (sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+    return bans;
+  }
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    BanData row;
+    row.id = sqlite3_column_int(stmt, 0);
+    row.ip_address =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+    row.reason = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    bans.push_back(row);
+  }
+
+  sqlite3_finalize(stmt);
+  return bans;
 }

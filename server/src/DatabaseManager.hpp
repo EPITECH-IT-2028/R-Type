@@ -13,6 +13,12 @@ namespace database {
       bool is_online;
   };
 
+  struct BanData {
+      int id;
+      std::string ip_address;
+      std::string reason;
+  };
+
   class DatabaseManager {
     public:
       DatabaseManager(const std::string &dbPath = "./rtype.db");
@@ -30,8 +36,9 @@ namespace database {
       std::optional<PlayerData> getPlayerByUsername(
           const std::string &username);
       std::optional<PlayerData> getPlayerByIP(const std::string &ip_address);
-      bool isPlayerBanned(int playerId);
+      bool isIpBanned(const std::string &ip_address);
       std::vector<PlayerData> getAllPlayers();
+      std::vector<BanData> getAllBans();
 
     private:
       bool executeQuery(const std::string &query);

@@ -300,6 +300,13 @@ void server::Server::handlePlayerInfoPacket(const char *data,
     }
   }
 
+  if (_databaseManager &&
+      _databaseManager->isIpBanned(current_endpoint.address().to_string())) {
+    std::cerr << "[WARNING] Refused connection from banned IP "
+              << current_endpoint.address().to_string() << std::endl;
+    return;
+  }
+
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
       int id = _next_player_id++;

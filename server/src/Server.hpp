@@ -70,6 +70,8 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
+      void checkIsPlayerBan();
+
     private:
       void startReceive();
       void handleReceive(const char *data, std::size_t bytes_transferred);
