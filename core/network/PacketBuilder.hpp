@@ -44,7 +44,7 @@ struct PacketBuilder {
         return false;
       }
 
-      std::uint32_t payloadSize = fullSerializedSize - sizeof(PacketHeader);
+      std::uint32_t payloadSize = fullSerializedSize;
       if (payloadSize > std::numeric_limits<std::uint32_t>::max()) {
         std::cerr << "[ERROR] Calculated payload size (" << payloadSize
                   << ") exceeds maximum allowed ("
