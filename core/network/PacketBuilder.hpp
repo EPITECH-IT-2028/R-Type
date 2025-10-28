@@ -12,6 +12,11 @@
 #include "Serializer.hpp"
 
 struct PacketBuilder {
+    static std::string truncateToBytes(const std::string &str,
+                                       size_t max_bytes) {
+      return str.length() > max_bytes ? str.substr(0, max_bytes) : str;
+    }
+
     /**
      * @brief Constructs a ChatMessagePacket populated with the given text,
      * player ID, RGBA color, and the current timestamp.
@@ -38,7 +43,7 @@ struct PacketBuilder {
       packet.header.type = PacketType::ChatMessage;
       packet.header.size = 0;
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
-      packet.message = msg;
+      packet.message = truncateToBytes(msg, 512);
       packet.player_id = player_id;
       packet.r = r;
       packet.g = g;
@@ -95,7 +100,7 @@ struct PacketBuilder {
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = 0;
       packet.player_id = player_id;
-      packet.player_name = player_name;
+      packet.player_name = truncateToBytes(player_name, 32);
       packet.x = x;
       packet.y = y;
       packet.speed = speed;
@@ -147,7 +152,7 @@ struct PacketBuilder {
       PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
       packet.header.size = 0;
-      packet.name = name;
+      packet.name = truncateToBytes(name, 32);
 
       PlayerInfoPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
@@ -506,14 +511,13 @@ struct PacketBuilder {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
       packet.header.size = 0;
-      packet.room_name = room_name;
+      packet.room_name = truncateToBytes(room_name, 32);
       packet.max_players = max_players;
       packet.is_private = !password.empty();
-      if (packet.is_private) {
-        packet.password = password;
-      } else {
+      if (packet.is_private)
+        packet.password = truncateToBytes(password, 32);
+      else
         packet.password.clear();
-      }
 
       CreateRoomPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
@@ -540,7 +544,7 @@ struct PacketBuilder {
       packet.header.type = PacketType::JoinRoom;
       packet.header.size = 0;
       packet.room_id = room_id;
-      packet.password = password;
+      packet.password = truncateToBytes(password, 32);
 
       JoinRoomPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
