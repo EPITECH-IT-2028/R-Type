@@ -664,7 +664,7 @@ struct PacketBuilder {
      * @brief Constructs a ChallengeResponsePacket with the given challenge and
      * timestamp.
      * @param challenge Character array containing the challenge response (must
-     * be at least 64 bytes).
+     * be at least CHALLENGE_HEX_LEN bytes).
      * @param timestamp Timestamp associated with the challenge response.
      * @return ChallengeResponsePacket Packet with header type set to
      * PacketType::ChallengeResponse, header size set to the packet size,
