@@ -56,7 +56,8 @@ constexpr int MAX_ROOMS = 10;
 constexpr int INVALID_ID = -1;
 constexpr Entity INVALID_ENTITY = std::numeric_limits<std::uint32_t>::max();
 
-constexpr int SERVER_SENDER_ID = -1;
+constexpr std::uint32_t SERVER_SENDER_ID =
+    std::numeric_limits<std::uint32_t>::max();
 
 /* UI constants */
 namespace chatUI {
