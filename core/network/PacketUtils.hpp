@@ -90,6 +90,10 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::GameEnd:
     case PacketType::PlayerInfo:
     case PacketType::PlayerShoot:
+    case PacketType::PlayerDeath:
+    case PacketType::CreateRoom:
+    case PacketType::JoinRoom:
+    case PacketType::JoinRoomResponse:
     case PacketType::PlayerDisconnected:
     case PacketType::Message:
     case PacketType::NewPlayer:

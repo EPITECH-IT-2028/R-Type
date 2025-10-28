@@ -145,16 +145,18 @@ void game::Game::stop() {
 
   _running = false;
 
-  _gameThread.join();
+  if (_gameThread.joinable())
+    _gameThread.join();
 
   clearAllEntities();
 }
 
 /**
- * @brief Run the game's main loop: advance time, update systems, and spawn enemies.
+ * @brief Run the game's main loop: advance time, update systems, and spawn
+ * enemies.
  *
- * Enqueues a GameStartEvent (sets its sequence number via getSequenceNumber() and
- * increments the sequence) then repeatedly:
+ * Enqueues a GameStartEvent (sets its sequence number via getSequenceNumber()
+ * and increments the sequence) then repeatedly:
  * - updates the stored frame delta time (_deltaTime),
  * - calls update on enemy, projectile, and collision systems with the delta,
  * - invokes enemy spawn logic,

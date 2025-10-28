@@ -89,6 +89,7 @@ void server::Client::resendUnacknowledgedPackets(
     }
   }
   for (auto &buf : toSend) {
+    std::cout << "Sending packet to client " << _player_id << std::endl;
     networkManager.sendToClient(_player_id, buf);
   }
 }
