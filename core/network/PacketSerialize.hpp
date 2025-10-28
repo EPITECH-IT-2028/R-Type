@@ -36,7 +36,7 @@ template <typename S>
  * @brief Serializes a ChatMessagePacket into the given serializer.
  *
  * Writes the packet fields in order: header type and size, timestamp,
- * 256-byte message buffer, player ID, and RGBA color components.
+ * message text (up to 512 bytes), player ID, and RGBA color components.
  *
  * @param s Serializer adapter used to write the packet data.
  * @param packet ChatMessagePacket to serialize.
@@ -45,9 +45,7 @@ void serialize(S &s, ChatMessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
-  for (size_t i = 0; i < 256; ++i) {
-    s.value1b(packet.message[i]);
-  }
+  s.text1b(packet.message, 512);
   s.value4b(packet.player_id);
   s.value1b(packet.r);
   s.value1b(packet.g);
@@ -70,9 +68,7 @@ template <typename S>
 void serialize(S &s, PlayerInfoPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.name[i]);
-  }
+  s.text1b(packet.name, 32);
 }
 template <typename S>
 /**
@@ -143,9 +139,7 @@ void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.player_name[i]);
-  }
+  s.text1b(packet.player_name, 32);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);
@@ -305,14 +299,10 @@ template <typename S>
 void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.room_name[i]);
-  }
+  s.text1b(packet.room_name, 32);
   s.value1b(packet.max_players);
   s.value1b(packet.is_private);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.password[i]);
-  }
+  s.text1b(packet.password, 32);
 }
 
 template <typename S>
@@ -328,9 +318,7 @@ void serialize(S &s, JoinRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.password[i]);
-  }
+  s.text1b(packet.password, 32);
 }
 
 template <typename S>
@@ -387,9 +375,7 @@ template <typename S>
  */
 void serialize(S &s, RoomInfo &room) {
   s.value4b(room.room_id);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(room.room_name[i]);
-  }
+  s.text1b(room.room_name, 32);
   s.value1b(room.player_count);
   s.value1b(room.max_players);
 }

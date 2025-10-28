@@ -42,8 +42,7 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   const std::string playerName = client.getPlayerNameById(packet.player_id);
-  size_t msgLen = strnlen(packet.message, sizeof(packet.message));
-  std::string message(packet.message, msgLen);
+  std::string message = packet.message;
   Color color = {packet.r, packet.g, packet.b, packet.a};
   client.storeChatMessage(playerName, message, color);
   return packet::OK;
@@ -77,11 +76,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  char name_buffer[33];
-  std::memcpy(name_buffer, packet.player_name, sizeof(packet.player_name));
-  name_buffer[32] = '\0';
   TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
-           name_buffer, packet.player_id, packet.x, packet.y, packet.speed);
+           packet.player_name.c_str(), packet.player_id, packet.x, packet.y,
+           packet.speed);
 
   client.createPlayerEntity(packet);
   return packet::OK;

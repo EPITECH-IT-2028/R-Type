@@ -36,8 +36,7 @@ struct PacketBuilder {
       packet.header.type = PacketType::ChatMessage;
       packet.header.size = sizeof(packet);
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
-      strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
-      packet.message[sizeof(packet.message) - 1] = '\0';
+      packet.message = msg;
       packet.player_id = player_id;
       packet.r = r;
       packet.g = g;
@@ -88,9 +87,7 @@ struct PacketBuilder {
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
-      strncpy(packet.player_name, player_name.c_str(),
-              sizeof(packet.player_name) - 1);
-      packet.player_name[sizeof(packet.player_name) - 1] = '\0';
+      packet.player_name = player_name;
       packet.x = x;
       packet.y = y;
       packet.speed = speed;
@@ -136,8 +133,7 @@ struct PacketBuilder {
       PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
       packet.header.size = sizeof(packet);
-      strncpy(packet.name, name.c_str(), sizeof(packet.name) - 1);
-      packet.name[sizeof(packet.name) - 1] = '\0';
+      packet.name = name;
       return packet;
     }
 
@@ -490,16 +486,13 @@ struct PacketBuilder {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
       packet.header.size = sizeof(packet);
-      strncpy(packet.room_name, room_name.c_str(),
-              sizeof(packet.room_name) - 1);
-      packet.room_name[sizeof(packet.room_name) - 1] = '\0';
+      packet.room_name = room_name;
       packet.max_players = max_players;
       packet.is_private = !password.empty();
       if (packet.is_private) {
-        strncpy(packet.password, password.c_str(), sizeof(packet.password) - 1);
-        packet.password[sizeof(packet.password) - 1] = '\0';
+        packet.password = password;
       } else {
-        std::memset(packet.password, 0, sizeof(packet.password));
+        packet.password.clear();
       }
       return packet;
     }
@@ -521,8 +514,7 @@ struct PacketBuilder {
       packet.header.type = PacketType::JoinRoom;
       packet.header.size = sizeof(packet);
       packet.room_id = room_id;
-      strncpy(packet.password, password.c_str(), sizeof(packet.password) - 1);
-      packet.password[sizeof(packet.password) - 1] = '\0';
+      packet.password = password;
       return packet;
     }
 

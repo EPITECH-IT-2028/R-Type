@@ -76,8 +76,7 @@ int packet::ChatMessageHandler::handlePacket(server::Server &server,
     return KO;
   }
   const ChatMessagePacket &packet = deserializedPacket.value();
-  std::string message(packet.message,
-                      strnlen(packet.message, sizeof(packet.message)));
+  std::string message = packet.message;
   std::cout << "[MESSAGE] Player " << client._player_id << ": " << message
             << std::endl;
 
@@ -128,11 +127,7 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   const PlayerInfoPacket &packet = deserializedPacket.value();
 
-  // Ensure null-termination of the name
-  char nameBuf[sizeof(packet.name) + 1];
-  std::memcpy(nameBuf, packet.name, sizeof(packet.name));
-  nameBuf[sizeof(packet.name)] = '\0';
-  std::string name(nameBuf);
+  std::string name = packet.name;
 
   client._player_name = name;
 
@@ -358,11 +353,8 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   const CreateRoomPacket &packet = deserializedPacket.value();
 
-  const size_t roomLen = strnlen(packet.room_name, sizeof(packet.room_name));
-  const size_t passLen = strnlen(packet.password, sizeof(packet.password));
-
-  std::string roomName(packet.room_name, roomLen);
-  std::string password(packet.password, passLen);
+  std::string roomName = packet.room_name;
+  std::string password = packet.password;
   auto newRoom = server.getGameManager().createRoom(roomName, password);
 
   if (!newRoom) {
@@ -456,8 +448,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   }
 
   if (room->hasPassword()) {
-    const size_t passLen = strnlen(packet.password, sizeof(packet.password));
-    std::string providedPassword(packet.password, passLen);
+    std::string providedPassword = packet.password;
 
     if (!room->checkPassword(providedPassword)) {
       ResponseHelper::sendJoinRoomResponse(server, client._player_id,
@@ -577,9 +568,7 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
   for (const auto &room : rooms) {
     RoomInfo info;
     info.room_id = room->getRoomId();
-    std::strncpy(info.room_name, room->getRoomName().c_str(),
-                 sizeof(info.room_name) - 1);
-    info.room_name[sizeof(info.room_name) - 1] = '\0';
+    info.room_name = room->getRoomName();
     info.player_count = room->getPlayerCount();
     info.max_players = room->getMaxPlayers();
     roomInfos.push_back(info);

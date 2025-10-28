@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include "Macro.hpp"
 
 enum class PacketType : std::uint8_t {
@@ -60,7 +61,7 @@ enum class MovementInputType : std::uint8_t {
   RIGHT = 1 << 3
 };
 
-#define ALIGNED alignas(4)
+#define ALIGNED alignas(8)
 
 /**
  * @brief Common 4-byte-aligned header present at the start of every network
@@ -85,7 +86,7 @@ struct ALIGNED PacketHeader {
  *
  * @var header Common packet header (type and payload size).
  * @var timestamp 32-bit timestamp associated with the message.
- * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
+ * @var message UTF-8 encoded chat message (fixed-size buffer of 512 bytes).
  * @var player_id 32-bit identifier of the player who sent or is associated with
  * the message.
  * @var r Red color component for the message (0–255).
@@ -96,7 +97,7 @@ struct ALIGNED PacketHeader {
 struct ALIGNED ChatMessagePacket {
     PacketHeader header;
     std::uint32_t timestamp;
-    char message[256];
+    std::string message;
     std::uint32_t player_id;
     std::uint8_t r, g, b, a;
 };
@@ -141,7 +142,7 @@ struct ALIGNED PlayerMovePacket {
 struct ALIGNED NewPlayerPacket {
     PacketHeader header;
     std::uint32_t player_id;
-    char player_name[32];
+    std::string player_name;
     float x;
     float y;
     float speed;
@@ -185,7 +186,7 @@ struct ALIGNED HeartbeatPlayerPacket {
  * Player's display name (null-terminated UTF-8). */
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
-    char name[32];
+    std::string name;
 };
 
 /**
@@ -478,9 +479,9 @@ struct ALIGNED PlayerDeathPacket {
  */
 struct ALIGNED CreateRoomPacket {
     PacketHeader header;
-    char room_name[32];
+    std::string room_name;
     std::uint8_t is_private;
-    char password[32];
+    std::string password;
     std::uint8_t max_players;
 };
 
@@ -500,7 +501,7 @@ struct ALIGNED CreateRoomPacket {
 struct ALIGNED JoinRoomPacket {
     PacketHeader header;
     std::uint32_t room_id;
-    char password[32];
+    std::string password;
 };
 
 /**
@@ -555,7 +556,7 @@ struct ALIGNED ListRoomPacket {
  */
 struct ALIGNED RoomInfo {
     std::uint32_t room_id;
-    char room_name[32];
+    std::string room_name;
     std::uint8_t player_count;
     std::uint8_t max_players;
 };

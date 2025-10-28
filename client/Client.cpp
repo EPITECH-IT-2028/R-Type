@@ -249,14 +249,13 @@ namespace client {
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
     std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
-    size_t len = strnlen(packet.player_name, sizeof(packet.player_name));
     if (_player_id == INVALID_ID) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      _playerName.assign(packet.player_name, len);
+      _playerName.assign(packet.player_name);
     }
     _playerEntities[packet.player_id] = player;
-    _playerNames[packet.player_id] = std::string(packet.player_name, len);
+    _playerNames[packet.player_id] = packet.player_name;
   }
 
   /**
