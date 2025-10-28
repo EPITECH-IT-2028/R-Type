@@ -11,6 +11,7 @@
 #include "Packet.hpp"
 #include "PacketSerialize.hpp"
 #include "Serializer.hpp"
+#include "PacketUtils.hpp"
 
 /**
  * Note: Packet sizing strategy:
@@ -62,7 +63,7 @@ struct PacketBuilder {
 
       if (serializedBuffer.empty()) {
         std::cerr << "[ERROR] Failed to serialize ChatMessagePacket (type: "
-                  << static_cast<int>(PacketType::ChatMessage)
+                  << packetTypeToString(PacketType::ChatMessage)
                   << ") for dynamic size calculation. Returning empty packet."
                   << std::endl;
         return {};
@@ -127,7 +128,7 @@ struct PacketBuilder {
 
       if (serializedBuffer.empty()) {
         std::cerr << "[ERROR] Failed to serialize NewPlayerPacket (type: "
-                  << static_cast<int>(PacketType::NewPlayer)
+                  << packetTypeToString(PacketType::NewPlayer)
                   << ") for dynamic size calculation. Returning empty packet."
                   << std::endl;
         return {};
@@ -184,7 +185,7 @@ struct PacketBuilder {
 
       if (serializedBuffer.empty()) {
         std::cerr << "[ERROR] Failed to serialize PlayerInfoPacket (type: "
-                  << static_cast<int>(PacketType::PlayerInfo)
+                  << packetTypeToString(PacketType::PlayerInfo)
                   << ") for dynamic size calculation. Returning empty packet."
                   << std::endl;
         return {};
@@ -558,7 +559,7 @@ struct PacketBuilder {
 
       if (serializedBuffer.empty()) {
         std::cerr << "[ERROR] Failed to serialize CreateRoomPacket (type: "
-                  << static_cast<int>(PacketType::CreateRoom)
+                  << packetTypeToString(PacketType::CreateRoom)
                   << ") for dynamic size calculation. Returning empty packet."
                   << std::endl;
         return {};
@@ -594,7 +595,7 @@ struct PacketBuilder {
 
       if (serializedBuffer.empty()) {
         std::cerr << "[ERROR] Failed to serialize JoinRoomPacket (type: "
-                  << static_cast<int>(PacketType::JoinRoom)
+                  << packetTypeToString(PacketType::JoinRoom)
                   << ") for dynamic size calculation. Returning empty packet."
                   << std::endl;
         return {};
@@ -682,7 +683,7 @@ struct PacketBuilder {
       if (serializedBuffer.empty()) {
         std::cerr
             << "[ERROR] Failed to serialize ListRoomResponsePacket (type: "
-            << static_cast<int>(PacketType::ListRoomResponse)
+            << packetTypeToString(PacketType::ListRoomResponse)
             << ") for dynamic size calculation. Returning empty packet."
             << std::endl;
         return {};
