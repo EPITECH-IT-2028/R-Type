@@ -90,7 +90,6 @@ struct PacketBuilder {
                                          const std::string &player_name,
                                          float x, float y, float speed,
                                          std::uint32_t sequence_number,
-                                         std::uint8_t nbr_player,
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
@@ -104,7 +103,6 @@ struct PacketBuilder {
       packet.speed = speed;
       packet.sequence_number = sequence_number;
       packet.max_health = max_health;
-      packet.nbr_player = nbr_player;
       return packet;
     }
 
