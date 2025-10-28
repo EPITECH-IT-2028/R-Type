@@ -32,7 +32,7 @@ namespace queue {
       float x;
       float y;
       int damage;
-      int sequence_number;
+      std::uint32_t sequence_number;
   };
 
   struct EnemyMoveEvent {
@@ -41,7 +41,7 @@ namespace queue {
       float y;
       float vx;
       float vy;
-      int sequence_number;
+      std::uint32_t sequence_number;
   };
 
   struct ProjectileSpawnEvent {

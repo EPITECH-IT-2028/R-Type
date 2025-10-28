@@ -1,8 +1,8 @@
 #include "Client.hpp"
+#include <raylib.h>
 #include <atomic>
 #include <cstdint>
 #include <cstring>
-#include <raylib.h>
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
@@ -268,6 +268,16 @@ namespace client {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
       _playerName.assign(packet.player_name, len);
+
+      {
+        std::lock_guard<std::mutex> lock(_deferredNewPlayerPacketsMutex);
+        for (const auto& deferredPacket : _deferredNewPlayerPackets) {
+          if (deferredPacket.player_id != _player_id) {
+            createPlayerEntity(deferredPacket);
+          }
+        }
+        _deferredNewPlayerPackets.clear();
+      }
     }
     _playerEntities[packet.player_id] = player;
     _playerNames[packet.player_id] = std::string(packet.player_name, len);
@@ -497,38 +507,31 @@ namespace client {
    *   - Removes entries that exceeded the maximum resend attempts.
    */
   void Client::resendUnacknowledgedPackets() {
-    const int MAX_RESEND_ATTEMPTS = 5;
-    const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(500);
-    auto now = std::chrono::steady_clock::now();
+    const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(MIN_RESEND_PACKET_DELAY);
+    const auto now = std::chrono::steady_clock::now();
 
-    std::vector<uint32_t> packets_to_remove;
-
+    std::vector<std::shared_ptr<std::vector<uint8_t>>> toSend;
+    std::vector<uint32_t> toDrop;
     {
       std::lock_guard<std::mutex> lock(_unacknowledgedPacketsMutex);
       for (auto &[seq, packet] : _unacknowledged_packets) {
-        if (now - packet.last_sent < MIN_RESEND_INTERVAL) {
+        if (now - packet.last_sent < MIN_RESEND_INTERVAL)
           continue;
-        }
-
         if (packet.resend_count >= MAX_RESEND_ATTEMPTS) {
-          TraceLog(LOG_WARNING,
-                   "[RESEND] Packet %u exceeded max resend attempts, dropping",
-                   seq);
-          packets_to_remove.push_back(seq);
+          toDrop.push_back(seq);
           continue;
         }
-
-        _networkManager.send(packet.data);
         packet.resend_count++;
         packet.last_sent = now;
-
-        TraceLog(LOG_INFO, "[RESEND] Resending packet %u (attempt %d/%d)", seq,
-                 packet.resend_count, MAX_RESEND_ATTEMPTS);
+        TraceLog(LOG_INFO, "Resending packet %u tried %d of %d", seq, packet.resend_count, MAX_RESEND_ATTEMPTS);
+        toSend.push_back(packet.data);
       }
-
-      for (uint32_t seq : packets_to_remove) {
+      for (auto seq : toDrop) {
         _unacknowledged_packets.erase(seq);
       }
+    }
+    for (auto &buf : toSend) {
+      _networkManager.send(buf);
     }
   }
 

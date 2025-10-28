@@ -388,7 +388,10 @@ namespace client {
       }
 
       void removeAcknowledgedPacket(std::uint32_t sequence_number);
+      std::vector<NewPlayerPacket> _deferredNewPlayerPackets;
+      std::mutex _deferredNewPlayerPacketsMutex;
     private:
+
       void resendPackets();
 
       void addUnacknowledgedPacket(

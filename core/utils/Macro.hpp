@@ -46,11 +46,15 @@ constexpr float PLAYER_HEIGHT = 37.0f;
 
 constexpr int MARGIN_WINDOW = 30;
 
-constexpr int RESEND_PACKET_DELAY = 200;  // number in milliseconds
+constexpr int RESEND_PACKET_DELAY = 500;  // number in milliseconds
 
 constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
 
 constexpr int COUNTDOWN_TIME = 5;
+
+constexpr int MAX_RESEND_ATTEMPTS = 5;
+
+constexpr int MIN_RESEND_PACKET_DELAY = 200;
 
 constexpr int MAX_ROOMS = 10;
 

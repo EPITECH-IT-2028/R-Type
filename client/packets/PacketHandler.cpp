@@ -22,7 +22,12 @@ namespace {
                               std::uint32_t seq) {
     if (!shouldAcknowledgePacketType(t))
       return;
-    c.send(PacketBuilder::makeAckPacket(seq, c.getPlayerId()));
+    auto playerId = c.getPlayerId();
+    if (playerId == INVALID_ID) {
+      TraceLog(LOG_WARNING, "[ACK] Trying to send ACK but player ID is not set yet (seq=%u)", seq);
+      return;
+    }
+    c.send(PacketBuilder::makeAckPacket(seq, playerId));
   }
 }  // namespace
 
@@ -92,8 +97,13 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   char name_buffer[33];
   std::memcpy(name_buffer, packet.player_name, sizeof(packet.player_name));
   name_buffer[32] = '\0';
-  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
-           name_buffer, packet.player_id, packet.x, packet.y, packet.speed);
+
+  {
+    std::lock_guard<std::mutex> lock(client._deferredNewPlayerPacketsMutex);
+    client._deferredNewPlayerPackets.push_back(packet);
+    TraceLog(LOG_INFO, "[NEW PLAYER] Deferred processing for player ID: %u (local _player_id not known)", packet.player_id);
+    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+  }
 
   client.createPlayerEntity(packet);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
@@ -572,6 +582,9 @@ int packet::GameStartHandler::handlePacket(client::Client &client,
 
   const GameStartPacket &packet = packetOpt.value();
   TraceLog(LOG_INFO, "[DEBUG] Game is starting!");
+
+  client.setClientState(client::ClientState::IN_GAME);
+  TraceLog(LOG_INFO, "[GAME START] Client state updated to IN_GAME");
 
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;

@@ -101,6 +101,7 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::EnemyDeath:
     case PacketType::ProjectileSpawn:
     case PacketType::ProjectileDestroy:
+    case PacketType::MatchmakingRequest:
       return true;
     case PacketType::PlayerMove:
     case PacketType::PlayerInput:

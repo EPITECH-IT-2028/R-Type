@@ -144,22 +144,15 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   client._player_name = name;
 
-  if (server::ClientState::CONNECTED_MENU == client._state) {
-    std::cout << "[INFO] Player " << client._player_id << "registered in menu"
-              << std::endl;
-    auto ackPacket =
-        PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
-    auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
-        serialization::BitserySerializer::serialize(ackPacket));
-    server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
-    return OK;
-  }
+  std::cout << "[INFO] Player " << client._player_id << " registered in menu"
+            << std::endl;
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(ackPacket));
+
   server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
-  return KO;
+  return OK;
 }
 
 /**
@@ -262,7 +255,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   if (lastProcessedOpt.has_value()) {
     lastSeq = lastProcessedOpt.value();
   }
-  if (packet.sequence_number <= lastSeq) {
+  if (static_cast<std::uint32_t>(packet.sequence_number - lastSeq) < 0) {
     server.getNetworkManager().sendToClient(
         client._player_id,
         std::make_shared<std::vector<uint8_t>>(

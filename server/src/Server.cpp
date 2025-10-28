@@ -59,7 +59,7 @@ void server::Server::start() {
   _networkManager.scheduleTimeout(std::chrono::seconds(1),
                                   [this]() { handleTimeout(); });
   _networkManager.scheduleUnacknowledgedPacketsCheck(
-      std::chrono::milliseconds(1000),
+      std::chrono::milliseconds(RESEND_PACKET_DELAY),
       [this]() { handleUnacknowledgedPackets(); });
 
   _networkManager.scheduleClearLastProcessedSeq(
@@ -718,8 +718,11 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
       game.getSequenceNumber(), max_health);
+
   auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(newPlayerPacket));
+
+  std::cout << game.getSequenceNumber() << " is packet NewPlayer for other players" << std::endl;
   for (const auto &roomClient : roomClients) {
     if (roomClient && roomClient->_player_id != client._player_id) {
       roomClient->addUnacknowledgedPacket(game.getSequenceNumber(),

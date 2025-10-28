@@ -3,6 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include "Macro.hpp"
 
 /**
  * @brief Store a packet as unacknowledged for retransmission tracking.
@@ -65,8 +66,8 @@ void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
  */
 void server::Client::resendUnacknowledgedPackets(
     network::ServerNetworkManager &networkManager) {
-  const int MAX_RESEND_ATTEMPTS = 5;
-  const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(500);
+  const auto MIN_RESEND_INTERVAL =
+      std::chrono::milliseconds(MIN_RESEND_PACKET_DELAY);
   const auto now = std::chrono::steady_clock::now();
 
   std::vector<std::shared_ptr<std::vector<uint8_t>>> toSend;
@@ -89,7 +90,6 @@ void server::Client::resendUnacknowledgedPackets(
     }
   }
   for (auto &buf : toSend) {
-    std::cout << "Sending packet to client " << _player_id << std::endl;
     networkManager.sendToClient(_player_id, buf);
   }
 }

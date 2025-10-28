@@ -291,6 +291,7 @@ void game::Game::spawnEnemy(float deltaTime) {
       event.vy = vel.second;
       event.health = health;
       event.max_health = max_health;
+      event.sequence_number = fetchAndIncrementSequenceNumber();
       _eventQueue.addRequest(event);
     }
   }
