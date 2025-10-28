@@ -14,9 +14,9 @@
 #include "Serializer.hpp"
 
 /**
- * Note: Packet sizing strategy:
- * - Fixed-size packets (no strings): use sizeof(packet)
- * - Variable-size packets (with strings): serialize to compute actual size
+ * Convention: header.size = taille totale sérialisée (octets), en‑tête inclus.
+ * - Paquets fixes (sans std::string) : header.size = sizeof(packet).
+ * - Paquets variables (avec std::string) : taille obtenue via sérialisation.
  */
 struct PacketBuilder {
   private:
