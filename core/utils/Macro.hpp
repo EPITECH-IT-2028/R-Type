@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include "EntityManager.hpp"
 
 #ifdef ERROR
   #undef ERROR
@@ -54,7 +53,8 @@ constexpr int COUNTDOWN_TIME = 5;
 constexpr int MAX_ROOMS = 10;
 
 constexpr int INVALID_ID = -1;
-constexpr Entity INVALID_ENTITY = std::numeric_limits<std::uint32_t>::max();
+constexpr std::uint32_t INVALID_ENTITY =
+    std::numeric_limits<std::uint32_t>::max();
 
 constexpr std::uint32_t SERVER_SENDER_ID =
     std::numeric_limits<std::uint32_t>::max();
