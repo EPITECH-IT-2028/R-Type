@@ -5,6 +5,7 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 #include "Macro.hpp"
@@ -12,7 +13,6 @@
 #include "PacketSerialize.hpp"
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
-#include <limits>
 
 /**
  * Convention: header.size = taille totale sérialisée (octets), en‑tête inclus.
@@ -45,16 +45,15 @@ struct PacketBuilder {
         return false;
       }
 
-      size_t payloadSize = fullSerializedSize - sizeof(PacketHeader);
-      if (payloadSize > std::numeric_limits<std::uint32_t>::max()) {
-        std::cerr << "[ERROR] Calculated payload size (" << payloadSize
+      if (fullSerializedSize > std::numeric_limits<std::uint32_t>::max()) {
+        std::cerr << "[ERROR] Calculated payload size (" << fullSerializedSize
                   << ") exceeds maximum allowed ("
                   << std::numeric_limits<std::uint32_t>::max()
                   << "). Context: " << ctx << ". Returning empty packet.\n";
         return false;
       }
 
-      packet.header.size = static_cast<std::uint32_t>(payloadSize);
+      packet.header.size = static_cast<std::uint32_t>(fullSerializedSize);
       return true;
     }
 
