@@ -722,7 +722,6 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(newPlayerPacket));
 
-  std::cout << game.getSequenceNumber() << " is packet NewPlayer for other players" << std::endl;
   for (const auto &roomClient : roomClients) {
     if (roomClient && roomClient->_player_id != client._player_id) {
       roomClient->addUnacknowledgedPacket(game.getSequenceNumber(),
