@@ -76,7 +76,7 @@ class AddBanModal(ModalScreen):
 
     def compose(self) -> ComposeResult:
         yield Container(
-            Static("🚫 Add New Ban", id="modal_title"),
+            Static("Add New Ban", id="modal_title"),
             Input(placeholder="IP Address (e.g., 192.168.0.1)", id="ip_input"),
             Input(placeholder="Reason (optional)", id="reason_input"),
             Horizontal(
