@@ -150,6 +150,7 @@ struct ALIGNED NewPlayerPacket {
     float speed;
     std::uint32_t sequence_number;
     std::uint32_t max_health;
+    std::uint8_t nbr_player;
 };
 
 /**

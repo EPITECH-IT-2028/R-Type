@@ -2,6 +2,7 @@
 #include <atomic>
 #include <cstdint>
 #include <cstring>
+#include <raylib.h>
 #include "AssetManager.hpp"
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
@@ -13,6 +14,7 @@
 #include "Macro.hpp"
 #include "MovementSystem.hpp"
 #include "Packet.hpp"
+#include "PlayerComponent.hpp"
 #include "PlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
@@ -227,6 +229,15 @@ namespace client {
    * (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
+    for (auto &entity : _ecsManager.getAllEntities()) {
+      if (_ecsManager.hasComponent<ecs::PlayerComponent>(entity)) {
+        if (_ecsManager.getComponent<ecs::PlayerComponent>(entity).player_id ==
+            packet.player_id) {
+          TraceLog(LOG_INFO, "Player alreadly registred into client data");
+          return;
+        }
+      }
+    }
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player,
                                                      {packet.x, packet.y});

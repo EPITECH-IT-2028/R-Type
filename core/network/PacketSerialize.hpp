@@ -155,6 +155,7 @@ void serialize(S &s, NewPlayerPacket &packet) {
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);
   s.value4b(packet.sequence_number);
+  s.value1b(packet.nbr_player);
   s.value4b(packet.max_health);
 }
 

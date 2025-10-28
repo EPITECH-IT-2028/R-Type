@@ -100,7 +100,7 @@ namespace broadcast {
             std::string playerName = player->getName();
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
-                player->getPlayerId(), playerName, pos.first, pos.second, speed,
+                player->getPlayerId(), playerName, pos.first, pos.second, speed, game.getAllPlayers().size(),
                 maxHealth);
 
             auto buffer = std::make_shared<std::vector<std::uint8_t>>(

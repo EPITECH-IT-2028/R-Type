@@ -700,7 +700,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
-      game.getSequenceNumber(), max_health);
+      game.getSequenceNumber(), game.getAllPlayers().size(), max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
   _networkManager.sendToClient(
@@ -717,7 +717,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
-      game.getSequenceNumber(), max_health);
+      game.getSequenceNumber(), game.getAllPlayers().size(), max_health);
   auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(newPlayerPacket));
   for (const auto &roomClient : roomClients) {
