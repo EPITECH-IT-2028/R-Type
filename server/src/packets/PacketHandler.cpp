@@ -24,6 +24,11 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
                                                   RoomError error) {
   auto response = PacketBuilder::makeJoinRoomResponse(error);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize JoinRoomResponse for client "
+              << player_id << std::endl;
+    return;
+  }
   server.getNetworkManager().sendToClient(
       player_id, reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
@@ -41,6 +46,11 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
                                                      RoomError error) {
   auto response = PacketBuilder::makeMatchmakingResponse(error);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize MatchmakingResponse for client "
+              << player_id << std::endl;
+    return;
+  }
   server.getNetworkManager().sendToClient(
       player_id, reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
@@ -578,6 +588,12 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
 
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(listRoomResponsePacket);
+  if (serializedBuffer.empty()) {
+    std::cerr
+        << "[ERROR] Failed to serialize ListRoomResponsePacket for client "
+        << client._player_id << std::endl;
+    return KO;
+  }
   server.getNetworkManager().sendToClient(
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),

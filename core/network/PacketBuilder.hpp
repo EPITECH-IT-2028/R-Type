@@ -53,6 +53,8 @@ struct PacketBuilder {
       ChatMessagePacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty())
+        return packet;
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -109,6 +111,8 @@ struct PacketBuilder {
       NewPlayerPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty())
+        return packet;
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -157,6 +161,8 @@ struct PacketBuilder {
       PlayerInfoPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty())
+        return packet;
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -522,6 +528,8 @@ struct PacketBuilder {
       CreateRoomPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty())
+        return packet;
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -549,6 +557,8 @@ struct PacketBuilder {
       JoinRoomPacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty())
+        return packet;
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
@@ -627,6 +637,8 @@ struct PacketBuilder {
       ListRoomResponsePacket temp_packet = packet;
       serialization::Buffer serializedBuffer =
           serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty())
+        return packet;
       std::uint32_t fullSerializedSize = serializedBuffer.size();
       packet.header.size = fullSerializedSize - sizeof(PacketHeader);
       return packet;
