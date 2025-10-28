@@ -11,31 +11,58 @@
 
 struct PacketBuilder {
     /**
-     * @brief Constructs a MessagePacket containing the provided text, current
-     * timestamp, and player identifier.
+     * @brief Constructs a ChatMessagePacket populated with the given text,
+     * player ID, RGBA color, and the current timestamp.
      *
-     * Copies up to sizeof(packet.message)-1 characters from `msg` into the
-     * packet's null-terminated message field (truncating if necessary), sets
-     * the header type to `Message`, header size to the packet size, timestamp
-     * to the current time, and assigns `player_id`.
+     * The provided message is copied into the packet's message buffer; it will
+     * be truncated to fit and always null-terminated.
      *
-     * @param msg Text to include in the message packet; may be truncated to fit
-     * the packet.
-     * @param player_id Identifier of the player who sent the message.
-     * @return MessagePacket Packet with header.type == PacketType::Message,
-     * header.size set to sizeof(packet), a null-terminated `message` field,
-     * current `timestamp`, and `player_id` set.
+     * @param msg Chat text to include in the packet.
+     * @param player_id ID of the player sending the message.
+     * @param r Red color component (0-255) for the message.
+     * @param g Green color component (0-255) for the message.
+     * @param b Blue color component (0-255) for the message.
+     * @param a Alpha (opacity) component (0-255) for the message.
+     * @return ChatMessagePacket Packet with header.type set to ChatMessage,
+     * header.size set to the packet size, timestamp set to the current time,
+     * message copied (truncated if necessary and null-terminated), player_id
+     * assigned, and color components assigned from the provided RGBA values.
      */
-    static MessagePacket makeMessage(const std::string &msg,
-                                     std::uint32_t player_id) {
-      MessagePacket packet{};
-      packet.header.type = PacketType::Message;
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id,
+                                             std::uint8_t r, std::uint8_t g,
+                                             std::uint8_t b, std::uint8_t a) {
+      ChatMessagePacket packet{};
+      packet.header.type = PacketType::ChatMessage;
       packet.header.size = sizeof(packet);
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
       packet.message[sizeof(packet.message) - 1] = '\0';
       packet.player_id = player_id;
+      packet.r = r;
+      packet.g = g;
+      packet.b = b;
+      packet.a = a;
       return packet;
+    }
+
+    /**
+     * @brief Constructs a ChatMessagePacket with default white color.
+     *
+     * This overload of makeChatMessage sets the message color to white
+     * (RGBA: 255, 255, 255, 255) by default.
+     *
+     * @param msg Text to include in the message packet; may be truncated to fit
+     * the packet.
+     * @param player_id Identifier of the player who sent the message.
+     * @return ChatMessagePacket Packet with header.type ==
+     * PacketType::ChatMessage, header.size set to sizeof(packet), a
+     * null-terminated `message` field, current `timestamp`, and `player_id`
+     * set. Message color is white.
+     */
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id) {
+      return makeChatMessage(msg, player_id, 255, 255, 255, 255);
     }
 
     /**
@@ -46,19 +73,24 @@ struct PacketBuilder {
      * NewPlayer.
      *
      * @param player_id Unique identifier for the player.
+     * @param player_name Name of the player.
      * @param x Initial X position of the player.
      * @param y Initial Y position of the player.
      * @param speed Initial movement speed of the player.
      * @param max_health Maximum health for the player (default: 100).
      * @return NewPlayerPacket Populated packet ready to be serialized and sent.
      */
-    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id, float x,
-                                         float y, float speed,
+    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id,
+                                         const std::string &player_name,
+                                         float x, float y, float speed,
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+      strncpy(packet.player_name, player_name.c_str(),
+              sizeof(packet.player_name) - 1);
+      packet.player_name[sizeof(packet.player_name) - 1] = '\0';
       packet.x = x;
       packet.y = y;
       packet.speed = speed;
@@ -602,16 +634,17 @@ struct PacketBuilder {
     };
 
     /**
-     * @brief Constructs a PlayerInputPacket representing a player's input
+     * @brief Construct a PlayerInputPacket containing a player's current input
      * state.
      *
-     * The returned packet has its header type and size initialized and contains
-     * the provided input flags and sequence number for ordering.
+     * The packet's header.type and header.size are initialized; the packet
+     * carries the provided input flags and sequence number for ordering.
      *
-     * @param input Player input flags (bitmask representing buttons/actions).
+     * @param input Bitmask of player input flags (buttons/actions).
      * @param sequence_number Monotonically increasing sequence number for this
      * input.
-     * @return PlayerInputPacket Populated packet ready for transmission.
+     * @return PlayerInputPacket The populated packet with input flags and
+     * sequence number.
      */
     static PlayerInputPacket makePlayerInput(std::uint8_t input,
                                              std::uint32_t sequence_number) {

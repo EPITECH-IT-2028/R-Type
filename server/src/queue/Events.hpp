@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <variant>
 #include "Packet.hpp"
 
@@ -68,6 +69,11 @@ namespace queue {
       float y;
   };
 
+  struct PlayerDiedEvent {
+      int player_id;
+      std::string player_name;
+  };
+
   struct PositionEvent {
       int player_id;
       float x;
@@ -89,6 +95,6 @@ namespace queue {
       std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent,
                    ProjectileSpawnEvent, PlayerHitEvent, EnemyHitEvent,
                    ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent,
-                   PositionEvent>;
+                   PositionEvent, PlayerDiedEvent>;
 
 }  // namespace queue

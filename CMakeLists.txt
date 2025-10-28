@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 project(r_type)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_compile_definitions(DEBUG_MODE=1)
+else()
+  add_compile_definitions(DEBUG_MODE=0)
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
@@ -32,7 +38,7 @@ endif()
 
 if(WIN32)
     set(WINDOWS_LIBS ws2_32 wsock32 mswsock)
-    add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX)
+    add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0A00)
     link_libraries(${WINDOWS_LIBS})
 endif()
 

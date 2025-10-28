@@ -32,8 +32,8 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _max_clients_per_room(max_clients_per_room),
       _port(port),
       _player_count(0),
-      _projectile_count(0),
-      _next_player_id(0) {
+      _next_player_id(0),
+      _projectile_count(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
   _clients.resize(_max_clients);
 }
@@ -85,6 +85,15 @@ void server::Server::stop() {
   _gameManager->shutdownRooms();
 }
 
+/**
+ * @brief Detects and handles client inactivity timeouts.
+ *
+ * Checks each connected client’s last heartbeat against CLIENT_TIMEOUT and, for
+ * clients exceeding that threshold, marks them disconnected, decrements the
+ * active player count, removes them from their room (if any), destroys their
+ * in-room player entity, broadcasts a player-disconnect packet and a chat
+ * message to the room, and clears the server slot for that client.
+ */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
 
@@ -100,7 +109,7 @@ void server::Server::handleTimeout() {
         now - client->_last_heartbeat);
     if (duration.count() > CLIENT_TIMEOUT) {
       const int pid = client->_player_id;
-      const int roomId = client->_room_id;
+      const std::uint32_t roomId = client->_room_id;
       std::cout << "[WORLD] Player " << pid << " timed out due to inactivity."
                 << std::endl;
       client->_connected = false;
@@ -115,6 +124,12 @@ void server::Server::handleTimeout() {
           auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
               _networkManager, roomClients, disconnectPacket);
+
+          std::string msg = client->_player_name + " has timed out.";
+          auto chatMessagePacket = PacketBuilder::makeChatMessage(
+              msg, SERVER_SENDER_ID, 255, 0, 0, 255);
+          broadcast::Broadcast::broadcastMessageToRoom(
+              _networkManager, roomClients, chatMessagePacket);
 
           room->getGame().destroyPlayer(pid);
           _gameManager->leaveRoom(client);
@@ -205,6 +220,12 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.player_id, specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerDeathToRoom(
               _networkManager, clients, playerDestroyPacket);
+        } else if constexpr (std::is_same_v<T, queue::PlayerDiedEvent>) {
+          std::string msg = specificEvent.player_name + " has died.";
+          auto chatMessagePacket = PacketBuilder::makeChatMessage(
+              msg, SERVER_SENDER_ID, 255, 0, 0, 255);
+          broadcast::Broadcast::broadcastMessageToRoom(_networkManager, clients,
+                                                       chatMessagePacket);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
           auto gameStartPacket =
               PacketBuilder::makeGameStart(specificEvent.game_started);
@@ -437,8 +458,9 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   float speed = player->getSpeed();
   int max_health = player->getMaxHealth().value_or(100);
 
-  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, max_health);
+  auto ownPlayerPacket =
+      PacketBuilder::makeNewPlayer(client._player_id, client._player_name,
+                                   pos.first, pos.second, speed, max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
   _networkManager.sendToClient(
@@ -451,10 +473,17 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   broadcast::Broadcast::broadcastExistingPlayersToRoom(
       _networkManager, room->getGame(), client._player_id, roomClients);
 
-  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
-      client._player_id, pos.first, pos.second, speed, max_health);
+  auto newPlayerPacket =
+      PacketBuilder::makeNewPlayer(client._player_id, client._player_name,
+                                   pos.first, pos.second, speed, max_health);
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
+
+  std::string msg = client._player_name + " has joined the game.";
+  auto chatMessagePacket =
+      PacketBuilder::makeChatMessage(msg, SERVER_SENDER_ID, 255, 255, 0, 255);
+  broadcast::Broadcast::broadcastMessageToRoomExcept(
+      _networkManager, roomClients, chatMessagePacket, client._player_id);
 
   if (roomClients.size() >= 2 &&
       room->getState() == game::RoomStatus::WAITING) {
@@ -547,7 +576,7 @@ void server::Server::handleCountdown(
  */
 std::shared_ptr<server::Client> server::Server::getClient(
     std::size_t idx) const {
-  if (idx < 0 || idx >= static_cast<std::size_t>(_clients.size())) {
+  if (idx >= static_cast<std::size_t>(_clients.size())) {
     return nullptr;
   }
   return _clients[idx];
