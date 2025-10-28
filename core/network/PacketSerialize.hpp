@@ -18,21 +18,30 @@ namespace serialization {
  * Common Packets
  */
 template <typename S>
+/**
+ * @brief Serializes a PacketHeader into the provided serializer.
+ *
+ * Writes the header's `type` as a one-byte value and `size` as a four-byte
+ * value.
+ *
+ * @param packet PacketHeader whose `type` and `size` fields will be written.
+ */
 void serialize(S &s, PacketHeader &packet) {
   s.value1b(packet.type);
   s.value4b(packet.size);
 }
 
 template <typename S>
-/**
- * @brief Serializes a MessagePacket into the provided serializer.
+/*
+ * @brief Serializes a ChatMessagePacket into the given serializer.
  *
- * Writes the packet header (type and size), timestamp, the 256-byte message
- * payload, player identifier, and sequence number into the serializer stream.
+ * Writes the packet fields in order: header type and size, timestamp,
+ * 256-byte message buffer, player ID, and RGBA color components.
  *
- * @param packet Packet instance whose fields will be serialized into `s`.
+ * @param s Serializer adapter used to write the packet data.
+ * @param packet ChatMessagePacket to serialize.
  */
-void serialize(S &s, MessagePacket &packet) {
+void serialize(S &s, ChatMessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
@@ -41,6 +50,10 @@ void serialize(S &s, MessagePacket &packet) {
   }
   s.value4b(packet.sequence_number);
   s.value4b(packet.player_id);
+  s.value1b(packet.r);
+  s.value1b(packet.g);
+  s.value1b(packet.b);
+  s.value1b(packet.a);
 }
 
 /*
@@ -90,6 +103,7 @@ void serialize(S &s, PlayerDisconnectPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -123,16 +137,20 @@ template <typename S>
 /**
  * @brief Serializes a NewPlayerPacket into the provided serializer.
  *
- * Writes the packet's header, player identifier, position (x, y), speed,
- * maximum health, and sequence number to the serializer in that order.
+ * Serializes the packet header, player identifier, 32-byte player name,
+ * position (x, y), movement speed, and maximum health in the protocol's binary
+ * layout.
  *
- * @param s Serializer adapter used to write packet data.
- * @param packet The NewPlayerPacket to serialize.
+ * @param packet The NewPlayerPacket whose fields will be written to the
+ * serializer.
  */
 void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
+  for (size_t i = 0; i < 32; ++i) {
+    s.value1b(packet.player_name[i]);
+  }
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);

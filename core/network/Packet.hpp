@@ -5,7 +5,7 @@
 #include "Macro.hpp"
 
 enum class PacketType : std::uint8_t {
-  Message = 0x01,
+  ChatMessage = 0x01,
   PlayerMove = 0x02,
   NewPlayer = 0x03,
   PlayerInfo = 0x04,
@@ -81,26 +81,26 @@ struct ALIGNED PacketHeader {
 };
 
 /**
- * @brief Timestamped UTF-8 message with sender identity and sequence metadata.
- *
- * Contains a packet header, a 32-bit timestamp, a 256-byte null-terminated
- * UTF-8 message buffer (up to 255 bytes of text), a 32-bit sequence_number used
- * for per-packet ordering, and the 32-bit player_id associated with the
- * message.
+ * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and
+ * RGBA color.
  *
  * @var header Common packet header (type and payload size).
  * @var timestamp 32-bit timestamp associated with the message.
  * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
- * @var sequence_number Per-packet ordering index.
- * @var player_id Identifier of the player that sent or is associated with the
- * message.
+ * @var player_id 32-bit identifier of the player who sent or is associated with
+ * the message.
+ * @var r Red color component for the message (0–255).
+ * @var g Green color component for the message (0–255).
+ * @var b Blue color component for the message (0–255).
+ * @var a Alpha (opacity) component for the message (0–255).
  */
-struct ALIGNED MessagePacket {
+struct ALIGNED ChatMessagePacket {
     PacketHeader header;
     std::uint32_t timestamp;
     char message[256];
     std::uint32_t sequence_number;
     std::uint32_t player_id;
+    std::uint8_t r, g, b, a;
 };
 
 /**
@@ -126,14 +126,16 @@ struct ALIGNED PlayerMovePacket {
 };
 
 /**
- * @brief Notifies clients that a new player has spawned on the server.
+ * @brief Notifies clients that a new player has spawned.
  *
- * Carries the spawned player's server-assigned ID, spawn coordinates, movement
- * speed, per-packet sequence number, and maximum health.
+ * Contains the server-assigned player ID, the player's display name, spawn
+ * position, movement speed, and maximum health.
  *
- * Members:
- * - header: Common packet header (type and payload size).
+ * @details
+ * - header: Common packet header present at the start of every packet.
  * - player_id: Server-assigned unique player identifier.
+ * - player_name: Null-terminated UTF-8 display name (fixed-size buffer of 32
+ * bytes).
  * - x, y: Spawn world coordinates.
  * - speed: Movement speed scalar.
  * - sequence_number: Per-packet ordering index for reliable processing.
@@ -142,6 +144,7 @@ struct ALIGNED PlayerMovePacket {
 struct ALIGNED NewPlayerPacket {
     PacketHeader header;
     std::uint32_t player_id;
+    char player_name[32];
     float x;
     float y;
     float speed;
@@ -160,6 +163,7 @@ struct ALIGNED NewPlayerPacket {
 struct ALIGNED PlayerDisconnectPacket {
     PacketHeader header;
     std::uint32_t player_id;
+    std::uint32_t sequence_number;
 };
 
 /**

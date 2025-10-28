@@ -11,45 +11,72 @@
 
 struct PacketBuilder {
     /**
-     * @brief Constructs a MessagePacket containing the given text, timestamp,
-     * player identifier, and sequence number.
+     * @brief Constructs a ChatMessagePacket populated with the given text,
+     * player ID, RGBA color, and the current timestamp.
      *
-     * The packet's message field is filled with up to sizeof(packet.message)-1
-     * characters from `msg` and is guaranteed to be null-terminated; if `msg`
-     * is longer it will be truncated to fit. The packet's timestamp is set to
-     * the current time.
+     * The provided message is copied into the packet's message buffer; it will
+     * be truncated to fit and always null-terminated.
      *
-     * @param msg Text to include in the message packet; may be truncated to fit
-     * the packet's message buffer.
-     * @param player_id Identifier of the player who sent the message.
-     * @param sequence_number Sequence number to include in the packet.
-     * @return MessagePacket Packet with header.type == PacketType::Message,
-     * header.size set to sizeof(MessagePacket), a null-terminated `message`
-     * field (truncated if necessary), `timestamp` set to the current time,
-     * `player_id` set, and `sequence_number` set.
+     * @param msg Chat text to include in the packet.
+     * @param player_id ID of the player sending the message.
+     * @param r Red color component (0-255) for the message.
+     * @param g Green color component (0-255) for the message.
+     * @param b Blue color component (0-255) for the message.
+     * @param a Alpha (opacity) component (0-255) for the message.
+     * @return ChatMessagePacket Packet with header.type set to ChatMessage,
+     * header.size set to the packet size, timestamp set to the current time,
+     * message copied (truncated if necessary and null-terminated), player_id
+     * assigned, and color components assigned from the provided RGBA values.
      */
-    static MessagePacket makeMessage(const std::string &msg,
-                                     std::uint32_t player_id,
-                                     std::uint32_t sequence_number) {
-      MessagePacket packet{};
-      packet.header.type = PacketType::Message;
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id,
+                                             std::uint8_t r, std::uint8_t g,
+                                             std::uint8_t b, std::uint8_t a,
+                                             std::uint32_t sequence_number) {
+      ChatMessagePacket packet{};
+      packet.header.type = PacketType::ChatMessage;
       packet.header.size = sizeof(packet);
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
       strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
       packet.message[sizeof(packet.message) - 1] = '\0';
       packet.player_id = player_id;
       packet.sequence_number = sequence_number;
+      packet.r = r;
+      packet.g = g;
+      packet.b = b;
+      packet.a = a;
       return packet;
     }
 
     /**
-     * @brief Create a NewPlayerPacket containing player identity, position,
-     * movement speed, maximum health, and sequence number.
+     * @brief Constructs a ChatMessagePacket with default white color.
+     *
+     * This overload of makeChatMessage sets the message color to white
+     * (RGBA: 255, 255, 255, 255) by default.
+     *
+     * @param msg Text to include in the message packet; may be truncated to fit
+     * the packet.
+     * @param player_id Identifier of the player who sent the message.
+     * @return ChatMessagePacket Packet with header.type ==
+     * PacketType::ChatMessage, header.size set to sizeof(packet), a
+     * null-terminated `message` field, current `timestamp`, and `player_id`
+     * set. Message color is white.
+     */
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id,
+                                             std::uint32_t sequence_number) {
+      return makeChatMessage(msg, player_id, 255, 255, 255, 255,
+                             sequence_number);
+    }
+
+    /**
+     * @brief Creates a NewPlayerPacket for a newly joined player.
      *
      * The packet's header.type is set to PacketType::NewPlayer and header.size
      * to sizeof(packet).
      *
      * @param player_id Unique identifier for the player.
+     * @param player_name Name of the player.
      * @param x Initial X position of the player.
      * @param y Initial Y position of the player.
      * @param speed Initial movement speed of the player.
@@ -59,14 +86,18 @@ struct PacketBuilder {
      * @return NewPlayerPacket Populated packet with the provided fields and an
      * initialized header.
      */
-    static NewPlayerPacket makeNewPlayer(uint32_t player_id, float x, float y,
-                                         float speed,
+    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id,
+                                         const std::string &player_name,
+                                         float x, float y, float speed,
                                          std::uint32_t sequence_number,
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+      strncpy(packet.player_name, player_name.c_str(),
+              sizeof(packet.player_name) - 1);
+      packet.player_name[sizeof(packet.player_name) - 1] = '\0';
       packet.x = x;
       packet.y = y;
       packet.speed = speed;
@@ -451,11 +482,12 @@ struct PacketBuilder {
      * and player_id populated.
      */
     static PlayerDisconnectPacket makePlayerDisconnect(
-        std::uint32_t player_id) {
+        std::uint32_t player_id, std::uint32_t sequence_number) {
       PlayerDisconnectPacket packet{};
       packet.header.type = PacketType::PlayerDisconnected;
       packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+      packet.sequence_number = sequence_number;
       return packet;
     }
 
@@ -639,18 +671,17 @@ struct PacketBuilder {
     };
 
     /**
-     * @brief Create a packet that encodes a player's input and sequence number.
+     * @brief Construct a PlayerInputPacket containing a player's current input
+     * state.
      *
-     * The packet's header type and size are initialized so the packet is ready
-     * for transmission; the input flags and sequence_number are stored for
-     * ordering.
+     * The packet's header.type and header.size are initialized; the packet
+     * carries the provided input flags and sequence number for ordering.
      *
      * @param input Bitmask of player input flags (buttons/actions).
      * @param sequence_number Monotonically increasing sequence number for this
      * input.
-     * @return PlayerInputPacket Packet with header.type set to
-     * PacketType::PlayerInput, header.size set to the packet size, and input
-     * and sequence_number populated.
+     * @return PlayerInputPacket The populated packet with input flags and
+     * sequence number.
      */
     static PlayerInputPacket makePlayerInput(std::uint8_t input,
                                              std::uint32_t sequence_number) {

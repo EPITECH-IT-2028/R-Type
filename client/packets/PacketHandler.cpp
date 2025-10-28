@@ -27,51 +27,53 @@ namespace {
 }  // namespace
 
 /**
- * @brief Handles an incoming server chat/message packet.
+ * @brief Process a chat message packet and store the message for the
+ * corresponding player.
  *
- * Deserializes a MessagePacket from the provided buffer, logs the server
- * message, and, if the packet type requires acknowledgment, sends an ACK
- * containing the packet's sequence number and this client's player ID.
+ * Deserializes a ChatMessagePacket from the provided byte buffer and, on
+ * success, stores the chat message for the player identified by the packet
+ * using the packet's RGBA color fields.
  *
- * @param client Client instance used for sending ACKs and accessing player ID.
- * @param data Pointer to the received packet bytes.
- * @param size Number of bytes in the buffer pointed to by `data`.
- * @return int 0 on success, `packet::KO` if packet deserialization fails.
+ * @param data Pointer to the serialized packet bytes.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` if the packet was deserialized and the message
+ * stored, `packet::KO` if deserialization failed.
  */
-int packet::MessageHandler::handlePacket(client::Client &client,
-                                         const char *data, std::size_t size) {
+int packet::ChatMessageHandler::handlePacket(client::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
-      serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
+      serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
   if (!packetOpt) {
-    TraceLog(LOG_ERROR, "[MESSAGE] Failed to deserialize packet");
+    TraceLog(LOG_ERROR, "[CHAT MESSAGE] Failed to deserialize packet");
     return packet::KO;
   }
 
-  const MessagePacket &packet = packetOpt.value();
-  size_t len = strnlen(packet.message, sizeof(packet.message));
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", static_cast<int>(len),
-           packet.message);
+  const ChatMessagePacket &packet = packetOpt.value();
+  const std::string playerName = client.getPlayerNameById(packet.player_id);
+  size_t msgLen = strnlen(packet.message, sizeof(packet.message));
+  std::string message(packet.message, msgLen);
+  Color color = {packet.r, packet.g, packet.b, packet.a};
+  client.storeChatMessage(playerName, message, color);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
 /**
- * @brief Handle an incoming NewPlayer packet: spawn the player locally and
- * acknowledge receipt.
+ * @brief Handle a "new player" packet and create the corresponding player
+ * entity.
  *
- * Deserializes a NewPlayerPacket from the provided raw packet bytes. On
- * success, logs the spawned player's ID, position and speed, instructs the
- * client to create the corresponding player entity, and sends an ACK containing
- * the packet's sequence number and the client's player ID. If deserialization
- * fails, logs an error and returns without side effects.
+ * Deserializes the provided byte buffer into a NewPlayerPacket. If
+ * deserialization fails, logs an error and returns packet::KO. On success, logs
+ * the spawned player's details and instructs the client to create a new player
+ * entity using the packet data.
  *
- * @param client Reference to the client that should create the player entity
- * and send the ACK.
- * @param data Pointer to the raw packet bytes to deserialize.
- * @param size Number of bytes available at `data`.
- * @return int `packet::OK` on successful processing and acknowledgement,
+ * @param client Client instance used to create the player entity.
+ * @param data Pointer to the packet payload bytes.
+ * @param size Length of the packet payload in bytes.
+ * @return int `packet::OK` on successful handling and entity creation,
  * `packet::KO` if deserialization fails.
  */
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
@@ -87,9 +89,11 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO,
-           "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
-           packet.player_id, packet.x, packet.y, packet.speed);
+  char name_buffer[33];
+  std::memcpy(name_buffer, packet.player_name, sizeof(packet.player_name));
+  name_buffer[32] = '\0';
+  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
+           name_buffer, packet.player_id, packet.x, packet.y, packet.speed);
 
   client.createPlayerEntity(packet);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
