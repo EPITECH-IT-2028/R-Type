@@ -24,7 +24,9 @@ namespace {
       return;
     auto playerId = c.getPlayerId();
     if (playerId == INVALID_ID) {
-      TraceLog(LOG_WARNING, "[ACK] Trying to send ACK but player ID is not set yet (seq=%u)", seq);
+      TraceLog(LOG_WARNING,
+               "[ACK] Trying to send ACK but player ID is not set yet (seq=%u)",
+               seq);
       return;
     }
     c.send(PacketBuilder::makeAckPacket(seq, playerId));
@@ -101,7 +103,10 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   {
     std::lock_guard<std::mutex> lock(client._deferredNewPlayerPacketsMutex);
     client._deferredNewPlayerPackets.push_back(packet);
-    TraceLog(LOG_INFO, "[NEW PLAYER] Deferred processing for player ID: %u (local _player_id not known)", packet.player_id);
+    TraceLog(LOG_INFO,
+             "[NEW PLAYER] Deferred processing for player ID: %u (local "
+             "_player_id not known)",
+             packet.player_id);
   }
 
   client.createPlayerEntity(packet);
