@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Macro.hpp"
-
 #include <raylib.h>
 #include <sys/stat.h>
 #include <array>
@@ -17,6 +15,7 @@
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
@@ -120,7 +119,8 @@ namespace client {
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo(_playerName);
+          PlayerInfoPacket packet =
+              PacketBuilder::makePlayerInfo(getPlayerName());
           send(packet);
         }
       }
