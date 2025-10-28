@@ -133,6 +133,13 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   std::string name(nameBuf);
 
   client._player_name = name;
+  server.getDatabaseManager().addPlayer(name, client._ip_address);
+  auto players = server.getDatabaseManager().getAllPlayers();
+  for (const auto &player : players) {
+    std::cout << " - ID: " << player.id << ", Username: " << player.username
+              << ", IP: " << player.ip_address
+              << ", Online: " << (player.is_online ? "Yes" : "No") << std::endl;
+  }
 
   switch (client._state) {
     case server::ClientState::CONNECTED_MENU:

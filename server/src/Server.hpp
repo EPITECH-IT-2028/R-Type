@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include "Client.hpp"
+#include "DatabaseManager.hpp"
 #include "Events.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
@@ -59,6 +60,10 @@ namespace server {
         return *_gameManager;
       }
 
+      database::DatabaseManager &getDatabaseManager() {
+        return *_databaseManager;
+      }
+
       void clearClientSlot(int player_id);
 
       std::shared_ptr<Client> getClientById(int player_id) const;
@@ -95,6 +100,7 @@ namespace server {
       std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
+      std::shared_ptr<database::DatabaseManager> _databaseManager;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;

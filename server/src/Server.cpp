@@ -36,6 +36,10 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _next_player_id(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
   _clients.resize(_max_clients);
+  _databaseManager = std::make_shared<database::DatabaseManager>();
+  if (!_databaseManager->initialize()) {
+    std::cerr << "[ERROR] Failed to initialize database manager." << std::endl;
+  }
 }
 
 void server::Server::start() {
@@ -301,6 +305,7 @@ void server::Server::handlePlayerInfoPacket(const char *data,
       int id = _next_player_id++;
       _clients[i] = std::make_shared<Client>(id);
       _clients[i]->_connected = true;
+      _clients[i]->_ip_address = current_endpoint.address().to_string();
       _player_count++;
       _networkManager.registerClient(id, current_endpoint);
 
