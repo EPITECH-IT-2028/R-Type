@@ -20,7 +20,6 @@
 #include "PacketSender.hpp"
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
-#include "raylib.h"
 
 #define TIMEOUT_MS 100
 

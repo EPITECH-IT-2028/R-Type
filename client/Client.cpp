@@ -233,7 +233,6 @@ namespace client {
       if (_ecsManager.hasComponent<ecs::PlayerComponent>(entity)) {
         if (_ecsManager.getComponent<ecs::PlayerComponent>(entity).player_id ==
             packet.player_id) {
-          TraceLog(LOG_INFO, "Player alreadly registred into client data");
           return;
         }
       }

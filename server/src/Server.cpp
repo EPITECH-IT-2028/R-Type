@@ -289,11 +289,6 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.sequence_number);
           broadcast::Broadcast::broadcastMessageToRoom(_networkManager, clients,
                                                        chatMessagePacket);
-        } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
-          auto gameStartPacket = PacketBuilder::makeGameStart(
-              specificEvent.game_started, specificEvent.sequence_number);
-          broadcast::Broadcast::broadcastGameStartToRoom(
-              _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
               specificEvent.player_id, specificEvent.x, specificEvent.y,
@@ -308,17 +303,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
           auto buffer = std::make_shared<std::vector<uint8_t>>(
               serialization::BitserySerializer::serialize(gameStartPacket));
           for (const auto &client : clients) {
-            std::cout << "[DEBUG] Adding GameStart packet with sequence "
-                      << specificEvent.sequence_number
-                      << " to unacknowledged list for player "
-                      << client->_player_id << " (total packets before: "
-                      << client->_unacknowledged_packets.size() << ")"
-                      << std::endl;
             client->addUnacknowledgedPacket(specificEvent.sequence_number,
                                             buffer);
-            std::cout << "[DEBUG] Player " << client->_player_id << " now has "
-                      << client->_unacknowledged_packets.size()
-                      << " unacknowledged packets" << std::endl;
           }
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
@@ -701,12 +687,13 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
       game.getSequenceNumber(), max_health);
-  auto serializedBuffer =
-      serialization::BitserySerializer::serialize(ownPlayerPacket);
-  _networkManager.sendToClient(
-      client._player_id,
-      reinterpret_cast<const char *>(serializedBuffer.data()),
-      serializedBuffer.size());
+
+  auto serializedBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(ownPlayerPacket));
+
+  client.addUnacknowledgedPacket(game.getSequenceNumber(), serializedBuffer);
+
+  _networkManager.sendToClient(client._player_id, serializedBuffer);
 
   game.incrementSequenceNumber();
 
@@ -717,7 +704,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
-      game.getSequenceNumber(), max_health);
+      game.fetchAndIncrementSequenceNumber(), max_health);
 
   auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(newPlayerPacket));
@@ -738,8 +725,6 @@ bool server::Server::initializePlayerInRoom(Client &client) {
                                      game.fetchAndIncrementSequenceNumber());
   broadcast::Broadcast::broadcastMessageToRoomExcept(
       _networkManager, roomClients, chatMessagePacket, client._player_id);
-
-  game.incrementSequenceNumber();
 
   if (roomClients.size() >= 2 &&
       room->getState() == game::RoomStatus::WAITING) {

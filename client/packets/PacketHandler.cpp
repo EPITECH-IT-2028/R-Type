@@ -102,7 +102,6 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
     std::lock_guard<std::mutex> lock(client._deferredNewPlayerPacketsMutex);
     client._deferredNewPlayerPackets.push_back(packet);
     TraceLog(LOG_INFO, "[NEW PLAYER] Deferred processing for player ID: %u (local _player_id not known)", packet.player_id);
-    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   }
 
   client.createPlayerEntity(packet);
