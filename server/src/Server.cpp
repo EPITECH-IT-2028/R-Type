@@ -222,8 +222,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               _networkManager, clients, playerDestroyPacket);
         } else if constexpr (std::is_same_v<T, queue::PlayerDiedEvent>) {
           std::string msg = specificEvent.player_name + " has died.";
-          auto chatMessagePacket =
-              PacketBuilder::makeChatMessage(msg, -1, 255, 0, 0, 255);
+          auto chatMessagePacket = PacketBuilder::makeChatMessage(
+              msg, SERVER_SENDER_ID, 255, 0, 0, 255);
           broadcast::Broadcast::broadcastMessageToRoom(_networkManager, clients,
                                                        chatMessagePacket);
         } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
