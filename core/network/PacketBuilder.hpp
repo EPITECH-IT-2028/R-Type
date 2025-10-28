@@ -11,6 +11,11 @@
 #include "PacketSerialize.hpp"
 #include "Serializer.hpp"
 
+/**
+ * Note: Packet sizing strategy:
+ * - Fixed-size packets (no strings): use sizeof(packet)
+ * - Variable-size packets (with strings): serialize to compute actual size
+ */
 struct PacketBuilder {
     static std::string truncateToBytes(const std::string &str,
                                        size_t max_bytes) {
