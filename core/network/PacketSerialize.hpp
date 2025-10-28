@@ -45,7 +45,7 @@ void serialize(S &s, ChatMessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
-  s.text1b(packet.message, 512);
+  s.text1b(packet.message, SERIALIZE_512_BYTES);
   s.value4b(packet.player_id);
   s.value1b(packet.r);
   s.value1b(packet.g);
@@ -68,7 +68,7 @@ template <typename S>
 void serialize(S &s, PlayerInfoPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.text1b(packet.name, 32);
+  s.text1b(packet.name, SERIALIZE_32_BYTES);
 }
 template <typename S>
 /**
@@ -139,7 +139,7 @@ void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
-  s.text1b(packet.player_name, 32);
+  s.text1b(packet.player_name, SERIALIZE_32_BYTES);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);
@@ -299,10 +299,10 @@ template <typename S>
 void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  s.text1b(packet.room_name, 32);
+  s.text1b(packet.room_name, SERIALIZE_32_BYTES);
   s.value1b(packet.max_players);
   s.value1b(packet.is_private);
-  s.text1b(packet.password, 32);
+  s.text1b(packet.password, SERIALIZE_32_BYTES);
 }
 
 template <typename S>
@@ -318,7 +318,7 @@ void serialize(S &s, JoinRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
-  s.text1b(packet.password, 32);
+  s.text1b(packet.password, SERIALIZE_32_BYTES);
 }
 
 template <typename S>
@@ -375,7 +375,7 @@ template <typename S>
  */
 void serialize(S &s, RoomInfo &room) {
   s.value4b(room.room_id);
-  s.text1b(room.room_name, 32);
+  s.text1b(room.room_name, SERIALIZE_32_BYTES);
   s.value1b(room.player_count);
   s.value1b(room.max_players);
 }

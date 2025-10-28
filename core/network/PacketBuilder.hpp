@@ -88,7 +88,7 @@ struct PacketBuilder {
       ChatMessagePacket packet{};
       packet.header.type = PacketType::ChatMessage;
       packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
-      packet.message = truncateToBytes(msg, 512);
+      packet.message = truncateToBytes(msg, SERIALIZE_512_BYTES);
       packet.player_id = player_id;
       packet.r = r;
       packet.g = g;
@@ -141,7 +141,7 @@ struct PacketBuilder {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
       packet.player_id = player_id;
-      packet.player_name = truncateToBytes(player_name, 32);
+      packet.player_name = truncateToBytes(player_name, SERIALIZE_32_BYTES);
       packet.x = x;
       packet.y = y;
       packet.speed = speed;
