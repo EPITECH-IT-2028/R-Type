@@ -111,7 +111,7 @@ void server::Server::stop() {
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
 
-  std::unique_lock<std::shared_mutex> lock(_clientsMutex);
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   if (_clients.empty()) {
     return;
   }
@@ -380,7 +380,7 @@ void server::Server::handlePlayerInfoPacket(const char *data,
   std::shared_ptr<Client> newClient;
 
   {
-    std::unique_lock<std::shared_mutex> lock(_clientsMutex);
+    std::lock_guard<std::shared_mutex> lock(_clientsMutex);
     for (size_t i = 0; i < _clients.size(); ++i) {
       if (_clients[i] && _clients[i]->_connected &&
           _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
@@ -430,7 +430,7 @@ size_t server::Server::findExistingClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
   {
-    std::unique_lock<std::shared_mutex> lock(_clientsMutex);
+    std::lock_guard<std::shared_mutex> lock(_clientsMutex);
     for (size_t i = 0; i < _clients.size(); ++i) {
       if (_clients[i] && _clients[i]->_connected &&
           _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
@@ -457,7 +457,7 @@ size_t server::Server::findExistingClient() {
  */
 void server::Server::handleClientData(std::size_t client_idx, const char *data,
                                       std::size_t size) {
-  std::unique_lock<std::shared_mutex> lock(_clientsMutex);
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   if (client_idx < 0 || client_idx >= static_cast<size_t>(_clients.size()) ||
       !_clients[client_idx]) {
     return;
@@ -609,7 +609,7 @@ std::shared_ptr<server::Client> server::Server::getClientById(
  * cleared.
  */
 void server::Server::clearClientSlot(int player_id) {
-  std::unique_lock<std::shared_mutex> lock(_clientsMutex);
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
       if (client->_room_id != NO_ROOM)
@@ -634,7 +634,7 @@ void server::Server::clearClientSlot(int player_id) {
  */
 
 void server::Server::handleUnacknowledgedPackets() {
-  std::unique_lock<std::shared_mutex> lock(_clientsMutex);
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
     if (client && client->_connected) {
       client->resendUnacknowledgedPackets(_networkManager);
