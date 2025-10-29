@@ -1,10 +1,7 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
 #include "ECSManager.hpp"
 #include "System.hpp"
-#include "raylib.h"
 
 namespace ecs {
   class MetricsSystem : public System {

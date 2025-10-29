@@ -351,22 +351,10 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
-      void updatePing(std::uint32_t ping) {
-        _ping.store(ping, std::memory_order_release);
-      }
-
       double calculatePacketLoss(uint32_t seq) {
         _packetLossMonitor.onReceived(seq);
-        
+
         return _packetLossMonitor.lossRatio();
-      }
-
-      std::uint32_t getPing() const {
-        return _ping.load(std::memory_order_acquire);
-      }
-
-      double getPacketLoss() const {
-        return _packetLoss.load(std::memory_order_acquire);
       }
 
     private:
@@ -387,7 +375,6 @@ namespace client {
       std::vector<ChatMessage> _chatMessages;
       mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
-      std::atomic<std::uint32_t> _ping{0};
 
       void registerComponent();
       void registerSystem();
@@ -395,7 +382,6 @@ namespace client {
 
       void createBackgroundEntities();
 
-      std::atomic<double> _packetLoss;
       network::PacketLossMonitor _packetLossMonitor;
 
       ecs::ECSManager &_ecsManager;

@@ -4,7 +4,6 @@
 #include "Macro.hpp"
 #include "PacketLossComponent.hpp"
 #include "PingComponent.hpp"
-#include "PlayerTagComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
