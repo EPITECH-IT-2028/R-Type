@@ -6,6 +6,7 @@
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
+#include "InterpolationSystem.hpp"
 #include "LocalPlayerTagComponent.hpp"
 #include "MovementSystem.hpp"
 #include "Packet.hpp"
@@ -13,6 +14,7 @@
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
+#include "RemoteEntityTagComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "RenderSystem.hpp"
@@ -20,6 +22,7 @@
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
+#include "StateHistoryComponent.hpp"
 #include "VelocityComponent.hpp"
 
 namespace client {
@@ -62,7 +65,7 @@ namespace client {
    * Registers the following components so they can be attached to entities and
    * queried by systems: PositionComponent, VelocityComponent, RenderComponent,
    * SpriteComponent, ScaleComponent, BackgroundTagComponent,
-   * PlayerTagComponent, and SpriteAnimationComponent.
+   * PlayerTagComponent, StateHistoryComponent, and SpriteAnimationComponent.
    */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
@@ -76,19 +79,23 @@ namespace client {
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
     _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
+    _ecsManager.registerComponent<ecs::StateHistoryComponent>();
+    _ecsManager.registerComponent<ecs::RemoteEntityTagComponent>();
   }
 
   /**
    * @brief Registers core ECS systems with the ECS manager.
    *
-   * Registers the background, movement, input, sprite animation, projectile,
-   * and render systems so they are created and managed by the ECS manager.
+   * Registers the background, movement, input, sprite animation, interpolation,
+   * projectile, and render systems so they are created and managed by the ECS
+   * manager.
    */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
+    _ecsManager.registerSystem<ecs::InterpolationSystem>();
     _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
   }
@@ -105,6 +112,8 @@ namespace client {
    * - InputSystem: LocalPlayerTagComponent, SpriteAnimationComponent,
    * PositionComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
+   * - InterpolationSystem: PositionComponent, StateHistoryComponent,
+   * RemoteEntityTagComponent
    * - ProjectileSystem: PositionComponent, VelocityComponent,
    * ProjectileComponent
    */
@@ -144,6 +153,15 @@ namespace client {
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::StateHistoryComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::RemoteEntityTagComponent>());
+      _ecsManager.setSystemSignature<ecs::InterpolationSystem>(signature);
     }
     {
       Signature signature;
@@ -201,7 +219,8 @@ namespace client {
    * player sprite configuration, and the entity is recorded in the client's
    * player-entity mapping in a thread-safe manner. If the client's local player
    * ID is not assigned, it is set from the packet and the entity is tagged as
-   * the local player.
+   * the local player. Remote players are tagged with RemoteEntityTagComponent
+   * and StateHistoryComponent for smooth interpolation.
    *
    * @param packet Packet carrying the player's id and initial position.
    */
@@ -233,7 +252,15 @@ namespace client {
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
+    } else {
+      _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(player, {});
+      ecs::StateHistoryComponent stateHistory;
+      ecs::EntityState initialState{packet.x, packet.y, GetTime()};
+      stateHistory.states.push_back(initialState);
+      _ecsManager.addComponent<ecs::StateHistoryComponent>(player,
+                                                           stateHistory);
     }
+
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
     _playerEntities[packet.player_id] = player;
   }
@@ -242,9 +269,10 @@ namespace client {
    * @brief Creates and registers an enemy entity from spawn packet data.
    *
    * Creates an ECS entity populated with position, velocity, render, sprite,
-   * scale, and animation components, then records the mapping from the packet's
-   * enemy_id to the created entity. If an entity with the same enemy_id already
-   * exists, logs a warning and returns without creating a new entity.
+   * scale, animation, and interpolation components, then records the mapping
+   * from the packet's enemy_id to the created entity. If an entity with the
+   * same enemy_id already exists, logs a warning and returns without creating a
+   * new entity. Enemies are tagged as remote entities for interpolation.
    *
    * @param packet Spawn packet containing `enemy_id` and initial position `x`,
    * `y`.
@@ -278,6 +306,12 @@ namespace client {
     anim.loop = false;
     anim.neutralFrame = static_cast<int>(EnemySpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(enemy, anim);
+
+    _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(enemy, {});
+    ecs::StateHistoryComponent stateHistory;
+    ecs::EntityState initialState{packet.x, packet.y, GetTime()};
+    stateHistory.states.push_back(initialState);
+    _ecsManager.addComponent<ecs::StateHistoryComponent>(enemy, stateHistory);
 
     _enemyEntities[packet.enemy_id] = enemy;
   }
