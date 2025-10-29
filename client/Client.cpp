@@ -211,17 +211,15 @@ namespace client {
   }
 
   /**
-   * @brief Create a player entity with position, render, sprite, scale,
-   * animation, and identification components.
+   * @brief Create and register a player entity from a NewPlayerPacket.
    *
-   * Configures the entity from the provided packet and player sprite
-   * configuration, records the entity in the client's player ID → entity and
-   * player ID → name mappings, and — if the client has no local player assigned
-   * — sets the local player ID, stores the local player name, and tags the
+   * Creates an ECS entity for the player, attaches position, render, sprite,
+   * scale, player tag, and sprite animation components, records the mapping
+   * from player ID to entity and player name, and if no local player ID is set,
+   * assigns the local player ID, stores the local player name, and tags the
    * entity as the local player.
    *
-   * @param packet Packet containing the player's ID, name, and initial position
-   * (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
