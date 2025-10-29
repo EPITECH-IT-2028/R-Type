@@ -95,7 +95,7 @@ class AddBanModal(ModalScreen):
             if ip:
                 self.dismiss({"ip": ip, "reason": reason or "No reason provided"})
             else:
-                pass
+                self.notify("IP Address cannot be empty!", severity="error")
         elif event.button.id == "btn_cancel":
             self.dismiss(None)
 
@@ -153,7 +153,7 @@ class BansManagement(Screen):
             )
 
         self.query_one("#selected_info", Label).update(
-            f"Total bans: {len(bans)} | Click on a row for actions | Press 'A' to add ban"
+            f"Total bans: {len(bans)} | Click on a row for actions | Press 'a' to add ban"
         )
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:

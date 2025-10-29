@@ -2,6 +2,7 @@
 #include <sqlite3.h>
 #include <fstream>
 #include <iostream>
+#include "Macro.hpp"
 
 database::DatabaseManager::DatabaseManager(const std::string &dbPath)
     : _db(nullptr), _dbPath(dbPath) {
@@ -33,9 +34,12 @@ std::vector<database::PlayerData> database::DatabaseManager::getResultQuery(
   while (sqlite3_step(stmt) == SQLITE_ROW) {
     PlayerData row;
     row.id = sqlite3_column_int(stmt, 0);
-    row.username = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-    row.ip_address =
+    const char *username_text =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+    const char *ip_text =
         reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    row.username = username_text ? username_text : "";
+    row.ip_address = ip_text ? ip_text : "";
     row.is_online = sqlite3_column_int(stmt, 3) != 0;
     data.push_back(row);
   }
@@ -51,7 +55,7 @@ bool database::DatabaseManager::initialize() {
     return false;
   }
 
-  std::ifstream sqlFile("db.sql");
+  std::ifstream sqlFile(SQL_PATH);
   if (!sqlFile.is_open()) {
     std::cerr << "[DATABASE ERROR] Failed to open db.sql file." << std::endl;
     return false;
@@ -86,39 +90,71 @@ bool database::DatabaseManager::addPlayer(const std::string &username,
     return false;
   }
 
-  std::string query =
-      "INSERT INTO players (username, ip_address, is_online) "
-      "VALUES ('" +
-      username + "', '" + ipAddress + "', 0);";
-  return executeQuery(query);
+  const char *query =
+      "INSERT INTO players (username, ip_address, is_online) VALUES (?, ?, 0)";
+  sqlite3_stmt *stmt;
+  if (sqlite3_prepare_v2(_db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+    return false;
+  }
+  sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_text(stmt, 2, ipAddress.c_str(), -1, SQLITE_TRANSIENT);
+  bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+  sqlite3_finalize(stmt);
+  return success;
 }
 
 bool database::DatabaseManager::removePlayer(int playerId) {
-  std::string query =
-      "DELETE FROM players WHERE id = " + std::to_string(playerId) + ";";
-  return executeQuery(query);
+  const char *query = "DELETE FROM players WHERE id = ?";
+  sqlite3_stmt *stmt;
+  if (sqlite3_prepare_v2(_db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+    return false;
+  }
+  sqlite3_bind_int(stmt, 1, playerId);
+  bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+  sqlite3_finalize(stmt);
+  return success;
 }
 
 bool database::DatabaseManager::updatePlayerStatus(const std::string &username,
                                                    bool isOnline) {
-  std::string query =
-      "UPDATE players SET is_online = " + std::to_string(isOnline ? 1 : 0) +
-      " WHERE username = '" + username + "';";
-  return executeQuery(query);
+  const char *query = "UPDATE players SET is_online = ? WHERE username = ?";
+  sqlite3_stmt *stmt;
+  if (sqlite3_prepare_v2(_db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+    return false;
+  }
+  sqlite3_bind_int(stmt, 1, isOnline ? 1 : 0);
+  sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_TRANSIENT);
+  bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+  sqlite3_finalize(stmt);
+  return success;
 }
 
 std::optional<database::PlayerData>
 database::DatabaseManager::getPlayerByUsername(const std::string &username) {
-  const std::string query =
+  const char *query =
       "SELECT id, username, ip_address, is_online FROM players WHERE username "
-      "= '" +
-      username + "';";
-
-  auto results = getResultQuery(query);
-  if (results.empty()) {
+      "= ?";
+  sqlite3_stmt *stmt;
+  if (sqlite3_prepare_v2(_db, query, -1, &stmt, nullptr) != SQLITE_OK) {
     return std::nullopt;
   }
-  return results.front();
+  sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+
+  std::optional<PlayerData> result;
+  if (sqlite3_step(stmt) == SQLITE_ROW) {
+    PlayerData row;
+    row.id = sqlite3_column_int(stmt, 0);
+    const char *username_text =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+    const char *ip_text =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    row.username = username_text ? username_text : "";
+    row.ip_address = ip_text ? ip_text : "";
+    row.is_online = sqlite3_column_int(stmt, 3) != 0;
+    result = row;
+  }
+  sqlite3_finalize(stmt);
+  return result;
 }
 
 std::optional<database::PlayerData> database::DatabaseManager::getPlayerByIP(
@@ -126,13 +162,27 @@ std::optional<database::PlayerData> database::DatabaseManager::getPlayerByIP(
   const std::string query =
       "SELECT id, username, ip_address, is_online FROM players WHERE "
       "ip_address "
-      "= '" +
-      ip_address + "';";
-  auto results = getResultQuery(query);
-  if (results.empty()) {
+      "= ?";
+  sqlite3_stmt *stmt;
+  if (sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
     return std::nullopt;
   }
-  return results.front();
+  sqlite3_bind_text(stmt, 1, ip_address.c_str(), -1, SQLITE_TRANSIENT);
+  std::optional<PlayerData> result;
+  if (sqlite3_step(stmt) == SQLITE_ROW) {
+    PlayerData row;
+    row.id = sqlite3_column_int(stmt, 0);
+    const char *username_text =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+    const char *ip_text =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    row.username = username_text ? username_text : "";
+    row.ip_address = ip_text ? ip_text : "";
+    row.is_online = sqlite3_column_int(stmt, 3) != 0;
+    result = row;
+  }
+  sqlite3_finalize(stmt);
+  return result;
 }
 
 std::vector<database::PlayerData> database::DatabaseManager::getAllPlayers() {
@@ -142,12 +192,13 @@ std::vector<database::PlayerData> database::DatabaseManager::getAllPlayers() {
 }
 
 bool database::DatabaseManager::isIpBanned(const std::string &ip_address) {
-  const std::string query =
-      "SELECT COUNT(*) FROM bans WHERE ip_address = '" + ip_address + "';";
+  const char *query = "SELECT COUNT(*) FROM bans WHERE ip_address = ?";
   sqlite3_stmt *stmt;
-  if (sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+  if (sqlite3_prepare_v2(_db, query, -1, &stmt, nullptr) != SQLITE_OK) {
     return false;
   }
+
+  sqlite3_bind_text(stmt, 1, ip_address.c_str(), -1, SQLITE_TRANSIENT);
 
   bool isBanned = false;
   if (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -170,9 +221,12 @@ std::vector<database::BanData> database::DatabaseManager::getAllBans() {
   while (sqlite3_step(stmt) == SQLITE_ROW) {
     BanData row;
     row.id = sqlite3_column_int(stmt, 0);
-    row.ip_address =
+    const char *ip_text =
         reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
-    row.reason = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    const char *reason_text =
+        reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    row.ip_address = ip_text ? ip_text : "";
+    row.reason = reason_text ? reason_text : "";
     bans.push_back(row);
   }
 
