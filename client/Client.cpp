@@ -249,16 +249,15 @@ namespace client {
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
+    _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(player, {});
+    ecs::StateHistoryComponent stateHistory;
+    ecs::EntityState initialState{packet.x, packet.y, GetTime()};
+    stateHistory.states.push_back(initialState);
+    _ecsManager.addComponent<ecs::StateHistoryComponent>(player, stateHistory);
+
     if (_player_id == static_cast<std::uint32_t>(-1)) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-    } else {
-      _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(player, {});
-      ecs::StateHistoryComponent stateHistory;
-      ecs::EntityState initialState{packet.x, packet.y, GetTime()};
-      stateHistory.states.push_back(initialState);
-      _ecsManager.addComponent<ecs::StateHistoryComponent>(player,
-                                                           stateHistory);
     }
 
     std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);

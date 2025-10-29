@@ -3,6 +3,7 @@
 #include "Client.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
+#include "LocalPlayerTagComponent.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
@@ -12,6 +13,7 @@
 #include "ScaleComponent.hpp"
 #include "Serializer.hpp"
 #include "SpriteComponent.hpp"
+#include "StateHistoryComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
@@ -153,9 +155,10 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
  * @brief Apply a player's position update from received packet data to client
  * state.
  *
- * Processes a PlayerMovePacket carried in the provided byte buffer and updates
- * the corresponding player's PositionComponent in the local ECS. If the update
- * targets the local player, the client's sequence number is updated.
+ * Processes a PlayerMovePacket carried in the provided byte buffer. For remote
+ * players, adds the new state to their StateHistoryComponent for interpolation.
+ * For the local player, updates the PositionComponent directly and updates the
+ * sequence number.
  *
  * @param data Pointer to the start of the received packet buffer.
  * @param size Number of bytes available at `data`.
@@ -185,13 +188,29 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       return packet::OK;
     }
 
-    auto &position =
-        ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
-    position.x = packet.x;
-    position.y = packet.y;
+    bool isLocalPlayer = (client.getPlayerId() == packet.player_id);
 
-    if (client.getPlayerId() == packet.player_id) {
+    if (isLocalPlayer) {
+      auto &position =
+          ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+      position.x = packet.x;
+      position.y = packet.y;
       client.updateSequenceNumber(packet.sequence_number);
+    } else {
+      if (ecsManager.hasComponent<ecs::StateHistoryComponent>(playerEntity)) {
+        auto &stateHistory =
+            ecsManager.getComponent<ecs::StateHistoryComponent>(playerEntity);
+        ecs::EntityState newState{packet.x, packet.y, GetTime()};
+        stateHistory.states.push_back(newState);
+        while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
+          stateHistory.states.pop_front();
+        }
+      } else {
+        auto &position =
+            ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+        position.x = packet.x;
+        position.y = packet.y;
+      }
     }
 
   } catch (const std::exception &e) {
@@ -255,10 +274,21 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
                packet.enemy_id);
       return packet::KO;
     }
-    auto &position =
-        ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
-    position.x = packet.x;
-    position.y = packet.y;
+
+    if (ecsManager.hasComponent<ecs::StateHistoryComponent>(enemyEntity)) {
+      auto &stateHistory =
+          ecsManager.getComponent<ecs::StateHistoryComponent>(enemyEntity);
+      ecs::EntityState newState{packet.x, packet.y, GetTime()};
+      stateHistory.states.push_back(newState);
+      while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
+        stateHistory.states.pop_front();
+      }
+    } else {
+      auto &position =
+          ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
+      position.x = packet.x;
+      position.y = packet.y;
+    }
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to update enemy %u: %s",
              packet.enemy_id, e.what());
