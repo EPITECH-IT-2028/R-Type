@@ -87,16 +87,17 @@ namespace broadcast {
             int maxHealth = player->getMaxHealth().value_or(100);
             std::string playerName = player->getName();
 
+            std::uint32_t seq = game.getSequenceNumber();
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), playerName, pos.first, pos.second, speed,
-                game.getSequenceNumber(), maxHealth);
+                seq, maxHealth);
 
             auto buffer = std::make_shared<std::vector<std::uint8_t>>(
                 serialization::BitserySerializer::serialize(existPlayerPacket));
 
             client.addUnacknowledgedPacket(game.getSequenceNumber(), buffer);
-
             networkManager.sendToClient(client._player_id, buffer);
+            game.incrementSequenceNumber();
           }
         }
       }

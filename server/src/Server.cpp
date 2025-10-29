@@ -703,8 +703,6 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   broadcast::Broadcast::broadcastExistingPlayersToRoom(
       _networkManager, room->getGame(), client, roomClients);
 
-  game.incrementSequenceNumber();
-
   // Send packets to the room
   uint32_t newPlayerSeq = game.getSequenceNumber();
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
