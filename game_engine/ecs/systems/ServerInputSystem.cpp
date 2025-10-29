@@ -41,17 +41,17 @@ void ecs::ServerInputSystem::processInput(
     uint8_t val = static_cast<uint8_t>(input.input);
 
     if (val & static_cast<uint8_t>(MovementInputType::UP))
-      deltaY -= moveDistance;
+      deltaY -= 1.0f;
     if (val & static_cast<uint8_t>(MovementInputType::DOWN))
-      deltaY += moveDistance;
+      deltaY += 1.0f;
     if (val & static_cast<uint8_t>(MovementInputType::LEFT))
-      deltaX -= moveDistance;
+      deltaX -= 1.0f;
     if (val & static_cast<uint8_t>(MovementInputType::RIGHT))
-      deltaX += moveDistance;
+      deltaX += 1.0f;
   }
 
   float length = std::sqrt(deltaX * deltaX + deltaY * deltaY);
-  if (length > moveDistance) {
+  if (length > 0.0f) {
     deltaX = (deltaX / length) * moveDistance;
     deltaY = (deltaY / length) * moveDistance;
   }
