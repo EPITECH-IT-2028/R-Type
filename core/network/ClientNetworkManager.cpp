@@ -164,10 +164,11 @@ void ClientNetworkManager::processReceivedPackets(client::Client &client) {
   }
 }
 
-void ClientNetworkManager::processPacket(const char *data, std::size_t size, client::Client &client) {
+void ClientNetworkManager::processPacket(const char *data, std::size_t size,
+                                         client::Client &client) {
   serialization::Buffer buffer(
-            reinterpret_cast<const std::uint8_t *>(data),
-            reinterpret_cast<const std::uint8_t *>(data) + size);
+      reinterpret_cast<const std::uint8_t *>(data),
+      reinterpret_cast<const std::uint8_t *>(data) + size);
   auto headerOpt =
       serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
 
@@ -185,13 +186,12 @@ void ClientNetworkManager::processPacket(const char *data, std::size_t size, cli
   if (handler) {
     int result = handler->handlePacket(client, data, size);
     if (result != 0) {
-            std::cerr << "Error handling packet of type "
-                      << packetTypeToString(packet_type) << ": " << result
-                      << std::endl;
-          }
-        } else {
-          std::cerr << "No handler for packet type "
-                    << packetTypeToString(packet_type) << std::endl;
-        }
+      std::cerr << "Error handling packet of type "
+                << packetTypeToString(packet_type) << ": " << result
+                << std::endl;
+    }
+  } else {
+    std::cerr << "No handler for packet type "
+              << packetTypeToString(packet_type) << std::endl;
+  }
 }
-
