@@ -684,6 +684,7 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   int max_health = player->getMaxHealth().value_or(100);
   auto &game = room->getGame();
 
+  // Send packets to client that just connected
   auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
       game.getSequenceNumber(), max_health);
@@ -695,29 +696,34 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 
   _networkManager.sendToClient(client._player_id, serializedBuffer);
 
-  game.incrementSequenceNumber();
-
   auto roomClients = room->getClients();
 
-  broadcast::Broadcast::broadcastExistingPlayersToRoom(
-      _networkManager, room->getGame(), client._player_id, roomClients);
+  game.incrementSequenceNumber();
 
+  broadcast::Broadcast::broadcastExistingPlayersToRoom(
+      _networkManager, room->getGame(), client, roomClients);
+
+  game.incrementSequenceNumber();
+
+  // Send packets to the room
+  uint32_t newPlayerSeq = game.getSequenceNumber();
   auto newPlayerPacket = PacketBuilder::makeNewPlayer(
       client._player_id, client._player_name, pos.first, pos.second, speed,
-      game.fetchAndIncrementSequenceNumber(), max_health);
+      newPlayerSeq, max_health);
 
   auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(newPlayerPacket));
 
+  broadcast::Broadcast::broadcastAncientPlayerToRoom(
+      _networkManager, roomClients, newPlayerPacket);
+
   for (const auto &roomClient : roomClients) {
     if (roomClient && roomClient->_player_id != client._player_id) {
-      roomClient->addUnacknowledgedPacket(game.getSequenceNumber(),
-                                          newPlayerBuffer);
+      roomClient->addUnacknowledgedPacket(newPlayerSeq, newPlayerBuffer);
     }
   }
 
-  broadcast::Broadcast::broadcastAncientPlayerToRoom(
-      _networkManager, roomClients, newPlayerPacket);
+  game.incrementSequenceNumber();
 
   std::string msg = client._player_name + " has joined the game.";
   auto chatMessagePacket =

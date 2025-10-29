@@ -75,13 +75,13 @@ namespace broadcast {
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,
-          int newPlayerID,
+          server::Client &client,
           const std::vector<std::shared_ptr<server::Client>> &roomClients) {
         auto players = game.getAllPlayers();
 
         for (const auto &player : players) {
           if (player && player->isConnected() &&
-              player->getPlayerId() != newPlayerID) {
+              player->getPlayerId() != client._player_id) {
             std::pair<float, float> pos = player->getPosition();
             float speed = player->getSpeed();
             int maxHealth = player->getMaxHealth().value_or(100);
@@ -89,12 +89,14 @@ namespace broadcast {
 
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), playerName, pos.first, pos.second, speed,
-                game.fetchAndIncrementSequenceNumber(), maxHealth);
+                game.getSequenceNumber(), maxHealth);
 
             auto buffer = std::make_shared<std::vector<std::uint8_t>>(
                 serialization::BitserySerializer::serialize(existPlayerPacket));
 
-            networkManager.sendToClient(newPlayerID, buffer);
+            client.addUnacknowledgedPacket(game.getSequenceNumber(), buffer);
+
+            networkManager.sendToClient(client._player_id, buffer);
           }
         }
       }

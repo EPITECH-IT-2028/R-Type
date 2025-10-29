@@ -139,8 +139,8 @@ namespace client {
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet =
-              PacketBuilder::makePlayerInfo(getPlayerName(), _sequence_number.load());
+          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo(
+              getPlayerName(), _sequence_number.load());
           send(packet);
         }
       }
@@ -161,8 +161,8 @@ namespace client {
           _running.store(false, std::memory_order_release);
           return;
         }
-        PlayerDisconnectPacket packet =
-            PacketBuilder::makePlayerDisconnect(getPlayerId(), _sequence_number.load());
+        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(
+            getPlayerId(), _sequence_number.load());
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
@@ -389,8 +389,8 @@ namespace client {
       void removeAcknowledgedPacket(std::uint32_t sequence_number);
       std::vector<NewPlayerPacket> _deferredNewPlayerPackets;
       std::mutex _deferredNewPlayerPacketsMutex;
-    private:
 
+    private:
       void resendPackets();
 
       void addUnacknowledgedPacket(

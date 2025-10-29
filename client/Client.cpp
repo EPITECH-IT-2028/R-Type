@@ -229,6 +229,18 @@ namespace client {
    * (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
+    std::uint32_t localId = _player_id;
+    if (localId != INVALID_ID && packet.player_id == localId) {
+      for (auto &entity : _ecsManager.getAllEntities()) {
+        if (_ecsManager.hasComponent<ecs::LocalPlayerTagComponent>(entity)) {
+          TraceLog(LOG_WARNING,
+                   "[DUPLICATE PREVENTION] Local player entity already exists, "
+                   "skipping creation for player_id: %u",
+                   packet.player_id);
+          return;
+        }
+      }
+    }
     for (auto &entity : _ecsManager.getAllEntities()) {
       if (_ecsManager.hasComponent<ecs::PlayerComponent>(entity)) {
         if (_ecsManager.getComponent<ecs::PlayerComponent>(entity).player_id ==
@@ -270,7 +282,7 @@ namespace client {
 
       {
         std::lock_guard<std::mutex> lock(_deferredNewPlayerPacketsMutex);
-        for (const auto& deferredPacket : _deferredNewPlayerPackets) {
+        for (const auto &deferredPacket : _deferredNewPlayerPackets) {
           if (deferredPacket.player_id != _player_id) {
             createPlayerEntity(deferredPacket);
           }
@@ -506,7 +518,8 @@ namespace client {
    *   - Removes entries that exceeded the maximum resend attempts.
    */
   void Client::resendUnacknowledgedPackets() {
-    const auto MIN_RESEND_INTERVAL = std::chrono::milliseconds(MIN_RESEND_PACKET_DELAY);
+    const auto MIN_RESEND_INTERVAL =
+        std::chrono::milliseconds(MIN_RESEND_PACKET_DELAY);
     const auto now = std::chrono::steady_clock::now();
 
     std::vector<std::shared_ptr<std::vector<uint8_t>>> toSend;
@@ -522,7 +535,8 @@ namespace client {
         }
         packet.resend_count++;
         packet.last_sent = now;
-        TraceLog(LOG_INFO, "Resending packet %u tried %d of %d", seq, packet.resend_count, MAX_RESEND_ATTEMPTS);
+        TraceLog(LOG_INFO, "Resending packet %u tried %d of %d", seq,
+                 packet.resend_count, MAX_RESEND_ATTEMPTS);
         toSend.push_back(packet.data);
       }
       for (auto seq : toDrop) {
