@@ -73,12 +73,14 @@ enum class MovementInputType : std::uint8_t {
  * @var type
  *   PacketType value identifying the specific packet structure that follows.
  * @var size
- *   Size of the packet payload in bytes (not including this header).
+ *   Total size of the serialized packet in bytes (including this header).
  */
 struct ALIGNED PacketHeader {
     PacketType type;
     std::uint32_t size;
 };
+
+constexpr std::size_t HEADER_SIZE = sizeof(PacketType) + sizeof(std::uint32_t);
 
 /**
  * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and

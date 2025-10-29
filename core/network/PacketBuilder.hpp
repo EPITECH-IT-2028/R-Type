@@ -37,10 +37,10 @@ struct PacketBuilder {
       }
 
       size_t fullSerializedSize = serializedBuffer.size();
-      if (fullSerializedSize < sizeof(PacketHeader)) {
+      if (fullSerializedSize < HEADER_SIZE) {
         std::cerr << "[ERROR] Serialized size (" << fullSerializedSize
-                  << ") is less than PacketHeader size ("
-                  << sizeof(PacketHeader) << "). Context: " << ctx
+                  << ") is less than minimum valid packet size (" << HEADER_SIZE
+                  << " bytes). Context: " << ctx
                   << ". Returning empty packet.\n";
         return false;
       }
@@ -168,11 +168,13 @@ struct PacketBuilder {
                                            float y) {
       PlayerMovePacket packet{};
       packet.header.type = PacketType::PlayerMove;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.sequence_number = seq;
       packet.x = x;
       packet.y = y;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerMove"))
+        return {};
       return packet;
     }
 
@@ -212,12 +214,14 @@ struct PacketBuilder {
                                          int sequence_number) {
       PlayerHitPacket packet{};
       packet.header.type = PacketType::PlayerHit;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.damage = damage;
       packet.x = x;
       packet.y = y;
       packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -243,7 +247,6 @@ struct PacketBuilder {
                                            std::uint32_t max_health) {
       EnemySpawnPacket packet{};
       packet.header.type = PacketType::EnemySpawn;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.enemy_type = type;
       packet.x = x;
@@ -252,6 +255,9 @@ struct PacketBuilder {
       packet.velocity_y = vy;
       packet.health = health;
       packet.max_health = max_health;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -274,13 +280,15 @@ struct PacketBuilder {
                                          float velocity_y, int seq) {
       EnemyMovePacket packet{};
       packet.header.type = PacketType::EnemyMove;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.x = x;
       packet.y = y;
       packet.velocity_x = velocity_x;
       packet.velocity_y = velocity_y;
       packet.sequence_number = seq;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -303,12 +311,14 @@ struct PacketBuilder {
                                            std::uint32_t score) {
       EnemyDeathPacket packet{};
       packet.header.type = PacketType::EnemyDeath;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.death_x = death_x;
       packet.death_y = death_y;
       packet.player_id = player_id;
       packet.score = score;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -328,12 +338,14 @@ struct PacketBuilder {
                                        int sequence_number) {
       EnemyHitPacket packet{};
       packet.header.type = PacketType::EnemyHit;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.hit_x = hit_x;
       packet.hit_y = hit_y;
       packet.damage = damage;
       packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -353,11 +365,13 @@ struct PacketBuilder {
                                              std::uint32_t seq) {
       PlayerShootPacket packet{};
       packet.header.type = PacketType::PlayerShoot;
-      packet.header.size = sizeof(packet);
       packet.x = x;
       packet.y = y;
       packet.projectile_type = projectile_type;
       packet.sequence_number = seq;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -385,7 +399,6 @@ struct PacketBuilder {
         std::uint32_t owner_id) {
       ProjectileSpawnPacket packet{};
       packet.header.type = PacketType::ProjectileSpawn;
-      packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.projectile_type = type;
       packet.x = x;
@@ -395,6 +408,9 @@ struct PacketBuilder {
       packet.is_enemy_projectile = is_enemy;
       packet.damage = damage;
       packet.owner_id = owner_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -415,12 +431,14 @@ struct PacketBuilder {
         float hit_y, std::uint8_t target_is_player) {
       ProjectileHitPacket packet{};
       packet.header.type = PacketType::ProjectileHit;
-      packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.target_id = target_id;
       packet.hit_x = hit_x;
       packet.hit_y = hit_y;
       packet.target_is_player = target_is_player;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -438,18 +456,22 @@ struct PacketBuilder {
         std::uint32_t projectile_id, float x, float y) {
       ProjectileDestroyPacket packet{};
       packet.header.type = PacketType::ProjectileDestroy;
-      packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.x = x;
       packet.y = y;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeProjectileDestroy"))
+        return {};
       return packet;
     }
 
     static GameStartPacket makeGameStart(bool started) {
       GameStartPacket packet{};
       packet.header.type = PacketType::GameStart;
-      packet.header.size = sizeof(packet);
       packet.game_start = started;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeGameStart"))
+        return {};
       return packet;
     }
 
@@ -464,8 +486,10 @@ struct PacketBuilder {
     static GameEndPacket makeGameEnd(bool ended) {
       GameEndPacket packet{};
       packet.header.type = PacketType::GameEnd;
-      packet.header.size = sizeof(packet);
       packet.game_end = ended;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeGameEnd"))
+        return {};
       return packet;
     }
 
@@ -485,10 +509,12 @@ struct PacketBuilder {
                                              float y) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.x = x;
       packet.y = y;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerDeath"))
+        return {};
       return packet;
     }
 
@@ -504,8 +530,10 @@ struct PacketBuilder {
         std::uint32_t player_id) {
       PlayerDisconnectPacket packet{};
       packet.header.type = PacketType::PlayerDisconnected;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerDisconnect"))
+        return {};
       return packet;
     }
 
@@ -520,8 +548,10 @@ struct PacketBuilder {
     static HeartbeatPlayerPacket makeHeartbeatPlayer(std::uint32_t player_id) {
       HeartbeatPlayerPacket packet{};
       packet.header.type = PacketType::Heartbeat;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeHeartbeatPlayer"))
+        return {};
       return packet;
     }
 
@@ -594,8 +624,10 @@ struct PacketBuilder {
         const RoomError &error_code) {
       JoinRoomResponsePacket packet{};
       packet.header.type = PacketType::JoinRoomResponse;
-      packet.header.size = sizeof(packet);
       packet.error_code = error_code;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeJoinRoomResponse"))
+        return {};
       return packet;
     }
 
@@ -609,8 +641,10 @@ struct PacketBuilder {
     static LeaveRoomPacket makeLeaveRoom(std::uint32_t room_id) {
       LeaveRoomPacket packet{};
       packet.header.type = PacketType::LeaveRoom;
-      packet.header.size = sizeof(packet);
       packet.room_id = room_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeLeaveRoom"))
+        return {};
       return packet;
     }
 
@@ -623,7 +657,9 @@ struct PacketBuilder {
     static ListRoomPacket makeListRoom() {
       ListRoomPacket packet{};
       packet.header.type = PacketType::ListRoom;
-      packet.header.size = sizeof(packet);
+
+      if (!setPayloadSizeFromSerialization(packet, "makeListRoom"))
+        return {};
       return packet;
     }
 
@@ -667,7 +703,9 @@ struct PacketBuilder {
     static MatchmakingRequestPacket makeMatchmakingRequest() {
       MatchmakingRequestPacket packet{};
       packet.header.type = PacketType::MatchmakingRequest;
-      packet.header.size = sizeof(packet);
+
+      if (!setPayloadSizeFromSerialization(packet, "makeMatchmakingRequest"))
+        return {};
       return packet;
     }
 
@@ -684,8 +722,10 @@ struct PacketBuilder {
         const RoomError &error_code) {
       MatchmakingResponsePacket packet{};
       packet.header.type = PacketType::MatchmakingResponse;
-      packet.header.size = sizeof(packet);
       packet.error_code = error_code;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeMatchmakingResponse"))
+        return {};
       return packet;
     };
 
@@ -706,9 +746,11 @@ struct PacketBuilder {
                                              std::uint32_t sequence_number) {
       PlayerInputPacket packet{};
       packet.header.type = PacketType::PlayerInput;
-      packet.header.size = sizeof(packet);
       packet.input = input;
       packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerInput"))
+        return {};
       return packet;
     }
 };
