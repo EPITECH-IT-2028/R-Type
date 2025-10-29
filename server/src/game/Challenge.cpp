@@ -5,7 +5,7 @@
 #include "crypto/Crypto.hpp"
 
 std::uint32_t game::Challenge::getCurrentTimestamp() const {
-  auto now = std::chrono::system_clock::now();
+  auto now = std::chrono::steady_clock::now();
   auto seconds =
       std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
   return static_cast<std::uint32_t>(seconds.count());

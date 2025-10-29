@@ -454,8 +454,6 @@ namespace client {
         password_hash = crypto::Crypto::sha256(both);
       }
 
-      std::cout << "Password hash to send: " << password_hash << std::endl;
-
       JoinRoomPacket packet =
           PacketBuilder::makeJoinRoom(room_id, password_hash);
       send(packet);
