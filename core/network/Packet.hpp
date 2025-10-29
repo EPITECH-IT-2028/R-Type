@@ -83,12 +83,15 @@ struct ALIGNED PacketHeader {
 constexpr std::size_t HEADER_SIZE = sizeof(PacketType) + sizeof(std::uint32_t);
 
 /**
- * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and RGBA color.
+ * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and
+ * RGBA color.
  *
- * Packet used to transmit a chat message together with its timestamp, the sending
- * player's identifier, and an RGBA color to apply when rendering the message.
+ * Packet used to transmit a chat message together with its timestamp, the
+ * sending player's identifier, and an RGBA color to apply when rendering the
+ * message.
  *
- * @var header Common packet header containing the packet type and total serialized size.
+ * @var header Common packet header containing the packet type and total
+ * serialized size.
  * @var timestamp 32-bit timestamp associated with the message.
  * @var message UTF-8 encoded chat message (std::string; variable length).
  * @var player_id 32-bit identifier of the player who sent the message.
@@ -186,7 +189,8 @@ struct ALIGNED HeartbeatPlayerPacket {
  * Common packet header identifying the packet type and total serialized size.
  *
  * @var std::string PlayerInfoPacket::name
- * Player's display name encoded in UTF-8.
+ * Player's display name encoded in UTF-8 (truncated at 32 bytes when
+ * serialized).
  */
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
@@ -476,9 +480,12 @@ struct ALIGNED PlayerDeathPacket {
  * Contains the requested room name, a privacy flag, an optional password for
  * private rooms, and the room's maximum player capacity.
  *
- * @param room_name Requested room display name (UTF-8).
- * @param is_private `1` to make the room private (password required), `0` for public.
- * @param password Password for private rooms; ignored for public rooms.
+ * @param room_name Requested room display name (UTF-8) (truncated at 32 bytes
+ * when serialized).
+ * @param is_private `1` to make the room private (password required), `0` for
+ * public.
+ * @param password Password for private rooms; ignored for public rooms
+ * (truncated at 32 bytes when serialized).
  * @param max_players Maximum number of players allowed in the room.
  */
 struct ALIGNED CreateRoomPacket {
@@ -499,7 +506,8 @@ struct ALIGNED CreateRoomPacket {
  * @var header Common 4-byte-aligned packet header indicating packet type and
  * total serialized packet size (including the header).
  * @var room_id Numeric identifier of the room to join.
- * @var password UTF-8 password for the room; empty when no password is required.
+ * @var password UTF-8 password for the room; empty when no password is
+ * required (truncated at 32 bytes when serialized).
  */
 struct ALIGNED JoinRoomPacket {
     PacketHeader header;
@@ -608,10 +616,11 @@ struct ALIGNED MatchmakingResponsePacket {
 };
 
 /**
- * @brief Conveys a client's directional input and its client-side sequence number.
+ * @brief Conveys a client's directional input and its client-side sequence
+ * number.
  *
- * Contains the packet header, an 8-bit bitfield of MovementInputType flags in `input`,
- * and `sequence_number` for ordering and acknowledgement correlation.
+ * Contains the packet header, an 8-bit bitfield of MovementInputType flags in
+ * `input`, and `sequence_number` for ordering and acknowledgement correlation.
  */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
