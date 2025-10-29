@@ -41,4 +41,4 @@ jobs:
         with:
           commit_message: "chore(format): apply clang-format"
           branch: ${{ github.head_ref }}
-          file_pattern: "*.cpp *.hpp"
+          file_pattern: "**/*.cpp **/*.hpp"
