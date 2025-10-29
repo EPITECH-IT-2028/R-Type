@@ -179,7 +179,7 @@ void ClientNetworkManager::processPacket(const char *data, std::size_t size,
 
   PacketHeader header = headerOpt.value();
 
-  std::memcpy(&header, data, sizeof(PacketHeader));
+  std::memcpy(&header, data, HEADER_SIZE);
   PacketType packet_type = static_cast<PacketType>(header.type);
 
   auto handler = _packetFactory.createHandler(packet_type);

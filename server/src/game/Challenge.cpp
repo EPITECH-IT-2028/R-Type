@@ -1,6 +1,7 @@
 #include "Challenge.hpp"
 #include <chrono>
 #include <cstdint>
+#include <iostream>
 #include "crypto/Crypto.hpp"
 
 std::uint32_t game::Challenge::getCurrentTimestamp() const {
