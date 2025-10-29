@@ -23,7 +23,7 @@ class DatabaseManager:
         if not self.connection:
             raise Exception("Database not connected")
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, username, ip_address, created_at, last_connection, is_online FROM players")
+        cursor.execute("SELECT id, username, ip_address, created_at, is_online FROM players")
         rows = cursor.fetchall()
 
         return [{
@@ -31,7 +31,6 @@ class DatabaseManager:
             "username": row["username"],
             "ip_address": row["ip_address"],
             "created_at": row["created_at"],
-            "last_connection": row["last_connection"],
             "status": "Online" if row["is_online"] else "Offline"
         } for row in rows]
 
@@ -39,7 +38,7 @@ class DatabaseManager:
         if not self.connection:
             raise Exception("Database not connected")
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, username, ip_address, created_at, last_connection, is_online FROM players WHERE id = ?", (player_id,))
+        cursor.execute("SELECT id, username, ip_address, created_at, is_online FROM players WHERE id = ?", (player_id,))
         row = cursor.fetchone()
 
         if row:
@@ -48,7 +47,6 @@ class DatabaseManager:
                 "username": row["username"],
                 "ip_address": row["ip_address"],
                 "created_at": row["created_at"],
-                "last_connection": row["last_connection"],
                 "status": "Online" if row["is_online"] else "Offline"
             }
         else:

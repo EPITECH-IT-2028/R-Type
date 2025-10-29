@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <string>
 
 #ifdef ERROR
   #undef ERROR

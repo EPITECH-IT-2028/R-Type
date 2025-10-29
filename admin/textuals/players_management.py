@@ -90,7 +90,7 @@ class PlayersManagement(Screen):
     def on_mount(self) -> None:
         table = self.query_one("#players_table", DataTable)
         table.cursor_type = "row"
-        table.add_columns("ID", "Username", "IP Address", "Created At", "Last connection", "Status")
+        table.add_columns("ID", "Username", "IP Address", "Created At", "Status")
         self.load_players()
 
     def load_players(self) -> None:
@@ -101,7 +101,7 @@ class PlayersManagement(Screen):
         for player in players:
             table.add_row(
                 player["id"], player["username"], player["ip_address"],
-                player["created_at"], player["last_connection"], player["status"]
+                player["created_at"], player["status"]
             )
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
