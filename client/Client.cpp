@@ -24,6 +24,9 @@
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "PacketLossComponent.hpp"
+#include "PingComponent.hpp"
+#include "MetricsSystem.hpp"
 
 namespace client {
   /**
@@ -94,6 +97,8 @@ namespace client {
     _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
     _ecsManager.registerComponent<ecs::ChatComponent>();
+    _ecsManager.registerComponent<ecs::PingComponent>();
+    _ecsManager.registerComponent<ecs::PacketLossComponent>();
   }
 
   /**
@@ -109,6 +114,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
     _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
+    _ecsManager.registerSystem<ecs::MetricsSystem>();
   }
 
   /**
@@ -169,6 +175,13 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::ProjectileComponent>());
       _ecsManager.setSystemSignature<ecs::ProjectileSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
+      _ecsManager.setSystemSignature<ecs::MetricsSystem>(signature);
     }
   }
 
@@ -258,6 +271,9 @@ namespace client {
     }
     _playerEntities[packet.player_id] = player;
     _playerNames[packet.player_id] = std::string(packet.player_name, len);
+
+    _ecsManager.addComponent<ecs::PingComponent>(player, {});
+    _ecsManager.addComponent<ecs::PacketLossComponent>(player, {});
   }
 
   /**

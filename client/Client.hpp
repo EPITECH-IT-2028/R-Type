@@ -16,8 +16,8 @@
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
-#include "PacketSender.hpp"
 #include "PacketLossMonitor.hpp"
+#include "PacketSender.hpp"
 
 #define TIMEOUT_MS 100
 
@@ -355,13 +355,18 @@ namespace client {
         _ping.store(ping, std::memory_order_release);
       }
 
-      void calculatePacketLoss(uint32_t seq) {
+      double calculatePacketLoss(uint32_t seq) {
         _packetLossMonitor.onReceived(seq);
-        _packetLoss = _packetLossMonitor.lossRatio();
+        
+        return _packetLossMonitor.lossRatio();
       }
 
-      double getPacketLoss() {
-        return _packetLoss;
+      std::uint32_t getPing() const {
+        return _ping.load(std::memory_order_acquire);
+      }
+
+      double getPacketLoss() const {
+        return _packetLoss.load(std::memory_order_acquire);
       }
 
     private:
@@ -390,7 +395,7 @@ namespace client {
 
       void createBackgroundEntities();
 
-      double _packetLoss;
+      std::atomic<double> _packetLoss;
       network::PacketLossMonitor _packetLossMonitor;
 
       ecs::ECSManager &_ecsManager;

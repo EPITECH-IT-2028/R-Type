@@ -100,9 +100,9 @@ int main(int ac, char **av) {
 
     renderer.beginDrawing();
     renderer.clearBackground(RAYWHITE);
-
+    
     float deltaTime = GetFrameTime();
-
+    
     ecsManager.update(deltaTime);
 
     renderer.endDrawing();

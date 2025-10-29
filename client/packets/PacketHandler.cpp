@@ -3,6 +3,7 @@
 #include "Client.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
@@ -13,6 +14,8 @@
 #include "Serializer.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "PingComponent.hpp"
+#include "PacketLossComponent.hpp"
 #include "raylib.h"
 
 /**
@@ -227,7 +230,11 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
     if (client.getPlayerId() == packet.player_id) {
       client.updateSequenceNumber(packet.sequence_number);
 
-      client.calculatePacketLoss(packet.sequence_number);
+      if (ecsManager.hasComponent<ecs::PacketLossComponent>(playerEntity)) {
+        auto &packetLossComp =
+            ecsManager.getComponent<ecs::PacketLossComponent>(playerEntity);
+        packetLossComp.packetLoss = client.calculatePacketLoss(packet.sequence_number);
+      }
     }
 
   } catch (const std::exception &e) {
@@ -615,7 +622,14 @@ int packet::PongHandler::handlePacket(client::Client &client, const char *data,
           std::chrono::steady_clock::now().time_since_epoch())
           .count();
   uint32_t ping = currentTimestamp - packet.timestamp;
-  client.updatePing(ping);
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  auto playerEntity = client.getPlayerEntity(client.getPlayerId());
+  if (playerEntity != INVALID_ENTITY) {
+    if (ecsManager.hasComponent<ecs::PingComponent>(playerEntity)) {
+      auto &pingComp = ecsManager.getComponent<ecs::PingComponent>(playerEntity);
+      pingComp.ping = ping;
+    }
+  }
   TraceLog(LOG_INFO, "[PONG] Received pong, RTT: %u ms", ping);
   return packet::OK;
 }
