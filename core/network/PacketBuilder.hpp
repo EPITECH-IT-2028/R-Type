@@ -14,11 +14,6 @@
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
 
-/**
- * Convention: header.size = taille totale sérialisée (octets), en‑tête inclus.
- * - Paquets fixes (sans std::string) : header.size = sizeof(packet).
- * - Paquets variables (avec std::string) : taille obtenue via sérialisation.
- */
 struct PacketBuilder {
   private:
     template <typename P>
