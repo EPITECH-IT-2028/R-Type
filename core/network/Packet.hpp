@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include "Macro.hpp"
 
 enum class PacketType : std::uint8_t {
@@ -60,43 +61,49 @@ enum class MovementInputType : std::uint8_t {
   RIGHT = 1 << 3
 };
 
-#define ALIGNED alignas(4)
+#define ALIGNED alignas(8)
 
 /**
- * @brief Common 4-byte-aligned header present at the start of every network
- * packet.
+ * @brief 8-byte-aligned header present at the start of every network packet.
  *
- * Contains the packet's kind and the size of its payload (in bytes), used to
- * route and validate incoming/outgoing packet data.
+ * Identifies the packet kind and records the total serialized packet size in
+ * bytes (including this header) for routing and validation of incoming and
+ * outgoing packet data.
  *
  * @var type
  *   PacketType value identifying the specific packet structure that follows.
  * @var size
- *   Size of the packet payload in bytes (not including this header).
+ *   Total size of the serialized packet in bytes, including this header.
  */
 struct ALIGNED PacketHeader {
     PacketType type;
     std::uint32_t size;
 };
 
+constexpr std::size_t HEADER_SIZE = sizeof(PacketType) + sizeof(std::uint32_t);
+
 /**
  * @brief Packet carrying a timestamped UTF-8 chat message, sender identity, and
  * RGBA color.
  *
- * @var header Common packet header (type and payload size).
+ * Packet used to transmit a chat message together with its timestamp, the
+ * sending player's identifier, and an RGBA color to apply when rendering the
+ * message.
+ *
+ * @var header Common packet header containing the packet type and total
+ * serialized size.
  * @var timestamp 32-bit timestamp associated with the message.
- * @var message Fixed-size 256-byte null-terminated UTF-8 message buffer.
- * @var player_id 32-bit identifier of the player who sent or is associated with
- * the message.
- * @var r Red color component for the message (0–255).
- * @var g Green color component for the message (0–255).
- * @var b Blue color component for the message (0–255).
- * @var a Alpha (opacity) component for the message (0–255).
+ * @var message UTF-8 encoded chat message (std::string; variable length).
+ * @var player_id 32-bit identifier of the player who sent the message.
+ * @var r Red color component (0–255).
+ * @var g Green color component (0–255).
+ * @var b Blue color component (0–255).
+ * @var a Alpha (opacity) component (0–255).
  */
 struct ALIGNED ChatMessagePacket {
     PacketHeader header;
     std::uint32_t timestamp;
-    char message[256];
+    std::string message;
     std::uint32_t player_id;
     std::uint8_t r, g, b, a;
 };
@@ -132,8 +139,7 @@ struct ALIGNED PlayerMovePacket {
  * @details
  * - header: Common packet header present at the start of every packet.
  * - player_id: Server-assigned unique player identifier.
- * - player_name: Null-terminated UTF-8 display name (fixed-size buffer of 32
- * bytes).
+ * - player_name: UTF-8 display name.
  * - x, y: Spawn world coordinates.
  * - speed: Movement speed scalar.
  * - max_health: Player's maximum health points.
@@ -141,7 +147,7 @@ struct ALIGNED PlayerMovePacket {
 struct ALIGNED NewPlayerPacket {
     PacketHeader header;
     std::uint32_t player_id;
-    char player_name[32];
+    std::string player_name;
     float x;
     float y;
     float speed;
@@ -174,18 +180,21 @@ struct ALIGNED HeartbeatPlayerPacket {
 };
 
 /**
- * @brief Packet sent from the client to the server to provide the player's
- * display name.
+ * @brief Client-to-server packet carrying the player's display name.
  *
- * Contains the common packet header and a fixed-size name buffer. The name is
- * stored as a null-terminated UTF-8 string in the 32-byte `name` field; maximum
- * 31 bytes of character data plus a terminating NUL.
+ * Contains the common packet header followed by the player's display name
+ * encoded as a UTF-8 std::string.
  *
- * @var char PlayerInfoPacket::name
- * Player's display name (null-terminated UTF-8). */
+ * @var PacketHeader PlayerInfoPacket::header
+ * Common packet header identifying the packet type and total serialized size.
+ *
+ * @var std::string PlayerInfoPacket::name
+ * Player's display name encoded in UTF-8 (truncated at 32 bytes when
+ * serialized).
+ */
 struct ALIGNED PlayerInfoPacket {
     PacketHeader header;
-    char name[32];
+    std::string name;
 };
 
 /**
@@ -468,39 +477,42 @@ struct ALIGNED PlayerDeathPacket {
 /**
  * @brief Client request to create a room with access controls and capacity.
  *
- * @param room_name Null-terminated UTF‑8 room name (up to 31 characters;
- * remaining bytes should be zero).
+ * Contains the requested room name, a privacy flag, an optional password for
+ * private rooms, and the room's maximum player capacity.
+ *
+ * @param room_name Requested room display name (UTF-8) (truncated at 32 bytes
+ * when serialized).
  * @param is_private `1` to make the room private (password required), `0` for
  * public.
- * @param password Null-terminated UTF‑8 password used when `is_private` is `1`
- * (up to 31 characters; remaining bytes should be zero).
+ * @param password Password for private rooms; ignored for public rooms
+ * (truncated at 32 bytes when serialized).
  * @param max_players Maximum number of players allowed in the room.
  */
 struct ALIGNED CreateRoomPacket {
     PacketHeader header;
-    char room_name[32];
+    std::string room_name;
     std::uint8_t is_private;
-    char password[32];
+    std::string password;
     std::uint8_t max_players;
 };
 
 /**
- * @brief Client-to-server request to join an existing room.
+ * @brief Client-to-server packet requesting to join an existing room.
  *
  * Contains the common packet header, the numeric room identifier, and an
- * optional null-terminated UTF-8 password (maximum 31 characters plus
- * terminating NUL).
+ * optional UTF-8 password string (empty when the room is public or no password
+ * is provided).
  *
  * @var header Common 4-byte-aligned packet header indicating packet type and
- * payload size.
+ * total serialized packet size (including the header).
  * @var room_id Numeric identifier of the room to join.
- * @var password Null-terminated UTF-8 password for the room; unused if empty.
- * Capacity 32 bytes including terminator.
+ * @var password UTF-8 password for the room; empty when no password is
+ * required (truncated at 32 bytes when serialized).
  */
 struct ALIGNED JoinRoomPacket {
     PacketHeader header;
     std::uint32_t room_id;
-    char password[32];
+    std::string password;
 };
 
 /**
@@ -545,17 +557,16 @@ struct ALIGNED ListRoomPacket {
 };
 
 /**
- * @brief Describes a room's identity and current occupancy for room listings.
+ * @brief Describes a room's identity and current occupancy for listings.
  *
- * @var room_id Unique numeric identifier of the room.
- * @var room_name Null-terminated UTF-8 room name (up to 31 bytes of text plus
- * terminator).
+ * @var room_id Unique numeric identifier for the room.
+ * @var room_name UTF-8 room name.
  * @var player_count Current number of players in the room.
  * @var max_players Maximum allowed players for the room.
  */
 struct ALIGNED RoomInfo {
     std::uint32_t room_id;
-    char room_name[32];
+    std::string room_name;
     std::uint8_t player_count;
     std::uint8_t max_players;
 };
@@ -605,17 +616,11 @@ struct ALIGNED MatchmakingResponsePacket {
 };
 
 /**
- * @brief Conveys the client's current directional input and its sequence
+ * @brief Conveys a client's directional input and its client-side sequence
  * number.
  *
- * Contains the common packet header, an 8-bit bitfield of MovementInputType
- * flags indicating which movement directions are active, and a client-side
- * sequence number used to order inputs and correlate acknowledgements.
- *
- * Fields:
- * - input: Bitflags (MovementInputType) representing active directional inputs.
- * - sequence_number: Client-side sequence number for input ordering and
- * acknowledgement correlation.
+ * Contains the packet header, an 8-bit bitfield of MovementInputType flags in
+ * `input`, and `sequence_number` for ordering and acknowledgement correlation.
  */
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
