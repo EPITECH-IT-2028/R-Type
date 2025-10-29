@@ -4,38 +4,136 @@
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 #include "Macro.hpp"
 #include "Packet.hpp"
+#include "PacketSerialize.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
 
+/**
+ * Convention: header.size = taille totale sérialisée (octets), en‑tête inclus.
+ * - Paquets fixes (sans std::string) : header.size = sizeof(packet).
+ * - Paquets variables (avec std::string) : taille obtenue via sérialisation.
+ */
 struct PacketBuilder {
+  private:
+    template <typename P>
     /**
-     * @brief Constructs a MessagePacket containing the provided text, current
-     * timestamp, and player identifier.
+     * @brief Compute and assign the packet's header.size from its serialized representation.
      *
-     * Copies up to sizeof(packet.message)-1 characters from `msg` into the
-     * packet's null-terminated message field (truncating if necessary), sets
-     * the header type to `Message`, header size to the packet size, timestamp
-     * to the current time, and assigns `player_id`.
+     * Serializes a temporary copy of the packet (with header.size cleared) to determine
+     * the full serialized size and, on success, sets packet.header.size to that value.
+     *
+     * @tparam P Packet type containing a modifiable `header.size` and `header.type`.
+     * @param packet Packet instance whose `header.size` will be updated on success.
+     *               On failure the packet is left unchanged.
+     * @param ctx Short context string included in error messages when sizing fails.
+     * @return true if `packet.header.size` was set to the computed serialized size, `false` if
+     *         serialization failed or the computed size was outside valid bounds.
+     */
+    static bool setPayloadSizeFromSerialization(P &packet, const char *ctx) {
+      P temp_packet = packet;
+      temp_packet.header.size = 0;
+
+      serialization::Buffer serializedBuffer =
+          serialization::BitserySerializer::serialize(temp_packet);
+      if (serializedBuffer.empty()) {
+        std::cerr << "[ERROR] Failed to serialize packet (type: "
+                  << packetTypeToString(packet.header.type)
+                  << ") for sizing. Context: " << ctx
+                  << ". Returning empty packet.\n";
+        return false;
+      }
+
+      size_t fullSerializedSize = serializedBuffer.size();
+      if (fullSerializedSize < HEADER_SIZE) {
+        std::cerr << "[ERROR] Serialized size (" << fullSerializedSize
+                  << ") is less than minimum valid packet size (" << HEADER_SIZE
+                  << " bytes). Context: " << ctx
+                  << ". Returning empty packet.\n";
+        return false;
+      }
+
+      if (fullSerializedSize > std::numeric_limits<std::uint32_t>::max()) {
+        std::cerr << "[ERROR] Calculated payload size (" << fullSerializedSize
+                  << ") exceeds maximum allowed ("
+                  << std::numeric_limits<std::uint32_t>::max()
+                  << "). Context: " << ctx << ". Returning empty packet.\n";
+        return false;
+      }
+
+      packet.header.size = static_cast<std::uint32_t>(fullSerializedSize);
+      return true;
+    }
+
+    /**
+     * @brief Truncates the input string to at most max_bytes bytes.
+     *
+     * The function returns a new string containing the first up to max_bytes bytes
+     * of the provided input. If the input length is less than or equal to
+     * max_bytes, the original string is returned unchanged.
+     *
+     * @param str Input string to truncate.
+     * @param max_bytes Maximum number of bytes to keep from the start of `str`.
+     * @return std::string The truncated string containing at most `max_bytes` bytes.
+     */
+    static std::string truncateToBytes(const std::string &str,
+                                       size_t max_bytes) {
+      return str.length() > max_bytes ? str.substr(0, max_bytes) : str;
+    }
+
+  public:
+    /**
+     * @brief Constructs a ChatMessagePacket populated with the given text, player ID, color, and current timestamp.
+     *
+     * @param msg Chat text to include in the packet. The text is truncated to SERIALIZE_512_BYTES bytes if necessary and stored null-terminated.
+     * @param player_id ID of the player sending the message.
+     * @param r Red color component (0-255) for the message.
+     * @param g Green color component (0-255) for the message.
+     * @param b Blue color component (0-255) for the message.
+     * @param a Alpha (opacity) component (0-255) for the message.
+     * @return ChatMessagePacket Packet with header.type set to ChatMessage, header.size set to the serialized packet size, timestamp set to the current time, message containing the (possibly truncated) text, and player_id and RGBA fields assigned.
+     */
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id,
+                                             std::uint8_t r, std::uint8_t g,
+                                             std::uint8_t b, std::uint8_t a) {
+      ChatMessagePacket packet{};
+      packet.header.type = PacketType::ChatMessage;
+      packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
+      packet.message = truncateToBytes(msg, SERIALIZE_512_BYTES);
+      packet.player_id = player_id;
+      packet.r = r;
+      packet.g = g;
+      packet.b = b;
+      packet.a = a;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeChatMessage"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * @brief Constructs a ChatMessagePacket with default white color.
+     *
+     * This overload of makeChatMessage sets the message color to white
+     * (RGBA: 255, 255, 255, 255) by default.
      *
      * @param msg Text to include in the message packet; may be truncated to fit
      * the packet.
      * @param player_id Identifier of the player who sent the message.
-     * @return MessagePacket Packet with header.type == PacketType::Message,
-     * header.size set to sizeof(packet), a null-terminated `message` field,
-     * current `timestamp`, and `player_id` set.
+     * @return ChatMessagePacket Packet with header.type ==
+     * PacketType::ChatMessage, header.size set to sizeof(packet), a
+     * null-terminated `message` field, current `timestamp`, and `player_id`
+     * set. Message color is white.
      */
-    static MessagePacket makeMessage(const std::string &msg,
-                                     std::uint32_t player_id) {
-      MessagePacket packet{};
-      packet.header.type = PacketType::Message;
-      packet.header.size = sizeof(packet);
-      packet.timestamp = static_cast<std::uint32_t>(time(nullptr));
-      strncpy(packet.message, msg.c_str(), sizeof(packet.message) - 1);
-      packet.message[sizeof(packet.message) - 1] = '\0';
-      packet.player_id = player_id;
-      return packet;
+    static ChatMessagePacket makeChatMessage(const std::string &msg,
+                                             std::uint32_t player_id) {
+      return makeChatMessage(msg, player_id, 255, 255, 255, 255);
     }
 
     /**
@@ -46,23 +144,28 @@ struct PacketBuilder {
      * NewPlayer.
      *
      * @param player_id Unique identifier for the player.
+     * @param player_name Name of the player.
      * @param x Initial X position of the player.
      * @param y Initial Y position of the player.
      * @param speed Initial movement speed of the player.
      * @param max_health Maximum health for the player (default: 100).
      * @return NewPlayerPacket Populated packet ready to be serialized and sent.
      */
-    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id, float x,
-                                         float y, float speed,
+    static NewPlayerPacket makeNewPlayer(std::uint32_t player_id,
+                                         const std::string &player_name,
+                                         float x, float y, float speed,
                                          std::uint32_t max_health = 100) {
       NewPlayerPacket packet{};
       packet.header.type = PacketType::NewPlayer;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+      packet.player_name = truncateToBytes(player_name, SERIALIZE_32_BYTES);
       packet.x = x;
       packet.y = y;
       packet.speed = speed;
       packet.max_health = max_health;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeNewPlayer"))
+        return {};
       return packet;
     }
 
@@ -82,30 +185,31 @@ struct PacketBuilder {
                                            float y) {
       PlayerMovePacket packet{};
       packet.header.type = PacketType::PlayerMove;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.sequence_number = seq;
       packet.x = x;
       packet.y = y;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerMove"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Create a PlayerInfo packet containing the player's name.
+     * @brief Construct a PlayerInfo packet containing the player's name.
      *
-     * @param name Player's name; copied into the packet's name field and
-     * truncated if it exceeds the field size. The stored name is guaranteed to
-     * be null-terminated.
-     * @return PlayerInfoPacket Packet with header.type set to
-     * PacketType::PlayerInfo, header.size populated, and the name field filled
-     * from `name`.
+     * The provided name is truncated to 32 bytes when stored in the packet.
+     *
+     * @param name Player name to store in the packet; truncated to 32 bytes if necessary.
+     * @return PlayerInfoPacket Packet whose header.type is PacketType::PlayerInfo and whose header.size is set to the serialized packet size.
      */
     static PlayerInfoPacket makePlayerInfo(const std::string &name) {
       PlayerInfoPacket packet{};
       packet.header.type = PacketType::PlayerInfo;
-      packet.header.size = sizeof(packet);
-      strncpy(packet.name, name.c_str(), sizeof(packet.name) - 1);
-      packet.name[sizeof(packet.name) - 1] = '\0';
+      packet.name = truncateToBytes(name, 32);
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerInfo"))
+        return {};
       return packet;
     }
 
@@ -125,18 +229,19 @@ struct PacketBuilder {
                                          int sequence_number) {
       PlayerHitPacket packet{};
       packet.header.type = PacketType::PlayerHit;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.damage = damage;
       packet.x = x;
       packet.y = y;
       packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs an EnemySpawnPacket with the enemy's identity, type,
-     * position, velocity, and health.
+     * @brief Creates an EnemySpawn packet populated with the enemy's identity, type, position, velocity, and health.
      *
      * @param enemy_id Unique identifier for the enemy.
      * @param type Enemy type.
@@ -144,10 +249,9 @@ struct PacketBuilder {
      * @param y Spawn Y coordinate.
      * @param vx Initial velocity in the X direction.
      * @param vy Initial velocity in the Y direction.
-     * @param health Current health.
-     * @param max_health Maximum health.
-     * @return EnemySpawnPacket Packet with fields initialized and its header
-     * indicating an EnemySpawn.
+     * @param health Current health value.
+     * @param max_health Maximum health value.
+     * @return EnemySpawnPacket Packet with Header.type set to EnemySpawn and all fields initialized; returns a default-constructed (empty) packet if payload sizing fails.
      */
     static EnemySpawnPacket makeEnemySpawn(std::uint32_t enemy_id,
                                            EnemyType type, float x, float y,
@@ -156,7 +260,6 @@ struct PacketBuilder {
                                            std::uint32_t max_health) {
       EnemySpawnPacket packet{};
       packet.header.type = PacketType::EnemySpawn;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.enemy_type = type;
       packet.x = x;
@@ -165,6 +268,9 @@ struct PacketBuilder {
       packet.velocity_y = vy;
       packet.health = health;
       packet.max_health = max_health;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -187,28 +293,27 @@ struct PacketBuilder {
                                          float velocity_y, int seq) {
       EnemyMovePacket packet{};
       packet.header.type = PacketType::EnemyMove;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.x = x;
       packet.y = y;
       packet.velocity_x = velocity_x;
       packet.velocity_y = velocity_y;
       packet.sequence_number = seq;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Create an EnemyDeath packet describing an enemy's death and
-     * awarding score to a player.
+     * @brief Constructs an EnemyDeath packet that records an enemy's death and awards score to a player.
      *
      * @param enemy_id Unique identifier of the enemy.
      * @param death_x X coordinate of the enemy's death location.
      * @param death_y Y coordinate of the enemy's death location.
      * @param player_id ID of the player credited with the kill.
      * @param score Score awarded to the player for the kill.
-     * @return EnemyDeathPacket Populated packet containing enemy_id, death
-     * coordinates, player_id, and score; packet header is set to
-     * `PacketType::EnemyDeath` and `header.size` is set to the packet's size.
+     * @return EnemyDeathPacket Packet with header.type set to `PacketType::EnemyDeath`, fields populated (`enemy_id`, `death_x`, `death_y`, `player_id`, `score`), and `header.size` set to the computed serialized size on success; a default-constructed (empty) packet is returned if sizing fails.
      */
     static EnemyDeathPacket makeEnemyDeath(std::uint32_t enemy_id,
                                            float death_x, float death_y,
@@ -216,37 +321,40 @@ struct PacketBuilder {
                                            std::uint32_t score) {
       EnemyDeathPacket packet{};
       packet.header.type = PacketType::EnemyDeath;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.death_x = death_x;
       packet.death_y = death_y;
       packet.player_id = player_id;
       packet.score = score;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs an EnemyHit packet describing damage dealt to an enemy.
+     * @brief Create an EnemyHit packet describing damage inflicted on an enemy.
      *
      * @param enemy_id Identifier of the enemy that was hit.
-     * @param hit_x World X coordinate where the hit occurred.
-     * @param hit_y World Y coordinate where the hit occurred.
-     * @param damage Amount of damage applied to the enemy.
-     * @param sequence_number Sequence number for ordering the event.
-     * @return EnemyHitPacket Packet populated with header, enemy id, hit
-     * position, damage, and sequence number.
+     * @param hit_x X coordinate of the hit location in world space.
+     * @param hit_y Y coordinate of the hit location in world space.
+     * @param damage Damage amount applied to the enemy.
+     * @param sequence_number Sequence number used to order this event.
+     * @return EnemyHitPacket Packet with header.type set to EnemyHit and fields populated: enemy_id, hit_x, hit_y, damage, and sequence_number.
      */
     static EnemyHitPacket makeEnemyHit(std::uint32_t enemy_id, float hit_x,
                                        float hit_y, float damage,
                                        int sequence_number) {
       EnemyHitPacket packet{};
       packet.header.type = PacketType::EnemyHit;
-      packet.header.size = sizeof(packet);
       packet.enemy_id = enemy_id;
       packet.hit_x = hit_x;
       packet.hit_y = hit_y;
       packet.damage = damage;
       packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -266,31 +374,32 @@ struct PacketBuilder {
                                              std::uint32_t seq) {
       PlayerShootPacket packet{};
       packet.header.type = PacketType::PlayerShoot;
-      packet.header.size = sizeof(packet);
       packet.x = x;
       packet.y = y;
       packet.projectile_type = projectile_type;
       packet.sequence_number = seq;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs a ProjectileSpawnPacket with the provided projectile
-     * properties.
+     * @brief Builds a ProjectileSpawnPacket with the supplied identity, type, kinematic
+     * and ownership properties and computes its serialized payload size.
      *
      * @param projectile_id Unique identifier for the projectile.
-     * @param type ProjectileType enum value specifying the projectile kind.
-     * @param x Initial x coordinate of the projectile.
-     * @param y Initial y coordinate of the projectile.
+     * @param type ProjectileType value specifying the projectile kind.
+     * @param x Initial x coordinate.
+     * @param y Initial y coordinate.
      * @param vel_x Initial velocity along the x axis.
      * @param vel_y Initial velocity along the y axis.
-     * @param is_enemy True if the projectile was fired by an enemy, false if
-     * fired by a player.
-     * @param damage Damage value carried by the projectile.
-     * @param owner_id Identifier of the entity that owns or fired the
-     * projectile.
-     * @return ProjectileSpawnPacket Packet populated with header type/size and
-     * the provided fields.
+     * @param is_enemy True if fired by an enemy, false if fired by a player.
+     * @param damage Damage carried by the projectile.
+     * @param owner_id Identifier of the entity that owns or fired the projectile.
+     * @return ProjectileSpawnPacket Packet populated with header.type, fields above,
+     * and header.size set based on serialization; returns a default-constructed
+     * (empty) packet if payload sizing fails.
      */
     static ProjectileSpawnPacket makeProjectileSpawn(
         std::uint32_t projectile_id, ProjectileType type, float x, float y,
@@ -298,7 +407,6 @@ struct PacketBuilder {
         std::uint32_t owner_id) {
       ProjectileSpawnPacket packet{};
       packet.header.type = PacketType::ProjectileSpawn;
-      packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.projectile_type = type;
       packet.x = x;
@@ -308,6 +416,9 @@ struct PacketBuilder {
       packet.is_enemy_projectile = is_enemy;
       packet.damage = damage;
       packet.owner_id = owner_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -328,12 +439,14 @@ struct PacketBuilder {
         float hit_y, std::uint8_t target_is_player) {
       ProjectileHitPacket packet{};
       packet.header.type = PacketType::ProjectileHit;
-      packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.target_id = target_id;
       packet.hit_x = hit_x;
       packet.hit_y = hit_y;
       packet.target_is_player = target_is_player;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+        return {};
       return packet;
     }
 
@@ -351,146 +464,157 @@ struct PacketBuilder {
         std::uint32_t projectile_id, float x, float y) {
       ProjectileDestroyPacket packet{};
       packet.header.type = PacketType::ProjectileDestroy;
-      packet.header.size = sizeof(packet);
       packet.projectile_id = projectile_id;
       packet.x = x;
       packet.y = y;
-      return packet;
-    }
 
-    static GameStartPacket makeGameStart(bool started) {
-      GameStartPacket packet{};
-      packet.header.type = PacketType::GameStart;
-      packet.header.size = sizeof(packet);
-      packet.game_start = started;
+      if (!setPayloadSizeFromSerialization(packet, "makeProjectileDestroy"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs a GameEnd packet indicating whether the game has ended.
+     * @brief Construct a GameStartPacket indicating whether the game has started.
      *
-     * @param ended `true` if the game has ended, `false` if the game is
-     * ongoing.
-     * @return GameEndPacket Packet with header fields populated and `game_end`
-     * set to `ended`.
+     * @param started True if the game is starting, `false` otherwise.
+     * @return GameStartPacket Packet with `header.type` set to `PacketType::GameStart`, `game_start` set to `started`,
+     * and `header.size` computed from serialization on success; returns a default-constructed (empty) packet if sizing fails.
+     */
+    static GameStartPacket makeGameStart(bool started) {
+      GameStartPacket packet{};
+      packet.header.type = PacketType::GameStart;
+      packet.game_start = started;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeGameStart"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * @brief Create a GameEnd packet indicating whether the game has ended.
+     *
+     * @param ended true if the game has ended, false otherwise.
+     * @return GameEndPacket Packet whose header.type is set to `PacketType::GameEnd` and whose `game_end` field is set to `ended`.
      */
     static GameEndPacket makeGameEnd(bool ended) {
       GameEndPacket packet{};
       packet.header.type = PacketType::GameEnd;
-      packet.header.size = sizeof(packet);
       packet.game_end = ended;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeGameEnd"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs a PlayerDeath packet describing a player's death
-     * location.
+     * @brief Create a PlayerDeathPacket describing a player's death location.
      *
-     * Builds a PlayerDeathPacket with the header type and size set, and fills
-     * the player identifier and world coordinates where the player died.
+     * Constructs a packet with header.type set to PlayerDeath and populates the
+     * player identifier and world coordinates for the death event. The packet's
+     * header.size is computed via serialization; if sizing fails an empty
+     * (default-constructed) packet is returned.
      *
      * @param player_id Identifier of the player who died.
      * @param x World X coordinate of the death location.
      * @param y World Y coordinate of the death location.
-     * @return PlayerDeathPacket Populated packet ready for transmission.
+     * @return PlayerDeathPacket Populated packet with header.size set on success,
+     *         an empty default-constructed packet on failure.
      */
     static PlayerDeathPacket makePlayerDeath(std::uint32_t player_id, float x,
                                              float y) {
       PlayerDeathPacket packet{};
       packet.header.type = PacketType::PlayerDeath;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
       packet.x = x;
       packet.y = y;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerDeath"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Construct a PlayerDisconnect packet for the given player.
+     * @brief Constructs a PlayerDisconnect packet for a disconnected player.
      *
-     * @param player_id ID of the player that disconnected.
-     * @return PlayerDisconnectPacket Packet with header type set to
-     * PacketType::PlayerDisconnected, header size set to the packet's sizeof,
-     * and player_id populated.
+     * @param player_id ID of the disconnected player.
+     * @return PlayerDisconnectPacket Packet with header.type set to PacketType::PlayerDisconnected,
+     * player_id populated, and header.size set to the computed serialized size. Returns a default-constructed
+     * (empty) packet if payload sizing via serialization fails.
      */
     static PlayerDisconnectPacket makePlayerDisconnect(
         std::uint32_t player_id) {
       PlayerDisconnectPacket packet{};
       packet.header.type = PacketType::PlayerDisconnected;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerDisconnect"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Create a HeartbeatPlayerPacket for the specified player.
+     * @brief Build a heartbeat packet for the given player.
      *
-     * @param player_id Player identifier to embed in the packet.
-     * @return HeartbeatPlayerPacket with header.type set to
-     * PacketType::Heartbeat, header.size set to the packet size, and player_id
-     * set to the provided value.
+     * @param player_id Player identifier to include in the packet.
+     * @return HeartbeatPlayerPacket with header.type set to PacketType::Heartbeat, header.size set based on serialization, and player_id set to the provided value.
      */
     static HeartbeatPlayerPacket makeHeartbeatPlayer(std::uint32_t player_id) {
       HeartbeatPlayerPacket packet{};
       packet.header.type = PacketType::Heartbeat;
-      packet.header.size = sizeof(packet);
       packet.player_id = player_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeHeartbeatPlayer"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs a CreateRoomPacket populated with the given room
-     * parameters.
+     * @brief Create a CreateRoomPacket initialized with the provided room parameters.
      *
-     * @param room_name Name of the room; will be copied into the packet and
-     * truncated if longer than the packet field.
+     * The packet's header.type is set to CreateRoom, string fields are truncated to fit payload limits
+     * (room_name truncated to 32 bytes; password truncated to 32 bytes when set), and header.size is
+     * computed from the packet's serialized size.
+     *
+     * @param room_name Name of the room; will be copied and truncated to 32 bytes if longer.
      * @param max_players Maximum number of players allowed in the room.
-     * @param password Optional room password. If non-empty the packet is marked
-     * private and the password is stored; if empty the password field is
-     * cleared.
-     * @return CreateRoomPacket Packet ready for sending to request room
-     * creation; its header size is set to sizeof(packet) and its type is set to
-     * CreateRoom.
+     * @param password Optional room password; if non-empty the packet is marked private and the
+     *                 truncated password is stored, otherwise the password field is cleared.
+     * @return CreateRoomPacket Packet populated for a create-room request with header.size set to the
+     *         computed serialized size. 
      */
     static CreateRoomPacket makeCreateRoom(const std::string &room_name,
                                            std::uint32_t max_players,
                                            const std::string &password = "") {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
-      packet.header.size = sizeof(packet);
-      strncpy(packet.room_name, room_name.c_str(),
-              sizeof(packet.room_name) - 1);
-      packet.room_name[sizeof(packet.room_name) - 1] = '\0';
+      packet.room_name = truncateToBytes(room_name, 32);
       packet.max_players = max_players;
       packet.is_private = !password.empty();
-      if (packet.is_private) {
-        strncpy(packet.password, password.c_str(), sizeof(packet.password) - 1);
-        packet.password[sizeof(packet.password) - 1] = '\0';
-      } else {
-        std::memset(packet.password, 0, sizeof(packet.password));
-      }
+      if (packet.is_private)
+        packet.password = truncateToBytes(password, 32);
+      else
+        packet.password.clear();
+
+      if (!setPayloadSizeFromSerialization(packet, "makeCreateRoom"))
+        return {};
       return packet;
     }
 
     /**
-     * Constructs a JoinRoomPacket populated with the specified room ID and
-     * password.
+     * Create a JoinRoomPacket for the specified room ID and password.
      *
-     * @param room_id Identifier of the room to join.
-     * @param password Password for the room; provide an empty string for no
-     * password.
-     * @return JoinRoomPacket Packet with header.type set to
-     * PacketType::JoinRoom, header.size set to the packet size, and the room_id
-     * and password fields populated.
+     * @param password Password for the room; empty string means no password.
+     * @return JoinRoomPacket Packet whose header.type is PacketType::JoinRoom, whose header.size has been set to the computed serialized size, and whose room_id and password fields are populated (password truncated to 32 bytes when necessary).
      */
     static JoinRoomPacket makeJoinRoom(std::uint32_t room_id,
                                        const std::string &password) {
       JoinRoomPacket packet{};
       packet.header.type = PacketType::JoinRoom;
-      packet.header.size = sizeof(packet);
       packet.room_id = room_id;
-      strncpy(packet.password, password.c_str(), sizeof(packet.password) - 1);
-      packet.password[sizeof(packet.password) - 1] = '\0';
+      packet.password = truncateToBytes(password, 32);
+
+      if (!setPayloadSizeFromSerialization(packet, "makeJoinRoom"))
+        return {};
       return packet;
     }
 
@@ -508,8 +632,10 @@ struct PacketBuilder {
         const RoomError &error_code) {
       JoinRoomResponsePacket packet{};
       packet.header.type = PacketType::JoinRoomResponse;
-      packet.header.size = sizeof(packet);
       packet.error_code = error_code;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeJoinRoomResponse"))
+        return {};
       return packet;
     }
 
@@ -523,21 +649,24 @@ struct PacketBuilder {
     static LeaveRoomPacket makeLeaveRoom(std::uint32_t room_id) {
       LeaveRoomPacket packet{};
       packet.header.type = PacketType::LeaveRoom;
-      packet.header.size = sizeof(packet);
       packet.room_id = room_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeLeaveRoom"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Creates a ListRoomPacket with its header initialized.
+     * @brief Builds a packet requesting the server's room list.
      *
-     * @return ListRoomPacket whose header.type is set to PacketType::ListRoom
-     * and header.size is set to the packet's byte size.
+     * @return ListRoomPacket whose header.type is PacketType::ListRoom and whose header.size equals the packet's serialized byte size; returns a default-constructed (empty) packet if sizing fails.
      */
     static ListRoomPacket makeListRoom() {
       ListRoomPacket packet{};
       packet.header.type = PacketType::ListRoom;
-      packet.header.size = sizeof(packet);
+
+      if (!setPayloadSizeFromSerialization(packet, "makeListRoom"))
+        return {};
       return packet;
     }
 
@@ -556,70 +685,73 @@ struct PacketBuilder {
         const std::vector<RoomInfo> &rooms) {
       ListRoomResponsePacket packet{};
       packet.header.type = PacketType::ListRoomResponse;
-      packet.header.size = sizeof(packet);
       packet.room_count = static_cast<std::uint32_t>(
           std::min<std::size_t>(rooms.size(), MAX_ROOMS));
 
       for (std::size_t i = 0; i < packet.room_count; ++i) {
         packet.rooms[i] = rooms[i];
       }
+
+      if (!setPayloadSizeFromSerialization(packet, "makeListRoomResponse"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Constructs a MatchmakingRequestPacket initialized with its header.
+     * @brief Construct a MatchmakingRequestPacket with its header initialized.
      *
-     * The packet's header type is set to PacketType::MatchmakingRequest and its
-     * size is set to the packet's sizeof value.
+     * The packet's header.type is set to PacketType::MatchmakingRequest and its
+     * header.size is computed from the packet's serialized size.
      *
-     * @return MatchmakingRequestPacket packet whose `header.type` is
-     * `PacketType::MatchmakingRequest` and `header.size` equals
-     * `sizeof(MatchmakingRequestPacket)`.
+     * @return MatchmakingRequestPacket whose `header.type` is `PacketType::MatchmakingRequest`
+     * and whose `header.size` is set to the packet's serialized size. Returns an
+     * empty (default-constructed) packet if payload sizing fails.
      */
     static MatchmakingRequestPacket makeMatchmakingRequest() {
       MatchmakingRequestPacket packet{};
       packet.header.type = PacketType::MatchmakingRequest;
-      packet.header.size = sizeof(packet);
+
+      if (!setPayloadSizeFromSerialization(packet, "makeMatchmakingRequest"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Create a packet indicating the result of a matchmaking request.
+     * @brief Constructs a MatchmakingResponse packet indicating the matchmaking result.
      *
-     * @param error_code The RoomError value representing the outcome of the
-     * matchmaking request.
-     * @return MatchmakingResponsePacket The constructed packet whose header
-     * identifies it as a MatchmakingResponse and whose `error_code` field
-     * contains the provided `error_code`.
+     * @param error_code RoomError value representing the matchmaking outcome.
+     * @return MatchmakingResponsePacket Packet whose header.type is MatchmakingResponse and whose `error_code` equals the provided value.
      */
     static MatchmakingResponsePacket makeMatchmakingResponse(
         const RoomError &error_code) {
       MatchmakingResponsePacket packet{};
       packet.header.type = PacketType::MatchmakingResponse;
-      packet.header.size = sizeof(packet);
       packet.error_code = error_code;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeMatchmakingResponse"))
+        return {};
       return packet;
     };
 
     /**
-     * @brief Constructs a PlayerInputPacket representing a player's input
-     * state.
+     * @brief Create a PlayerInputPacket representing a player's input state.
      *
-     * The returned packet has its header type and size initialized and contains
-     * the provided input flags and sequence number for ordering.
+     * The packet's header.type is set to PlayerInput and header.size is computed
+     * from the serialized packet; if size computation fails an empty packet is returned.
      *
-     * @param input Player input flags (bitmask representing buttons/actions).
-     * @param sequence_number Monotonically increasing sequence number for this
-     * input.
-     * @return PlayerInputPacket Populated packet ready for transmission.
+     * @param input Bitmask of player input flags (buttons/actions).
+     * @param sequence_number Monotonically increasing sequence number for ordering inputs.
+     * @return PlayerInputPacket The populated packet with input flags and sequence number, or an empty packet on sizing failure.
      */
     static PlayerInputPacket makePlayerInput(std::uint8_t input,
                                              std::uint32_t sequence_number) {
       PlayerInputPacket packet{};
       packet.header.type = PacketType::PlayerInput;
-      packet.header.size = sizeof(packet);
       packet.input = input;
       packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerInput"))
+        return {};
       return packet;
     }
 };

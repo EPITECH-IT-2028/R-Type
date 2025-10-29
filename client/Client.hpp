@@ -1,37 +1,22 @@
 #pragma once
 
+#include <raylib.h>
 #include <sys/stat.h>
-#include <cstdint>
-#include <unordered_map>
-#include "EntityManager.hpp"
-#include "Packet.hpp"
-
-#if defined(_WIN32)
-  #ifndef NOMINMAX
-    #define NOMINMAX
-  #endif
-  #ifndef WIN32_LEAN_AND_MEAN
-    #define WIN32_LEAN_AND_MEAN
-  #endif
-  #ifndef ASIO_NO_WIN32_LEAN_AND_MEAN
-    #define ASIO_NO_WIN32_LEAN_AND_MEAN
-  #endif
-  #define PLATFORM_DESKTOP
-  #define NOGDI
-  #define NOUSER
-  #define _WINSOCK_DEPRECATED_NO_WARNINGS
-  #define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <iostream>
 #include <mutex>
 #include <shared_mutex>
 #include <string>
+#include <unordered_map>
+#include <vector>
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
+#include "EntityManager.hpp"
+#include "Macro.hpp"
+#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
 
@@ -40,12 +25,19 @@
 namespace client {
   constexpr int OK = 0;
   constexpr int KO = 1;
+  constexpr std::size_t CHAT_MAX_MESSAGES = 14;
 
   enum class ClientState {
     IN_CONNECTED_MENU,
     IN_ROOM_WAITING,
     IN_GAME,
     DISCONNECTED
+  };
+
+  struct ChatMessage {
+      std::string author;
+      std::string message;
+      Color color;
   };
 
   /**
@@ -115,21 +107,20 @@ namespace client {
       }
 
       /**
-       * @brief Attempts to establish a network connection and, on success,
-       * transitions the client to the menu state and announces the local
-       * player.
+       * @brief Connects to the server, transitions the client to the connected
+       * menu state, and announces the local player.
        *
-       * Initiates a connection using the internal network manager. If the
-       * connection is established, sets the client state to
-       * ClientState::CONNECTED_MENU and sends a PlayerInfo packet for the local
-       * player named "Player".
+       * Initiates a network connection; if the connection is established, sets
+       * the client state to ClientState::IN_CONNECTED_MENU and sends a
+       * PlayerInfo packet containing the current local player name.
        */
       void connect() {
         _networkManager.connect();
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo("Player");
+          PlayerInfoPacket packet =
+              PacketBuilder::makePlayerInfo(getPlayerName());
           send(packet);
         }
       }
@@ -143,13 +134,13 @@ namespace client {
        * the network manager is disconnected and the running flag is cleared.
        */
       void disconnect() {
-        if (_player_id == static_cast<std::uint32_t>(-1)) {
+        if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
           _networkManager.disconnect();
           _running.store(false, std::memory_order_release);
           return;
         }
         PlayerDisconnectPacket packet =
-            PacketBuilder::makePlayerDisconnect(_player_id);
+            PacketBuilder::makePlayerDisconnect(getPlayerId());
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
@@ -184,6 +175,21 @@ namespace client {
       }
 
       /**
+       * @brief Sets the local player's display name.
+       *
+       * Stores the provided string as the client's local player name, which is
+       * used for display and outgoing player-identifying messages.
+       *
+       * @param name The player name to store.
+       */
+      void setPlayerName(const std::string &name) {
+        std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
+        _playerName = name;
+        if (_player_id != INVALID_ID)
+          _playerNames[_player_id] = name;
+      }
+
+      /**
        * @brief Retrieve the ECS entity ID associated with an enemy identifier.
        *
        * @returns std::uint32_t The entity ID mapped to the given enemy_id, or
@@ -205,7 +211,7 @@ namespace client {
        * if no mapping exists.
        */
       std::uint32_t getPlayerEntity(std::uint32_t player_id) const {
-        std::shared_lock<std::shared_mutex> lock(_playerEntitiesMutex);
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         auto it = _playerEntities.find(player_id);
         if (it != _playerEntities.end()) {
           return it->second;
@@ -214,17 +220,12 @@ namespace client {
       }
 
       /**
-       * @brief Remove the entity associated with a player ID from the client
-       * registry.
+       * @brief Removes the entity mapping for the specified player ID.
        *
-       * Removes any mapping for the given playerId from the internal
-       * player-entity map.
-       *
-       * @param playerId ID of the player whose entity mapping should be
-       * removed.
+       * @param playerId Player identifier whose entity mapping will be removed.
        */
       void destroyPlayerEntity(std::uint32_t playerId) {
-        std::lock_guard<std::shared_mutex> lock(_playerEntitiesMutex);
+        std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
         _playerEntities.erase(playerId);
       }
 
@@ -242,6 +243,7 @@ namespace client {
 
       void createPlayerEntity(NewPlayerPacket packet);
       void createEnemyEntity(EnemySpawnPacket packet);
+      void createChatMessageUIEntity();
 
       void addProjectileEntity(std::uint32_t projectileId, Entity entity);
       Entity getProjectileEntity(std::uint32_t projectileId);
@@ -254,7 +256,42 @@ namespace client {
        * if no player is assigned.
        */
       std::uint32_t getPlayerId() const {
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
         return _player_id;
+      }
+
+      /**
+       * @brief Retrieves the local client's current player name.
+       *
+       * This accessor is thread-safe.
+       *
+       * @return std::string The local player's name; empty string if not set.
+       */
+      std::string getPlayerName() const {
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
+        return _playerName;
+      }
+
+      /**
+       * @brief Retrieve the display name associated with a player identifier.
+       *
+       * Looks up the name mapped to the given playerId. If no mapping exists
+       * and playerId equals (std::uint32_t)-1, returns "Server". If no mapping
+       * exists for any other id, returns "Unknown".
+       *
+       * @param playerId Player identifier to look up; the sentinel value
+       * `(std::uint32_t)-1` represents the server.
+       * @return std::string The player name, "Server" for the sentinel id, or
+       * "Unknown" if the id is not found.
+       */
+      std::string getPlayerNameById(const std::uint32_t playerId) const {
+        std::shared_lock<std::shared_mutex> lock(_playerStateMutex);
+        auto it = _playerNames.find(playerId);
+        if (it != _playerNames.end())
+          return it->second;
+        if (playerId == INVALID_ID)
+          return "Server";
+        return "Unknown";
       }
 
       /**
@@ -280,6 +317,20 @@ namespace client {
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
+
+      void sendChatMessage(const std::string &message);
+      void storeChatMessage(const std::string &author,
+                            const std::string &message, const Color color);
+      /**
+       * @brief Get a snapshot of stored chat messages.
+       *
+       * @return std::vector<ChatMessage> A vector containing a copy of all chat
+       * messages as they existed at the time of the call.
+       */
+      std::vector<ChatMessage> getChatMessages() const {
+        std::lock_guard<std::mutex> lock(_chatMutex);
+        return _chatMessages;
+      }
 
       /**
        * @brief Retrieve the client's current connection/game state.
@@ -309,11 +360,15 @@ namespace client {
       std::atomic<std::uint64_t> _packet_count;
       std::chrono::milliseconds _timeout;
       std::unordered_map<std::uint32_t, Entity> _playerEntities;
-      mutable std::shared_mutex _playerEntitiesMutex;
       std::unordered_map<std::uint32_t, Entity> _enemyEntities;
       std::unordered_map<std::uint32_t, Entity> _projectileEntities;
       std::mutex _projectileMutex;
-      std::uint32_t _player_id = static_cast<std::uint32_t>(-1);
+      std::uint32_t _player_id = INVALID_ID;
+      std::string _playerName;
+      std::unordered_map<std::uint32_t, std::string> _playerNames;
+      mutable std::shared_mutex _playerStateMutex;
+      std::vector<ChatMessage> _chatMessages;
+      mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
 
       void registerComponent();

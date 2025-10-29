@@ -13,10 +13,12 @@
 #include "Server.hpp"
 
 /**
- * @brief Send a JoinRoomResponse to a specific client indicating the result of
- * a join attempt.
+ * @brief Sends a JoinRoomResponse to the specified client indicating the join result.
  *
- * @param player_id ID of the client to receive the response.
+ * Sends a serialized JoinRoomResponse packet to the client identified by player_id.
+ * If serialization fails, logs an error and aborts sending.
+ *
+ * @param player_id ID of the client that will receive the response.
  * @param error Result code describing why the join succeeded or failed.
  */
 void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
@@ -24,15 +26,20 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
                                                   RoomError error) {
   auto response = PacketBuilder::makeJoinRoomResponse(error);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize JoinRoomResponse for client "
+              << player_id << std::endl;
+    return;
+  }
   server.getNetworkManager().sendToClient(
       player_id, reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
 }
 
 /**
- * @brief Send a MatchmakingResponse to the specified player indicating the
- * result of a matchmaking request.
+ * @brief Send a MatchmakingResponse to a specific player indicating the matchmaking result.
  *
+ * @param server Server instance whose network manager will deliver the response.
  * @param player_id ID of the target player to receive the response.
  * @param error Result code describing the matchmaking outcome.
  */
@@ -41,45 +48,51 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
                                                      RoomError error) {
   auto response = PacketBuilder::makeMatchmakingResponse(error);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize MatchmakingResponse for client "
+              << player_id << std::endl;
+    return;
+  }
   server.getNetworkManager().sendToClient(
       player_id, reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
 }
 
 /**
- * @brief Handle an incoming chat MessagePacket and broadcast it to the sender's
- * room.
+ * @brief Handle an incoming chat message and broadcast it to the sender's room.
  *
- * Deserializes a MessagePacket from the provided buffer, replaces the packet's
- * player_id with the sender's id, and broadcasts the validated packet to all
- * clients in the sender's room.
+ * Deserializes a ChatMessagePacket from the provided buffer, replaces the
+ * packet's player_id with the sender's id, and broadcasts the validated packet
+ * to all clients in the sender's room.
  *
- * @param server The server instance used to access game and network managers.
- * @param client The client that sent the packet; its player_id and room_id are
+ * @param server Server instance used to access game and network managers.
+ * @param client Client that sent the packet; its player_id and room_id are
  * used.
- * @param data Pointer to the serialized MessagePacket bytes.
+ * @param data Pointer to the serialized ChatMessagePacket bytes.
  * @param size Number of bytes available at `data`.
  * @return int `OK` on success, `KO` if deserialization fails or the client is
  * not in a room.
  */
-int packet::MessageHandler::handlePacket(server::Server &server,
-                                         server::Client &client,
-                                         const char *data, std::size_t size) {
+int packet::ChatMessageHandler::handlePacket(server::Server &server,
+                                             server::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
-      serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
+      serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
 
   if (!deserializedPacket) {
-    std::cerr << "[ERROR] Failed to deserialize MessagePacket from client "
+    std::cerr << "[ERROR] Failed to deserialize ChatMessagePacket from client "
               << client._player_id << std::endl;
     return KO;
   }
-  const MessagePacket &packet = deserializedPacket.value();
-  std::cout << "[MESSAGE] Player " << client._player_id << ": "
-            << packet.message << std::endl;
+  const ChatMessagePacket &packet = deserializedPacket.value();
+  std::string message = packet.message;
+  std::cout << "[MESSAGE] Player " << client._player_id << ": " << message
+            << std::endl;
 
-  MessagePacket validatedPacket = packet;
+  ChatMessagePacket validatedPacket = packet;
   validatedPacket.player_id = static_cast<std::uint32_t>(client._player_id);
 
   auto room = server.getGameManager().getRoom(client._room_id);
@@ -126,11 +139,7 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
 
   const PlayerInfoPacket &packet = deserializedPacket.value();
 
-  // Ensure null-termination of the name
-  char nameBuf[sizeof(packet.name) + 1];
-  std::memcpy(nameBuf, packet.name, sizeof(packet.name));
-  nameBuf[sizeof(packet.name)] = '\0';
-  std::string name(nameBuf);
+  std::string name = packet.name;
 
   client._player_name = name;
 
@@ -245,20 +254,15 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process an incoming PlayerDisconnectPacket and finalize the client's
- * disconnection.
+ * @brief Handle a PlayerDisconnectPacket from a client and finalize that
+ * client's disconnection.
  *
- * Validates and applies a PlayerDisconnectPacket from the provided buffer,
- * updates server and client connection state, removes the player from their
- * room and game if present, broadcasts the disconnect to remaining room
- * clients, and clears the client's server slot.
+ * Updates server and client state, removes the player from their room and game
+ * when present, broadcasts the disconnect and an announcement chat message to
+ * remaining room clients, and clears the client's server slot.
  *
- * @param server Server instance handling clients and rooms.
- * @param client Client instance corresponding to the sending connection.
- * @param data Pointer to the serialized PlayerDisconnectPacket bytes.
- * @param size Size of the serialized data in bytes.
- * @return int `OK` if the disconnection was processed successfully; `KO` if
- * packet deserialization fails or the packet's player_id does not match the
+ * @returns int `OK` if the disconnection was processed successfully; `KO` if
+ * packet deserialization fails or the packet's `player_id` does not match the
  * client.
  */
 int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
@@ -316,6 +320,12 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
           PacketBuilder::makePlayerDisconnect(client._player_id);
       broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
           server.getNetworkManager(), roomClients, disconnectPacket);
+
+      std::string msg = client._player_name + " has disconnected.";
+      auto chatMessagePacket = PacketBuilder::makeChatMessage(
+          msg, SERVER_SENDER_ID, 255, 255, 0, 255);
+      broadcast::Broadcast::broadcastMessageToRoom(
+          server.getNetworkManager(), roomClients, chatMessagePacket);
     }
   }
   server.clearClientSlot(client._player_id);
@@ -355,11 +365,8 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   const CreateRoomPacket &packet = deserializedPacket.value();
 
-  const size_t roomLen = strnlen(packet.room_name, sizeof(packet.room_name));
-  const size_t passLen = strnlen(packet.password, sizeof(packet.password));
-
-  std::string roomName(packet.room_name, roomLen);
-  std::string password(packet.password, passLen);
+  std::string roomName = packet.room_name;
+  std::string password = packet.password;
   auto newRoom = server.getGameManager().createRoom(roomName, password);
 
   if (!newRoom) {
@@ -453,8 +460,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   }
 
   if (room->hasPassword()) {
-    const size_t passLen = strnlen(packet.password, sizeof(packet.password));
-    std::string providedPassword(packet.password, passLen);
+    std::string providedPassword = packet.password;
 
     if (!room->checkPassword(providedPassword)) {
       ResponseHelper::sendJoinRoomResponse(server, client._player_id,
@@ -542,18 +548,9 @@ int packet::LeaveRoomHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a ListRoom request and send the current room list to the
- * requesting client.
+ * @brief Send the current list of active rooms to the requesting client.
  *
- * Deserializes a ListRoomPacket from the provided buffer, gathers all active
- * rooms, builds a ListRoomResponse containing each room's id, name, player
- * count, and max players, serializes that response, and sends it to the
- * requesting client.
- *
- * @param data Pointer to the incoming packet data.
- * @param size Size of the incoming packet data in bytes.
- * @return int `OK` on success, `KO` if deserialization fails or the request
- * cannot be processed.
+ * @returns int `OK` on success, `KO` if the request cannot be processed (for example, deserialization or serialization failure).
  */
 int packet::ListRoomHandler::handlePacket(server::Server &server,
                                           server::Client &client,
@@ -574,9 +571,7 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
   for (const auto &room : rooms) {
     RoomInfo info;
     info.room_id = room->getRoomId();
-    std::strncpy(info.room_name, room->getRoomName().c_str(),
-                 sizeof(info.room_name) - 1);
-    info.room_name[sizeof(info.room_name) - 1] = '\0';
+    info.room_name = room->getRoomName();
     info.player_count = room->getPlayerCount();
     info.max_players = room->getMaxPlayers();
     roomInfos.push_back(info);
@@ -586,6 +581,12 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
 
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(listRoomResponsePacket);
+  if (serializedBuffer.empty()) {
+    std::cerr
+        << "[ERROR] Failed to serialize ListRoomResponsePacket for client "
+        << client._player_id << std::endl;
+    return KO;
+  }
   server.getNetworkManager().sendToClient(
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),

@@ -201,17 +201,23 @@ bool ecs::CollisionSystem::overlapAABBAABB(const Entity &a,
 }
 
 /**
- * @brief Process a collision between a projectile and a player, apply damage,
- * emit events, and destroy involved entities.
+ * @brief Handle a collision where a projectile strikes a player: apply damage,
+ * emit events, and destroy affected entities.
  *
- * If the projectile is an enemy-owned projectile, subtract its damage from the
- * player's health, enqueue either a PlayerHitEvent or PlayerDestroyEvent as
- * appropriate, enqueue a ProjectileDestroyEvent for the projectile, and ensure
- * the projectile is destroyed. If the projectile or player is null, or the
- * projectile is a player-owned projectile, no action is taken.
+ * If the projectile is enemy-owned and both the player's health and the
+ * projectile's damage are available, subtract the projectile's damage from the
+ * player's health. If the player's health becomes less than or equal to zero,
+ * enqueue a PlayerDiedEvent (with player_id and player_name) followed by a
+ * PlayerDestroyEvent and destroy the player; otherwise enqueue a PlayerHitEvent
+ * with damage and position. In all processed collisions enqueue a
+ * ProjectileDestroyEvent and destroy the projectile.
  *
- * @param projectile Shared pointer to the projectile involved in the collision;
- * must have a corresponding ProjectileComponent.
+ * The function returns without action if the projectile or player is null, the
+ * projectile lacks a ProjectileComponent, the projectile is player-owned, or
+ * either required health/damage is missing.
+ *
+ * @param projectile Shared pointer to the projectile involved; must correspond
+ * to an entity with a ProjectileComponent.
  * @param player Shared pointer to the player struck by the projectile.
  */
 void ecs::CollisionSystem::handlePlayerProjectileCollision(
@@ -236,6 +242,11 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
   player->setHealth(player->getHealth().value() -
                     projectile->getDamage().value());
   if (player->getHealth().value() <= 0) {
+    queue::PlayerDiedEvent playerDiedEvent;
+    playerDiedEvent.player_id = player->getPlayerId();
+    playerDiedEvent.player_name = player->getName();
+    _eventQueue->addRequest(playerDiedEvent);
+
     queue::PlayerDestroyEvent playerDestroyEvent;
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;
@@ -269,16 +280,18 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
 /**
  * @brief Resolve a collision between a player and an enemy.
  *
- * Applies fixed collision damage to both the enemy and the player, enqueues
- * hit or destroy events for each as appropriate, destroys entities whose
- * health reaches zero, and awards the enemy's score to the player when the
- * enemy is destroyed.
+ * Applies a fixed collision damage to both entities, enqueues hit or destroy
+ * events for each as appropriate, destroys entities whose health reaches
+ * zero via the game interface, and awards the enemy's score to the player
+ * when the enemy is destroyed.
  *
- * If the system's event queue is not set, no damage, events, destruction,
- * or score updates are performed.
+ * Preconditions: both `enemy` and `player` must have a defined health value;
+ * the function returns immediately if either health is absent.
  *
- * @param enemy The enemy involved in the collision.
- * @param player The player involved in the collision.
+ * @param enemy The enemy involved in the collision (must provide health, id,
+ * position, and score).
+ * @param player The player involved in the collision (must provide health, id,
+ * name, and position).
  */
 void ecs::CollisionSystem::handlePlayerEnemyCollision(
     std::shared_ptr<game::Enemy> enemy, std::shared_ptr<game::Player> player) {
@@ -310,6 +323,11 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
     _eventQueue->addRequest(enemyHitEvent);
   }
   if (player->getHealth().value() <= 0) {
+    queue::PlayerDiedEvent playerDiedEvent;
+    playerDiedEvent.player_id = player->getPlayerId();
+    playerDiedEvent.player_name = player->getName();
+    _eventQueue->addRequest(playerDiedEvent);
+
     queue::PlayerDestroyEvent playerDestroyEvent;
     playerDestroyEvent.player_id = player->getPlayerId();
     playerDestroyEvent.x = player->getPosition().first;

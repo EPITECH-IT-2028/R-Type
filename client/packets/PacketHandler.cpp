@@ -17,23 +17,43 @@
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
-int packet::MessageHandler::handlePacket(client::Client &client,
-                                         const char *data, std::size_t size) {
+/**
+ * @brief Handle an incoming chat message packet and store it for the specified player.
+ *
+ * @param data Pointer to the serialized packet bytes.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` if the packet was deserialized and the message stored, `packet::KO` if deserialization failed.
+ */
+int packet::ChatMessageHandler::handlePacket(client::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto packetOpt =
-      serialization::BitserySerializer::deserialize<MessagePacket>(buffer);
+      serialization::BitserySerializer::deserialize<ChatMessagePacket>(buffer);
   if (!packetOpt) {
-    TraceLog(LOG_ERROR, "[MESSAGE] Failed to deserialize packet");
+    TraceLog(LOG_ERROR, "[CHAT MESSAGE] Failed to deserialize packet");
     return packet::KO;
   }
 
-  const MessagePacket &packet = packetOpt.value();
-  size_t len = strnlen(packet.message, sizeof(packet.message));
-  TraceLog(LOG_INFO, "[MESSAGE] Server : %.*s", len, packet.message);
-  return 0;
+  const ChatMessagePacket &packet = packetOpt.value();
+  const std::string playerName = client.getPlayerNameById(packet.player_id);
+  std::string message = packet.message;
+  Color color = {packet.r, packet.g, packet.b, packet.a};
+  client.storeChatMessage(playerName, message, color);
+  return packet::OK;
 }
 
+/**
+ * @brief Handle a NewPlayerPacket and create the corresponding player entity on the client.
+ *
+ * Deserializes the provided byte buffer into a NewPlayerPacket and, if successful,
+ * instructs the client to create a new player entity using the packet data.
+ *
+ * @param data Pointer to the serialized packet payload.
+ * @param size Length of the packet payload in bytes.
+ * @return int `packet::OK` on successful handling and entity creation, `packet::KO` if deserialization fails.
+ */
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {
   serialization::Buffer buffer(data, data + size);
@@ -47,9 +67,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO,
-           "[NEW PLAYER] Player ID: %u spawned at (%f, %f) with speed %f",
-           packet.player_id, packet.x, packet.y, packet.speed);
+  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
+           packet.player_name.c_str(), packet.player_id, packet.x, packet.y,
+           packet.speed);
 
   client.createPlayerEntity(packet);
   return packet::OK;

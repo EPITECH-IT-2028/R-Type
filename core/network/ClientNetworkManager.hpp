@@ -1,21 +1,22 @@
 #pragma once
 
+#include <queue>
 #include "BaseNetworkManager.hpp"
 #include "PacketFactory.hpp"
-#include <queue>
 
 namespace network {
 
   struct ReceivedPacket {
-    std::vector<char> data;
-    asio::ip::udp::endpoint sender;
+      std::vector<char> data;
+      asio::ip::udp::endpoint sender;
   };
 
   class ClientNetworkManager : public BaseNetworkManager {
     public:
       ClientNetworkManager(const std::string &host, std::uint16_t port);
 
-      void startReceive(const std::function<void(const char *, std::size_t)> &callback) override;
+      void startReceive(const std::function<void(const char *, std::size_t)>
+                            &callback) override;
 
       void receivePackets();
       void processReceivedPackets(client::Client &client);
@@ -46,7 +47,8 @@ namespace network {
 
       void startAsyncReceive();
       void handleReceive(const asio::error_code &ec, std::size_t length);
-      void processPacket(const char *data, std::size_t size, client::Client &client);
+      void processPacket(const char *data, std::size_t size,
+                         client::Client &client);
   };
 
 }  // namespace network
