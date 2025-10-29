@@ -481,6 +481,11 @@ bool server::Server::initializePlayerInRoom(Client &client) {
                                    pos.first, pos.second, speed, max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize ownPlayerPacket for client "
+              << client._player_id << std::endl;
+    return false;
+  }
   _networkManager.sendToClient(
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),

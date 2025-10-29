@@ -97,12 +97,17 @@ class PlayersManagement(Screen):
         table = self.query_one("#players_table", DataTable)
         table.clear()
 
-        players = self.db.get_all_players()
-        for player in players:
-            table.add_row(
-                player["id"], player["username"], player["ip_address"],
-                player["created_at"], player["status"]
-            )
+        try:
+            players = self.db.get_all_players()
+            for player in players:
+                table.add_row(
+                    player["id"], player["username"], player["ip_address"],
+                    player["created_at"], player["status"]
+                )
+                label = self.query_one("#selected_info", Label)
+                label.update(f"Total players: {len(players)} | Click on a row to open actions menu")
+        except Exception as e:
+                    self.notify(f"Error loading players: {e}", severity="error")
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         self.selected_row = event.row_key
@@ -137,6 +142,7 @@ class PlayersManagement(Screen):
 
         if self.db.ban_ip(ip_address, "Banned via admin panel"):
             self.notify(f"IP {ip_address} has been banned!", severity="warning")
+            self.load_players()
         else:
             self.notify(f"IP {ip_address} is already banned!", severity="warning")
 
