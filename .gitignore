@@ -54,3 +54,5 @@ CMakeUserPresets.json
 *.dwo
 
 tests/html/*
+
+__pycache__/
