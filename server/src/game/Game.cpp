@@ -244,7 +244,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
  * @param player_id Identifier of the player to remove.
  */
 void game::Game::destroyPlayer(int player_id) {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   auto it = _players.find(player_id);
   if (it != _players.end()) {
     std::uint32_t entity_id = it->second->getEntityId();

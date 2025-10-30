@@ -369,7 +369,7 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
           server.getNetworkManager(), roomClients, chatMessagePacket);
     }
   }
-  server.clearClientSlot(client._player_id);
+  server.enqueueClientRemoval(client._player_id);
   return OK;
 }
 

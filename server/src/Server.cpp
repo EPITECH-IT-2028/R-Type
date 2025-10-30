@@ -67,24 +67,6 @@ void server::Server::start() {
   _networkManager.run();
 }
 
-void server::Server::processGameEvents() {
-  auto rooms = _gameManager->getAllRooms();
-
-  for (auto &room : rooms) {
-    if (!room || !room->isActive()) {
-      continue;
-    }
-
-    queue::GameEvent event;
-
-    while (room->getGame().getEventQueue().popRequest(event)) {
-      handleGameEvent(event, room->getRoomId());
-    }
-  }
-
-  _gameManager->removeEmptyRooms();
-}
-
 /**
  * @brief Gracefully stops the server and shuts down its networking and game
  * subsystems.
@@ -613,7 +595,9 @@ void server::Server::clearClientSlot(int player_id) {
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
       if (client->_room_id != NO_ROOM)
+      {
         _gameManager->leaveRoom(client);
+      }
       client.reset();
       return;
     }
@@ -748,4 +732,41 @@ bool server::Server::initializePlayerInRoom(Client &client) {
 void server::Server::clearLastProcessedSeq() {
   std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
   _lastProcessedSeq.clear();
+}
+
+void server::Server::enqueueClientRemoval(std::uint32_t player_id) {
+  std::lock_guard<std::mutex> lock(_clientsToRemoveMutex);
+  _clientsToRemove.push(player_id);
+}
+
+void server::Server::processPendingClientRemovals() {
+  std::queue<std::uint32_t> toRemove;
+  {
+    std::lock_guard<std::mutex> lock(_clientsToRemoveMutex);
+    std::swap(toRemove, _clientsToRemove);
+  }
+  while (!toRemove.empty()) {
+    clearClientSlot(toRemove.front());
+    toRemove.pop();
+  }
+}
+
+void server::Server::processGameEvents() {
+  auto rooms = _gameManager->getAllRooms();
+
+  for (auto &room : rooms) {
+    if (!room || !room->isActive()) {
+      continue;
+    }
+
+    queue::GameEvent event;
+
+    processPendingClientRemovals();
+
+    while (room->getGame().getEventQueue().popRequest(event)) {
+      handleGameEvent(event, room->getRoomId());
+    }
+  }
+
+  _gameManager->removeEmptyRooms();
 }

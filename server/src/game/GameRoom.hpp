@@ -312,10 +312,10 @@ namespace game {
        */
       void startCountdown(int seconds,
                           std::shared_ptr<asio::steady_timer> timer) {
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         RoomStatus expected = RoomStatus::WAITING;
         if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
           _countdown = seconds;
-          std::lock_guard<std::shared_mutex> lock(_mutex);
           _countdown_timer = timer;
         }
       }

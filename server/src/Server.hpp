@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <queue>
 #include <shared_mutex>
 #include <unordered_map>
 #include <vector>
@@ -106,6 +107,9 @@ namespace server {
         _lastProcessedSeq[player_id] = sequence_number;
       }
 
+      void enqueueClientRemoval(std::uint32_t player_id);
+      void processPendingClientRemovals();
+
     private:
       void startReceive();
       void handleReceive(const char *data, std::size_t bytes_transferred);
@@ -145,11 +149,15 @@ namespace server {
       mutable std::mutex _lastProcessedSeqMutex;
       std::unordered_map<uint32_t, uint64_t> _lastProcessedSeq;
 
+      mutable std::mutex _clientsToRemoveMutex;
+      std::queue<std::uint32_t> _clientsToRemove;
+
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;
       std::uint16_t _port;
       int _player_count;
       int _next_player_id;
       std::uint32_t _projectile_count;
+
   };
 }  // namespace server
