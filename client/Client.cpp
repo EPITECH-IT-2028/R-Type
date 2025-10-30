@@ -230,7 +230,7 @@ namespace client {
    * initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
-    std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
+    std::unique_lock<std::shared_mutex> lock(_playerStateMutex);
     
     if (_playerEntities.find(packet.player_id) != _playerEntities.end()) {
       TraceLog(LOG_WARNING,
@@ -238,6 +238,8 @@ namespace client {
                packet.player_id);
       return;
     }
+
+    lock.unlock();
     
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player,
@@ -270,6 +272,8 @@ namespace client {
     anim.loop = false;
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
+
+    lock.lock();
 
     if (_player_id == INVALID_ID) {
       _player_id = packet.player_id;
@@ -470,20 +474,8 @@ namespace client {
   void Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
     std::lock_guard<std::mutex> lock(_unacknowledgedPacketsMutex);
     auto it = _unacknowledged_packets.find(sequence_number);
-    if (it != _unacknowledged_packets.end()) {
-      TraceLog(LOG_INFO,
-               "[ACK] Client removing acknowledged packet %u (had %zu unacked "
-               "packets)",
-               sequence_number, _unacknowledged_packets.size());
+    if (it != _unacknowledged_packets.end())
       _unacknowledged_packets.erase(it);
-      TraceLog(LOG_INFO,
-               "[ACK] Client now has %zu unacknowledged packets remaining",
-               _unacknowledged_packets.size());
-    } else {
-      TraceLog(LOG_WARNING,
-               "[ACK] Client tried to remove non-existent packet %u",
-               sequence_number);
-    }
   }
 
   /**
@@ -521,8 +513,6 @@ namespace client {
         }
         packet.resend_count++;
         packet.last_sent = now;
-        TraceLog(LOG_INFO, "Resending packet %u tried %d of %d", seq,
-                 packet.resend_count, MAX_RESEND_ATTEMPTS);
         toSend.push_back(packet.data);
       }
       for (auto seq : toDrop) {

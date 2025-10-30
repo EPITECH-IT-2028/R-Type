@@ -615,10 +615,9 @@ bool server::Server::initializePlayerInRoom(Client &client) {
  * are logged to stderr.
  *
  * @param room Shared pointer to the game room whose countdown should be driven.
- *             Must be non-null and in STARTING state for the function to take
- * effect.
- * @param timer Shared pointer to an asio steady_timer used to schedule the next
- *              countdown tick.
+ * Must be non-null and in STARTING state for the function to take effect.
+ * @param timer Shared pointer to an asio steady timer used to schedule the next
+ * countdown tick.
  */
 void server::Server::handleCountdown(
     std::shared_ptr<game::GameRoom> room,
@@ -733,19 +732,6 @@ void server::Server::clearClientSlot(int player_id) {
     }
   }
 }
-
-/**
- * @brief Drive a room's countdown and start the game when it reaches zero.
- *
- * Validates the client's state, room assignment, and name; creates a player
- * entity in the room's game, stores the entity id on the client, sends the
- * new-player state to the client, broadcasts existing players and the new
- * player to the room, and starts the room countdown when conditions are met.
- *
- * @param client Client instance to initialize (modified in-place).
- * @return true if the player was successfully initialized in the room, false
- * otherwise.
- */
 
 void server::Server::handleUnacknowledgedPackets() {
   std::lock_guard<std::shared_mutex> lock(_clientsMutex);

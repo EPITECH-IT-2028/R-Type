@@ -111,11 +111,6 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::ProjectileDestroy:
     case PacketType::MatchmakingRequest:
       return true;
-    case PacketType::PlayerMove:
-    case PacketType::PlayerInput:
-    case PacketType::Heartbeat:
-    case PacketType::Ack:
-      return false;
     default:
       return false;
   }

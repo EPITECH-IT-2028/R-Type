@@ -536,7 +536,7 @@ struct PacketBuilder {
       packet.game_start = started;
       packet.sequence_number = sequence_number;
 
-      if (!setPayloadSizeFromSerialization(packet, "makeProjectileDestroy"))
+      if (!setPayloadSizeFromSerialization(packet, "makeGameStart"))
         return {};
       return packet;
     }

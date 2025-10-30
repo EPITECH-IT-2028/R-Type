@@ -198,9 +198,6 @@ namespace client {
           if constexpr (requires { packet.sequence_number; }) {
             if (shouldAcknowledgePacketType(packet.header.type)) {
               addUnacknowledgedPacket(packet.sequence_number, serializedData);
-              TraceLog(LOG_INFO,
-                       "[SEND] Added packet %u to unacknowledged list",
-                       packet.sequence_number);
             }
           }
           _sequence_number.fetch_add(1, std::memory_order_release);

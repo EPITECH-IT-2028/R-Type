@@ -162,8 +162,8 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
               << client._player_id << std::endl;
   }
 
-  std::cout << "[INFO] Player " << client._player_id << " registered in menu"
-            << std::endl;
+  std::cout << "[INFO] Client " << client._player_id << " (" << name
+            << ") registered in menu" << std::endl;
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
@@ -273,7 +273,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   if (lastProcessedOpt.has_value()) {
     lastSeq = lastProcessedOpt.value();
   }
-  if (packet.sequence_number <= lastSeq) {
+  if (packet.sequence_number == lastSeq) {
     server.getNetworkManager().sendToClient(
         client._player_id,
         std::make_shared<std::vector<uint8_t>>(
@@ -303,10 +303,6 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(ackPacket));
   server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
-
-  std::cout << "Sending ACK to client " << client._player_id
-            << " for projectile " << projectileId << " with sequence number "
-            << playerShotPacket.sequence_number << std::endl;
 
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerShootToRoom(

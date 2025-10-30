@@ -46,7 +46,7 @@ void serialize(S &s, ChatMessagePacket &packet) {
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
   s.value4b(packet.player_id);
-  s.text1b(packet.message, SERIALIZE_32_BYTES);
+  s.text1b(packet.message, SERIALIZE_512_BYTES);
   s.value1b(packet.r);
   s.value1b(packet.g);
   s.value1b(packet.b);

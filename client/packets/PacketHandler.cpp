@@ -91,10 +91,6 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
 
   const NewPlayerPacket &packet = packetOpt.value();
   
-  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
-           packet.player_name.c_str(), packet.player_id, packet.x, packet.y,
-           packet.speed);
-  
   client.createPlayerEntity(packet);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
@@ -145,10 +141,6 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
     ecsManager.destroyEntity(playerEntity);
     client.destroyPlayerEntity(packet.player_id);
 
-    if (client.getPlayerId() == packet.player_id) {
-      TraceLog(LOG_INFO, "[PLAYER DEATH] Our player ID %u died",
-               packet.player_id);
-    }
     sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER DEATH] Failed to remove player %u: %s",
@@ -574,7 +566,6 @@ int packet::GameStartHandler::handlePacket(client::Client &client,
   TraceLog(LOG_INFO, "[DEBUG] Game is starting!");
 
   client.setClientState(client::ClientState::IN_GAME);
-  TraceLog(LOG_INFO, "[GAME START] Client state updated to IN_GAME");
 
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
@@ -608,9 +599,6 @@ int packet::PlayerShootHandler::handlePacket(client::Client &client,
   }
 
   const PlayerShootPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO, "[PLAYER SHOOT] A player shot in %f %f is shooting!",
-           packet.x, packet.y);
-
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
@@ -636,9 +624,6 @@ int packet::AckPacketHandler::handlePacket(client::Client &client,
   }
 
   const AckPacket &packet = packetOpt.value();
-  TraceLog(LOG_INFO, "[ACK] Received ack packet with sequence number %u",
-           packet.sequence_number);
-
   client.removeAcknowledgedPacket(packet.sequence_number);
   return packet::OK;
 }
