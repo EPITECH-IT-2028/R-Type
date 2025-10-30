@@ -82,6 +82,8 @@ constexpr unsigned char ASCII_NULL = 0x00;
 constexpr unsigned char ASCII_SPACE = 0x20;
 constexpr unsigned char ASCII_DEL = 0x7f;
 
+constexpr int FRAME_RATE = 30;
+
 /* Serialization */
 constexpr std::size_t SERIALIZE_32_BYTES = 32;
 constexpr std::size_t SERIALIZE_512_BYTES = 512;

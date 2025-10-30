@@ -233,8 +233,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
-              specificEvent.player_id, specificEvent.x, specificEvent.y,
-              specificEvent.sequence_number);
+              specificEvent.player_id, specificEvent.sequence_number,
+              specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
         } else {

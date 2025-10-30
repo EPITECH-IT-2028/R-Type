@@ -1,7 +1,5 @@
 #include "PacketHandler.hpp"
-#include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -11,6 +9,7 @@
 #include "Packet.hpp"
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
+#include "ServerInputSystem.hpp"
 
 /**
  * @brief Sends a JoinRoomResponse to the specified client indicating the join result.
@@ -732,60 +731,23 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
   const PlayerInputPacket &packet = deserializedPacket.value();
   auto room = server.getGameManager().getRoom(client._room_id);
-  if (!room || !room->isActive()) {
+  if (!room) {
+    return KO;
+  }
+  auto sis = room->getGame().getServerInputSystem();
+  if (!sis) {
+    return KO;
+  }
+  if (client._entity_id == static_cast<Entity>(-1)) {
+    std::cerr << "[ERROR] Client " << client._player_id
+              << " has invalid entity_id" << std::endl;
     return KO;
   }
 
-  auto &game = room->getGame();
-  float deltaTime = game.getDeltaTime();
+  const ecs::PlayerInput packetInput = {
+      static_cast<MovementInputType>(packet.input),
+      static_cast<int>(packet.sequence_number)};
 
-  if (deltaTime == 0.0f) {
-    deltaTime = 0.016f;
-  }
-
-  auto player = room->getGame().getPlayer(client._player_id);
-  if (!player) {
-    return KO;
-  }
-
-  player->setSequenceNumber(packet.sequence_number);
-
-  float moveDistance = player->getSpeed() * deltaTime;
-
-  float dirX = 0.0f;
-  float dirY = 0.0f;
-
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::UP))
-    dirY -= 1.0f;
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::DOWN))
-    dirY += 1.0f;
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::LEFT))
-    dirX -= 1.0f;
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::RIGHT))
-    dirX += 1.0f;
-
-  float length = std::sqrt(dirX * dirX + dirY * dirY);
-  if (length > 0.0f) {
-    dirX /= length;
-    dirY /= length;
-  }
-
-  float newX = player->getPosition().first + dirX * moveDistance;
-  float newY = player->getPosition().second + dirY * moveDistance;
-
-  newX =
-      std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
-  newY =
-      std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
-
-  player->setPosition(newX, newY);
-
-  auto movePacket = PacketBuilder::makePlayerMove(
-      client._player_id, player->getSequenceNumber().value_or(0), newX, newY);
-
-  auto roomClients = room->getClients();
-  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
-                                                  roomClients, movePacket);
-
+  sis->queueInput(client._entity_id, packetInput);
   return OK;
 }
