@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include <raylib.h>
 #include <cstdint>
 #include <cstring>
 #include "AssetManager.hpp"
@@ -69,6 +70,7 @@ namespace client {
       renderSystem->setClient(this);
 
     createBackgroundEntities();
+    createStartMenuEntity();
     createChatMessageUIEntity();
   }
 
@@ -211,17 +213,33 @@ namespace client {
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
   }
 
+  void Client::createStartMenuEntity() {
+    Image startScreenImage =
+        asset::AssetManager::loadImage(renderManager::START_SCREEN_PATH);
+    float screenWidth = GetScreenWidth();
+    float scaleX = 0;
+    if (startScreenImage.data != nullptr && startScreenImage.width > 0)
+      scaleX = screenWidth / startScreenImage.width;
+
+    auto startScreen = _ecsManager.createEntity();
+    _ecsManager.addComponent<ecs::RenderComponent>(
+        startScreen, {renderManager::START_SCREEN_PATH});
+    _ecsManager.addComponent<ecs::PositionComponent>(startScreen, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::ScaleComponent>(startScreen,
+                                                  {scaleX, scaleX});
+  }
+
   /**
    * @brief Create and register a player entity from a NewPlayerPacket.
    *
    * Creates an ECS entity for the player, attaches position, render, sprite,
    * scale, player tag, and sprite animation components, records the mapping
-   * from player ID to entity and player name, and if no local player ID is set,
-   * assigns the local player ID, stores the local player name, and tags the
-   * entity as the local player.
+   * from player ID to entity and player name, and if no local player ID is
+   * set, assigns the local player ID, stores the local player name, and tags
+   * the entity as the local player.
    *
-   * @param packet Packet containing the player's ID, null-terminated name, and
-   * initial position (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name,
+   * and initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -262,12 +280,13 @@ namespace client {
    * @brief Creates and registers an enemy entity from spawn packet data.
    *
    * Creates an ECS entity populated with position, velocity, render, sprite,
-   * scale, and animation components, then records the mapping from the packet's
-   * enemy_id to the created entity. If an entity with the same enemy_id already
-   * exists, logs a warning and returns without creating a new entity.
+   * scale, and animation components, then records the mapping from the
+   * packet's enemy_id to the created entity. If an entity with the same
+   * enemy_id already exists, logs a warning and returns without creating a
+   * new entity.
    *
-   * @param packet Spawn packet containing `enemy_id` and initial position `x`,
-   * `y`.
+   * @param packet Spawn packet containing `enemy_id` and initial position
+   * `x`, `y`.
    */
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
     if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
@@ -317,7 +336,8 @@ namespace client {
    * @brief Associate a projectile identifier with its ECS entity for later
    * lookup.
    *
-   * Stores the mapping in the client's projectile map in a thread-safe manner.
+   * Stores the mapping in the client's projectile map in a thread-safe
+   * manner.
    *
    * @param projectileId Unique identifier for the projectile.
    * @param entity ECS entity corresponding to the projectileId.
@@ -360,7 +380,8 @@ namespace client {
   /**
    * @brief Transmit the local player's current input flags to the server.
    *
-   * If the client has not been assigned a local player ID, the call is ignored.
+   * If the client has not been assigned a local player ID, the call is
+   * ignored.
    *
    * @param input Bitmask of player input flags (each bit represents an input
    * action).
@@ -383,8 +404,8 @@ namespace client {
   }
 
   /**
-   * @brief Send a shoot action for the local player to the server at the given
-   * world coordinates.
+   * @brief Send a shoot action for the local player to the server at the
+   * given world coordinates.
    *
    * If the local player ID is unassigned, no packet is sent and the function
    * returns immediately.
@@ -475,8 +496,8 @@ namespace client {
    * Sends a chat message from the local player to the server.
    *
    * If the local player ID is not assigned, the function logs a warning and
-   * does nothing. On failure to build or send the packet, the function logs an
-   * error.
+   * does nothing. On failure to build or send the packet, the function logs
+   * an error.
    *
    * @param message The text of the chat message to send.
    */

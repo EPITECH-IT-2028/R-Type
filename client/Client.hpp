@@ -385,6 +385,7 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
+      void createStartMenuEntity();
 
       Challenge _challenge;
       ecs::ECSManager &_ecsManager;
