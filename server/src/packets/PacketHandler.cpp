@@ -292,21 +292,28 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
 
   auto playerShotPacket =
       PacketBuilder::makePlayerShoot(pos.first, pos.second, projectileType,
-                                     room->getGame().getSequenceNumber());
+                                     room->getGame().fetchAndIncrementSequenceNumber());
+  auto playerShotBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(playerShotPacket));
 
-  server.setLastProcessedSeq(client._player_id, packet.sequence_number);
+  server.setLastProcessedSeq(client._player_id, playerShotPacket.sequence_number);
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(
       serialization::BitserySerializer::serialize(ackPacket));
   server.getNetworkManager().sendToClient(client._player_id, ackBuffer);
+
   std::cout << "Sending ACK to client " << client._player_id
             << " for projectile " << projectileId << " with sequence number "
-            << room->getGame().getSequenceNumber() << std::endl;
+            << playerShotPacket.sequence_number << std::endl;
+
   auto roomClients = room->getClients();
   broadcast::Broadcast::broadcastPlayerShootToRoom(
       server.getNetworkManager(), roomClients, playerShotPacket);
 
+  for (auto &client : roomClients) {
+    client->addUnacknowledgedPacket(playerShotPacket.sequence_number, playerShotBuffer);
+  }
   return OK;
 }
 

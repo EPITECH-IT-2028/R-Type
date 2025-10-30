@@ -90,6 +90,7 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::GameEnd:
     case PacketType::PlayerInfo:
     case PacketType::PlayerShoot:
+    case PacketType::PlayerHit:
     case PacketType::PlayerDeath:
     case PacketType::CreateRoom:
     case PacketType::JoinRoom:
@@ -99,6 +100,7 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::NewPlayer:
     case PacketType::EnemySpawn:
     case PacketType::EnemyDeath:
+    case PacketType::EnemyHit:
     case PacketType::ProjectileSpawn:
     case PacketType::ProjectileDestroy:
     case PacketType::MatchmakingRequest:
