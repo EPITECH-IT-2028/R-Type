@@ -9,14 +9,15 @@ jobs:
   check_formatting:
     name: Check Code Formatting
     runs-on: ubuntu-24.04
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install clang-format 22
         run: |
           set -e
@@ -35,8 +36,9 @@ jobs:
                            game_engine/**/*.cpp game_engine/**/*.hpp
 
       - name: Commit formatted code (if any)
+        if: github.ref != 'refs/heads/main'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(format): apply clang-format"
           branch: ${{ github.head_ref }}
-          file_pattern: "server/**/*.cpp server/**/*.hpp client/**/*.cpp client/**/*.hpp core/**/*.cpp core/**/*.hpp game_engine/**/*.cpp game_engine/**/*.hpp"
+          file_pattern: "**/*.cpp **/*.hpp"
