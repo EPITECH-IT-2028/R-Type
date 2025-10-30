@@ -291,11 +291,12 @@ template <typename S>
 /**
  * @brief Serialize a CreateRoomPacket into the provided serializer.
  *
- * Writes the packet header (type and size), the room name as a fixed 32-byte field,
- * the maximum player count, the privacy flag, and the password as a fixed 32-byte field.
+ * Writes the packet header (type and size), the room name as a fixed 32-byte
+ * field, the maximum player count, the privacy flag, and the password as a
+ * fixed 32-byte field.
  *
- * @param packet The CreateRoomPacket to serialize; its header, `room_name` (32 bytes),
- *               `max_players`, `is_private`, and `password` (32 bytes) are written.
+ * @param packet The CreateRoomPacket to serialize; its header, `room_name` (32
+ * bytes), `max_players`, `is_private`, and `password` (32 bytes) are written.
  */
 void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.header.type);
