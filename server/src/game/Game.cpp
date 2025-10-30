@@ -178,7 +178,7 @@ void game::Game::stop() {
  * - calculates and stores frame delta time in `_deltaTime`,
  * - updates the enemy, projectile, and collision systems with the delta time,
  * - runs enemy spawn logic,
- * - sleeps approximately 16 milliseconds to cap frame pacing.
+ * - dynamically sleeps to maintain a consistent tick rate.
  *
  * The loop exits when `_running` becomes false or when any required system
  * (enemy, projectile, collision) is not available, in which case the running
@@ -190,18 +190,19 @@ void game::Game::gameLoop() {
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
+  constexpr std::chrono::nanoseconds tickDuration(NANOSECONDS_IN_SECOND / TPS);
 
   while (_running) {
+    auto frameStart = std::chrono::high_resolution_clock::now();
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
       std::cerr << "Error: ECS Manager or Systems not initialized."
                 << std::endl;
       _running = false;
       break;
     }
-    auto now = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> deltaTime = now - lastTime;
+    std::chrono::duration<float> deltaTime = frameStart - lastTime;
     _deltaTime.store(deltaTime.count());
-    lastTime = now;
+    lastTime = frameStart;
 
     _serverInputSystem->update(deltaTime.count());
     _enemySystem->update(deltaTime.count());
@@ -210,7 +211,11 @@ void game::Game::gameLoop() {
 
     spawnEnemy(deltaTime.count());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
+    auto frameEnd = std::chrono::high_resolution_clock::now();
+    auto frameDuration = frameEnd - frameStart;
+    auto sleepTime = tickDuration - frameDuration;
+    if (sleepTime > std::chrono::nanoseconds(0))
+      std::this_thread::sleep_for(sleepTime);
   }
 }
 
