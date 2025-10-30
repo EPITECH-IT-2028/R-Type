@@ -620,7 +620,6 @@ int packet::PongHandler::handlePacket(client::Client &client, const char *data,
       pingComp.ping = ping;
     }
   }
-  TraceLog(LOG_INFO, "[PONG] Received pong, RTT: %u ms", ping);
   return packet::OK;
 }
 
