@@ -4,6 +4,10 @@
 #include <deque>
 
 namespace ecs {
+  constexpr size_t MAX_INTERPOLATION_STATES = 10;
+  constexpr double INTERPOLATION_DELAY = 0.05;
+  constexpr float MAX_EXTRAPOLATION = 1.15f;
+
   /**
    * @brief Represents a single state event of an entity at a specific time.
    */
@@ -22,8 +26,4 @@ namespace ecs {
   struct StateHistoryComponent {
     std::deque<EntityState> states;
   };
-
-  constexpr size_t MAX_INTERPOLATION_STATES = 10;
-  constexpr double INTERPOLATION_DELAY = 0.1;
-
 }  // namespace ecs
