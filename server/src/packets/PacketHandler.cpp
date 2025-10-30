@@ -273,7 +273,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
   if (lastProcessedOpt.has_value()) {
     lastSeq = lastProcessedOpt.value();
   }
-  if (packet.sequence_number == lastSeq) {
+  if (packet.sequence_number <= lastSeq) {
     server.getNetworkManager().sendToClient(
         client._player_id,
         std::make_shared<std::vector<uint8_t>>(

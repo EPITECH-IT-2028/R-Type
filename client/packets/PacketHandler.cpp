@@ -234,10 +234,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
     position.x = packet.x;
     position.y = packet.y;
 
-    if (client.getPlayerId() == packet.player_id) {
-      client.updateSequenceNumber(packet.sequence_number);
-    }
-
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s",
              packet.player_id, e.what());
