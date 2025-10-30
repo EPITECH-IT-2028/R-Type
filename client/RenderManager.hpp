@@ -5,6 +5,7 @@
 
 namespace renderManager {
   constexpr float SCROLL_SPEED = 250.0f;
+  constexpr const char *START_SCREEN_PATH = "embedded://start_screen";
   constexpr const char *BG_PATH = "embedded://background";
   constexpr const char *PLAYER_PATH = "embedded://players";
   constexpr const char *PROJECTILE_PATH = "embedded://projectiles";

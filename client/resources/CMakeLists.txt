@@ -9,6 +9,7 @@ target_link_libraries(embed_assets raylib)
 target_include_directories(embed_assets PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set(REQUIRED_ASSETS
+  start_screen.png
   background.png
   players.gif
   enemies.gif
@@ -22,6 +23,7 @@ endforeach()
 
 add_custom_command(
   OUTPUT
+    ${EMBEDDED_ASSETS_DIR}/start_screen_data.h
     ${EMBEDDED_ASSETS_DIR}/background_data.h
     ${EMBEDDED_ASSETS_DIR}/players_data.h
     ${EMBEDDED_ASSETS_DIR}/enemies_data.h
