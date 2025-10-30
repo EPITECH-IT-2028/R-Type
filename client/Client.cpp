@@ -98,6 +98,7 @@ namespace client {
     _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
     _ecsManager.registerComponent<ecs::ChatComponent>();
+    _ecsManager.registerComponent<ecs::PlayerComponent>();
   }
 
   /**
@@ -224,29 +225,19 @@ namespace client {
    * assigns the local player ID, stores the local player name, and tags the
    * entity as the local player.
    *
-   * @param packet Packet containing the player's ID, null-terminated name, and initial position (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and
+   * initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
-    std::uint32_t localId = _player_id;
-    if (localId != INVALID_ID && packet.player_id == localId) {
-      for (auto &entity : _ecsManager.getAllEntities()) {
-        if (_ecsManager.hasComponent<ecs::LocalPlayerTagComponent>(entity)) {
-          TraceLog(LOG_WARNING,
-                   "[DUPLICATE PREVENTION] Local player entity already exists, "
-                   "skipping creation for player_id: %u",
-                   packet.player_id);
-          return;
-        }
-      }
+    std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
+    
+    if (_playerEntities.find(packet.player_id) != _playerEntities.end()) {
+      TraceLog(LOG_WARNING,
+               "[DUPLICATE PREVENTION] Player entity already exists for player_id: %u",
+               packet.player_id);
+      return;
     }
-    for (auto &entity : _ecsManager.getAllEntities()) {
-      if (_ecsManager.hasComponent<ecs::PlayerComponent>(entity)) {
-        if (_ecsManager.getComponent<ecs::PlayerComponent>(entity).player_id ==
-            packet.player_id) {
-          return;
-        }
-      }
-    }
+    
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player,
                                                      {packet.x, packet.y});
@@ -260,6 +251,14 @@ namespace client {
     _ecsManager.addComponent<ecs::ScaleComponent>(
         player, {PlayerSpriteConfig::SCALE, PlayerSpriteConfig::SCALE});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
+    
+    ecs::PlayerComponent playerComp;
+    playerComp.player_id = packet.player_id;
+    playerComp.name = packet.player_name;
+    playerComp.is_alive = true;
+    playerComp.connected = true;
+    _ecsManager.addComponent<ecs::PlayerComponent>(player, playerComp);
+    
     ecs::SpriteAnimationComponent anim;
     anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
     anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
@@ -271,20 +270,10 @@ namespace client {
     anim.neutralFrame = static_cast<int>(PlayerSpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
-    std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
     if (_player_id == INVALID_ID) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
       _playerName.assign(packet.player_name);
-      {
-        std::lock_guard<std::mutex> lock(_deferredNewPlayerPacketsMutex);
-        for (const auto &deferredPacket : _deferredNewPlayerPackets) {
-          if (deferredPacket.player_id != _player_id) {
-            createPlayerEntity(deferredPacket);
-          }
-        }
-      _deferredNewPlayerPackets.clear();
-      }
     }
     _playerEntities[packet.player_id] = player;
     _playerNames[packet.player_id] = packet.player_name;

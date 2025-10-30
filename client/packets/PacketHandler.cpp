@@ -90,17 +90,11 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  if (client.getPlayerId() == INVALID_ID) {
-    std::lock_guard<std::mutex> lock(client._deferredNewPlayerPacketsMutex);
-    client._deferredNewPlayerPackets.push_back(packet);
-    TraceLog(LOG_INFO,
-             "[NEW PLAYER] Deferred processing for player ID: %u (local "
-             "_player_id not known)",
-             packet.player_id);
-  }
+  
   TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
            packet.player_name.c_str(), packet.player_id, packet.x, packet.y,
            packet.speed);
+  
   client.createPlayerEntity(packet);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
