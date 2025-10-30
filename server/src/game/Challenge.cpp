@@ -1,7 +1,7 @@
 #include "Challenge.hpp"
 #include <chrono>
 #include <cstdint>
-#include "crypto/Crypto.hpp"
+#include "Crypto.hpp"
 
 std::uint32_t game::Challenge::getCurrentTimestamp() const {
   auto now = std::chrono::steady_clock::now();

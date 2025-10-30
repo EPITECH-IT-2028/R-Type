@@ -433,9 +433,6 @@ namespace client {
       RequestChallengePacket packet =
           PacketBuilder::makeRequestChallenge(room_id);
       send(packet);
-      TraceLog(LOG_INFO,
-               "[REQUEST CHALLENGE] Sent challenge request for room %u",
-               room_id);
 
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[REQUEST CHALLENGE] Exception: %s", e.what());
@@ -450,15 +447,13 @@ namespace client {
 
       if (_challenge.isChallengeReceived() &&
           _challenge.getRoomId() == room_id) {
-        std::string both = _challenge.getChallenge() + password_hash;
-        password_hash = crypto::Crypto::sha256(both);
+        std::string generateString = _challenge.getChallenge() + password_hash;
+        password_hash = crypto::Crypto::sha256(generateString);
       }
 
       JoinRoomPacket packet =
           PacketBuilder::makeJoinRoom(room_id, password_hash);
       send(packet);
-      TraceLog(LOG_INFO, "[JOIN ROOM] Sent join room request for room %u",
-               room_id);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[JOIN ROOM] Exception: %s", e.what());
     }
@@ -471,8 +466,6 @@ namespace client {
       CreateRoomPacket packet =
           PacketBuilder::makeCreateRoom(room_name, 4, pwd_hash);
       send(packet);
-      TraceLog(LOG_INFO, "[CREATE ROOM] Sent create room request for room '%s'",
-               room_name.c_str());
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());
     }

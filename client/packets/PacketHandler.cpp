@@ -603,12 +603,8 @@ int packet::ChallengeResponseHandler::handlePacket(client::Client &client,
 
   const ChallengeResponsePacket &packet = deserializedPacket.value();
 
-  std::string challenge(packet.challenge,
-                        strnlen(packet.challenge, sizeof(packet.challenge)));
+  std::string challenge = packet.challenge;
   client.getChallenge().setChallenge(challenge, packet.timestamp);
-
-  TraceLog(LOG_INFO, "[CHALLENGE RESPONSE] Received challenge (timestamp: %u)",
-           packet.timestamp);
 
   return OK;
 }

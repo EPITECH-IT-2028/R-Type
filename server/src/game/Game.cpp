@@ -178,25 +178,32 @@ void game::Game::stop() {
  * - calculates and stores frame delta time in `_deltaTime`,
  * - updates the enemy, projectile, and collision systems with the delta time,
  * - runs enemy spawn logic,
- * - sleeps approximately 16 milliseconds to cap frame pacing.
+ * - dynamically sleeps to maintain a consistent tick rate.
  *
  * The loop exits when `_running` becomes false or when any required system
  * (enemy, projectile, collision) is not available, in which case the running
  * flag is cleared and the loop stops.
  */
-void game::Game::gameLoop() {
-  const float TICK_DURATION = 1.0f / TICK_RATE;
-  const auto TICK_DURATION_MS = std::chrono::duration<float>(TICK_DURATION);
 
+void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
   auto gameStartTime = std::chrono::high_resolution_clock::now();
-  auto lastTickTime = lastTime;
+  constexpr std::chrono::nanoseconds tickDuration(NANOSECONDS_IN_SECOND / TPS);
 
   while (_running) {
+    auto frameStart = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<float> elapsedTime = frameStart - gameStartTime;
+    if (elapsedTime.count() >= GAME_DURATION) {
+      queue::GameEndEvent endEvent;
+      endEvent.game_ended = true;
+      _eventQueue.addRequest(endEvent);
+      break;
+    }
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
       std::cerr << "Error: ECS Manager or Systems not initialized."
                 << std::endl;
@@ -204,33 +211,21 @@ void game::Game::gameLoop() {
       break;
     }
 
-    auto now = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> deltaTime = now - lastTime;
-    lastTime = now;
+    std::chrono::duration<float> deltaTime = frameStart - lastTime;
+    _deltaTime.store(deltaTime.count());
+    lastTime = frameStart;
 
-    std::chrono::duration<float> timeSinceLastTick = now - lastTickTime;
+    _serverInputSystem->update(deltaTime.count());
+    _enemySystem->update(deltaTime.count());
+    _projectileSystem->update(deltaTime.count());
+    _collisionSystem->update(deltaTime.count());
+    spawnEnemy(deltaTime.count());
 
-    if (timeSinceLastTick >= TICK_DURATION_MS) {
-      _deltaTime.store(TICK_DURATION);
-      lastTickTime = now;
-
-      std::chrono::duration<float> elapsedTime = now - gameStartTime;
-      if (elapsedTime.count() >= GAME_DURATION) {
-        queue::GameEndEvent endEvent;
-        endEvent.game_ended = true;
-        _eventQueue.addRequest(endEvent);
-        break;
-      }
-
-      _serverInputSystem->update(TICK_DURATION);
-      _enemySystem->update(TICK_DURATION);
-      _projectileSystem->update(TICK_DURATION);
-      _collisionSystem->update(TICK_DURATION);
-      spawnEnemy(TICK_DURATION);
-    } else {
-      auto timeToWait = TICK_DURATION_MS - timeSinceLastTick;
-      std::this_thread::sleep_for(timeToWait);
-    }
+    auto frameEnd = std::chrono::high_resolution_clock::now();
+    auto frameDuration = frameEnd - frameStart;
+    auto sleepTime = tickDuration - frameDuration;
+    if (sleepTime > std::chrono::nanoseconds(0))
+      std::this_thread::sleep_for(sleepTime);
   }
 }
 
@@ -275,9 +270,9 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
 /**
  * @brief Removes a player and its associated ECS entity from the game.
  *
- * Destroys the ECS entity owned by the player with the given id and removes the
- * player from the internal registry. If no player with that id exists, the
- * function has no effect.
+ * Destroys the ECS entity owned by the player with the given id and removes
+ * the player from the internal registry. If no player with that id exists,
+ * the function has no effect.
  *
  * @param player_id Identifier of the player to remove.
  */
@@ -388,13 +383,13 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
  * @brief Removes the enemy with the given id, marks it as dead, and destroys
  * its ECS entity.
  *
- * If the enemy exists, its EnemyComponent (if present) will have `is_alive` set
- * to `false`, the corresponding ECS entity will be destroyed, and the enemy
- * will be removed from the registry. The operation is guarded by the internal
- * enemy mutex.
+ * If the enemy exists, its EnemyComponent (if present) will have `is_alive`
+ * set to `false`, the corresponding ECS entity will be destroyed, and the
+ * enemy will be removed from the registry. The operation is guarded by the
+ * internal enemy mutex.
  *
- * @param enemy_id Identifier of the enemy to destroy. No action is taken if no
- * enemy with this id exists.
+ * @param enemy_id Identifier of the enemy to destroy. No action is taken if
+ * no enemy with this id exists.
  */
 void game::Game::destroyEnemy(int enemy_id) {
   std::scoped_lock lock(_enemyMutex);

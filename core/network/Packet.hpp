@@ -644,6 +644,6 @@ struct ALIGNED RequestChallengePacket {
 
 struct ALIGNED ChallengeResponsePacket {
     PacketHeader header;
-    char challenge[CHALLENGE_HEX_LEN];
+    std::string challenge;
     std::uint32_t timestamp;
 };
