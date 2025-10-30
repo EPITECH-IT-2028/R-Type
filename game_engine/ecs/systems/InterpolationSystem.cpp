@@ -1,25 +1,38 @@
 #include "InterpolationSystem.hpp"
+#include <cmath>
 #include <raylib.h>
 #include "PositionComponent.hpp"
 #include "StateHistoryComponent.hpp"
 
 void ecs::InterpolationSystem::update(float deltaTime) {
-  (void)deltaTime;  // We use absolute time from GetTime()
-
+  (void)deltaTime;
   double currentTime = GetTime();
 
   for (const auto &entity : _entities) {
     auto &stateHistory =
         _ecsManager.getComponent<StateHistoryComponent>(entity);
     auto &position = _ecsManager.getComponent<PositionComponent>(entity);
-
     EntityState state0, state1;
     float alpha;
 
     if (getInterpolatedStates(stateHistory, currentTime, state0, state1,
                               alpha)) {
-      position.x = lerp(state0.x, state1.x, alpha);
-      position.y = lerp(state0.y, state1.y, alpha);
+      float dx = state1.x - state0.x;
+      float dy = state1.y - state0.y;
+      float distanceSquared = dx * dx + dy * dy;
+      float maxAlpha = MAX_EXTRAPOLATION;
+
+      if (distanceSquared > 400.0f) {
+        maxAlpha = 0.95f;
+      } else if (distanceSquared > 100.0f) {
+        maxAlpha = 1.0f;
+      } else if (distanceSquared > 25.0f) {
+        maxAlpha = 1.05f;
+      }
+
+      float clampedAlpha = std::min(alpha, maxAlpha);
+      position.x = linterpolation(state0.x, state1.x, clampedAlpha);
+      position.y = linterpolation(state0.y, state1.y, clampedAlpha);
     }
   }
 }
@@ -32,7 +45,7 @@ void ecs::InterpolationSystem::update(float deltaTime) {
  * @param t Interpolation factor (0.0 to 1.0).
  * @return Interpolated value.
  */
-float ecs::InterpolationSystem::lerp(float a, float b, float t) const {
+float ecs::InterpolationSystem::linterpolation(float a, float b, float t) const {
   return a + (b - a) * t;
 }
 
@@ -54,13 +67,9 @@ bool ecs::InterpolationSystem::getInterpolatedStates(const StateHistoryComponent
                             double currentTime, EntityState &state0,
                             EntityState &state1, float &alpha) const {
   const auto &states = stateHistory.states;
-
   if (states.empty()) {
     return false;
   }
-
-  double renderTime = currentTime - INTERPOLATION_DELAY;
-
   if (states.size() == 1) {
     state0 = states[0];
     state1 = states[0];
@@ -68,31 +77,18 @@ bool ecs::InterpolationSystem::getInterpolatedStates(const StateHistoryComponent
     return true;
   }
 
-  for (size_t i = 0; i < states.size() - 1; ++i) {
-    if (states[i].timestamp <= renderTime &&
-        renderTime <= states[i + 1].timestamp) {
-      state0 = states[i];
-      state1 = states[i + 1];
+  state0 = states.front();
+  state1 = states.back();
+  double timeDiff = state1.timestamp - state0.timestamp;
 
-      double timeDiff = state1.timestamp - state0.timestamp;
-      if (timeDiff > 0.0) {
-        alpha = static_cast<float>((renderTime - state0.timestamp) / timeDiff);
-      } else {
-        alpha = 0.0f;
-      }
-      return true;
-    }
-  }
-
-  if (renderTime < states.front().timestamp) {
-    state0 = states.front();
-    state1 = states.front();
+  if (timeDiff < 0.001) {
+    state0 = state1;
     alpha = 0.0f;
     return true;
   }
-
-  state0 = states[states.size() - 2];
-  state1 = states.back();
-  alpha = 1.0f;
+  
+  double timeSinceFirst = currentTime - INTERPOLATION_DELAY - state0.timestamp;
+  alpha = static_cast<float>(timeSinceFirst / timeDiff);
+  alpha = std::max(0.0f, std::min(MAX_EXTRAPOLATION, alpha));
   return true;
 }

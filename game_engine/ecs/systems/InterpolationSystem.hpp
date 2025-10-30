@@ -26,7 +26,7 @@ namespace ecs {
 
    private:
     ECSManager &_ecsManager;
-    float lerp(float a, float b, float t) const;
+    float linterpolation(float a, float b, float t) const;
     bool getInterpolatedStates(const StateHistoryComponent &stateHistory,
                                double currentTime, EntityState &state0,
                                EntityState &state1, float &alpha) const;
