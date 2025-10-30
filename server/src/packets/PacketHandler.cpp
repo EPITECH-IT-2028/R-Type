@@ -431,7 +431,18 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   auto response = PacketBuilder::makeCreateRoomResponse(RoomError::SUCCESS,
                                                         newRoom->getRoomId());
+
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize CreateRoomResponse for client "
+              << client._player_id << std::endl;
+    server.getGameManager().leaveRoom(sharedClient);
+    server.getGameManager().destroyRoom(newRoom->getRoomId());
+    client._state = server::ClientState::CONNECTED_MENU;
+    return KO;
+  }
+
   server.getNetworkManager().sendToClient(
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),
