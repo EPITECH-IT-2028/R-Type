@@ -180,8 +180,6 @@ namespace client {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
-      signature.set(_ecsManager.getComponentType<ecs::RenderComponent>());
       _ecsManager.setSystemSignature<ecs::MetricsSystem>(signature);
     }
   }
