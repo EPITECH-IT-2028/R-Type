@@ -126,13 +126,13 @@ void ecs::RenderSystem::update(float deltaTime) {
 
   for (auto const &entity : _ecsManager.getAllEntities()) {
     if (_ecsManager.hasComponent<ecs::ChatComponent>(entity)) {
-      _chatEntity = entity;
-      auto &chat =
-          _ecsManager.getComponent<ecs::ChatComponent>(_chatEntity.value());
+      _messagesUI.setChatEntity(entity);
+      auto &chat = _ecsManager.getComponent<ecs::ChatComponent>(
+          _messagesUI.getChatEntity().value());
       if (chat.isChatting) {
-        drawMessagesBox();
-        drawMessages();
-        drawMessageInputField(chat);
+        _messagesUI.drawMessagesBox();
+        _messagesUI.drawMessages();
+        _messagesUI.drawMessageInputField(chat);
       }
       break;
     }
@@ -147,7 +147,7 @@ void ecs::RenderSystem::update(float deltaTime) {
  * fixed size (two-thirds of the screen width by 365 pixels) and a subtle corner
  * radius.
  */
-void ecs::RenderSystem::drawMessagesBox() {
+void ecs::ChatMessagesUI::drawMessagesBox() {
   Color rectColor = {255, 255, 255, 16};
 
   renderManager::Renderer::drawRectangleRounded(10, GetScreenHeight() - 415,
@@ -166,7 +166,7 @@ void ecs::RenderSystem::drawMessagesBox() {
  *
  * The function does nothing if no client is connected.
  */
-void ecs::RenderSystem::drawMessages() {
+void ecs::ChatMessagesUI::drawMessages() {
   if (_client == nullptr)
     return;
   std::vector<client::ChatMessage> chatMessages = _client->getChatMessages();
@@ -223,7 +223,7 @@ void ecs::RenderSystem::drawMessages() {
  *
  * @param chat ChatComponent whose `message` is displayed in the input field.
  */
-void ecs::RenderSystem::drawMessageInputField(const ChatComponent &chat) {
+void ecs::ChatMessagesUI::drawMessageInputField(const ChatComponent &chat) {
   Color rectColor = {255, 255, 255, 16};
 
   renderManager::Renderer::drawRectangleRounded(

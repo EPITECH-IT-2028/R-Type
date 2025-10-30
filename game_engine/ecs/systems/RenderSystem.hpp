@@ -8,6 +8,35 @@
 #include "raylib.h"
 
 namespace ecs {
+  class ChatMessagesUI {
+    public:
+      static ChatMessagesUI init() {
+        return ChatMessagesUI();
+      }
+
+      void setChatEntity(const std::optional<Entity> &entity) {
+        _chatEntity = entity;
+      }
+
+      const std::optional<Entity> &getChatEntity() const {
+        return _chatEntity;
+      }
+
+      void drawMessagesBox();
+      void drawMessages();
+      void drawMessageInputField(const ChatComponent &chat);
+
+      void setClient(client::Client *client) {
+        _client = client;
+      }
+
+    private:
+      ChatMessagesUI() = default;
+
+      client::Client *_client;
+      std::optional<Entity> _chatEntity;
+  };
+
   class RenderSystem : public System {
     public:
       /**
@@ -35,28 +64,15 @@ namespace ecs {
 
       void update(float deltaTime) override;
 
-      /**
-       * @brief Associate a client instance with the render system.
-       *
-       * Attaches the provided client so the render system can access
-       * client-side data during rendering. Passing `nullptr` clears the stored
-       * client.
-       *
-       * @param client Pointer to the client to set, or `nullptr` to unset the
-       * current client.
-       */
       void setClient(client::Client *client) {
         _client = client;
+        _messagesUI.setClient(client);
       }
 
     private:
-      void drawMessagesBox();
-      void drawMessages();
-      void drawMessageInputField(const ChatComponent &chat);
-
       ECSManager &_ecsManager;
       std::unordered_map<std::string, Texture2D> _textureCache;
       client::Client *_client;
-      std::optional<Entity> _chatEntity;
+      ChatMessagesUI _messagesUI = ChatMessagesUI::init();
   };
 }  // namespace ecs
