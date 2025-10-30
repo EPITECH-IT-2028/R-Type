@@ -208,23 +208,31 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       return packet::OK;
     }
 
-    if (ecsManager.hasComponent<ecs::StateHistoryComponent>(playerEntity)) {
-      auto &stateHistory =
-          ecsManager.getComponent<ecs::StateHistoryComponent>(playerEntity);
-      ecs::EntityState newState{packet.x, packet.y, GetTime()};
-      stateHistory.states.push_back(newState);
-      while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
-        stateHistory.states.pop_front();
-      }
-    } else {
+    bool isLocalPlayer = (client.getPlayerId() == packet.player_id);
+
+    if (isLocalPlayer) {
       auto &position =
           ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
       position.x = packet.x;
       position.y = packet.y;
-    }
-
-    if (client.getPlayerId() == packet.player_id) {
       client.updateSequenceNumber(packet.sequence_number);
+    } else {
+      if (ecsManager.hasComponent<ecs::StateHistoryComponent>(playerEntity)) {
+        auto &stateHistory =
+            ecsManager.getComponent<ecs::StateHistoryComponent>(playerEntity);
+        
+        double currentTime = GetTime();
+        ecs::EntityState newState{packet.x, packet.y, currentTime};
+        stateHistory.states.push_back(newState);
+        while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
+          stateHistory.states.pop_front();
+        }
+      } else {
+        auto &position =
+            ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+        position.x = packet.x;
+        position.y = packet.y;
+      }
     }
 
   } catch (const std::exception &e) {
@@ -292,7 +300,9 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
     if (ecsManager.hasComponent<ecs::StateHistoryComponent>(enemyEntity)) {
       auto &stateHistory =
           ecsManager.getComponent<ecs::StateHistoryComponent>(enemyEntity);
-      ecs::EntityState newState{packet.x, packet.y, GetTime()};
+      
+      double currentTime = GetTime();
+      ecs::EntityState newState{packet.x, packet.y, currentTime};
       stateHistory.states.push_back(newState);
       while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
         stateHistory.states.pop_front();
