@@ -140,6 +140,8 @@ void game::Game::initECS() {
         _ecsManager->getComponentType<ecs::PositionComponent>());
     serverInputSignature.set(
         _ecsManager->getComponentType<ecs::SpeedComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::PlayerComponent>());
     _ecsManager->setSystemSignature<ecs::ServerInputSystem>(
         serverInputSignature);
 
@@ -208,7 +210,7 @@ void game::Game::gameLoop() {
 
     spawnEnemy(deltaTime.count());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
   }
 }
 

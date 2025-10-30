@@ -81,3 +81,5 @@ namespace chatUI {
 constexpr unsigned char ASCII_NULL = 0x00;
 constexpr unsigned char ASCII_SPACE = 0x20;
 constexpr unsigned char ASCII_DEL = 0x7f;
+
+constexpr int FRAME_RATE = 30;
