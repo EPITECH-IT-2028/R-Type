@@ -824,6 +824,12 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
 
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(responsePacket);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize ChallengeResponsePacket for "
+                 "client "
+              << client._player_id << std::endl;
+    return KO;
+  }
 
   server.getNetworkManager().sendToClient(
       client._player_id,
