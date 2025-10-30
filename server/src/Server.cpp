@@ -36,6 +36,12 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _projectile_count(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
   _clients.resize(_max_clients);
+  _databaseManager = std::make_shared<database::DatabaseManager>();
+  if (!_databaseManager->initialize()) {
+    std::cerr << "[ERROR] Failed to initialize database manager." << std::endl;
+    throw std::runtime_error(
+        "Database initialization failed - cannot start server");
+  }
 }
 
 void server::Server::start() {
@@ -115,6 +121,12 @@ void server::Server::handleTimeout() {
       client->_connected = false;
       if (_player_count > 0)
         --_player_count;
+
+      if (!getDatabaseManager().updatePlayerStatus(client->_player_name,
+                                                   false)) {
+        std::cerr << "[ERROR] Failed to update online status for player "
+                  << client->_player_id << std::endl;
+      }
 
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
@@ -233,8 +245,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
-              specificEvent.player_id, specificEvent.x, specificEvent.y,
-              specificEvent.sequence_number);
+              specificEvent.player_id, specificEvent.sequence_number,
+              specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
         } else {
@@ -317,11 +329,19 @@ void server::Server::handlePlayerInfoPacket(const char *data,
     }
   }
 
+  if (_databaseManager &&
+      _databaseManager->isIpBanned(current_endpoint.address().to_string())) {
+    std::cerr << "[WARNING] Refused connection from banned IP "
+              << current_endpoint.address().to_string() << std::endl;
+    return;
+  }
+
   for (size_t i = 0; i < _clients.size(); ++i) {
     if (!_clients[i]) {
       int id = _next_player_id++;
       _clients[i] = std::make_shared<Client>(id);
       _clients[i]->_connected = true;
+      _clients[i]->_ip_address = current_endpoint.address().to_string();
       _player_count++;
       _networkManager.registerClient(id, current_endpoint);
 
@@ -463,6 +483,11 @@ bool server::Server::initializePlayerInRoom(Client &client) {
                                    pos.first, pos.second, speed, max_health);
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(ownPlayerPacket);
+  if (serializedBuffer.empty()) {
+    std::cerr << "[ERROR] Failed to serialize ownPlayerPacket for client "
+              << client._player_id << std::endl;
+    return false;
+  }
   _networkManager.sendToClient(
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),

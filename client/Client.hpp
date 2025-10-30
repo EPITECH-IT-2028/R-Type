@@ -8,8 +8,8 @@
 #include <mutex>
 #include <shared_mutex>
 #include <string>
-#include <unordered_map>
 #include <vector>
+#include "Challenge.hpp"
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
@@ -316,6 +316,10 @@ namespace client {
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
+      void sendRequestChallenge(std::uint32_t room_id);
+      void sendJoinRoom(std::uint32_t room_id, const std::string &password);
+      void createRoom(const std::string &room_name,
+                      const std::string &password);
 
       void sendChatMessage(const std::string &message);
       void storeChatMessage(const std::string &author,
@@ -356,6 +360,10 @@ namespace client {
 
         return _packetLossMonitor.lossRatio();
       }
+      
+      Challenge &getChallenge() {
+        return _challenge;
+      }
 
     private:
       std::array<char, 2048> _recv_buffer;
@@ -384,6 +392,7 @@ namespace client {
 
       network::PacketLossMonitor _packetLossMonitor;
 
+      Challenge _challenge;
       ecs::ECSManager &_ecsManager;
   };
 }  // namespace client

@@ -94,9 +94,63 @@ int main(int ac, char **av) {
 
   std::thread networkThread(gameLoop, std::ref(client));
 
+  bool showMenu = true;
+  std::uint32_t roomId = 1;
+  char passwordInput[64] = "";
+  bool waitingForChallenge = false;
+
   while (!renderer.shouldClose()) {
     if (IsWindowResized())
       renderer.resizeWindow();
+
+    // TODO: Create a real menu
+    if (showMenu &&
+        client.getClientState() == client::ClientState::IN_CONNECTED_MENU) {
+      if (IsKeyPressed(KEY_ONE)) {
+        std::cout << "Enter Room ID: ";
+        std::cin >> roomId;
+        client.sendRequestChallenge(roomId);
+        waitingForChallenge = true;
+        std::cout << "[INFO] Challenge requested for room " << roomId
+                  << std::endl;
+      }
+
+      if (IsKeyPressed(KEY_TWO) &&
+          client.getChallenge().isChallengeReceived()) {
+        std::cout << "Enter password for room " << roomId << ": ";
+        std::cin >> passwordInput;
+        client.sendJoinRoom(roomId, std::string(passwordInput));
+        std::cout << "[INFO] Join room request sent" << std::endl;
+      }
+
+      if (IsKeyPressed(KEY_THREE)) {
+        client.sendMatchmakingRequest();
+        std::cout << "[INFO] Matchmaking request sent" << std::endl;
+      }
+
+      if (IsKeyPressed(KEY_FOUR)) {
+        std::string roomName;
+        std::string password;
+        char roomNameInput[64] = "";
+        char passwordInput[64] = "";
+
+        std::cout << "Enter Room Name: ";
+        std::cin >> roomNameInput;
+        roomName = std::string(roomNameInput);
+
+        std::cout << "Enter Password (leave empty for no password): ";
+        std::cin >> passwordInput;
+        password = std::string(passwordInput);
+
+        client.createRoom(roomName, password);
+        std::cout << "[INFO] Create room request sent" << std::endl;
+      }
+    }
+
+    if (client.getClientState() == client::ClientState::IN_ROOM_WAITING ||
+        client.getClientState() == client::ClientState::IN_GAME) {
+      showMenu = false;
+    }
 
     renderer.beginDrawing();
     renderer.clearBackground(RAYWHITE);
@@ -104,6 +158,17 @@ int main(int ac, char **av) {
     float deltaTime = GetFrameTime();
     
     ecsManager.update(deltaTime);
+
+    if (showMenu) {
+      DrawText("Press 1: Request Challenge for a Room", 50, 100, 20, DARKGRAY);
+      DrawText("Press 2: Join Room (after challenge)", 50, 130, 20, DARKGRAY);
+      DrawText("Press 3: Quick Match (matchmaking)", 50, 160, 20, DARKGRAY);
+      DrawText("Press 4: Create Room", 50, 190, 20, DARKGRAY);
+
+      if (client.getChallenge().isChallengeReceived()) {
+        DrawText("Challenge Received!", 50, 230, 20, GREEN);
+      }
+    }
 
     renderer.endDrawing();
   }

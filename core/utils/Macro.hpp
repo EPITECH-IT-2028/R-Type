@@ -54,6 +54,7 @@ constexpr int COUNTDOWN_TIME = 5;
 
 constexpr int MAX_ROOMS = 10;
 
+constexpr int CHALLENGE_HEX_LEN = 129;
 constexpr std::uint32_t INVALID_ID = std::numeric_limits<std::uint32_t>::max();
 constexpr std::uint32_t INVALID_ENTITY =
     std::numeric_limits<std::uint32_t>::max();
@@ -83,3 +84,13 @@ namespace chatUI {
 constexpr unsigned char ASCII_NULL = 0x00;
 constexpr unsigned char ASCII_SPACE = 0x20;
 constexpr unsigned char ASCII_DEL = 0x7f;
+
+constexpr const char *SQL_PATH = "db.sql";
+constexpr int TPS = 60;
+constexpr int NANOSECONDS_IN_SECOND = 1000000000;
+
+/* Serialization */
+constexpr std::size_t SERIALIZE_32_BYTES = 32;
+constexpr std::size_t SERIALIZE_64_BYTES = 64;
+constexpr std::size_t SERIALIZE_128_BYTES = 128;
+constexpr std::size_t SERIALIZE_512_BYTES = 512;

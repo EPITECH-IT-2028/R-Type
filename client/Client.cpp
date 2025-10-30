@@ -5,6 +5,7 @@
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "ChatComponent.hpp"
+#include "Crypto.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -225,17 +226,16 @@ namespace client {
   }
 
   /**
-   * @brief Create a player entity with position, render, sprite, scale,
-   * animation, and identification components.
+   * @brief Create and register a player entity from a NewPlayerPacket.
    *
-   * Configures the entity from the provided packet and player sprite
-   * configuration, records the entity in the client's player ID → entity and
-   * player ID → name mappings, and — if the client has no local player assigned
-   * — sets the local player ID, stores the local player name, and tags the
+   * Creates an ECS entity for the player, attaches position, render, sprite,
+   * scale, player tag, and sprite animation components, records the mapping
+   * from player ID to entity and player name, and if no local player ID is set,
+   * assigns the local player ID, stores the local player name, and tags the
    * entity as the local player.
    *
-   * @param packet Packet containing the player's ID, name, and initial position
-   * (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and
+   * initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -263,17 +263,16 @@ namespace client {
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
     std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
-    size_t len = strnlen(packet.player_name, sizeof(packet.player_name));
     if (_player_id == INVALID_ID) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      _playerName.assign(packet.player_name, len);
+      _playerName.assign(packet.player_name);
     }
-    _playerEntities[packet.player_id] = player;
-    _playerNames[packet.player_id] = std::string(packet.player_name, len);
-
     _ecsManager.addComponent<ecs::PingComponent>(player, {});
     _ecsManager.addComponent<ecs::PacketLossComponent>(player, {});
+
+    _playerEntities[packet.player_id] = player;
+    _playerNames[packet.player_id] = packet.player_name;
   }
 
   /**
@@ -439,6 +438,53 @@ namespace client {
       TraceLog(LOG_INFO, "[MATCHMAKING] Sent matchmaking request");
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[MATCHMAKING] Exception: %s", e.what());
+    }
+  }
+
+  void Client::sendRequestChallenge(std::uint32_t room_id) {
+    try {
+      _challenge.reset();
+      _challenge.setRoomId(room_id);
+      _challenge.setWaitingChallenge(true);
+
+      RequestChallengePacket packet =
+          PacketBuilder::makeRequestChallenge(room_id);
+      send(packet);
+
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[REQUEST CHALLENGE] Exception: %s", e.what());
+      _challenge.setWaitingChallenge(false);
+    }
+  }
+
+  void Client::sendJoinRoom(std::uint32_t room_id,
+                            const std::string &password) {
+    try {
+      std::string password_hash = crypto::Crypto::sha256(password);
+
+      if (_challenge.isChallengeReceived() &&
+          _challenge.getRoomId() == room_id) {
+        std::string generateString = _challenge.getChallenge() + password_hash;
+        password_hash = crypto::Crypto::sha256(generateString);
+      }
+
+      JoinRoomPacket packet =
+          PacketBuilder::makeJoinRoom(room_id, password_hash);
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[JOIN ROOM] Exception: %s", e.what());
+    }
+  }
+
+  void Client::createRoom(const std::string &room_name,
+                          const std::string &password) {
+    try {
+      auto pwd_hash = crypto::Crypto::sha256(password);
+      CreateRoomPacket packet =
+          PacketBuilder::makeCreateRoom(room_name, 4, pwd_hash);
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());
     }
   }
 

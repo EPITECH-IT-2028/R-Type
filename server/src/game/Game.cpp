@@ -18,6 +18,7 @@
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
 #include "ScoreComponent.hpp"
+#include "ServerInputSystem.hpp"
 #include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -48,12 +49,16 @@ game::Game::~Game() {
   if (_collisionSystem) {
     _collisionSystem->setECSManager(nullptr);
   }
+  if (_serverInputSystem) {
+    _serverInputSystem->setECSManager(nullptr);
+  }
 
   clearAllEntities();
 
   _enemySystem.reset();
   _collisionSystem.reset();
   _projectileSystem.reset();
+  _serverInputSystem.reset();
 }
 
 /**
@@ -97,6 +102,9 @@ void game::Game::initECS() {
 
     _projectileSystem = _ecsManager->registerSystem<ecs::ProjectileSystem>();
 
+    _serverInputSystem = _ecsManager->registerSystem<ecs::ServerInputSystem>();
+    _serverInputSystem->setEventQueue(&_eventQueue);
+
     Signature enemySignature;
     enemySignature.set(_ecsManager->getComponentType<ecs::EnemyComponent>());
     enemySignature.set(_ecsManager->getComponentType<ecs::PositionComponent>());
@@ -124,6 +132,18 @@ void game::Game::initECS() {
     collisionSignature.set(
         _ecsManager->getComponentType<ecs::ColliderComponent>());
     _ecsManager->setSystemSignature<ecs::CollisionSystem>(collisionSignature);
+
+    Signature serverInputSignature{};
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::VelocityComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::PositionComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::SpeedComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::PlayerComponent>());
+    _ecsManager->setSystemSignature<ecs::ServerInputSystem>(
+        serverInputSignature);
 
   } catch (const std::runtime_error &e) {
     std::cerr << "ECS System registration error: " << e.what() << std::endl;
@@ -158,7 +178,7 @@ void game::Game::stop() {
  * - calculates and stores frame delta time in `_deltaTime`,
  * - updates the enemy, projectile, and collision systems with the delta time,
  * - runs enemy spawn logic,
- * - sleeps approximately 16 milliseconds to cap frame pacing.
+ * - dynamically sleeps to maintain a consistent tick rate.
  *
  * The loop exits when `_running` becomes false or when any required system
  * (enemy, projectile, collision) is not available, in which case the running
@@ -170,26 +190,32 @@ void game::Game::gameLoop() {
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
+  constexpr std::chrono::nanoseconds tickDuration(NANOSECONDS_IN_SECOND / TPS);
 
   while (_running) {
+    auto frameStart = std::chrono::high_resolution_clock::now();
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
       std::cerr << "Error: ECS Manager or Systems not initialized."
                 << std::endl;
       _running = false;
       break;
     }
-    auto now = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> deltaTime = now - lastTime;
+    std::chrono::duration<float> deltaTime = frameStart - lastTime;
     _deltaTime.store(deltaTime.count());
-    lastTime = now;
+    lastTime = frameStart;
 
+    _serverInputSystem->update(deltaTime.count());
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
     _collisionSystem->update(deltaTime.count());
 
     spawnEnemy(deltaTime.count());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    auto frameEnd = std::chrono::high_resolution_clock::now();
+    auto frameDuration = frameEnd - frameStart;
+    auto sleepTime = tickDuration - frameDuration;
+    if (sleepTime > std::chrono::nanoseconds(0))
+      std::this_thread::sleep_for(sleepTime);
   }
 }
 

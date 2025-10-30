@@ -45,6 +45,10 @@ namespace packet {
               {PacketType::MatchmakingResponse,
                []() { return std::make_unique<MatchmakingResponseHandler>(); }},
               {PacketType::Pong,
-               []() { return std::make_unique<PongHandler>(); }}};
+               []() { return std::make_unique<PongHandler>(); }},
+              {PacketType::ChallengeResponse,
+               []() { return std::make_unique<ChallengeResponseHandler>(); }},
+              {PacketType::CreateRoomResponse,
+               []() { return std::make_unique<CreateRoomResponseHandler>(); }}};
   };
 }  // namespace packet

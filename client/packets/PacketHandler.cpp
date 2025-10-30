@@ -3,7 +3,6 @@
 #include "Client.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
-#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
@@ -14,17 +13,13 @@
 #include "Serializer.hpp"
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "raylib.h"
 #include "PingComponent.hpp"
 #include "PacketLossComponent.hpp"
-#include "raylib.h"
 
 /**
- * @brief Process a chat message packet and store the message for the
- * corresponding player.
- *
- * Deserializes a ChatMessagePacket from the provided byte buffer and, on
- * success, stores the chat message for the player identified by the packet
- * using the packet's RGBA color fields.
+ * @brief Handle an incoming chat message packet and store it for the specified
+ * player.
  *
  * @param data Pointer to the serialized packet bytes.
  * @param size Number of bytes available at `data`.
@@ -45,24 +40,21 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   const std::string playerName = client.getPlayerNameById(packet.player_id);
-  size_t msgLen = strnlen(packet.message, sizeof(packet.message));
-  std::string message(packet.message, msgLen);
+  std::string message = packet.message;
   Color color = {packet.r, packet.g, packet.b, packet.a};
   client.storeChatMessage(playerName, message, color);
   return packet::OK;
 }
 
 /**
- * @brief Handle a "new player" packet and create the corresponding player
- * entity.
+ * @brief Handle a NewPlayerPacket and create the corresponding player entity on
+ * the client.
  *
- * Deserializes the provided byte buffer into a NewPlayerPacket. If
- * deserialization fails, logs an error and returns packet::KO. On success, logs
- * the spawned player's details and instructs the client to create a new player
- * entity using the packet data.
+ * Deserializes the provided byte buffer into a NewPlayerPacket and, if
+ * successful, instructs the client to create a new player entity using the
+ * packet data.
  *
- * @param client Client instance used to create the player entity.
- * @param data Pointer to the packet payload bytes.
+ * @param data Pointer to the serialized packet payload.
  * @param size Length of the packet payload in bytes.
  * @return int `packet::OK` on successful handling and entity creation,
  * `packet::KO` if deserialization fails.
@@ -80,11 +72,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  char name_buffer[33];
-  std::memcpy(name_buffer, packet.player_name, sizeof(packet.player_name));
-  name_buffer[32] = '\0';
   TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
-           name_buffer, packet.player_id, packet.x, packet.y, packet.speed);
+           packet.player_name.c_str(), packet.player_id, packet.x, packet.y,
+           packet.speed);
 
   client.createPlayerEntity(packet);
   return packet::OK;
@@ -632,4 +622,53 @@ int packet::PongHandler::handlePacket(client::Client &client, const char *data,
   }
   TraceLog(LOG_INFO, "[PONG] Received pong, RTT: %u ms", ping);
   return packet::OK;
+}
+
+int packet::ChallengeResponseHandler::handlePacket(client::Client &client,
+                                                   const char *data,
+                                                   std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ChallengeResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[CHALLENGE RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const ChallengeResponsePacket &packet = deserializedPacket.value();
+
+  std::string challenge = packet.challenge;
+  client.getChallenge().setChallenge(challenge, packet.timestamp);
+
+  return OK;
+}
+
+int packet::CreateRoomResponseHandler::handlePacket(client::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<CreateRoomResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[CREATE ROOM RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const CreateRoomResponsePacket &packet = deserializedPacket.value();
+
+  if (packet.error_code == RoomError::SUCCESS) {
+    client.setClientState(client::ClientState::IN_ROOM_WAITING);
+  } else {
+    TraceLog(
+        LOG_WARNING,
+        "[CREATE ROOM RESPONSE] Failed to create/join room, error code: %d",
+        static_cast<int>(packet.error_code));
+  }
+  return OK;
 }
