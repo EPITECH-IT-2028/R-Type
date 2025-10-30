@@ -356,11 +356,12 @@ namespace client {
       }
 
       double calculatePacketLoss(uint32_t seq) {
+        std::lock_guard<std::mutex> lock(_packetLossMutex);
         _packetLossMonitor.onReceived(seq);
 
         return _packetLossMonitor.lossRatio();
       }
-      
+
       Challenge &getChallenge() {
         return _challenge;
       }
@@ -391,6 +392,7 @@ namespace client {
       void createBackgroundEntities();
 
       network::PacketLossMonitor _packetLossMonitor;
+      mutable std::mutex _packetLossMutex;
 
       Challenge _challenge;
       ecs::ECSManager &_ecsManager;
