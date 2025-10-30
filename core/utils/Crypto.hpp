@@ -25,9 +25,8 @@ namespace crypto {
        * @param length Length of the challenge in bytes (default is 64).
        * @return std::string Hexadecimal representation of the random challenge.
        */
-      static std::string generateChallenge(size_t length = 64) {
-        std::random_device rd;
-        std::mt19937_64 gen(rd());
+      static std::string generateChallenge(size_t length) {
+        static std::mt19937 gen(std::random_device{}());
         std::uniform_int_distribution<unsigned int> dis(0, 255);
 
         std::vector<unsigned char> buffer(length);

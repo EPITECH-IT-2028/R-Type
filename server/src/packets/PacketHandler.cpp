@@ -382,12 +382,18 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   const CreateRoomPacket &packet = deserializedPacket.value();
 
-  std::string roomName(packet.room_name);
-  std::string password(packet.password);
+  std::string roomName = packet.room_name;
+  std::string password = packet.password;
 
   std::string actualPassword = packet.is_private ? password : "";
 
   auto newRoom = server.getGameManager().createRoom(roomName, actualPassword);
+
+  if (!newRoom) {
+    std::cerr << "[ERROR] Failed to create room for client "
+              << client._player_id << std::endl;
+    return KO;
+  }
 
   auto sharedClient = server.getClientById(client._player_id);
   if (!sharedClient) {
@@ -488,9 +494,6 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
                                            RoomError::WRONG_PASSWORD);
       return KO;
     }
-
-    std::cout << "[INFO] Password validated successfully for player "
-              << client._player_id << std::endl;
   }
 
   auto sharedClient = server.getClientById(client._player_id);
@@ -819,8 +822,7 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
           std::chrono::system_clock::now().time_since_epoch())
           .count());
 
-  auto responsePacket =
-      PacketBuilder::makeChallengeResponse(challenge.c_str(), time);
+  auto responsePacket = PacketBuilder::makeChallengeResponse(challenge, time);
 
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(responsePacket);

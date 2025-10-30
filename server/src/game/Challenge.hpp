@@ -7,12 +7,12 @@
 
 namespace game {
 
-  class Challenge {
-      struct ChallengeStruct {
-          std::string nonce;
-          std::uint32_t timestamp;
-      };
+  struct ChallengeStruct {
+      std::string nonce;
+      std::uint32_t timestamp;
+  };
 
+  class Challenge {
     public:
       Challenge() = default;
       Challenge(const Challenge &) = delete;

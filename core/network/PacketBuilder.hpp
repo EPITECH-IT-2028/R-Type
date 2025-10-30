@@ -651,9 +651,11 @@ struct PacketBuilder {
         const RoomError &error_code, std::uint32_t room_id) {
       CreateRoomResponsePacket packet{};
       packet.header.type = PacketType::CreateRoomResponse;
-      packet.header.size = sizeof(packet);
       packet.error_code = error_code;
       packet.room_id = room_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeCreateRoomResponse"))
+        return {};
       return packet;
     }
 
@@ -835,8 +837,10 @@ struct PacketBuilder {
     static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id) {
       RequestChallengePacket packet{};
       packet.header.type = PacketType::RequestChallenge;
-      packet.header.size = sizeof(packet);
       packet.room_id = room_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeRequestChallenge"))
+        return {};
       return packet;
     }
 
@@ -851,13 +855,14 @@ struct PacketBuilder {
      * challenge copied into the packet, and timestamp set.
      */
     static ChallengeResponsePacket makeChallengeResponse(
-        const char challenge[CHALLENGE_HEX_LEN], std::uint32_t timestamp) {
+        const std::string challenge, std::uint32_t timestamp) {
       ChallengeResponsePacket packet{};
       packet.header.type = PacketType::ChallengeResponse;
-      packet.header.size = sizeof(packet);
-      strncpy(packet.challenge, challenge, sizeof(packet.challenge) - 1);
-      packet.challenge[sizeof(packet.challenge) - 1] = '\0';
+      packet.challenge = challenge;
       packet.timestamp = timestamp;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeChallengeResponse"))
+        return {};
       return packet;
     }
 };

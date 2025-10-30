@@ -387,7 +387,6 @@ namespace client {
       void createBackgroundEntities();
 
       Challenge _challenge;
-
       ecs::ECSManager &_ecsManager;
   };
 }  // namespace client

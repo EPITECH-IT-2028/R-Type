@@ -6,7 +6,13 @@
 namespace client {
   class Challenge {
     public:
-      Challenge() = default;
+      Challenge()
+          : _currentChallenge(""),
+            _challengeTimestamp(0),
+            _roomId(0),
+            _waitingChallenge(false),
+            _challengeReceived(false) {
+      }
 
       void setChallenge(const std::string &challenge, std::uint32_t timestamp) {
         _currentChallenge = challenge;
@@ -44,10 +50,10 @@ namespace client {
       }
 
     private:
-      std::string _currentChallenge = "";
-      std::uint32_t _challengeTimestamp = 0;
-      std::uint32_t _roomId = 0;
-      bool _waitingChallenge = false;
-      bool _challengeReceived = false;
+      std::string _currentChallenge;
+      std::uint32_t _challengeTimestamp;
+      std::uint32_t _roomId;
+      bool _waitingChallenge;
+      bool _challengeReceived;
   };
 }  // namespace client

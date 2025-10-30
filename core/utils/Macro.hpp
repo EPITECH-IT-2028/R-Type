@@ -89,4 +89,6 @@ constexpr int NANOSECONDS_IN_SECOND = 1000000000;
 
 /* Serialization */
 constexpr std::size_t SERIALIZE_32_BYTES = 32;
+constexpr std::size_t SERIALIZE_64_BYTES = 64;
+constexpr std::size_t SERIALIZE_128_BYTES = 128;
 constexpr std::size_t SERIALIZE_512_BYTES = 512;
