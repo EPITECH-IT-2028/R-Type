@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asio.hpp>
+#include <iostream>
 #include "Client.hpp"
 #include "Game.hpp"
 #include "Macro.hpp"
@@ -30,8 +31,15 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
-        auto buffer = std::make_shared<std::vector<std::uint8_t>>(
-            serialization::BitserySerializer::serialize(packet));
+        serialization::Buffer serializedBuffer =
+            serialization::BitserySerializer::serialize(packet);
+        if (serializedBuffer.empty()) {
+          std::cerr << "[ERROR] Failed to serialize packet for broadcast."
+                    << std::endl;
+          return;
+        }
+        auto buffer =
+            std::make_shared<std::vector<std::uint8_t>>(serializedBuffer);
 
         for (const auto &client : clients) {
           if (client && client->_connected &&
@@ -91,10 +99,18 @@ namespace broadcast {
                 player->getPlayerId(), playerName, pos.first, pos.second, speed,
                 maxHealth);
 
-            auto buffer = std::make_shared<std::vector<std::uint8_t>>(
-                serialization::BitserySerializer::serialize(existPlayerPacket));
+            auto buffer =
+                serialization::BitserySerializer::serialize(existPlayerPacket);
+            if (buffer.empty()) {
+              std::cerr << "[ERROR] Failed to serialize existPlayerPacket for "
+                           "newPlayerID "
+                        << newPlayerID << std::endl;
+              continue;
+            }
 
-            networkManager.sendToClient(newPlayerID, buffer);
+            networkManager.sendToClient(
+                newPlayerID,
+                std::make_shared<std::vector<std::uint8_t>>(buffer));
           }
         }
       }

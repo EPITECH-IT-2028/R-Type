@@ -36,7 +36,7 @@ template <typename S>
  * @brief Serializes a ChatMessagePacket into the given serializer.
  *
  * Writes the packet fields in order: header type and size, timestamp,
- * 256-byte message buffer, player ID, and RGBA color components.
+ * message text (up to 512 bytes), player ID, and RGBA color components.
  *
  * @param s Serializer adapter used to write the packet data.
  * @param packet ChatMessagePacket to serialize.
@@ -45,9 +45,7 @@ void serialize(S &s, ChatMessagePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.timestamp);
-  for (size_t i = 0; i < 256; ++i) {
-    s.value1b(packet.message[i]);
-  }
+  s.text1b(packet.message, SERIALIZE_512_BYTES);
   s.value4b(packet.player_id);
   s.value1b(packet.r);
   s.value1b(packet.g);
@@ -70,9 +68,7 @@ template <typename S>
 void serialize(S &s, PlayerInfoPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.name[i]);
-  }
+  s.text1b(packet.name, SERIALIZE_32_BYTES);
 }
 template <typename S>
 /**
@@ -143,9 +139,7 @@ void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.player_id);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.player_name[i]);
-  }
+  s.text1b(packet.player_name, SERIALIZE_32_BYTES);
   s.template value<sizeof(float)>(packet.x);
   s.template value<sizeof(float)>(packet.y);
   s.template value<sizeof(float)>(packet.speed);
@@ -295,42 +289,39 @@ void serialize(S &s, GameEndPacket &packet) {
  */
 template <typename S>
 /**
- * @brief Serializes a CreateRoomPacket into the provided serializer.
+ * @brief Serialize a CreateRoomPacket into the provided serializer.
  *
- * Writes the packet header followed by a fixed 32-byte room name, the
- * maximum player count, the privacy flag, and a fixed 32-byte password.
+ * Writes the packet header (type and size), the room name as a fixed 32-byte
+ * field, the maximum player count, the privacy flag, and the password as a
+ * fixed 32-byte field.
  *
- * @param packet Packet instance whose fields will be serialized.
+ * @param packet The CreateRoomPacket to serialize; its header, `room_name` (32
+ * bytes), `max_players`, `is_private`, and `password` (32 bytes) are written.
  */
 void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.room_name[i]);
-  }
+  s.text1b(packet.room_name, SERIALIZE_32_BYTES);
   s.value1b(packet.max_players);
   s.value1b(packet.is_private);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.password[i]);
-  }
+  s.text1b(packet.password, SERIALIZE_32_BYTES);
 }
 
 template <typename S>
 /**
- * @brief Serializes a JoinRoomPacket into the given serializer.
+ * @brief Serialize a JoinRoomPacket into the provided serializer.
  *
- * Writes the packet header (type as 1 byte, size as 4 bytes), the room ID (4
- * bytes), and the 32-byte password as a sequence of bytes.
+ * Serializes the packet header, the 4-byte room ID, and the password as a fixed
+ * 32-byte field (uses SERIALIZE_32_BYTES).
  *
- * @param packet The JoinRoomPacket to serialize.
+ * @param s Serializer to write the packet into.
+ * @param packet JoinRoomPacket to serialize.
  */
 void serialize(S &s, JoinRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(packet.password[i]);
-  }
+  s.text1b(packet.password, SERIALIZE_32_BYTES);
 }
 
 template <typename S>
@@ -387,9 +378,7 @@ template <typename S>
  */
 void serialize(S &s, RoomInfo &room) {
   s.value4b(room.room_id);
-  for (size_t i = 0; i < 32; ++i) {
-    s.value1b(room.room_name[i]);
-  }
+  s.text1b(room.room_name, SERIALIZE_32_BYTES);
   s.value1b(room.player_count);
   s.value1b(room.max_players);
 }
