@@ -532,6 +532,7 @@ void serialize(S &s, AckPacket &packet) {
   s.value4b(packet.player_id);
 }
 
+template <typename S>
 void serialize(S &s, RequestChallengePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);

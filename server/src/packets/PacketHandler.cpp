@@ -907,7 +907,7 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
-      serialization::BitserySerializer::deserialize<AckPacket::RequestChallengePacket>(
+      serialization::BitserySerializer::deserialize<RequestChallengePacket>(
           buffer);
 
   if (!deserializedPacket) {
@@ -917,7 +917,7 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
     return KO;
   }
 
-  const AckPacket::RequestChallengePacket &packet = deserializedPacket.value();
+  const RequestChallengePacket &packet = deserializedPacket.value();
 
   auto room = server.getGameManager().getRoom(packet.room_id);
   if (!room) {

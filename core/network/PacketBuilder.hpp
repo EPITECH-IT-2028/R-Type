@@ -886,8 +886,8 @@ struct PacketBuilder {
      * PacketType::RequestChallenge, header size set to the packet size,
      * and room_id set.
      */
-    static AckPacket::RequestChallengePacket makeRequestChallenge(std::uint32_t room_id) {
-      AckPacket::RequestChallengePacket packet{};
+    static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id) {
+      RequestChallengePacket packet{};
       packet.header.type = PacketType::RequestChallenge;
       packet.room_id = room_id;
 
@@ -906,9 +906,9 @@ struct PacketBuilder {
      * PacketType::ChallengeResponse, header size set to the packet size,
      * challenge copied into the packet, and timestamp set.
      */
-    static AckPacket::ChallengeResponsePacket makeChallengeResponse(
+    static ChallengeResponsePacket makeChallengeResponse(
         const std::string challenge, std::uint32_t timestamp) {
-      AckPacket::ChallengeResponsePacket packet{};
+      ChallengeResponsePacket packet{};
       packet.header.type = PacketType::ChallengeResponse;
       packet.challenge = challenge;
       packet.timestamp = timestamp;

@@ -674,6 +674,7 @@ struct ALIGNED AckPacket {
     PacketHeader header;
     std::uint32_t sequence_number;
     std::uint32_t player_id;
+};
 
 struct ALIGNED RequestChallengePacket {
     PacketHeader header;
