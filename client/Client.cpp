@@ -216,17 +216,15 @@ namespace client {
   }
 
   /**
-   * @brief Create a player entity with position, render, sprite, scale,
-   * animation, and identification components.
+   * @brief Create and register a player entity from a NewPlayerPacket.
    *
-   * Configures the entity from the provided packet and player sprite
-   * configuration, records the entity in the client's player ID → entity and
-   * player ID → name mappings, and — if the client has no local player assigned
-   * — sets the local player ID, stores the local player name, and tags the
+   * Creates an ECS entity for the player, attaches position, render, sprite,
+   * scale, player tag, and sprite animation components, records the mapping
+   * from player ID to entity and player name, and if no local player ID is set,
+   * assigns the local player ID, stores the local player name, and tags the
    * entity as the local player.
    *
-   * @param packet Packet containing the player's ID, name, and initial position
-   * (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     std::uint32_t localId = _player_id;
@@ -274,12 +272,10 @@ namespace client {
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(player, anim);
 
     std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
-    size_t len = strnlen(packet.player_name, sizeof(packet.player_name));
     if (_player_id == INVALID_ID) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      _playerName.assign(packet.player_name, len);
-
+      _playerName.assign(packet.player_name);
       {
         std::lock_guard<std::mutex> lock(_deferredNewPlayerPacketsMutex);
         for (const auto &deferredPacket : _deferredNewPlayerPackets) {
@@ -287,11 +283,11 @@ namespace client {
             createPlayerEntity(deferredPacket);
           }
         }
-        _deferredNewPlayerPackets.clear();
+      _deferredNewPlayerPackets.clear();
       }
     }
     _playerEntities[packet.player_id] = player;
-    _playerNames[packet.player_id] = std::string(packet.player_name, len);
+    _playerNames[packet.player_id] = packet.player_name;
   }
 
   /**

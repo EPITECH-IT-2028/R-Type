@@ -18,6 +18,7 @@
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
 #include "ScoreComponent.hpp"
+#include "ServerInputSystem.hpp"
 #include "ShootComponent.hpp"
 #include "SpeedComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -48,12 +49,16 @@ game::Game::~Game() {
   if (_collisionSystem) {
     _collisionSystem->setECSManager(nullptr);
   }
+  if (_serverInputSystem) {
+    _serverInputSystem->setECSManager(nullptr);
+  }
 
   clearAllEntities();
 
   _enemySystem.reset();
   _collisionSystem.reset();
   _projectileSystem.reset();
+  _serverInputSystem.reset();
 }
 
 /**
@@ -97,6 +102,9 @@ void game::Game::initECS() {
 
     _projectileSystem = _ecsManager->registerSystem<ecs::ProjectileSystem>();
 
+    _serverInputSystem = _ecsManager->registerSystem<ecs::ServerInputSystem>();
+    _serverInputSystem->setEventQueue(&_eventQueue);
+
     Signature enemySignature;
     enemySignature.set(_ecsManager->getComponentType<ecs::EnemyComponent>());
     enemySignature.set(_ecsManager->getComponentType<ecs::PositionComponent>());
@@ -124,6 +132,18 @@ void game::Game::initECS() {
     collisionSignature.set(
         _ecsManager->getComponentType<ecs::ColliderComponent>());
     _ecsManager->setSystemSignature<ecs::CollisionSystem>(collisionSignature);
+
+    Signature serverInputSignature{};
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::VelocityComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::PositionComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::SpeedComponent>());
+    serverInputSignature.set(
+        _ecsManager->getComponentType<ecs::PlayerComponent>());
+    _ecsManager->setSystemSignature<ecs::ServerInputSystem>(
+        serverInputSignature);
 
   } catch (const std::runtime_error &e) {
     std::cerr << "ECS System registration error: " << e.what() << std::endl;
@@ -186,13 +206,14 @@ void game::Game::gameLoop() {
     _deltaTime.store(deltaTime.count());
     lastTime = now;
 
+    _serverInputSystem->update(deltaTime.count());
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
     _collisionSystem->update(deltaTime.count());
 
     spawnEnemy(deltaTime.count());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
   }
 }
 

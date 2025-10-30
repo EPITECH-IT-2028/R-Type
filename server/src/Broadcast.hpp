@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asio.hpp>
+#include <iostream>
 #include "Client.hpp"
 #include "Game.hpp"
 #include "Macro.hpp"
@@ -30,8 +31,15 @@ namespace broadcast {
           network::ServerNetworkManager &networkManager,
           const std::vector<std::shared_ptr<server::Client>> &clients,
           const Packet &packet, Pred pred) {
-        auto buffer = std::make_shared<std::vector<std::uint8_t>>(
-            serialization::BitserySerializer::serialize(packet));
+        serialization::Buffer serializedBuffer =
+            serialization::BitserySerializer::serialize(packet);
+        if (serializedBuffer.empty()) {
+          std::cerr << "[ERROR] Failed to serialize packet for broadcast."
+                    << std::endl;
+          return;
+        }
+        auto buffer =
+            std::make_shared<std::vector<std::uint8_t>>(serializedBuffer);
 
         for (const auto &client : clients) {
           if (client && client->_connected &&
@@ -92,11 +100,21 @@ namespace broadcast {
                 player->getPlayerId(), playerName, pos.first, pos.second, speed,
                 seq, maxHealth);
 
-            auto buffer = std::make_shared<std::vector<std::uint8_t>>(
-                serialization::BitserySerializer::serialize(existPlayerPacket));
+            auto buffer =
+                serialization::BitserySerializer::serialize(existPlayerPacket);
+            if (buffer.empty()) {
+              std::cerr << "[ERROR] Failed to serialize existPlayerPacket for "
+                           "newPlayerID "
+                        << client._player_id << std::endl;
+              continue;
+            }
 
-            client.addUnacknowledgedPacket(game.getSequenceNumber(), buffer);
-            networkManager.sendToClient(client._player_id, buffer);
+            client.addUnacknowledgedPacket(
+                game.getSequenceNumber(),
+                std::make_shared<std::vector<std::uint8_t>>(buffer));
+            networkManager.sendToClient(
+                client._player_id,
+                std::make_shared<std::vector<std::uint8_t>>(buffer));
             game.incrementSequenceNumber();
           }
         }

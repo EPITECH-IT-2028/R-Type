@@ -3,6 +3,7 @@
 #include "Client.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
+#include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketUtils.hpp"
@@ -34,12 +35,8 @@ namespace {
 }  // namespace
 
 /**
- * @brief Process a chat message packet and store the message for the
- * corresponding player.
- *
- * Deserializes a ChatMessagePacket from the provided byte buffer and, on
- * success, stores the chat message for the player identified by the packet
- * using the packet's RGBA color fields.
+ * @brief Handle an incoming chat message packet and store it for the specified
+ * player.
  *
  * @param data Pointer to the serialized packet bytes.
  * @param size Number of bytes available at `data`.
@@ -60,8 +57,7 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 
   const ChatMessagePacket &packet = packetOpt.value();
   const std::string playerName = client.getPlayerNameById(packet.player_id);
-  size_t msgLen = strnlen(packet.message, sizeof(packet.message));
-  std::string message(packet.message, msgLen);
+  std::string message = packet.message;
   Color color = {packet.r, packet.g, packet.b, packet.a};
   client.storeChatMessage(playerName, message, color);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
@@ -69,16 +65,14 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Handle a "new player" packet and create the corresponding player
- * entity.
+ * @brief Handle a NewPlayerPacket and create the corresponding player entity on
+ * the client.
  *
- * Deserializes the provided byte buffer into a NewPlayerPacket. If
- * deserialization fails, logs an error and returns packet::KO. On success, logs
- * the spawned player's details and instructs the client to create a new player
- * entity using the packet data.
+ * Deserializes the provided byte buffer into a NewPlayerPacket and, if
+ * successful, instructs the client to create a new player entity using the
+ * packet data.
  *
- * @param client Client instance used to create the player entity.
- * @param data Pointer to the packet payload bytes.
+ * @param data Pointer to the serialized packet payload.
  * @param size Length of the packet payload in bytes.
  * @return int `packet::OK` on successful handling and entity creation,
  * `packet::KO` if deserialization fails.
@@ -96,11 +90,7 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  char name_buffer[33];
-  std::memcpy(name_buffer, packet.player_name, sizeof(packet.player_name));
-  name_buffer[32] = '\0';
-
-  {
+  if (client.getPlayerId() == INVALID_ID) {
     std::lock_guard<std::mutex> lock(client._deferredNewPlayerPacketsMutex);
     client._deferredNewPlayerPackets.push_back(packet);
     TraceLog(LOG_INFO,
@@ -108,7 +98,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
              "_player_id not known)",
              packet.player_id);
   }
-
+  TraceLog(LOG_INFO, "[NEW PLAYER] %s: %u spawned at (%f, %f) with speed %f",
+           packet.player_name.c_str(), packet.player_id, packet.x, packet.y,
+           packet.speed);
   client.createPlayerEntity(packet);
   sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
