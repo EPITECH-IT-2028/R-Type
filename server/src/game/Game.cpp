@@ -185,11 +185,16 @@ void game::Game::stop() {
  * flag is cleared and the loop stops.
  */
 void game::Game::gameLoop() {
+  const float TICK_DURATION = 1.0f / TICK_RATE;
+  const auto TICK_DURATION_MS = std::chrono::duration<float>(TICK_DURATION);
+
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
+  auto gameStartTime = std::chrono::high_resolution_clock::now();
+  auto lastTickTime = lastTime;
 
   while (_running) {
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
@@ -198,19 +203,34 @@ void game::Game::gameLoop() {
       _running = false;
       break;
     }
+
     auto now = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> deltaTime = now - lastTime;
-    _deltaTime.store(deltaTime.count());
     lastTime = now;
 
-    _serverInputSystem->update(deltaTime.count());
-    _enemySystem->update(deltaTime.count());
-    _projectileSystem->update(deltaTime.count());
-    _collisionSystem->update(deltaTime.count());
+    std::chrono::duration<float> timeSinceLastTick = now - lastTickTime;
 
-    spawnEnemy(deltaTime.count());
+    if (timeSinceLastTick >= TICK_DURATION_MS) {
+      _deltaTime.store(TICK_DURATION);
+      lastTickTime = now;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
+      std::chrono::duration<float> elapsedTime = now - gameStartTime;
+      if (elapsedTime.count() >= GAME_DURATION) {
+        queue::GameEndEvent endEvent;
+        endEvent.game_ended = true;
+        _eventQueue.addRequest(endEvent);
+        break;
+      }
+
+      _serverInputSystem->update(TICK_DURATION);
+      _enemySystem->update(TICK_DURATION);
+      _projectileSystem->update(TICK_DURATION);
+      _collisionSystem->update(TICK_DURATION);
+      spawnEnemy(TICK_DURATION);
+    } else {
+      auto timeToWait = TICK_DURATION_MS - timeSinceLastTick;
+      std::this_thread::sleep_for(timeToWait);
+    }
   }
 }
 
@@ -520,4 +540,19 @@ void game::Game::clearAllEntities() {
   _nextEnemyId = 0;
   _nextProjectileId.store(0, std::memory_order_relaxed);
   _enemySpawnTimer = 0.0f;
+}
+
+std::unordered_map<int, int> game::Game::getPlayerScores() const {
+  std::unordered_map<int, int> scores;
+  std::scoped_lock lock(_playerMutex);
+  for (const auto &pair : _players) {
+    int playerId = pair.first;
+    auto player = pair.second;
+    if (player) {
+      auto scoreComp =
+          _ecsManager->getComponent<ecs::ScoreComponent>(player->getEntityId());
+      scores[playerId] = scoreComp.score;
+    }
+  }
+  return scores;
 }

@@ -144,10 +144,22 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   std::string name = packet.name;
 
   client._player_name = name;
-  if (!server.getDatabaseManager().addPlayer(name, client._ip_address)) {
-    std::cerr << "[ERROR] Failed to add player " << client._player_id
-              << " to database" << std::endl;
+
+  auto playerData = server.getDatabaseManager().getPlayerByUsername(name);
+  if (!playerData.has_value()) {
+    if (!server.getDatabaseManager().addPlayer(name, client._ip_address)) {
+      std::cerr << "[ERROR] Failed to add player " << client._player_id
+                << " to database" << std::endl;
+    }
+    playerData = server.getDatabaseManager().getPlayerByUsername(name);
   }
+
+  if (playerData.has_value()) {
+    client._database_player_id = playerData.value().id;
+  } else {
+    client._database_player_id = INVALID_ID;
+  }
+
   if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
                                                       true)) {
     std::cerr << "[ERROR] Failed to update player status for player "

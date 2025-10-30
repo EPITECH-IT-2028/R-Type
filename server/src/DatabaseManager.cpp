@@ -233,3 +233,42 @@ std::vector<database::BanData> database::DatabaseManager::getAllBans() {
   sqlite3_finalize(stmt);
   return bans;
 }
+
+bool database::DatabaseManager::addScore(int playerId, int score) {
+  const char *query =
+      "INSERT INTO scores (player_id, score) VALUES (?, ?) "
+      "ON CONFLICT(player_id) DO UPDATE SET score = score + excluded.score";
+  sqlite3_stmt *stmt;
+  if (sqlite3_prepare_v2(_db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+    return false;
+  }
+  sqlite3_bind_int(stmt, 1, playerId);
+  sqlite3_bind_int(stmt, 2, score);
+  bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+  sqlite3_finalize(stmt);
+  return success;
+}
+
+std::vector<database::ScoreData> database::DatabaseManager::getTopScores(
+    int limit) {
+  std::vector<ScoreData> scores;
+  sqlite3_stmt *stmt;
+  const std::string query =
+      "SELECT player_id, score FROM scores ORDER BY score DESC LIMIT ?;";
+
+  if (sqlite3_prepare_v2(_db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+    return scores;
+  }
+
+  sqlite3_bind_int(stmt, 1, limit);
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    ScoreData row;
+    row.player_id = sqlite3_column_int(stmt, 0);
+    row.score = sqlite3_column_int(stmt, 1);
+    scores.push_back(row);
+  }
+
+  sqlite3_finalize(stmt);
+  return scores;
+}

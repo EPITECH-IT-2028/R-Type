@@ -179,7 +179,7 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
   auto clients = room->getClients();
 
   std::visit(
-      [this, &clients](const auto &specificEvent) {
+      [this, &clients, &room](const auto &specificEvent) {
         using T = std::decay_t<decltype(specificEvent)>;
 
         if constexpr (std::is_same_v<T, queue::EnemySpawnEvent>) {
@@ -249,6 +249,41 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
+        } else if constexpr (std::is_same_v<T, queue::GameEndEvent>) {
+          auto gameEndPacket =
+              PacketBuilder::makeGameEnd(specificEvent.game_ended);
+          broadcast::Broadcast::broadcastGameEndToRoom(_networkManager, clients,
+                                                       gameEndPacket);
+          for (auto &client : clients) {
+            if (client) {
+              client->_state = ClientState::CONNECTED_MENU;
+            }
+          }
+          auto playersScore = room->getGame().getPlayerScores();
+
+          for (const auto &scorePair : playersScore) {
+            int gamePlayerId = scorePair.first;
+            int score = scorePair.second;
+
+            auto client = getClientById(gamePlayerId);
+            if (client) {
+              if (client->_database_player_id != INVALID_ID) {
+                bool success = _databaseManager->addScore(
+                    client->_database_player_id, score);
+                if (success) {
+                  std::cout << "[SCORE] Successfully added score " << score
+                            << " for player " << client->_player_name
+                            << " (DB ID: " << client->_database_player_id << ")"
+                            << std::endl;
+                } else {
+                  std::cerr
+                      << "[ERROR] Failed to add score to database for player "
+                      << client->_player_name << std::endl;
+                }
+              }
+            }
+          }
+          room->getGame().stop();
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }
@@ -640,7 +675,7 @@ void server::Server::clearClientSlot(int player_id) {
     if (client && client->_player_id == player_id) {
       if (client->_room_id != NO_ROOM)
         _gameManager->leaveRoom(client);
-      client.reset();
+      client->_connected = false;
       return;
     }
   }
