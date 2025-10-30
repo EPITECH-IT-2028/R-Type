@@ -42,7 +42,10 @@ namespace packet {
               {PacketType::PlayerInput,
                []() { return std::make_unique<PlayerInputHandler>(); }},
               {PacketType::Ack,
-               []() { return std::make_unique<AckPacketHandler>(); }}};
+               []() { return std::make_unique<AckPacketHandler>(); }},
+              {PacketType::RequestChallenge,
+               []() { return std::make_unique<RequestChallengeHandler>(); }}
+      };
   };
 
 }  // namespace packet

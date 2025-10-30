@@ -33,7 +33,10 @@ enum class PacketType : std::uint8_t {
   MatchmakingResponse = 0x19,
   JoinRoomResponse = 0x1A,
   PlayerInput = 0x1B,
-  Ack = 0x1C
+  Ack = 0x1C,
+  RequestChallenge = 0x1D,
+  ChallengeResponse = 0x1E,
+  CreateRoomResponse = 0x1F
 };
 
 enum class EnemyType : std::uint8_t {
@@ -517,6 +520,12 @@ struct ALIGNED CreateRoomPacket {
     std::uint32_t sequence_number;
 };
 
+struct ALIGNED CreateRoomResponsePacket {
+    PacketHeader header;
+    RoomError error_code;
+    std::uint32_t room_id;
+};
+
 /**
  * @brief Client-to-server packet requesting to join an existing room.
  *
@@ -665,4 +674,14 @@ struct ALIGNED AckPacket {
     PacketHeader header;
     std::uint32_t sequence_number;
     std::uint32_t player_id;
+
+struct ALIGNED RequestChallengePacket {
+    PacketHeader header;
+    std::uint32_t room_id;
+};
+
+struct ALIGNED ChallengeResponsePacket {
+    PacketHeader header;
+    std::string challenge;
+    std::uint32_t timestamp;
 };

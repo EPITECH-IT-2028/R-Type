@@ -175,12 +175,11 @@ void game::Game::stop() {
  * @brief Run the game's main loop: advance time, update systems, and spawn
  * enemies.
  *
- * Enqueues a GameStartEvent (sets its sequence number via getSequenceNumber()
- * and increments the sequence) then repeatedly:
- * - updates the stored frame delta time (_deltaTime),
- * - calls update on enemy, projectile, and collision systems with the delta,
- * - invokes enemy spawn logic,
- * - and enforces approximate 16ms frame pacing.
+ * Enqueues a GameStartEvent immediately, then repeatedly:
+ * - calculates and stores frame delta time in `_deltaTime`,
+ * - updates the enemy, projectile, and collision systems with the delta time,
+ * - runs enemy spawn logic,
+ * - dynamically sleeps to maintain a consistent tick rate.
  *
  * The loop ends when `_running` becomes false or if any required system
  * (enemy, projectile, collision) is unavailable, in which case `_running` is
@@ -193,18 +192,19 @@ void game::Game::gameLoop() {
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
+  constexpr std::chrono::nanoseconds tickDuration(NANOSECONDS_IN_SECOND / TPS);
 
   while (_running) {
+    auto frameStart = std::chrono::high_resolution_clock::now();
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
       std::cerr << "Error: ECS Manager or Systems not initialized."
                 << std::endl;
       _running = false;
       break;
     }
-    auto now = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> deltaTime = now - lastTime;
+    std::chrono::duration<float> deltaTime = frameStart - lastTime;
     _deltaTime.store(deltaTime.count());
-    lastTime = now;
+    lastTime = frameStart;
 
     _serverInputSystem->update(deltaTime.count());
     _enemySystem->update(deltaTime.count());
@@ -213,7 +213,11 @@ void game::Game::gameLoop() {
 
     spawnEnemy(deltaTime.count());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_RATE));
+    auto frameEnd = std::chrono::high_resolution_clock::now();
+    auto frameDuration = frameEnd - frameStart;
+    auto sleepTime = tickDuration - frameDuration;
+    if (sleepTime > std::chrono::nanoseconds(0))
+      std::this_thread::sleep_for(sleepTime);
   }
 }
 

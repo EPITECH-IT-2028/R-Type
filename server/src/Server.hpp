@@ -14,6 +14,8 @@
 #include "GameManager.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
+#include "game/Challenge.hpp"
+#include "game/GameManager.hpp"
 
 namespace game {
   class GameManager;
@@ -98,6 +100,10 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
+      game::Challenge &getChallengeManager() {
+        return _challenge;
+      }
+
       std::optional<std::uint64_t> getLastProcessedSeq(
           std::uint32_t player_id) const {
         std::lock_guard<std::mutex> g(_lastProcessedSeqMutex);
@@ -114,7 +120,6 @@ namespace server {
 
       void enqueueClientRemoval(std::uint32_t player_id);
       void processPendingClientRemovals();
-
       void checkIsPlayerBan();
 
     private:
@@ -150,6 +155,7 @@ namespace server {
       std::uint16_t screen_height = 1200;
 
       std::shared_ptr<game::GameManager> _gameManager;
+      game::Challenge _challenge;
       std::shared_ptr<database::DatabaseManager> _databaseManager;
 
       mutable std::shared_mutex _clientsMutex;

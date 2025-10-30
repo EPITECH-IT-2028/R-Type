@@ -48,8 +48,11 @@ namespace packet {
                []() { return std::make_unique<AckPacketHandler>(); }},
               {PacketType::JoinRoomResponse,
                []() { return std::make_unique<JoinRoomResponseHandler>(); }},
-              {PacketType::MatchmakingResponse, []() {
-                 return std::make_unique<MatchmakingResponseHandler>();
-               }}};
+              {PacketType::MatchmakingResponse,
+               []() { return std::make_unique<MatchmakingResponseHandler>(); }},
+              {PacketType::ChallengeResponse,
+               []() { return std::make_unique<ChallengeResponseHandler>(); }},
+              {PacketType::CreateRoomResponse,
+               []() { return std::make_unique<CreateRoomResponseHandler>(); }}};
   };
 }  // namespace packet
