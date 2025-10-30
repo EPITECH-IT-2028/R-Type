@@ -270,15 +270,9 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               if (client->_database_player_id != INVALID_ID) {
                 bool success = _databaseManager->addScore(
                     client->_database_player_id, score);
-                if (success) {
-                  std::cout << "[SCORE] Successfully added score " << score
-                            << " for player " << client->_player_name
-                            << " (DB ID: " << client->_database_player_id << ")"
-                            << std::endl;
-                } else {
-                  std::cerr
-                      << "[ERROR] Failed to add score to database for player "
-                      << client->_player_name << std::endl;
+                if (!success) {
+                  std::cerr << "[ERROR] Failed to add score for player "
+                            << client->_player_id << std::endl;
                 }
               }
             }

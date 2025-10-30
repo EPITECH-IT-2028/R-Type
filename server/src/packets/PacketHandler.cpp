@@ -852,3 +852,50 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
 
   return OK;
 }
+
+int packet::ScoreboardRequestHandler::handlePacket(server::Server &server,
+                                                   server::Client &client,
+                                                   const char *data,
+                                                   std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ScoreboardRequestPacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    std::cerr
+        << "[ERROR] Failed to deserialize ScoreboardRequestPacket from client "
+        << client._player_id << std::endl;
+    return KO;
+  }
+
+  const ScoreboardRequestPacket &packet = deserializedPacket.value();
+  std::uint32_t limit = packet.limit;
+
+  auto scoreData = server.getDatabaseManager().getTopScores(limit);
+
+  std::vector<ScoreEntry> scoreEntries;
+  for (const auto &data : scoreData) {
+    ScoreEntry entry;
+    auto players = server.getDatabaseManager().getAllPlayers();
+    for (const auto &playerData : players) {
+      if (playerData.id == data.player_id) {
+        entry.player_name = playerData.username;
+        entry.score = data.score;
+        scoreEntries.push_back(entry);
+        break;
+      }
+    }
+  }
+
+  auto responsePacket = PacketBuilder::makeScoreboardResponse(scoreEntries);
+  serialization::Buffer responseBuffer =
+      serialization::BitserySerializer::serialize(responsePacket);
+
+  server.getNetworkManager().sendToClient(
+      client._player_id, reinterpret_cast<const char *>(responseBuffer.data()),
+      responseBuffer.size());
+
+  return OK;
+}

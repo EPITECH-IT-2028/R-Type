@@ -361,6 +361,8 @@ namespace client {
         return _challenge;
       }
 
+      void getScoreboard();
+
     private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
