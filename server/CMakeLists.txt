@@ -1,6 +1,7 @@
 find_package(asio REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Bitsery REQUIRED CONFIG)
+find_package(SQLite3 REQUIRED)
 
 set(PROJECT_NAME r_type_server)
 
@@ -38,7 +39,7 @@ if(WIN32)
 endif()
 
 add_compile_options(-W -Wall -Wextra)
-target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads Bitsery::bitsery)
+target_link_libraries(${PROJECT_NAME} asio::asio Threads::Threads Bitsery::bitsery SQLite::SQLite3)
 target_include_directories(${PROJECT_NAME} PRIVATE
   src/
   src/errors/

@@ -13,10 +13,11 @@
 #include "ServerInputSystem.hpp"
 
 /**
- * @brief Sends a JoinRoomResponse to the specified client indicating the join result.
+ * @brief Sends a JoinRoomResponse to the specified client indicating the join
+ * result.
  *
- * Sends a serialized JoinRoomResponse packet to the client identified by player_id.
- * If serialization fails, logs an error and aborts sending.
+ * Sends a serialized JoinRoomResponse packet to the client identified by
+ * player_id. If serialization fails, logs an error and aborts sending.
  *
  * @param player_id ID of the client that will receive the response.
  * @param error Result code describing why the join succeeded or failed.
@@ -37,9 +38,11 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
 }
 
 /**
- * @brief Send a MatchmakingResponse to a specific player indicating the matchmaking result.
+ * @brief Send a MatchmakingResponse to a specific player indicating the
+ * matchmaking result.
  *
- * @param server Server instance whose network manager will deliver the response.
+ * @param server Server instance whose network manager will deliver the
+ * response.
  * @param player_id ID of the target player to receive the response.
  * @param error Result code describing the matchmaking outcome.
  */
@@ -149,6 +152,15 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   std::string name = packet.name;
 
   client._player_name = name;
+  if (!server.getDatabaseManager().addPlayer(name, client._ip_address)) {
+    std::cerr << "[ERROR] Failed to add player " << client._player_id
+              << " to database" << std::endl;
+  }
+  if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
+                                                      true)) {
+    std::cerr << "[ERROR] Failed to update player status for player "
+              << client._player_id << std::endl;
+  }
 
   std::cout << "[INFO] Player " << client._player_id << " registered in menu"
             << std::endl;
@@ -347,6 +359,12 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
       auto player = room->getGame().getPlayer(client._player_id);
       if (player) {
         room->getGame().destroyPlayer(client._player_id);
+      }
+
+      if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
+                                                          false)) {
+        std::cerr << "[ERROR] Failed to update player status for player "
+                  << client._player_id << std::endl;
       }
 
       std::shared_ptr<server::Client> sharedClient;
@@ -597,7 +615,8 @@ int packet::LeaveRoomHandler::handlePacket(server::Server &server,
 /**
  * @brief Send the current list of active rooms to the requesting client.
  *
- * @returns int `OK` on success, `KO` if the request cannot be processed (for example, deserialization or serialization failure).
+ * @returns int `OK` on success, `KO` if the request cannot be processed (for
+ * example, deserialization or serialization failure).
  */
 int packet::ListRoomHandler::handlePacket(server::Server &server,
                                           server::Client &client,

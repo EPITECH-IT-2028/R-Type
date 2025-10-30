@@ -37,6 +37,12 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _projectile_count(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
   _clients.resize(_max_clients);
+  _databaseManager = std::make_shared<database::DatabaseManager>();
+  if (!_databaseManager->initialize()) {
+    std::cerr << "[ERROR] Failed to initialize database manager." << std::endl;
+    throw std::runtime_error(
+        "Database initialization failed - cannot start server");
+  }
 }
 
 void server::Server::start() {
@@ -112,6 +118,12 @@ void server::Server::handleTimeout() {
       client->_connected = false;
       if (_player_count > 0)
         --_player_count;
+
+      if (!getDatabaseManager().updatePlayerStatus(client->_player_name,
+                                                   false)) {
+        std::cerr << "[ERROR] Failed to update online status for player "
+                  << client->_player_id << std::endl;
+      }
 
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
@@ -388,10 +400,29 @@ void server::Server::handlePlayerInfoPacket(const char *data,
     }
   }
 
-  if (newClient) {
-    auto handler = _factory.createHandler(PacketType::PlayerInfo);
-    if (handler) {
-      handler->handlePacket(*this, *newClient, data, size);
+  if (_databaseManager &&
+      _databaseManager->isIpBanned(current_endpoint.address().to_string())) {
+    std::cerr << "[WARNING] Refused connection from banned IP "
+              << current_endpoint.address().to_string() << std::endl;
+    return;
+  }
+
+  for (size_t i = 0; i < _clients.size(); ++i) {
+    if (!_clients[i]) {
+      int id = _next_player_id++;
+      _clients[i] = std::make_shared<Client>(id);
+      _clients[i]->_connected = true;
+      _clients[i]->_ip_address = current_endpoint.address().to_string();
+      _player_count++;
+      _networkManager.registerClient(id, current_endpoint);
+
+      std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
+
+      auto handler = _factory.createHandler(PacketType::PlayerInfo);
+      if (handler) {
+        handler->handlePacket(*this, *_clients[i], data, size);
+      }
+      return;
     }
     return;
   }
