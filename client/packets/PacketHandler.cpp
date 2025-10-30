@@ -586,3 +586,52 @@ int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
 
   return OK;
 }
+
+int packet::ChallengeResponseHandler::handlePacket(client::Client &client,
+                                                   const char *data,
+                                                   std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ChallengeResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[CHALLENGE RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const ChallengeResponsePacket &packet = deserializedPacket.value();
+
+  std::string challenge = packet.challenge;
+  client.getChallenge().setChallenge(challenge, packet.timestamp);
+
+  return OK;
+}
+
+int packet::CreateRoomResponseHandler::handlePacket(client::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<CreateRoomResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    TraceLog(LOG_ERROR, "[CREATE ROOM RESPONSE] Failed to deserialize packet");
+    return KO;
+  }
+
+  const CreateRoomResponsePacket &packet = deserializedPacket.value();
+
+  if (packet.error_code == RoomError::SUCCESS) {
+    client.setClientState(client::ClientState::IN_ROOM_WAITING);
+  } else {
+    TraceLog(
+        LOG_WARNING,
+        "[CREATE ROOM RESPONSE] Failed to create/join room, error code: %d",
+        static_cast<int>(packet.error_code));
+  }
+  return OK;
+}

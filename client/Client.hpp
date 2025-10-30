@@ -12,6 +12,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "Challenge.hpp"
 #include "ClientNetworkManager.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
@@ -317,6 +318,10 @@ namespace client {
       void sendInput(std::uint8_t input);
       void sendShoot(float x, float y);
       void sendMatchmakingRequest();
+      void sendRequestChallenge(std::uint32_t room_id);
+      void sendJoinRoom(std::uint32_t room_id, const std::string &password);
+      void createRoom(const std::string &room_name,
+                      const std::string &password);
 
       void sendChatMessage(const std::string &message);
       void storeChatMessage(const std::string &author,
@@ -352,6 +357,10 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
+      Challenge &getChallenge() {
+        return _challenge;
+      }
+
     private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
@@ -377,6 +386,7 @@ namespace client {
 
       void createBackgroundEntities();
 
+      Challenge _challenge;
       ecs::ECSManager &_ecsManager;
   };
 }  // namespace client

@@ -5,6 +5,7 @@
 #include "BackgroundSystem.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "ChatComponent.hpp"
+#include "Crypto.hpp"
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
@@ -219,7 +220,8 @@ namespace client {
    * assigns the local player ID, stores the local player name, and tags the
    * entity as the local player.
    *
-   * @param packet Packet containing the player's ID, null-terminated name, and initial position (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and
+   * initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     auto player = _ecsManager.createEntity();
@@ -419,6 +421,53 @@ namespace client {
       TraceLog(LOG_INFO, "[MATCHMAKING] Sent matchmaking request");
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[MATCHMAKING] Exception: %s", e.what());
+    }
+  }
+
+  void Client::sendRequestChallenge(std::uint32_t room_id) {
+    try {
+      _challenge.reset();
+      _challenge.setRoomId(room_id);
+      _challenge.setWaitingChallenge(true);
+
+      RequestChallengePacket packet =
+          PacketBuilder::makeRequestChallenge(room_id);
+      send(packet);
+
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[REQUEST CHALLENGE] Exception: %s", e.what());
+      _challenge.setWaitingChallenge(false);
+    }
+  }
+
+  void Client::sendJoinRoom(std::uint32_t room_id,
+                            const std::string &password) {
+    try {
+      std::string password_hash = crypto::Crypto::sha256(password);
+
+      if (_challenge.isChallengeReceived() &&
+          _challenge.getRoomId() == room_id) {
+        std::string generateString = _challenge.getChallenge() + password_hash;
+        password_hash = crypto::Crypto::sha256(generateString);
+      }
+
+      JoinRoomPacket packet =
+          PacketBuilder::makeJoinRoom(room_id, password_hash);
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[JOIN ROOM] Exception: %s", e.what());
+    }
+  }
+
+  void Client::createRoom(const std::string &room_name,
+                          const std::string &password) {
+    try {
+      auto pwd_hash = crypto::Crypto::sha256(password);
+      CreateRoomPacket packet =
+          PacketBuilder::makeCreateRoom(room_name, 4, pwd_hash);
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());
     }
   }
 

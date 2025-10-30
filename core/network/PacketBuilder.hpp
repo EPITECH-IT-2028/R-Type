@@ -627,7 +627,7 @@ struct PacketBuilder {
       packet.max_players = max_players;
       packet.is_private = !password.empty();
       if (packet.is_private)
-        packet.password = truncateToBytes(password, 32);
+        packet.password = password;
       else
         packet.password.clear();
 
@@ -637,7 +637,31 @@ struct PacketBuilder {
     }
 
     /**
-     * Create a JoinRoomPacket for the specified room ID and password.
+     * @brief Constructs a CreateRoomResponsePacket with the specified error
+     * code and room ID.
+     *
+     * @param error_code The RoomError value to set in the packet's error_code
+     * field.
+     * @param room_id The unique identifier of the created room.
+     * @return CreateRoomResponsePacket Packet with header.type set to
+     * CreateRoomResponse, header.size set to the packet size, error_code set
+     * to the provided value, and room_id set to the provided room ID.
+     */
+    static CreateRoomResponsePacket makeCreateRoomResponse(
+        const RoomError &error_code, std::uint32_t room_id) {
+      CreateRoomResponsePacket packet{};
+      packet.header.type = PacketType::CreateRoomResponse;
+      packet.error_code = error_code;
+      packet.room_id = room_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeCreateRoomResponse"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * Constructs a JoinRoomPacket populated with the specified room ID and
+     * password.
      *
      * @param password Password for the room; empty string means no password.
      * @return JoinRoomPacket Packet whose header.type is PacketType::JoinRoom,
@@ -650,7 +674,7 @@ struct PacketBuilder {
       JoinRoomPacket packet{};
       packet.header.type = PacketType::JoinRoom;
       packet.room_id = room_id;
-      packet.password = truncateToBytes(password, 32);
+      packet.password = password;
 
       if (!setPayloadSizeFromSerialization(packet, "makeJoinRoom"))
         return {};
@@ -798,6 +822,46 @@ struct PacketBuilder {
       packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makePlayerInput"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * @brief Constructs a RequestChallengePacket for the specified room ID.
+     *
+     * @param room_id Identifier of the room for which to request a challenge.
+     * @return RequestChallengePacket Packet with header type set to
+     * PacketType::RequestChallenge, header size set to the packet size,
+     * and room_id set.
+     */
+    static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id) {
+      RequestChallengePacket packet{};
+      packet.header.type = PacketType::RequestChallenge;
+      packet.room_id = room_id;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeRequestChallenge"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * @brief Constructs a ChallengeResponsePacket with the given challenge and
+     * timestamp.
+     * @param challenge Character array containing the challenge response (must
+     * be at least CHALLENGE_HEX_LEN bytes).
+     * @param timestamp Timestamp associated with the challenge response.
+     * @return ChallengeResponsePacket Packet with header type set to
+     * PacketType::ChallengeResponse, header size set to the packet size,
+     * challenge copied into the packet, and timestamp set.
+     */
+    static ChallengeResponsePacket makeChallengeResponse(
+        const std::string challenge, std::uint32_t timestamp) {
+      ChallengeResponsePacket packet{};
+      packet.header.type = PacketType::ChallengeResponse;
+      packet.challenge = challenge;
+      packet.timestamp = timestamp;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeChallengeResponse"))
         return {};
       return packet;
     }

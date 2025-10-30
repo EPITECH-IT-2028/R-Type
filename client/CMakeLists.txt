@@ -2,6 +2,7 @@ find_package(raylib REQUIRED)
 find_package(asio REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Bitsery REQUIRED CONFIG)
+find_package(PicoSHA2 REQUIRED CONFIG)
 
 set(PROJECT_NAME r_type_client)
 
@@ -39,7 +40,7 @@ add_dependencies(${PROJECT_NAME} generate_embedded_assets)
 
 add_compile_options(-W -Wall -Wextra)
 
-target_link_libraries(${PROJECT_NAME} raylib asio::asio Threads::Threads Bitsery::bitsery)
+target_link_libraries(${PROJECT_NAME} raylib asio::asio Threads::Threads Bitsery::bitsery picosha2::picosha2)
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/client/
   ${CMAKE_SOURCE_DIR}/client/packets/
@@ -47,6 +48,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/core/errors/
   ${CMAKE_SOURCE_DIR}/core/network/
   ${CMAKE_SOURCE_DIR}/core/utils/
+  ${CMAKE_SOURCE_DIR}/core/crypto/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
