@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include "AssetManager.hpp"
 
 /**
@@ -38,6 +39,15 @@ int main(int argc, char **argv) {
   std::cout << "Resources: " << resourcesDir << std::endl;
   std::cout << "Output: " << outputDir << std::endl;
 
+  {
+    std::string startScreenPath = resourcesDir + "/start_screen.png";
+    std::string outputPath = outputDir + "/start_screen_data.h";
+
+    if (!asset::AssetManager::exportImageAsCode(startScreenPath, outputPath)) {
+      std::cerr << "[ERROR] Failed to export start_screen.png" << std::endl;
+      success = false;
+    }
+  }
   {
     std::string backgroundPath = resourcesDir + "/background.png";
     std::string outputPath = outputDir + "/background_data.h";
