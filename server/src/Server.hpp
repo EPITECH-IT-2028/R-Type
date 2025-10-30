@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include "Client.hpp"
+#include "DatabaseManager.hpp"
 #include "Events.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
@@ -60,6 +61,10 @@ namespace server {
         return *_gameManager;
       }
 
+      database::DatabaseManager &getDatabaseManager() {
+        return *_databaseManager;
+      }
+
       void clearClientSlot(int player_id);
 
       std::shared_ptr<Client> getClientById(int player_id) const;
@@ -69,6 +74,7 @@ namespace server {
       game::Challenge &getChallengeManager() {
         return _challenge;
       }
+      void checkIsPlayerBan();
 
     private:
       void startReceive();
@@ -101,6 +107,7 @@ namespace server {
 
       std::shared_ptr<game::GameManager> _gameManager;
       game::Challenge _challenge;
+      std::shared_ptr<database::DatabaseManager> _databaseManager;
 
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;
