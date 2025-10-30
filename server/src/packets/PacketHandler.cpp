@@ -1,7 +1,5 @@
 #include "PacketHandler.hpp"
-#include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <iostream>
@@ -11,12 +9,14 @@
 #include "Packet.hpp"
 #include "PacketSerialize.hpp"
 #include "Server.hpp"
+#include "ServerInputSystem.hpp"
 
 /**
- * @brief Sends a JoinRoomResponse to the specified client indicating the join result.
+ * @brief Sends a JoinRoomResponse to the specified client indicating the join
+ * result.
  *
- * Sends a serialized JoinRoomResponse packet to the client identified by player_id.
- * If serialization fails, logs an error and aborts sending.
+ * Sends a serialized JoinRoomResponse packet to the client identified by
+ * player_id. If serialization fails, logs an error and aborts sending.
  *
  * @param player_id ID of the client that will receive the response.
  * @param error Result code describing why the join succeeded or failed.
@@ -37,9 +37,11 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
 }
 
 /**
- * @brief Send a MatchmakingResponse to a specific player indicating the matchmaking result.
+ * @brief Send a MatchmakingResponse to a specific player indicating the
+ * matchmaking result.
  *
- * @param server Server instance whose network manager will deliver the response.
+ * @param server Server instance whose network manager will deliver the
+ * response.
  * @param player_id ID of the target player to receive the response.
  * @param error Result code describing the matchmaking outcome.
  */
@@ -142,7 +144,10 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   std::string name = packet.name;
 
   client._player_name = name;
-  server.getDatabaseManager().addPlayer(name, client._ip_address);
+  if (!server.getDatabaseManager().addPlayer(name, client._ip_address)) {
+    std::cerr << "[ERROR] Failed to add player " << client._player_id
+              << " to database" << std::endl;
+  }
   if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
                                                       true)) {
     std::cerr << "[ERROR] Failed to update player status for player "
@@ -562,7 +567,8 @@ int packet::LeaveRoomHandler::handlePacket(server::Server &server,
 /**
  * @brief Send the current list of active rooms to the requesting client.
  *
- * @returns int `OK` on success, `KO` if the request cannot be processed (for example, deserialization or serialization failure).
+ * @returns int `OK` on success, `KO` if the request cannot be processed (for
+ * example, deserialization or serialization failure).
  */
 int packet::ListRoomHandler::handlePacket(server::Server &server,
                                           server::Client &client,
@@ -744,60 +750,23 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 
   const PlayerInputPacket &packet = deserializedPacket.value();
   auto room = server.getGameManager().getRoom(client._room_id);
-  if (!room || !room->isActive()) {
+  if (!room) {
+    return KO;
+  }
+  auto sis = room->getGame().getServerInputSystem();
+  if (!sis) {
+    return KO;
+  }
+  if (client._entity_id == static_cast<Entity>(-1)) {
+    std::cerr << "[ERROR] Client " << client._player_id
+              << " has invalid entity_id" << std::endl;
     return KO;
   }
 
-  auto &game = room->getGame();
-  float deltaTime = game.getDeltaTime();
+  const ecs::PlayerInput packetInput = {
+      static_cast<MovementInputType>(packet.input),
+      static_cast<int>(packet.sequence_number)};
 
-  if (deltaTime == 0.0f) {
-    deltaTime = 0.016f;
-  }
-
-  auto player = room->getGame().getPlayer(client._player_id);
-  if (!player) {
-    return KO;
-  }
-
-  player->setSequenceNumber(packet.sequence_number);
-
-  float moveDistance = player->getSpeed() * deltaTime;
-
-  float dirX = 0.0f;
-  float dirY = 0.0f;
-
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::UP))
-    dirY -= 1.0f;
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::DOWN))
-    dirY += 1.0f;
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::LEFT))
-    dirX -= 1.0f;
-  if (packet.input & static_cast<std::uint8_t>(MovementInputType::RIGHT))
-    dirX += 1.0f;
-
-  float length = std::sqrt(dirX * dirX + dirY * dirY);
-  if (length > 0.0f) {
-    dirX /= length;
-    dirY /= length;
-  }
-
-  float newX = player->getPosition().first + dirX * moveDistance;
-  float newY = player->getPosition().second + dirY * moveDistance;
-
-  newX =
-      std::clamp(newX, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
-  newY =
-      std::clamp(newY, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
-
-  player->setPosition(newX, newY);
-
-  auto movePacket = PacketBuilder::makePlayerMove(
-      client._player_id, player->getSequenceNumber().value_or(0), newX, newY);
-
-  auto roomClients = room->getClients();
-  broadcast::Broadcast::broadcastPlayerMoveToRoom(server.getNetworkManager(),
-                                                  roomClients, movePacket);
-
+  sis->queueInput(client._entity_id, packetInput);
   return OK;
 }

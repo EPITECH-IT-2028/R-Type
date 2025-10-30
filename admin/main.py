@@ -11,7 +11,7 @@ class AdminPanel(App):
     #title {
         content-align: center middle;
         text-style: bold;
-        color: $accent;
+        color: yellow;
         margin: 1;
         height: 3;
     }

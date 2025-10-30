@@ -104,10 +104,10 @@ class PlayersManagement(Screen):
                     player["id"], player["username"], player["ip_address"],
                     player["created_at"], player["status"]
                 )
-                label = self.query_one("#selected_info", Label)
-                label.update(f"Total players: {len(players)} | Click on a row to open actions menu")
+            label = self.query_one("#selected_info", Label)
+            label.update(f"Total players: {len(players)} | Click on a row to open actions menu")
         except Exception as e:
-                    self.notify(f"Error loading players: {e}", severity="error")
+            self.notify(f"Error loading players: {e}", severity="error")
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
         self.selected_row = event.row_key

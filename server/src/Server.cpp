@@ -39,6 +39,8 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
   _databaseManager = std::make_shared<database::DatabaseManager>();
   if (!_databaseManager->initialize()) {
     std::cerr << "[ERROR] Failed to initialize database manager." << std::endl;
+    throw std::runtime_error(
+        "Database initialization failed - cannot start server");
   }
 }
 
@@ -243,8 +245,8 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
-              specificEvent.player_id, specificEvent.x, specificEvent.y,
-              specificEvent.sequence_number);
+              specificEvent.player_id, specificEvent.sequence_number,
+              specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
         } else {

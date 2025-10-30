@@ -16,11 +16,13 @@
 #include "raylib.h"
 
 /**
- * @brief Handle an incoming chat message packet and store it for the specified player.
+ * @brief Handle an incoming chat message packet and store it for the specified
+ * player.
  *
  * @param data Pointer to the serialized packet bytes.
  * @param size Number of bytes available at `data`.
- * @return int `packet::OK` if the packet was deserialized and the message stored, `packet::KO` if deserialization failed.
+ * @return int `packet::OK` if the packet was deserialized and the message
+ * stored, `packet::KO` if deserialization failed.
  */
 int packet::ChatMessageHandler::handlePacket(client::Client &client,
                                              const char *data,
@@ -43,14 +45,17 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
 }
 
 /**
- * @brief Handle a NewPlayerPacket and create the corresponding player entity on the client.
+ * @brief Handle a NewPlayerPacket and create the corresponding player entity on
+ * the client.
  *
- * Deserializes the provided byte buffer into a NewPlayerPacket and, if successful,
- * instructs the client to create a new player entity using the packet data.
+ * Deserializes the provided byte buffer into a NewPlayerPacket and, if
+ * successful, instructs the client to create a new player entity using the
+ * packet data.
  *
  * @param data Pointer to the serialized packet payload.
  * @param size Length of the packet payload in bytes.
- * @return int `packet::OK` on successful handling and entity creation, `packet::KO` if deserialization fails.
+ * @return int `packet::OK` on successful handling and entity creation,
+ * `packet::KO` if deserialization fails.
  */
 int packet::NewPlayerHandler::handlePacket(client::Client &client,
                                            const char *data, std::size_t size) {

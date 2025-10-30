@@ -72,9 +72,9 @@ class DatabaseManager:
         try:
             if not self.connection:
                 raise Exception("Database not connected")
-                cursor = self.connection.cursor()
-                cursor.execute("SELECT id, ip_address, banned_at, reason FROM bans")
-                rows = cursor.fetchall()
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT id, ip_address, banned_at, reason FROM bans")
+            rows = cursor.fetchall()
 
             return [{
                 "id": row["id"],
