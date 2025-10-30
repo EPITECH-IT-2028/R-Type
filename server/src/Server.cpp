@@ -383,48 +383,32 @@ void server::Server::handlePlayerInfoPacket(const char *data,
       }
     }
 
+    if (_databaseManager &&
+        _databaseManager->isIpBanned(current_endpoint.address().to_string())) {
+      std::cerr << "[WARNING] Refused connection from banned IP "
+                << current_endpoint.address().to_string() << std::endl;
+      return;
+    }
+
     for (size_t i = 0; i < _clients.size(); ++i) {
       if (!_clients[i]) {
         int id = _next_player_id++;
         _clients[i] = std::make_shared<Client>(id);
         _clients[i]->_connected = true;
+        _clients[i]->_ip_address = current_endpoint.address().to_string();
         _player_count++;
         _networkManager.registerClient(id, current_endpoint);
 
         std::cout << "[WORLD] New player connecting with ID " << id
                   << std::endl;
 
-        newClient = _clients[i];
-        break;
+        auto handler = _factory.createHandler(PacketType::PlayerInfo);
+        if (handler) {
+          handler->handlePacket(*this, *_clients[i], data, size);
+        }
+        return;
       }
     }
-  }
-
-  if (_databaseManager &&
-      _databaseManager->isIpBanned(current_endpoint.address().to_string())) {
-    std::cerr << "[WARNING] Refused connection from banned IP "
-              << current_endpoint.address().to_string() << std::endl;
-    return;
-  }
-
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (!_clients[i]) {
-      int id = _next_player_id++;
-      _clients[i] = std::make_shared<Client>(id);
-      _clients[i]->_connected = true;
-      _clients[i]->_ip_address = current_endpoint.address().to_string();
-      _player_count++;
-      _networkManager.registerClient(id, current_endpoint);
-
-      std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
-
-      auto handler = _factory.createHandler(PacketType::PlayerInfo);
-      if (handler) {
-        handler->handlePacket(*this, *_clients[i], data, size);
-      }
-      return;
-    }
-    return;
   }
 
   std::cerr << "[WARNING] Max clients reached. Refused connection from "
@@ -741,8 +725,7 @@ void server::Server::clearClientSlot(int player_id) {
   std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
-      if (client->_room_id != NO_ROOM)
-      {
+      if (client->_room_id != NO_ROOM) {
         _gameManager->leaveRoom(client);
       }
       client.reset();
