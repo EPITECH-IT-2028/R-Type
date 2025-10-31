@@ -26,7 +26,7 @@ namespace crypto {
        * @return std::string Hexadecimal representation of the random challenge.
        */
       static std::string generateChallenge(size_t length) {
-        static std::mt19937 gen(std::random_device{}());
+        thread_local std::mt19937 gen(std::random_device{}());
         std::uniform_int_distribution<unsigned int> dis(0, 255);
 
         std::vector<unsigned char> buffer(length);
