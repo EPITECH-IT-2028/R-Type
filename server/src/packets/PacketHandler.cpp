@@ -297,7 +297,7 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
       serialization::BitserySerializer::serialize(playerShotPacket));
 
   server.setLastProcessedSeq(client._player_id,
-                             playerShotPacket.sequence_number);
+                             packet.sequence_number);
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);
   auto ackBuffer = std::make_shared<std::vector<uint8_t>>(

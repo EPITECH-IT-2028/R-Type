@@ -90,9 +90,13 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
   }
 
   const NewPlayerPacket &packet = packetOpt.value();
-  
+
   client.createPlayerEntity(packet);
-  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
+  if (packet.player_id == client.getPlayerId()) {
+    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+  }
+
   return packet::OK;
 }
 
@@ -233,7 +237,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
         ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
     position.x = packet.x;
     position.y = packet.y;
-
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s",
              packet.player_id, e.what());
