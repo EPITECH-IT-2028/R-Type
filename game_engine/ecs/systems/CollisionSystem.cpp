@@ -458,13 +458,6 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
 
   if (!isOutOfBounds)
     return false;
-  if (_eventQueue) {
-    queue::ProjectileDestroyEvent projectileDestroyEvent;
-    projectileDestroyEvent.projectile_id = projectile.projectile_id;
-    projectileDestroyEvent.x = position.x;
-    projectileDestroyEvent.y = position.y;
-    _eventQueue->addRequest(projectileDestroyEvent);
-  }
 
   _game->destroyProjectile(projectile.projectile_id);
   return true;
