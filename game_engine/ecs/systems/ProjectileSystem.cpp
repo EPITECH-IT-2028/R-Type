@@ -8,7 +8,14 @@ void ecs::ProjectileSystem::update(float dt) {
   if (!_ecsManagerPtr) {
     return;
   }
-  for (const auto &entity : _entities) {
+
+  std::set<Entity> entities;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    entities = _entities;
+  }
+
+  for (const auto &entity : entities) {
     if (_ecsManagerPtr->hasComponent<ProjectileComponent>(entity)) {
       auto &projectile =
           _ecsManagerPtr->getComponent<ProjectileComponent>(entity);
