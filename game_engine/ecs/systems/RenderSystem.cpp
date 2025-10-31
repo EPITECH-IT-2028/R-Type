@@ -45,7 +45,11 @@ ecs::RenderSystem::~RenderSystem() noexcept {
  *                  time-based animation updates.
  */
 void ecs::RenderSystem::update(float deltaTime) {
-  auto entities = _entities;
+  std::set<Entity> entities;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    entities = _entities;
+  }
   for (Entity entity : entities) {
     if (!_ecsManager.isEntityValid(entity))
       continue;
