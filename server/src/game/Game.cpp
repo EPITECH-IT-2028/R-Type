@@ -482,7 +482,21 @@ void game::Game::destroyProjectile(std::uint32_t projectile_id) {
   std::scoped_lock lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   if (it != _projectiles.end()) {
-    std::uint32_t entity_id = it->second->getEntityId();
+    auto projectile = it->second;
+    std::uint32_t entity_id = projectile->getEntityId();
+
+    queue::ProjectileDestroyEvent event;
+    event.projectile_id = projectile_id;
+    try {
+      auto pos = projectile->getPosition();
+      event.x = pos.first;
+      event.y = pos.second;
+    } catch (const std::runtime_error &e) {
+      event.x = 0;
+      event.y = 0;
+    }
+    _eventQueue.addRequest(event);
+
     {
       std::scoped_lock ecsLock(_ecsMutex);
       _ecsManager->destroyEntity(entity_id);
