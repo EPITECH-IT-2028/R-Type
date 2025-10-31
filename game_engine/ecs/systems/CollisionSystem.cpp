@@ -263,17 +263,6 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     _eventQueue->addRequest(playerHitEvent);
   }
 
-  queue::ProjectileDestroyEvent projDestroyEvent;
-  try {
-    projDestroyEvent.projectile_id = projectile->getProjectileId();
-    projDestroyEvent.x = projectile->getPosition().first;
-    projDestroyEvent.y = projectile->getPosition().second;
-    _eventQueue->addRequest(projDestroyEvent);
-  } catch (const std::runtime_error &e) {
-    std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
-              << std::endl;
-  }
-
   _game->destroyProjectile(projectile->getProjectileId());
 }
 
@@ -392,11 +381,6 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
     _eventQueue->addRequest(hitEvent);
   }
 
-  queue::ProjectileDestroyEvent projDestroyEvent;
-  projDestroyEvent.projectile_id = projectile->getProjectileId();
-  projDestroyEvent.x = projectile->getPosition().first;
-  projDestroyEvent.y = projectile->getPosition().second;
-  _eventQueue->addRequest(projDestroyEvent);
   _game->destroyProjectile(projectile->getProjectileId());
 }
 
