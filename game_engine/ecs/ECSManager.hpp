@@ -124,6 +124,11 @@ namespace ecs {
         _systemManager->update(dt);
       }
 
+      bool isEntityValid(Entity entityId) {
+        std::lock_guard<std::mutex> lock(_mutex);
+        return _entityManager->isEntityValid(entityId);
+      }
+
     private:
       std::unique_ptr<EntityManager> _entityManager;
       std::unique_ptr<ComponentManager> _componentManager;
