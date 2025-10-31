@@ -457,6 +457,33 @@ void serialize(S &s, PlayerInputPacket &packet) {
   s.value4b(packet.sequence_number);
 }
 
+template<typename S>
+/**
+ * @brief Serializes a PingPacket into the provided serializer.
+ *
+ * Writes the packet header (type and size) followed by the timestamp.
+ *
+ * @param s Serializer to write into.
+ * @param packet PingPacket to serialize.
+ */
+void serialize(S& s, PingPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.timestamp);
+}
+
+template<typename S>
+/**
+ * @brief Serializes a PongPacket into the provided serializer.
+ * Writes the packet header (type and size) followed by the timestamp.
+ * @param s Serializer to write into.
+ * @param packet PongPacket to serialize.
+ */
+void serialize(S& s, PongPacket& packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.timestamp);
+}
 template <typename S>
 void serialize(S &s, RequestChallengePacket &packet) {
   s.value1b(packet.header.type);

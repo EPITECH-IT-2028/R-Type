@@ -14,6 +14,8 @@
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "raylib.h"
+#include "PingComponent.hpp"
+#include "PacketLossComponent.hpp"
 
 /**
  * @brief Handle an incoming chat message packet and store it for the specified
@@ -217,6 +219,12 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
 
     if (client.getPlayerId() == packet.player_id) {
       client.updateSequenceNumber(packet.sequence_number);
+
+      if (ecsManager.hasComponent<ecs::PacketLossComponent>(playerEntity)) {
+        auto &packetLossComp =
+            ecsManager.getComponent<ecs::PacketLossComponent>(playerEntity);
+        packetLossComp.packetLoss = client.calculatePacketLoss(packet.sequence_number);
+      }
     }
 
   } catch (const std::exception &e) {
@@ -585,6 +593,34 @@ int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
   }
 
   return OK;
+}
+
+int packet::PongHandler::handlePacket(client::Client &client, const char *data,
+                                      std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<PongPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PONG] Failed to deserialize packet");
+    return packet::KO;
+  }
+
+  const PongPacket &packet = packetOpt.value();
+  uint32_t currentTimestamp =
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::steady_clock::now().time_since_epoch())
+          .count();
+  uint32_t ping = currentTimestamp - packet.timestamp;
+  auto &ecsManager = ecs::ECSManager::getInstance();
+  auto playerEntity = client.getPlayerEntity(client.getPlayerId());
+  if (playerEntity != INVALID_ENTITY) {
+    if (ecsManager.hasComponent<ecs::PingComponent>(playerEntity)) {
+      auto &pingComp = ecsManager.getComponent<ecs::PingComponent>(playerEntity);
+      pingComp.ping = ping;
+    }
+  }
+  return packet::OK;
 }
 
 int packet::ChallengeResponseHandler::handlePacket(client::Client &client,

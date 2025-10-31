@@ -1,8 +1,6 @@
 #pragma once
 
 #include <raylib.h>
-#include <sys/stat.h>
-#include <array>
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -10,7 +8,6 @@
 #include <mutex>
 #include <shared_mutex>
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include "Challenge.hpp"
 #include "ClientNetworkManager.hpp"
@@ -19,6 +16,7 @@
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
+#include "PacketLossMonitor.hpp"
 #include "PacketSender.hpp"
 
 #define TIMEOUT_MS 100
@@ -357,6 +355,13 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
+      double calculatePacketLoss(uint32_t seq) {
+        std::lock_guard<std::mutex> lock(_packetLossMutex);
+        _packetLossMonitor.onReceived(seq);
+
+        return _packetLossMonitor.lossRatio();
+      }
+
       Challenge &getChallenge() {
         return _challenge;
       }
@@ -385,6 +390,9 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
+
+      network::PacketLossMonitor _packetLossMonitor;
+      mutable std::mutex _packetLossMutex;
 
       Challenge _challenge;
       ecs::ECSManager &_ecsManager;
