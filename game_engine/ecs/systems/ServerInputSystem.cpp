@@ -9,6 +9,9 @@
 #include "SpeedComponent.hpp"
 
 void ecs::ServerInputSystem::update(float deltaTime) {
+  if (!_eventQueue)
+    return;
+
   std::unordered_map<Entity, std::vector<PlayerInput>> inputsToProcess;
   {
     std::scoped_lock lock(_pendingInputsMutex);
@@ -17,7 +20,7 @@ void ecs::ServerInputSystem::update(float deltaTime) {
     inputsToProcess.swap(_pendingInputs);
   }
 
-  if (inputsToProcess.empty() || !_eventQueue)
+  if (inputsToProcess.empty())
     return;
 
   for (auto &[entityId, inputs] : inputsToProcess) {
