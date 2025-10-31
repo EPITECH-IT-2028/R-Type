@@ -435,6 +435,21 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 
   const CreateRoomPacket &packet = deserializedPacket.value();
 
+  if (client._room_id != NO_ROOM) {
+    std::cout << "[CREATE ROOM] Client " << client._player_id
+              << " already in room " << client._room_id
+              << ", ignoring duplicate create request" << std::endl;
+    
+    auto response = PacketBuilder::makeCreateRoomResponse(RoomError::SUCCESS,
+                                                          client._room_id);
+    auto serializedBuffer = serialization::BitserySerializer::serialize(response);
+    server.getNetworkManager().sendToClient(
+        client._player_id,
+        reinterpret_cast<const char *>(serializedBuffer.data()),
+        serializedBuffer.size());
+    return OK;
+  }
+
   std::string roomName = packet.room_name;
   std::string password = packet.password;
 
@@ -891,6 +906,7 @@ int packet::AckPacketHandler::handlePacket(server::Server &server,
               << ", conn=" << client._player_id << ")" << std::endl;
     return KO;
   }
+  
   client.removeAcknowledgedPacket(packet.sequence_number);
 
   return OK;

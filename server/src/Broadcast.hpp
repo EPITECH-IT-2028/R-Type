@@ -109,9 +109,6 @@ namespace broadcast {
               continue;
             }
 
-            client.addUnacknowledgedPacket(
-                game.getSequenceNumber(),
-                std::make_shared<std::vector<std::uint8_t>>(buffer));
             networkManager.sendToClient(
                 client._player_id,
                 std::make_shared<std::vector<std::uint8_t>>(buffer));

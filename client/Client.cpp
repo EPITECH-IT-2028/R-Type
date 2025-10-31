@@ -275,11 +275,17 @@ namespace client {
 
     lock.lock();
 
-    if (_player_id == INVALID_ID) {
+    bool isLocalPlayer = (_player_id == INVALID_ID && packet.player_name == _playerName);
+    
+    if (isLocalPlayer) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      _playerName.assign(packet.player_name);
+      TraceLog(LOG_INFO, "[CREATE PLAYER] Set local player ID to %u (%s)", 
+               _player_id, _playerName.c_str());
+    } else if (packet.player_id == _player_id) {
+      _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
     }
+    
     _playerEntities[packet.player_id] = player;
     _playerNames[packet.player_id] = packet.player_name;
   }

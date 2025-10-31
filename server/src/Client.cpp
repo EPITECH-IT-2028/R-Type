@@ -43,9 +43,6 @@ void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
   auto it = _unacknowledged_packets.find(sequence_number);
   if (it != _unacknowledged_packets.end()) {
     _unacknowledged_packets.erase(it);
-  } else {
-    std::cerr << "[WARNING] Server tried to remove non-existent packet "
-              << sequence_number << " from player " << _player_id << std::endl;
   }
 }
 
