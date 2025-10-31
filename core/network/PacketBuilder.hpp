@@ -14,11 +14,6 @@
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
 
-/**
- * Convention: header.size = taille totale sérialisée (octets), en‑tête inclus.
- * - Paquets fixes (sans std::string) : header.size = sizeof(packet).
- * - Paquets variables (avec std::string) : taille obtenue via sérialisation.
- */
 struct PacketBuilder {
   private:
     template <typename P>
@@ -286,7 +281,7 @@ struct PacketBuilder {
       packet.health = health;
       packet.max_health = max_health;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makeEnemySpawn"))
         return {};
       return packet;
     }
@@ -317,7 +312,7 @@ struct PacketBuilder {
       packet.velocity_y = velocity_y;
       packet.sequence_number = seq;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makeEnemyMove"))
         return {};
       return packet;
     }
@@ -349,7 +344,7 @@ struct PacketBuilder {
       packet.player_id = player_id;
       packet.score = score;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makeEnemyDeath"))
         return {};
       return packet;
     }
@@ -376,7 +371,7 @@ struct PacketBuilder {
       packet.damage = damage;
       packet.sequence_number = sequence_number;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makeEnemyHit"))
         return {};
       return packet;
     }
@@ -402,7 +397,7 @@ struct PacketBuilder {
       packet.projectile_type = projectile_type;
       packet.sequence_number = seq;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makePlayerShoot"))
         return {};
       return packet;
     }
@@ -442,7 +437,7 @@ struct PacketBuilder {
       packet.damage = damage;
       packet.owner_id = owner_id;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makeProjectileSpawn"))
         return {};
       return packet;
     }
@@ -470,7 +465,7 @@ struct PacketBuilder {
       packet.hit_y = hit_y;
       packet.target_is_player = target_is_player;
 
-      if (!setPayloadSizeFromSerialization(packet, "makePlayerHit"))
+      if (!setPayloadSizeFromSerialization(packet, "makeProjectileHit"))
         return {};
       return packet;
     }
