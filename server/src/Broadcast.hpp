@@ -83,34 +83,39 @@ namespace broadcast {
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,
-          int newPlayerID,
+          server::Client &client,
           const std::vector<std::shared_ptr<server::Client>> &roomClients) {
         auto players = game.getAllPlayers();
 
         for (const auto &player : players) {
           if (player && player->isConnected() &&
-              player->getPlayerId() != newPlayerID) {
+              player->getPlayerId() != client._player_id) {
             std::pair<float, float> pos = player->getPosition();
             float speed = player->getSpeed();
             int maxHealth = player->getMaxHealth().value_or(100);
             std::string playerName = player->getName();
 
+            std::uint32_t seq = game.getSequenceNumber();
             auto existPlayerPacket = PacketBuilder::makeNewPlayer(
                 player->getPlayerId(), playerName, pos.first, pos.second, speed,
-                maxHealth);
+                seq, maxHealth);
 
             auto buffer =
                 serialization::BitserySerializer::serialize(existPlayerPacket);
             if (buffer.empty()) {
               std::cerr << "[ERROR] Failed to serialize existPlayerPacket for "
                            "newPlayerID "
-                        << newPlayerID << std::endl;
+                        << client._player_id << std::endl;
               continue;
             }
 
-            networkManager.sendToClient(
-                newPlayerID,
+            client.addUnacknowledgedPacket(
+                game.getSequenceNumber(),
                 std::make_shared<std::vector<std::uint8_t>>(buffer));
+            networkManager.sendToClient(
+                client._player_id,
+                std::make_shared<std::vector<std::uint8_t>>(buffer));
+            game.incrementSequenceNumber();
           }
         }
       }

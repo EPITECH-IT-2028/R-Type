@@ -17,9 +17,10 @@
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
 #include "Macro.hpp"
-#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketSender.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
 
 #define TIMEOUT_MS 100
 
@@ -93,8 +94,27 @@ namespace client {
   class Client {
     public:
       Client(const std::string &host, const std::uint16_t &port);
-      ~Client() = default;
+      /**
+       * @brief Stops the resend thread and joins it during client destruction.
+       *
+       * Signals the resend thread to stop and joins the thread if it is
+       * joinable to ensure the background resend mechanism is terminated before
+       * destruction.
+       */
+      ~Client() {
+        _resendThreadRunning.store(false, std::memory_order_release);
+        if (_resendThread.joinable()) {
+          _resendThread.join();
+        }
+      }
 
+      /**
+       * @brief Check whether the client currently has an active network
+       * connection.
+       *
+       * @return `true` if the underlying network manager reports a connection,
+       * `false` otherwise.
+       */
       bool isConnected() const {
         return _networkManager.isConnected();
       }
@@ -120,8 +140,8 @@ namespace client {
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet =
-              PacketBuilder::makePlayerInfo(getPlayerName());
+          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo(
+              getPlayerName(), _sequence_number.load());
           send(packet);
         }
       }
@@ -135,13 +155,15 @@ namespace client {
        * the network manager is disconnected and the running flag is cleared.
        */
       void disconnect() {
+        _resendThreadRunning.store(false, std::memory_order_release);
+
         if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
           _networkManager.disconnect();
           _running.store(false, std::memory_order_release);
           return;
         }
-        PlayerDisconnectPacket packet =
-            PacketBuilder::makePlayerDisconnect(getPlayerId());
+        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(
+            getPlayerId(), _sequence_number.load());
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
@@ -167,9 +189,18 @@ namespace client {
         }
 
         try {
+          auto serializedData = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(packet));
+
           packet::PacketSender::sendPacket(_networkManager, packet);
           ++_packet_count;
-          ++_sequence_number;
+
+          if constexpr (requires { packet.sequence_number; }) {
+            if (shouldAcknowledgePacketType(packet.header.type)) {
+              addUnacknowledgedPacket(packet.sequence_number, serializedData);
+            }
+          }
+          _sequence_number.fetch_add(1, std::memory_order_release);
         } catch (std::exception &e) {
           std::cerr << "Send error: " << e.what() << std::endl;
         }
@@ -251,7 +282,7 @@ namespace client {
       void removeProjectileEntity(std::uint32_t projectileId);
 
       /**
-       * @brief Retrieve the local player's identifier.
+       * @brief Retrieves the local player's identifier.
        *
        * @return std::uint32_t The local player ID; returns `(std::uint32_t)-1`
        * if no player is assigned.
@@ -338,7 +369,7 @@ namespace client {
       }
 
       /**
-       * @brief Retrieve the client's current connection/game state.
+       * @brief Retrieves the client's current connection/game state.
        *
        * @return ClientState The current client state.
        */
@@ -361,6 +392,16 @@ namespace client {
         return _challenge;
       }
 
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
+    private:
+      void resendPackets();
+
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+
+      void resendUnacknowledgedPackets();
+
     private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
@@ -379,6 +420,12 @@ namespace client {
       std::vector<ChatMessage> _chatMessages;
       mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
+
+      std::thread _resendThread;
+      mutable std::mutex _unacknowledgedPacketsMutex;
+      std::atomic<bool> _resendThreadRunning{false};
+      std::unordered_map<std::uint32_t, UnacknowledgedPacket>
+          _unacknowledged_packets;
 
       void registerComponent();
       void registerSystem();

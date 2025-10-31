@@ -165,14 +165,15 @@ void game::Game::stop() {
 
   _running = false;
 
-  _gameThread.join();
+  if (_gameThread.joinable())
+    _gameThread.join();
 
   clearAllEntities();
 }
 
 /**
- * @brief Executes the main game loop, updating systems and handling enemy
- * spawns.
+ * @brief Run the game's main loop: advance time, update systems, and spawn
+ * enemies.
  *
  * Enqueues a GameStartEvent immediately, then repeatedly:
  * - calculates and stores frame delta time in `_deltaTime`,
@@ -180,13 +181,14 @@ void game::Game::stop() {
  * - runs enemy spawn logic,
  * - dynamically sleeps to maintain a consistent tick rate.
  *
- * The loop exits when `_running` becomes false or when any required system
- * (enemy, projectile, collision) is not available, in which case the running
- * flag is cleared and the loop stops.
+ * The loop ends when `_running` becomes false or if any required system
+ * (enemy, projectile, collision) is unavailable, in which case `_running` is
+ * cleared and the loop stops.
  */
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
+  startEvent.sequence_number = fetchAndIncrementSequenceNumber();
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
@@ -267,7 +269,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
  * @param player_id Identifier of the player to remove.
  */
 void game::Game::destroyPlayer(int player_id) {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   auto it = _players.find(player_id);
   if (it != _players.end()) {
     std::uint32_t entity_id = it->second->getEntityId();
@@ -314,6 +316,7 @@ void game::Game::spawnEnemy(float deltaTime) {
       event.vy = vel.second;
       event.health = health;
       event.max_health = max_health;
+      event.sequence_number = fetchAndIncrementSequenceNumber();
       _eventQueue.addRequest(event);
     }
   }

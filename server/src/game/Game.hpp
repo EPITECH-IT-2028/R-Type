@@ -93,6 +93,33 @@ namespace game {
         return _deltaTime.load();
       }
 
+      /**
+       * @brief Set the game's sequence number used for ordering events and
+       * updates.
+       *
+       * @param value New sequence number to assign.
+       */
+      void setSequenceNumber(std::uint32_t value) {
+        _sequence_number = value;
+      }
+      /**
+       * @brief Atomically increments the internal sequence number by one and
+       * return the new value.
+       *
+       * Advances the game's sequence number used for event and update ordering.
+       */
+      std::uint32_t fetchAndIncrementSequenceNumber() {
+        return _sequence_number.fetch_add(1, std::memory_order_relaxed);
+      }
+
+      void incrementSequenceNumber() {
+        _sequence_number.fetch_add(1, std::memory_order_relaxed);
+      }
+
+      std::uint32_t getSequenceNumber() {
+        return _sequence_number.load(std::memory_order_acquire);
+      }
+
     private:
       void gameLoop();
       void initECS();
@@ -112,6 +139,7 @@ namespace game {
       std::unordered_map<std::uint32_t, std::shared_ptr<Projectile>>
           _projectiles;
 
+      std::atomic<std::uint32_t> _sequence_number{0};
       float _enemySpawnTimer = 0.0f;
       float _enemySpawnInterval = 5.0f;
       int _nextEnemyId = 0;
