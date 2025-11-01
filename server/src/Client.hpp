@@ -45,6 +45,8 @@ namespace server {
       std::uint32_t _room_id = NO_ROOM;
       std::string _player_name = "";
       std::string _ip_address = "";
+      int _database_player_id = INVALID_ID;
+      int _score = 0;
       ClientState _state = ClientState::CONNECTED_MENU;
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;

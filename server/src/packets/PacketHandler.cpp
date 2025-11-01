@@ -144,10 +144,22 @@ int packet::PlayerInfoHandler::handlePacket(server::Server &server,
   std::string name = packet.name;
 
   client._player_name = name;
-  if (!server.getDatabaseManager().addPlayer(name, client._ip_address)) {
-    std::cerr << "[ERROR] Failed to add player " << client._player_id
-              << " to database" << std::endl;
+
+  auto playerData = server.getDatabaseManager().getPlayerByUsername(name);
+  if (!playerData.has_value()) {
+    if (!server.getDatabaseManager().addPlayer(name, client._ip_address)) {
+      std::cerr << "[ERROR] Failed to add player " << client._player_id
+                << " to database" << std::endl;
+    }
+    playerData = server.getDatabaseManager().getPlayerByUsername(name);
   }
+
+  if (playerData.has_value()) {
+    client._database_player_id = playerData.value().id;
+  } else {
+    client._database_player_id = INVALID_ID;
+  }
+
   if (!server.getDatabaseManager().updatePlayerStatus(client._player_name,
                                                       true)) {
     std::cerr << "[ERROR] Failed to update player status for player "
@@ -848,6 +860,53 @@ int packet::RequestChallengeHandler::handlePacket(server::Server &server,
       client._player_id,
       reinterpret_cast<const char *>(serializedBuffer.data()),
       serializedBuffer.size());
+
+  return OK;
+}
+
+int packet::ScoreboardRequestHandler::handlePacket(server::Server &server,
+                                                   server::Client &client,
+                                                   const char *data,
+                                                   std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ScoreboardRequestPacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    std::cerr
+        << "[ERROR] Failed to deserialize ScoreboardRequestPacket from client "
+        << client._player_id << std::endl;
+    return KO;
+  }
+
+  const ScoreboardRequestPacket &packet = deserializedPacket.value();
+  std::uint32_t limit = packet.limit;
+
+  auto scoreData = server.getDatabaseManager().getTopScores(limit);
+
+  std::vector<ScoreEntry> scoreEntries;
+  for (const auto &data : scoreData) {
+    ScoreEntry entry;
+    auto players = server.getDatabaseManager().getAllPlayers();
+    for (const auto &playerData : players) {
+      if (playerData.id == data.player_id) {
+        entry.player_name = playerData.username;
+        entry.score = data.score;
+        scoreEntries.push_back(entry);
+        break;
+      }
+    }
+  }
+
+  auto responsePacket = PacketBuilder::makeScoreboardResponse(scoreEntries);
+  serialization::Buffer responseBuffer =
+      serialization::BitserySerializer::serialize(responsePacket);
+
+  server.getNetworkManager().sendToClient(
+      client._player_id, reinterpret_cast<const char *>(responseBuffer.data()),
+      responseBuffer.size());
 
   return OK;
 }

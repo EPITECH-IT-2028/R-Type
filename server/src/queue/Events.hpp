@@ -91,10 +91,14 @@ namespace queue {
       bool game_started;
   };
 
+  struct GameEndEvent {
+      bool game_ended;
+  };
+
   using GameEvent =
       std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent,
                    ProjectileSpawnEvent, PlayerHitEvent, EnemyHitEvent,
                    ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent,
-                   PositionEvent, PlayerDiedEvent>;
+                   PositionEvent, PlayerDiedEvent, GameEndEvent>;
 
 }  // namespace queue

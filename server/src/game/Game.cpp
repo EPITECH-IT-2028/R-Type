@@ -184,22 +184,33 @@ void game::Game::stop() {
  * (enemy, projectile, collision) is not available, in which case the running
  * flag is cleared and the loop stops.
  */
+
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
+  auto gameStartTime = std::chrono::high_resolution_clock::now();
   constexpr std::chrono::nanoseconds tickDuration(NANOSECONDS_IN_SECOND / TPS);
 
   while (_running) {
     auto frameStart = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<float> elapsedTime = frameStart - gameStartTime;
+    if (elapsedTime.count() >= GAME_DURATION) {
+      queue::GameEndEvent endEvent;
+      endEvent.game_ended = true;
+      _eventQueue.addRequest(endEvent);
+      break;
+    }
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
       std::cerr << "Error: ECS Manager or Systems not initialized."
                 << std::endl;
       _running = false;
       break;
     }
+
     std::chrono::duration<float> deltaTime = frameStart - lastTime;
     _deltaTime.store(deltaTime.count());
     lastTime = frameStart;
@@ -208,7 +219,6 @@ void game::Game::gameLoop() {
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
     _collisionSystem->update(deltaTime.count());
-
     spawnEnemy(deltaTime.count());
 
     auto frameEnd = std::chrono::high_resolution_clock::now();
@@ -260,9 +270,9 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
 /**
  * @brief Removes a player and its associated ECS entity from the game.
  *
- * Destroys the ECS entity owned by the player with the given id and removes the
- * player from the internal registry. If no player with that id exists, the
- * function has no effect.
+ * Destroys the ECS entity owned by the player with the given id and removes
+ * the player from the internal registry. If no player with that id exists,
+ * the function has no effect.
  *
  * @param player_id Identifier of the player to remove.
  */
@@ -373,13 +383,13 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
  * @brief Removes the enemy with the given id, marks it as dead, and destroys
  * its ECS entity.
  *
- * If the enemy exists, its EnemyComponent (if present) will have `is_alive` set
- * to `false`, the corresponding ECS entity will be destroyed, and the enemy
- * will be removed from the registry. The operation is guarded by the internal
- * enemy mutex.
+ * If the enemy exists, its EnemyComponent (if present) will have `is_alive`
+ * set to `false`, the corresponding ECS entity will be destroyed, and the
+ * enemy will be removed from the registry. The operation is guarded by the
+ * internal enemy mutex.
  *
- * @param enemy_id Identifier of the enemy to destroy. No action is taken if no
- * enemy with this id exists.
+ * @param enemy_id Identifier of the enemy to destroy. No action is taken if
+ * no enemy with this id exists.
  */
 void game::Game::destroyEnemy(int enemy_id) {
   std::scoped_lock lock(_enemyMutex);
@@ -539,4 +549,19 @@ void game::Game::clearAllEntities() {
   _nextEnemyId = 0;
   _nextProjectileId.store(0, std::memory_order_relaxed);
   _enemySpawnTimer = 0.0f;
+}
+
+std::unordered_map<int, int> game::Game::getPlayerScores() const {
+  std::unordered_map<int, int> scores;
+  std::scoped_lock lock(_playerMutex);
+  for (const auto &pair : _players) {
+    int playerId = pair.first;
+    auto player = pair.second;
+    if (player) {
+      auto scoreComp =
+          _ecsManager->getComponent<ecs::ScoreComponent>(player->getEntityId());
+      scores[playerId] = scoreComp.score;
+    }
+  }
+  return scores;
 }

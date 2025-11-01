@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include "Macro.hpp"
 
 enum class PacketType : std::uint8_t {
@@ -35,7 +36,9 @@ enum class PacketType : std::uint8_t {
   PlayerInput = 0x1B,
   RequestChallenge = 0x1C,
   ChallengeResponse = 0x1D,
-  CreateRoomResponse = 0x1E
+  CreateRoomResponse = 0x1E,
+  ScoreboardRequest = 0x1F,
+  ScoreboardResponse = 0x20
 };
 
 enum class EnemyType : std::uint8_t {
@@ -646,4 +649,36 @@ struct ALIGNED ChallengeResponsePacket {
     PacketHeader header;
     std::string challenge;
     std::uint32_t timestamp;
+};
+
+/**
+ * @brief Entry for a single player's score in the scoreboard.
+ */
+struct ALIGNED ScoreEntry {
+    std::string player_name;
+    std::uint32_t score;
+};
+
+/**
+ * @brief Request packet to fetch the top scores from the server.
+ *
+ * @param header Common packet header.
+ * @param limit Maximum number of top scores to retrieve.
+ */
+struct ALIGNED ScoreboardRequestPacket {
+    PacketHeader header;
+    std::uint32_t limit;
+};
+
+/**
+ * @brief Response packet containing the top player scores.
+ *
+ * @param header Common packet header.
+ * @param entry_count Number of score entries in the scores array.
+ * @param scores Array of score entries, sorted by score (highest first).
+ */
+struct ALIGNED ScoreboardResponsePacket {
+    PacketHeader header;
+    std::uint32_t entry_count;
+    std::vector<ScoreEntry> scores;
 };

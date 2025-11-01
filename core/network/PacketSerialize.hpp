@@ -479,3 +479,50 @@ void serialize(S &s, CreateRoomResponsePacket &packet) {
   s.value1b(packet.error_code);
   s.value4b(packet.room_id);
 }
+
+/**
+ * @brief Serializes a ScoreEntry structure.
+ *
+ * Writes the player name (up to 32 bytes) and the score (4 bytes).
+ *
+ * @param s Serializer adapter.
+ * @param entry ScoreEntry to serialize.
+ */
+template <typename S>
+void serialize(S &s, ScoreEntry &entry) {
+  s.text1b(entry.player_name, SERIALIZE_32_BYTES);
+  s.value4b(entry.score);
+}
+
+/**
+ * @brief Serializes a ScoreboardRequestPacket.
+ *
+ * Writes the packet header (type and size) and the limit value.
+ *
+ * @param s Serializer adapter.
+ * @param packet ScoreboardRequestPacket to serialize.
+ */
+template <typename S>
+void serialize(S &s, ScoreboardRequestPacket &packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.limit);
+}
+
+/**
+ * @brief Serializes a ScoreboardResponsePacket.
+ *
+ * Writes the packet header (type and size), the entry count, and then
+ * iterates through the scores vector to serialize each ScoreEntry.
+ *
+ * @param s Serializer adapter.
+ * @param packet ScoreboardResponsePacket to serialize.
+ */
+template <typename S>
+void serialize(S &s, ScoreboardResponsePacket &packet) {
+  s.value1b(packet.header.type);
+  s.value4b(packet.header.size);
+  s.value4b(packet.entry_count);
+  s.container(packet.scores, packet.entry_count,
+              [](S &s, ScoreEntry &entry) { serialize(s, entry); });
+}

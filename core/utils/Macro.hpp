@@ -84,6 +84,7 @@ constexpr unsigned char ASCII_SPACE = 0x20;
 constexpr unsigned char ASCII_DEL = 0x7f;
 
 constexpr const char *SQL_PATH = "db.sql";
+constexpr float GAME_DURATION = 10.0f;
 constexpr int TPS = 60;
 constexpr int NANOSECONDS_IN_SECOND = 1000000000;
 

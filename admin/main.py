@@ -3,7 +3,7 @@ from textual.widgets import Header, Footer, Button, Static
 from textual.containers import Container, Vertical
 from textual.binding import Binding
 from database import DatabaseManager
-from textuals import PlayersManagement, BansManagement
+from textuals import PlayersManagement, BansManagement, ScoresManagement
 
 
 class AdminPanel(App):
@@ -50,6 +50,7 @@ class AdminPanel(App):
             Vertical(
                 Button("Manage Players", id="btn_players", variant="primary"),
                 Button("Manage Bans", id="btn_bans", variant="warning"),
+                Button("Manage Scores", id="btn_scores", variant="success"),
                 Button("Exit", id="btn_exit", variant="error"),
                 id="menu_container"
             )
@@ -61,6 +62,8 @@ class AdminPanel(App):
             self.push_screen(PlayersManagement(self.db))
         elif event.button.id == "btn_bans":
             self.push_screen(BansManagement(self.db))
+        elif event.button.id == "btn_scores":
+            self.push_screen(ScoresManagement(self.db))
         elif event.button.id == "btn_exit":
             self.exit()
 

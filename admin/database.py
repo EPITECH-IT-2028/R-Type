@@ -109,3 +109,36 @@ class DatabaseManager:
         except sqlite3.Error as e:
             print(f"Error unbanning IP: {e}")
             return False
+
+    def get_all_scores(self) -> List[Dict]:
+        try:
+            if not self.connection:
+                raise Exception("Database not connected")
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                SELECT scores.id, players.username, scores.score
+                FROM scores
+                JOIN players ON scores.player_id = players.id
+            """)
+            rows = cursor.fetchall()
+
+            return [{
+                "id": row["id"],
+                "player_id": row["username"],
+                "score": row["score"],
+            } for row in rows]
+        except sqlite3.Error as e:
+            print(f"Error retrieving scores: {e}")
+            return []
+
+    def delete_score(self, score_id: int) -> bool:
+        if not self.connection:
+            raise Exception("Database not connected")
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute("DELETE FROM scores WHERE id = ?", (score_id,))
+            self.connection.commit()
+            return True
+        except sqlite3.Error as e:
+            print(f"Error deleting score: {e}")
+            return False

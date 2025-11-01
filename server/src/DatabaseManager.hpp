@@ -20,6 +20,11 @@ namespace database {
       std::string reason;
   };
 
+  struct ScoreData {
+      int player_id;
+      int score;
+  };
+
   class DatabaseManager {
     public:
       DatabaseManager(const std::string &dbPath = "./rtype.db");
@@ -40,6 +45,8 @@ namespace database {
       bool isIpBanned(const std::string &ip_address);
       std::vector<PlayerData> getAllPlayers();
       std::vector<BanData> getAllBans();
+      bool addScore(int playerId, int score);
+      std::vector<ScoreData> getTopScores(int limit);
 
     private:
       bool executeQuery(const std::string &query);
