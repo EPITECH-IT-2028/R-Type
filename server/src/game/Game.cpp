@@ -202,6 +202,7 @@ void game::Game::gameLoop() {
       queue::GameEndEvent endEvent;
       endEvent.game_ended = true;
       _eventQueue.addRequest(endEvent);
+      _running = false;
       break;
     }
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
