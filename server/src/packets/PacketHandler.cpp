@@ -1,4 +1,5 @@
 #include "PacketHandler.hpp"
+#include <algorithm>
 #include <chrono>
 #include <cstdint>
 #include <cstring>
@@ -882,9 +883,9 @@ int packet::ScoreboardRequestHandler::handlePacket(server::Server &server,
   }
 
   const ScoreboardRequestPacket &packet = deserializedPacket.value();
-  std::uint32_t limit = packet.limit;
-
-  auto scoreData = server.getDatabaseManager().getTopScores(limit);
+  std::uint32_t limit = std::clamp(packet.limit, 1u, MAX_TOP_SCORES);
+  auto scoreData =
+      server.getDatabaseManager().getTopScores(static_cast<int>(limit));
 
   std::vector<ScoreEntry> scoreEntries;
   for (const auto &data : scoreData) {

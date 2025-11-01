@@ -47,6 +47,7 @@ constexpr std::uint32_t INVALID_ENTITY =
 constexpr std::uint32_t SERVER_SENDER_ID =
     std::numeric_limits<std::uint32_t>::max();
 constexpr std::uint32_t SCOREBOARD_MAX_ENTRIES = 100;
+constexpr std::uint32_t MAX_TOP_SCORES = 1000;
 constexpr const char *SQL_PATH = "db.sql";
 constexpr int NANOSECONDS_IN_SECOND = 1000000000;
 
