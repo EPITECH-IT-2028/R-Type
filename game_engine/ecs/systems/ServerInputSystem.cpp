@@ -12,13 +12,10 @@ void ecs::ServerInputSystem::update(float deltaTime) {
   std::unordered_map<Entity, std::vector<PlayerInput>> inputsToProcess;
   {
     std::lock_guard<std::mutex> lock(_inputMutex);
-    if (_pendingInputs.empty())
+    if (_pendingInputs.empty() || !_eventQueue)
       return;
     inputsToProcess.swap(_pendingInputs);
   }
-
-  if (inputsToProcess.empty() || !_eventQueue)
-    return;
 
   for (auto &[entityId, inputs] : inputsToProcess) {
     if (inputs.empty())
