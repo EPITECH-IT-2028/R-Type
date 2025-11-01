@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <unordered_map>
 #include "Broadcast.hpp"
 #include "GameManager.hpp"
 #include "Macro.hpp"
@@ -888,16 +889,18 @@ int packet::ScoreboardRequestHandler::handlePacket(server::Server &server,
       server.getDatabaseManager().getTopScores(static_cast<int>(limit));
 
   std::vector<ScoreEntry> scoreEntries;
+  auto players = server.getDatabaseManager().getAllPlayers();
+  std::unordered_map<int, std::string> playerMap;
+  for (const auto &playerData : players)
+    playerMap[playerData.id] = playerData.username;
+
   for (const auto &data : scoreData) {
     ScoreEntry entry;
-    auto players = server.getDatabaseManager().getAllPlayers();
-    for (const auto &playerData : players) {
-      if (playerData.id == data.player_id) {
-        entry.player_name = playerData.username;
-        entry.score = data.score;
-        scoreEntries.push_back(entry);
-        break;
-      }
+    auto it = playerMap.find(data.player_id);
+    if (it != playerMap.end()) {
+      entry.player_name = it->second;
+      entry.score = data.score;
+      scoreEntries.push_back(entry);
     }
   }
 
