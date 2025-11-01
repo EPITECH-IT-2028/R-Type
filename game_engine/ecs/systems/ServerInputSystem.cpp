@@ -9,9 +9,21 @@
 #include "SpeedComponent.hpp"
 
 void ecs::ServerInputSystem::update(float deltaTime) {
-  if (_pendingInputs.empty() || !_eventQueue)
+  if (!_eventQueue)
     return;
-  for (auto &[entityId, inputs] : _pendingInputs) {
+
+  std::unordered_map<Entity, std::vector<PlayerInput>> inputsToProcess;
+  {
+    std::scoped_lock lock(_pendingInputsMutex);
+    if (_pendingInputs.empty())
+      return;
+    inputsToProcess.swap(_pendingInputs);
+  }
+
+  if (inputsToProcess.empty())
+    return;
+
+  for (auto &[entityId, inputs] : inputsToProcess) {
     if (inputs.empty())
       continue;
     if (!_ecsManagerPtr ||
@@ -21,11 +33,11 @@ void ecs::ServerInputSystem::update(float deltaTime) {
     processInput(entityId, inputs, deltaTime);
     sendPositionUpdate(entityId);
   }
-  _pendingInputs.clear();
 }
 
 void ecs::ServerInputSystem::queueInput(Entity entityId,
                                         const PlayerInput &input) {
+  std::scoped_lock lock(_pendingInputsMutex);
   _pendingInputs[entityId].push_back(input);
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 #include "ECSManager.hpp"
@@ -37,5 +38,6 @@ namespace ecs {
       std::unordered_map<Entity, std::vector<PlayerInput>> _pendingInputs;
       std::unordered_map<Entity, std::chrono::steady_clock::time_point>
           _lastInputTime;
+      std::mutex _pendingInputsMutex;
   };
 }  // namespace ecs

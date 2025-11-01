@@ -45,7 +45,14 @@ ecs::RenderSystem::~RenderSystem() noexcept {
  *                  time-based animation updates.
  */
 void ecs::RenderSystem::update(float deltaTime) {
-  for (Entity entity : _entities) {
+  std::set<Entity> entities;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    entities = _entities;
+  }
+  for (Entity entity : entities) {
+    if (!_ecsManager.isEntityValid(entity))
+      continue;
     auto &positionComp =
         _ecsManager.getComponent<ecs::PositionComponent>(entity);
     auto &renderComp = _ecsManager.getComponent<ecs::RenderComponent>(entity);
