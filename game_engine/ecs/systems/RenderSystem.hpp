@@ -55,7 +55,7 @@ namespace ecs {
         _showMenu = showMenu;
       }
 
-      void drawMenu();
+      void drawMenuButtons();
       void drawStartButton();
 
     private:

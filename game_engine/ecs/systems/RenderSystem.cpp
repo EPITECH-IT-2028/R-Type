@@ -127,7 +127,7 @@ void ecs::RenderSystem::update(float deltaTime) {
 
   if (_menuUI.getShowMenu() == true &&
       _client->getClientState() == client::ClientState::IN_CONNECTED_MENU) {
-    _menuUI.drawMenu();
+    _menuUI.drawMenuButtons();
   }
 
   for (auto const &entity : _ecsManager.getAllEntities()) {
@@ -248,7 +248,7 @@ void ecs::ChatMessagesUI::drawMessageInputField(const ChatComponent &chat) {
       WHITE);
 }
 
-void ecs::MenuUI::drawMenu() {
+void ecs::MenuUI::drawMenuButtons() {
   drawStartButton();
 }
 
