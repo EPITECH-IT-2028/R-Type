@@ -3,6 +3,7 @@
 #include "AssetManager.hpp"
 #include "BackgroundTagComponent.hpp"
 #include "ChatComponent.hpp"
+#include "Client.hpp"
 #include "Macro.hpp"
 #include "PositionComponent.hpp"
 #include "RenderComponent.hpp"
@@ -124,6 +125,11 @@ void ecs::RenderSystem::update(float deltaTime) {
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
   }
 
+  if (_menuUI.getShowMenu() == true &&
+      _client->getClientState() == client::ClientState::IN_CONNECTED_MENU) {
+    _menuUI.drawMenu();
+  }
+
   for (auto const &entity : _ecsManager.getAllEntities()) {
     if (_ecsManager.hasComponent<ecs::ChatComponent>(entity)) {
       _messagesUI.setChatEntity(entity);
@@ -240,4 +246,33 @@ void ecs::ChatMessagesUI::drawMessageInputField(const ChatComponent &chat) {
       displayText.c_str(), chatUI::LINE_HEIGHT,
       GetScreenHeight() - chatUI::INPUT_TEXT_Y_OFFSET, chatUI::FONT_SIZE,
       WHITE);
+}
+
+void ecs::MenuUI::drawMenu() {
+  int posX = (GetScreenWidth() - menuUI::BUTTON_WIDTH) / 2;
+  int posY = (GetScreenHeight() - menuUI::BUTTON_HEIGHT) / 2;
+  Color buttonColor = DARKGRAY;
+
+  renderManager::ButtonState startButton =
+      renderManager::Renderer::handleButton(posX, posY, menuUI::BUTTON_WIDTH,
+                                            menuUI::BUTTON_HEIGHT);
+  switch (startButton) {
+    case renderManager::ButtonState::HOVER:
+      buttonColor = GRAY;
+      break;
+    case renderManager::ButtonState::CLICKED:
+      buttonColor = LIGHTGRAY;
+      break;
+    case renderManager::ButtonState::RELEASED:
+      _client->sendMatchmakingRequest();
+      break;
+    case renderManager::ButtonState::IDLE:
+    default:
+      buttonColor = DARKGRAY;
+      break;
+  }
+
+  renderManager::Renderer::drawButton(posX, posY, menuUI::BUTTON_WIDTH,
+                                      menuUI::BUTTON_HEIGHT, "Start Game",
+                                      menuUI::FONT_SIZE, WHITE, buttonColor);
 }

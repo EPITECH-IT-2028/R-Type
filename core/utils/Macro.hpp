@@ -73,6 +73,12 @@ namespace chatUI {
   constexpr int INPUT_TEXT_RIGHT_MARGIN = 50;
 }  // namespace chatUI
 
+namespace menuUI {
+  constexpr int BUTTON_WIDTH = 200;
+  constexpr int BUTTON_HEIGHT = 50;
+  constexpr int FONT_SIZE = 20;
+}  // namespace menuUI
+
 /* ASCII characters */
 constexpr unsigned char ASCII_NULL = 0x00;
 constexpr unsigned char ASCII_SPACE = 0x20;
