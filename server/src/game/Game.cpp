@@ -537,12 +537,12 @@ void game::Game::clearAllEntities() {
 
 std::unordered_map<int, int> game::Game::getPlayerScores() const {
   std::unordered_map<int, int> scores;
-  std::lock_guard<std::mutex> lock(_playerMutex);
+  std::scoped_lock lock(_playerMutex, _ecsMutex);
   for (const auto &pair : _players) {
     int playerId = pair.first;
     auto player = pair.second;
     if (player) {
-      auto scoreComp =
+      auto &scoreComp =
           _ecsManager->getComponent<ecs::ScoreComponent>(player->getEntityId());
       scores[playerId] = scoreComp.score;
     }
