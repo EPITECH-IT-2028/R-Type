@@ -30,7 +30,11 @@
  * @param dt Elapsed time since the previous update in seconds.
  */
 void ecs::CollisionSystem::update(float dt) {
-  std::vector<Entity> entities(_entities.begin(), _entities.end());
+  std::vector<Entity> entities;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    entities.assign(_entities.begin(), _entities.end());
+  }
   std::unordered_set<Entity> destroyedEntities;
 
   if (!_game || !_eventQueue)
