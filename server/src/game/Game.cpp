@@ -277,7 +277,7 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
  * @param player_id Identifier of the player to remove.
  */
 void game::Game::destroyPlayer(int player_id) {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   auto it = _players.find(player_id);
   if (it != _players.end()) {
     std::uint32_t entity_id = it->second->getEntityId();
@@ -287,13 +287,13 @@ void game::Game::destroyPlayer(int player_id) {
 }
 
 std::shared_ptr<game::Player> game::Game::getPlayer(int player_id) {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   auto it = _players.find(player_id);
   return (it != _players.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   std::vector<std::shared_ptr<Player>> playerList;
   playerList.reserve(_players.size());
   for (const auto &pair : _players) {
@@ -344,11 +344,11 @@ void game::Game::spawnEnemy(float deltaTime) {
  */
 std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   std::uint32_t entity;
   switch (type) {
     case EnemyType::BASIC_FIGHTER: {
-      std::scoped_lock ecsLock(_ecsMutex);
+      std::lock_guard<std::mutex> lock(_ecsMutex);
       entity = _ecsManager->createEntity();
 
       float spawnY =
@@ -392,7 +392,7 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
  * no enemy with this id exists.
  */
 void game::Game::destroyEnemy(int enemy_id) {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   auto it = _enemies.find(enemy_id);
   if (it != _enemies.end()) {
     auto enemy = it->second;
@@ -410,13 +410,13 @@ void game::Game::destroyEnemy(int enemy_id) {
 }
 
 std::shared_ptr<game::Enemy> game::Game::getEnemy(int enemy_id) {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   auto it = _enemies.find(enemy_id);
   return (it != _enemies.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   std::vector<std::shared_ptr<Enemy>> enemyList;
   enemyList.reserve(_enemies.size());
   for (const auto &pair : _enemies) {
@@ -445,7 +445,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   std::shared_ptr<Projectile> projectile;
   std::uint32_t entity;
   {
-    std::scoped_lock ecsLock(_ecsMutex);
+    std::lock_guard<std::mutex> lock(_ecsMutex);
     entity = _ecsManager->createEntity();
     _ecsManager->addComponent<ecs::PositionComponent>(entity, {x, y});
     _ecsManager->addComponent<ecs::SpeedComponent>(entity, {10.0f});
@@ -461,7 +461,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
                                               *_ecsManager);
   }
   {
-    std::scoped_lock lk(_projectileMutex);
+    std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectiles[projectile_id] = projectile;
   }
 
@@ -489,12 +489,12 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
  * @param projectile_id Identifier of the projectile to remove.
  */
 void game::Game::destroyProjectile(std::uint32_t projectile_id) {
-  std::scoped_lock lock(_projectileMutex);
+  std::lock_guard<std::mutex> lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   if (it != _projectiles.end()) {
     std::uint32_t entity_id = it->second->getEntityId();
     {
-      std::scoped_lock ecsLock(_ecsMutex);
+      std::lock_guard<std::mutex> lock(_ecsMutex);
       _ecsManager->destroyEntity(entity_id);
     }
     _projectiles.erase(it);
@@ -503,14 +503,14 @@ void game::Game::destroyProjectile(std::uint32_t projectile_id) {
 
 std::shared_ptr<game::Projectile> game::Game::getProjectile(
     std::uint32_t projectile_id) {
-  std::scoped_lock lock(_projectileMutex);
+  std::lock_guard<std::mutex> lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   return (it != _projectiles.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Projectile>> game::Game::getAllProjectiles()
     const {
-  std::scoped_lock lock(_projectileMutex);
+  std::lock_guard<std::mutex> lock(_projectileMutex);
   std::vector<std::shared_ptr<Projectile>> projectileList;
   projectileList.reserve(_projectiles.size());
   for (const auto &pair : _projectiles) {
@@ -539,7 +539,7 @@ void game::Game::clearAllEntities() {
 
 std::unordered_map<int, int> game::Game::getPlayerScores() const {
   std::unordered_map<int, int> scores;
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   for (const auto &pair : _players) {
     int playerId = pair.first;
     auto player = pair.second;
