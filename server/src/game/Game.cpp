@@ -159,13 +159,10 @@ void game::Game::start() {
 }
 
 void game::Game::stop() {
-  if (!_running || !_gameThread.joinable()) {
-    return;
-  }
-
   _running = false;
-
-  _gameThread.join();
+  if (_gameThread.joinable()) {
+    _gameThread.join();
+  }
 
   clearAllEntities();
 }
