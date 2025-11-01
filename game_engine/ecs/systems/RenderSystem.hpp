@@ -56,6 +56,7 @@ namespace ecs {
       }
 
       void drawMenu();
+      void drawStartButton();
 
     private:
       MenuUI() : _showMenu(true) {

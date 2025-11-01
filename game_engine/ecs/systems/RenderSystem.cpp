@@ -249,6 +249,10 @@ void ecs::ChatMessagesUI::drawMessageInputField(const ChatComponent &chat) {
 }
 
 void ecs::MenuUI::drawMenu() {
+  drawStartButton();
+}
+
+void ecs::MenuUI::drawStartButton() {
   int posX = (GetScreenWidth() - menuUI::BUTTON_WIDTH) / 2;
   int posY = (GetScreenHeight() - menuUI::BUTTON_HEIGHT) / 2;
   Color buttonColor = DARKGRAY;
