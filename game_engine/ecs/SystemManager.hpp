@@ -40,6 +40,7 @@ namespace ecs {
 
       void entityDestroyed(Entity entityId) {
         for (auto &pair : _systems) {
+          std::lock_guard<std::mutex> lock(pair.second->_mutex);
           pair.second->_entities.erase(entityId);
         }
       }
@@ -50,6 +51,7 @@ namespace ecs {
           auto const &system = pair.second;
           auto const &systemSignature = _signatures[type];
 
+          std::lock_guard<std::mutex> lock(system->_mutex);
           if ((entitySignature & systemSignature) == systemSignature) {
             system->_entities.insert(entityId);
           } else {

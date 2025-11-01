@@ -29,7 +29,6 @@ namespace ecs {
        */
       RenderSystem(const RenderSystem &) = delete;
       RenderSystem &operator=(const RenderSystem &) = delete;
-      RenderSystem(RenderSystem &&) noexcept = default;
       RenderSystem &operator=(RenderSystem &&) = delete;
 
       ~RenderSystem() noexcept;
