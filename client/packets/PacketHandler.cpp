@@ -659,7 +659,8 @@ int packet::ScoreboardResponseHandler::handlePacket(client::Client &client,
 
   int rank = 1;
   for (const auto &entry : packet.scores) {
-    std::cout << rank << entry.player_name << " | " << entry.score << std::endl;
+    std::cout << rank << " | " << entry.player_name << " | " << entry.score
+              << std::endl;
     rank++;
   }
 
