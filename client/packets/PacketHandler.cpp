@@ -648,7 +648,7 @@ int packet::ScoreboardResponseHandler::handlePacket(client::Client &client,
   if (!deserializedPacket) {
     std::cerr << "[ERROR] Failed to deserialize ScoreboardResponsePacket"
               << std::endl;
-    return -1;
+    return KO;
   }
 
   const ScoreboardResponsePacket &packet = deserializedPacket.value();
@@ -664,5 +664,5 @@ int packet::ScoreboardResponseHandler::handlePacket(client::Client &client,
     rank++;
   }
 
-  return 0;
+  return OK;
 }
