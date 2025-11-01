@@ -890,6 +890,13 @@ struct PacketBuilder {
         const std::vector<ScoreEntry> &scores) {
       ScoreboardResponsePacket packet{};
       packet.header.type = PacketType::ScoreboardResponse;
+
+      if (scores.size() > std::numeric_limits<std::uint32_t>::max()) {
+        std::cerr << "Error: Too many scores to fit in ScoreboardResponsePacket"
+                  << std::endl;
+        return {};
+      }
+
       packet.entry_count = static_cast<std::uint32_t>(scores.size());
       packet.scores = scores;
 
