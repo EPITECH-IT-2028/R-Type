@@ -22,19 +22,47 @@ namespace ecs {
         return _chatEntity;
       }
 
-      void drawMessagesBox();
-      void drawMessages();
-      void drawMessageInputField(const ChatComponent &chat);
-
       void setClient(client::Client *client) {
         _client = client;
       }
+
+      void drawMessagesBox();
+      void drawMessages();
+      void drawMessageInputField(const ChatComponent &chat);
 
     private:
       ChatMessagesUI() = default;
 
       client::Client *_client;
       std::optional<Entity> _chatEntity;
+  };
+
+  class MenuUI {
+    public:
+      static MenuUI init() {
+        return MenuUI();
+      }
+
+      void setClient(client::Client *client) {
+        _client = client;
+      }
+
+      bool getShowMenu() const {
+        return _showMenu;
+      }
+
+      void setShowMenu(bool showMenu) {
+        _showMenu = showMenu;
+      }
+
+      void drawMenu();
+
+    private:
+      MenuUI() : _showMenu(true) {
+      }
+
+      client::Client *_client;
+      bool _showMenu;
   };
 
   class RenderSystem : public System {
@@ -67,12 +95,15 @@ namespace ecs {
       void setClient(client::Client *client) {
         _client = client;
         _messagesUI.setClient(client);
+        _menuUI.setClient(client);
       }
 
     private:
       ECSManager &_ecsManager;
       std::unordered_map<std::string, Texture2D> _textureCache;
       client::Client *_client;
+
       ChatMessagesUI _messagesUI = ChatMessagesUI::init();
+      MenuUI _menuUI = MenuUI::init();
   };
 }  // namespace ecs
