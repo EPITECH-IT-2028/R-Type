@@ -60,6 +60,8 @@ constexpr std::uint32_t INVALID_ENTITY =
 constexpr std::uint32_t SERVER_SENDER_ID =
     std::numeric_limits<std::uint32_t>::max();
 
+constexpr std::uint32_t SCOREBOARD_MAX_ENTRIES = 100;
+
 /* UI constants */
 namespace chatUI {
   constexpr int BOX_MAX_TEXT_LEN = 170;

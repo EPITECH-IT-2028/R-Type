@@ -4,6 +4,7 @@
 #include <bitsery/bitsery.h>
 #include <bitsery/traits/string.h>
 #include <bitsery/traits/vector.h>
+#include <algorithm>
 #include <vector>
 #include "Macro.hpp"
 #include "Packet.hpp"
@@ -523,6 +524,10 @@ void serialize(S &s, ScoreboardResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.entry_count);
+
+  packet.entry_count = std::min(packet.entry_count, SCOREBOARD_MAX_ENTRIES);
+
   s.container(packet.scores, packet.entry_count,
               [](S &s, ScoreEntry &entry) { serialize(s, entry); });
+  packet.entry_count = static_cast<uint32_t>(packet.scores.size());
 }
