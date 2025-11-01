@@ -266,18 +266,6 @@ void ecs::CollisionSystem::handlePlayerProjectileCollision(
     _eventQueue->addRequest(playerHitEvent);
   }
 
-  queue::ProjectileDestroyEvent projDestroyEvent;
-  try {
-    projDestroyEvent.projectile_id = projectile->getProjectileId();
-    projDestroyEvent.x = projectile->getPosition().first;
-    projDestroyEvent.y = projectile->getPosition().second;
-    projDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
-    _eventQueue->addRequest(projDestroyEvent);
-  } catch (const std::runtime_error &e) {
-    std::cerr << "Error creating ProjectileDestroyEvent: " << e.what()
-              << std::endl;
-  }
-
   _game->destroyProjectile(projectile->getProjectileId());
 }
 
@@ -403,12 +391,6 @@ void ecs::CollisionSystem::handleEnemyProjectileCollision(
     _eventQueue->addRequest(hitEvent);
   }
 
-  queue::ProjectileDestroyEvent projDestroyEvent;
-  projDestroyEvent.projectile_id = projectile->getProjectileId();
-  projDestroyEvent.x = projectile->getPosition().first;
-  projDestroyEvent.y = projectile->getPosition().second;
-  projDestroyEvent.sequence_number = _game->fetchAndIncrementSequenceNumber();
-  _eventQueue->addRequest(projDestroyEvent);
   _game->destroyProjectile(projectile->getProjectileId());
 }
 
@@ -470,16 +452,7 @@ bool ecs::CollisionSystem::isOutOfBounds(const Entity &entity) {
 
   if (!isOutOfBounds)
     return false;
-  if (_eventQueue) {
-    queue::ProjectileDestroyEvent projectileDestroyEvent;
-    projectileDestroyEvent.projectile_id = projectile.projectile_id;
-    projectileDestroyEvent.x = position.x;
-    projectileDestroyEvent.y = position.y;
-    projectileDestroyEvent.sequence_number =
-        _game->fetchAndIncrementSequenceNumber();
-    _eventQueue->addRequest(projectileDestroyEvent);
-  }
 
-  _ecsManager->destroyEntity(entity);
+  _game->destroyProjectile(projectile.projectile_id);
   return true;
 }
