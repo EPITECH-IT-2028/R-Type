@@ -905,6 +905,13 @@ int packet::ScoreboardRequestHandler::handlePacket(server::Server &server,
   serialization::Buffer responseBuffer =
       serialization::BitserySerializer::serialize(responsePacket);
 
+  if (responseBuffer.empty()) {
+    std::cerr
+        << "[ERROR] Failed to serialize ScoreboardResponsePacket for client "
+        << client._player_id << std::endl;
+    return KO;
+  }
+
   server.getNetworkManager().sendToClient(
       client._player_id, reinterpret_cast<const char *>(responseBuffer.data()),
       responseBuffer.size());
