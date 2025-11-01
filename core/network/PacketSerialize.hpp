@@ -376,6 +376,7 @@ void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.max_players);
   s.value1b(packet.is_private);
   s.text1b(packet.password, SERIALIZE_64_BYTES);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -392,6 +393,7 @@ void serialize(S &s, JoinRoomPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
+  s.value4b(packet.sequence_number);
   s.text1b(packet.password, SERIALIZE_64_BYTES);
 }
 
@@ -409,6 +411,7 @@ void serialize(S &s, JoinRoomResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.error_code);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -483,6 +486,7 @@ template <typename S>
 void serialize(S &s, MatchmakingRequestPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -499,6 +503,7 @@ void serialize(S &s, MatchmakingResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value1b(packet.error_code);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -537,6 +542,7 @@ void serialize(S &s, RequestChallengePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
   s.value4b(packet.room_id);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -545,6 +551,7 @@ void serialize(S &s, ChallengeResponsePacket &packet) {
   s.value4b(packet.header.size);
   s.text1b(packet.challenge, SERIALIZE_128_BYTES);
   s.value4b(packet.timestamp);
+  s.value4b(packet.sequence_number);
 }
 
 template <typename S>
@@ -553,4 +560,5 @@ void serialize(S &s, CreateRoomResponsePacket &packet) {
   s.value4b(packet.header.size);
   s.value1b(packet.error_code);
   s.value4b(packet.room_id);
+  s.value4b(packet.sequence_number);
 }

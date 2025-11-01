@@ -555,7 +555,7 @@ namespace client {
    */
   void Client::sendMatchmakingRequest() {
     try {
-      MatchmakingRequestPacket packet = PacketBuilder::makeMatchmakingRequest();
+      MatchmakingRequestPacket packet = PacketBuilder::makeMatchmakingRequest(_sequence_number.load());
       send(packet);
       TraceLog(LOG_INFO, "[MATCHMAKING] Sent matchmaking request");
     } catch (const std::exception &e) {
@@ -570,7 +570,7 @@ namespace client {
       _challenge.setWaitingChallenge(true);
 
       RequestChallengePacket packet =
-          PacketBuilder::makeRequestChallenge(room_id);
+          PacketBuilder::makeRequestChallenge(room_id, _sequence_number.load());
       send(packet);
 
     } catch (const std::exception &e) {
@@ -591,7 +591,8 @@ namespace client {
       }
 
       JoinRoomPacket packet =
-          PacketBuilder::makeJoinRoom(room_id, password_hash);
+          PacketBuilder::makeJoinRoom(room_id, password_hash, 
+                                      _sequence_number.load());
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[JOIN ROOM] Exception: %s", e.what());
@@ -603,7 +604,7 @@ namespace client {
     try {
       auto pwd_hash = crypto::Crypto::sha256(password);
       CreateRoomPacket packet =
-          PacketBuilder::makeCreateRoom(room_name, 4, pwd_hash);
+          PacketBuilder::makeCreateRoom(room_name, 4, _sequence_number.load(),pwd_hash);
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());

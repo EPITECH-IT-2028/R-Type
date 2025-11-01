@@ -524,6 +524,7 @@ struct ALIGNED CreateRoomResponsePacket {
     PacketHeader header;
     RoomError error_code;
     std::uint32_t room_id;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -543,6 +544,7 @@ struct ALIGNED JoinRoomPacket {
     PacketHeader header;
     std::uint32_t room_id;
     std::string password;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -559,6 +561,7 @@ struct ALIGNED JoinRoomPacket {
 struct ALIGNED JoinRoomResponsePacket {
     PacketHeader header;
     RoomError error_code;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -626,6 +629,7 @@ struct ALIGNED ListRoomResponsePacket {
  */
 struct ALIGNED MatchmakingRequestPacket {
     PacketHeader header;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -643,6 +647,7 @@ struct ALIGNED MatchmakingRequestPacket {
 struct ALIGNED MatchmakingResponsePacket {
     PacketHeader header;
     RoomError error_code;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -679,10 +684,12 @@ struct ALIGNED AckPacket {
 struct ALIGNED RequestChallengePacket {
     PacketHeader header;
     std::uint32_t room_id;
+    std::uint32_t sequence_number;
 };
 
 struct ALIGNED ChallengeResponsePacket {
     PacketHeader header;
     std::string challenge;
     std::uint32_t timestamp;
+    std::uint32_t sequence_number;
 };

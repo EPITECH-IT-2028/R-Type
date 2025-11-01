@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstdint>
 #include "APacket.hpp"
 #include "Packet.hpp"
 
@@ -13,11 +14,10 @@ namespace packet {
   class ResponseHelper {
     public:
       static void sendJoinRoomResponse(server::Server &server,
-                                       std::uint32_t player_id,
-                                       RoomError error);
+                                       server::Client &client, RoomError error);
 
       static void sendMatchmakingResponse(server::Server &server,
-                                          std::uint32_t player_id,
+                                          server::Client &client,
                                           RoomError error);
   };
 

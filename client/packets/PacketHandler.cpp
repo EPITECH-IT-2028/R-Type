@@ -56,11 +56,13 @@ int packet::ChatMessageHandler::handlePacket(client::Client &client,
   }
 
   const ChatMessagePacket &packet = packetOpt.value();
+
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   const std::string playerName = client.getPlayerNameById(packet.player_id);
   std::string message = packet.message;
   Color color = {packet.r, packet.g, packet.b, packet.a};
   client.storeChatMessage(playerName, message, color);
-  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   return packet::OK;
 }
 
@@ -131,6 +133,8 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
 
   const PlayerDeathPacket &packet = packetOpt.value();
 
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   TraceLog(LOG_INFO, "[PLAYER DEATH] Player ID: %u died at (%f, %f)",
            packet.player_id, packet.x, packet.y);
 
@@ -144,8 +148,6 @@ int packet::PlayerDeathHandler::handlePacket(client::Client &client,
     }
     ecsManager.destroyEntity(playerEntity);
     client.destroyPlayerEntity(packet.player_id);
-
-    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER DEATH] Failed to remove player %u: %s",
              packet.player_id, e.what());
@@ -169,6 +171,8 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
   }
 
   const PlayerDisconnectPacket &packet = packetOpt.value();
+
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
 
   TraceLog(LOG_INFO, "[PLAYER DISCONNECTED] Player ID: %u disconnected",
            packet.player_id);
@@ -333,6 +337,8 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
 
   const EnemyDeathPacket &packet = packetOpt.value();
 
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   ecs::ECSManager &ecsManager = ecs::ECSManager::getInstance();
   try {
     auto enemyEntity = client.getEnemyEntity(packet.enemy_id);
@@ -343,7 +349,6 @@ int packet::EnemyDeathHandler::handlePacket(client::Client &client,
     }
     ecsManager.destroyEntity(enemyEntity);
     client.destroyEnemyEntity(packet.enemy_id);
-    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[ENEMY DEATH] Failed to destroy enemy %u: %s",
              packet.enemy_id, e.what());
@@ -385,6 +390,8 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
   }
 
   const ProjectileSpawnPacket packet = packetOpt.value();
+
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
 
   if (client.getProjectileEntity(packet.projectile_id) !=
       static_cast<Entity>(-1)) {
@@ -437,7 +444,6 @@ int packet::ProjectileSpawnHandler::handlePacket(client::Client &client,
         entityProjectile, {renderManager::ProjectileSprite::DEFAULT_SCALE_X,
                            renderManager::ProjectileSprite::DEFAULT_SCALE_Y});
     client.addProjectileEntity(packet.projectile_id, entityProjectile);
-    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "Failed to create projectile entity: %s", e.what());
     return packet::KO;
@@ -655,6 +661,8 @@ int packet::JoinRoomResponseHandler::handlePacket(client::Client &client,
 
   const JoinRoomResponsePacket &packet = deserializedPacket.value();
 
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   if (packet.error_code == RoomError::SUCCESS) {
     client.setClientState(client::ClientState::IN_ROOM_WAITING);
     TraceLog(LOG_INFO, "[JOIN ROOM RESPONSE] Successfully joined room");
@@ -698,6 +706,8 @@ int packet::MatchmakingResponseHandler::handlePacket(client::Client &client,
 
   const MatchmakingResponsePacket &packet = deserializedPacket.value();
 
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   if (packet.error_code == RoomError::SUCCESS) {
     client.setClientState(client::ClientState::IN_ROOM_WAITING);
     TraceLog(LOG_INFO,
@@ -728,6 +738,8 @@ int packet::ChallengeResponseHandler::handlePacket(client::Client &client,
 
   const ChallengeResponsePacket &packet = deserializedPacket.value();
 
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   std::string challenge = packet.challenge;
   client.getChallenge().setChallenge(challenge, packet.timestamp);
 
@@ -749,6 +761,8 @@ int packet::CreateRoomResponseHandler::handlePacket(client::Client &client,
   }
 
   const CreateRoomResponsePacket &packet = deserializedPacket.value();
+
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
 
   if (packet.error_code == RoomError::SUCCESS) {
     client.setClientState(client::ClientState::IN_ROOM_WAITING);

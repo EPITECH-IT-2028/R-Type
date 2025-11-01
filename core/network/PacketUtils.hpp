@@ -110,6 +110,9 @@ inline bool shouldAcknowledgePacketType(PacketType type) {
     case PacketType::ProjectileSpawn:
     case PacketType::ProjectileDestroy:
     case PacketType::MatchmakingRequest:
+    case PacketType::MatchmakingResponse:
+    case PacketType::RequestChallenge:
+    case PacketType::CreateRoomResponse:
       return true;
     default:
       return false;

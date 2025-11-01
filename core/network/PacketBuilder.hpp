@@ -645,12 +645,14 @@ struct PacketBuilder {
      */
     static CreateRoomPacket makeCreateRoom(const std::string &room_name,
                                            std::uint32_t max_players,
+                                           std::uint32_t sequence_number,
                                            const std::string &password = "") {
       CreateRoomPacket packet{};
       packet.header.type = PacketType::CreateRoom;
       packet.room_name = truncateToBytes(room_name, 32);
       packet.max_players = max_players;
       packet.is_private = !password.empty();
+      packet.sequence_number = sequence_number;
       if (packet.is_private)
         packet.password = password;
       else
@@ -673,11 +675,12 @@ struct PacketBuilder {
      * to the provided value, and room_id set to the provided room ID.
      */
     static CreateRoomResponsePacket makeCreateRoomResponse(
-        const RoomError &error_code, std::uint32_t room_id) {
+        const RoomError &error_code, std::uint32_t room_id, std::uint32_t sequence_number) {
       CreateRoomResponsePacket packet{};
       packet.header.type = PacketType::CreateRoomResponse;
       packet.error_code = error_code;
       packet.room_id = room_id;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeCreateRoomResponse"))
         return {};
@@ -695,11 +698,13 @@ struct PacketBuilder {
      * when necessary).
      */
     static JoinRoomPacket makeJoinRoom(std::uint32_t room_id,
-                                       const std::string &password) {
+                                       const std::string &password,
+                                       std::uint32_t sequence_number) {
       JoinRoomPacket packet{};
       packet.header.type = PacketType::JoinRoom;
       packet.room_id = room_id;
       packet.password = password;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeJoinRoom"))
         return {};
@@ -717,10 +722,11 @@ struct PacketBuilder {
      * to the provided value.
      */
     static JoinRoomResponsePacket makeJoinRoomResponse(
-        const RoomError &error_code) {
+        const RoomError &error_code, std::uint32_t sequence_number) {
       JoinRoomResponsePacket packet{};
       packet.header.type = PacketType::JoinRoomResponse;
       packet.error_code = error_code;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeJoinRoomResponse"))
         return {};
@@ -798,9 +804,10 @@ struct PacketBuilder {
      * packet's serialized size. Returns an empty (default-constructed) packet
      * if payload sizing fails.
      */
-    static MatchmakingRequestPacket makeMatchmakingRequest() {
+    static MatchmakingRequestPacket makeMatchmakingRequest(std::uint32_t sequence_number) {
       MatchmakingRequestPacket packet{};
       packet.header.type = PacketType::MatchmakingRequest;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeMatchmakingRequest"))
         return {};
@@ -816,10 +823,11 @@ struct PacketBuilder {
      * MatchmakingResponse and whose `error_code` equals the provided value.
      */
     static MatchmakingResponsePacket makeMatchmakingResponse(
-        const RoomError &error_code) {
+        const RoomError &error_code, std::uint32_t sequence_number) {
       MatchmakingResponsePacket packet{};
       packet.header.type = PacketType::MatchmakingResponse;
       packet.error_code = error_code;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeMatchmakingResponse"))
         return {};
@@ -881,10 +889,11 @@ struct PacketBuilder {
      * PacketType::RequestChallenge, header size set to the packet size,
      * and room_id set.
      */
-    static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id) {
+    static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id, std::uint32_t sequence_number) {
       RequestChallengePacket packet{};
       packet.header.type = PacketType::RequestChallenge;
       packet.room_id = room_id;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeRequestChallenge"))
         return {};
@@ -902,11 +911,12 @@ struct PacketBuilder {
      * challenge copied into the packet, and timestamp set.
      */
     static ChallengeResponsePacket makeChallengeResponse(
-        const std::string challenge, std::uint32_t timestamp) {
+        const std::string challenge, std::uint32_t timestamp, std::uint32_t sequence_number) {
       ChallengeResponsePacket packet{};
       packet.header.type = PacketType::ChallengeResponse;
       packet.challenge = challenge;
       packet.timestamp = timestamp;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makeChallengeResponse"))
         return {};
