@@ -14,9 +14,13 @@
 #include "ServerInputSystem.hpp"
 
 /**
- * @brief Send a JoinRoomResponse to the given client including the room's sequence number and track it as unacknowledged.
+ * @brief Send a JoinRoomResponse to the given client including the room's
+ * sequence number and track it as unacknowledged.
  *
- * Builds a JoinRoomResponse using the room/game sequence number, transmits the serialized packet to the client, and records the sent buffer on the client as an unacknowledged packet. If serialization fails, an error is logged and the packet is not sent or recorded.
+ * Builds a JoinRoomResponse using the room/game sequence number, transmits the
+ * serialized packet to the client, and records the sent buffer on the client as
+ * an unacknowledged packet. If serialization fails, an error is logged and the
+ * packet is not sent or recorded.
  *
  * @param error Result code describing why the join succeeded or failed.
  */
@@ -26,7 +30,8 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
   auto room = server.getGameManager().getRoom(client._room_id);
 
   auto response = PacketBuilder::makeJoinRoomResponse(
-      error, room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber() : 0);
+      error,
+      room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber() : 0);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
   if (serializedBuffer.empty()) {
     std::cerr << "[ERROR] Failed to serialize JoinRoomResponse for client "
@@ -45,14 +50,16 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
 }
 
 /**
- * @brief Send a MatchmakingResponse to the specified client indicating the matchmaking result.
+ * @brief Send a MatchmakingResponse to the specified client indicating the
+ * matchmaking result.
  *
- * Builds a response populated with the room's next sequence number, serializes it,
- * sends the bytes to the client, and records the serialized buffer as an
+ * Builds a response populated with the room's next sequence number, serializes
+ * it, sends the bytes to the client, and records the serialized buffer as an
  * unacknowledged packet associated with the response's sequence number.
  *
  * @param server Server used to access the network and game managers.
- * @param client Target client that will receive the response; its room and player id are used.
+ * @param client Target client that will receive the response; its room and
+ * player id are used.
  * @param error Result code describing the matchmaking outcome.
  */
 void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
@@ -61,7 +68,8 @@ void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
   auto room = server.getGameManager().getRoom(client._room_id);
 
   auto response = PacketBuilder::makeMatchmakingResponse(
-      error, room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber() : 0);
+      error,
+      room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber() : 0);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
   if (serializedBuffer.empty()) {
     std::cerr << "[ERROR] Failed to serialize MatchmakingResponse for client "
@@ -137,15 +145,19 @@ int packet::ChatMessageHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a PlayerInfoPacket: register the player's name, update database status, and acknowledge the sender.
+ * @brief Handle a PlayerInfoPacket: register the player's name, update database
+ * status, and acknowledge the sender.
  *
- * Updates the client's stored player name, attempts to add the player to the database and mark them connected, and sends an AckPacket for the received sequence number.
+ * Updates the client's stored player name, attempts to add the player to the
+ * database and mark them connected, and sends an AckPacket for the received
+ * sequence number.
  *
  * @param server Server managing rooms, game state, and networking.
  * @param client Client that sent the packet; its `_player_name` may be updated.
  * @param data Pointer to the raw PlayerInfoPacket bytes.
  * @param size Size of the data buffer in bytes.
- * @return int `OK` if the packet was processed and an acknowledgement was sent, `KO` if deserialization failed or the packet was invalid.
+ * @return int `OK` if the packet was processed and an acknowledgement was sent,
+ * `KO` if deserialization failed or the packet was invalid.
  */
 int packet::PlayerInfoHandler::handlePacket(server::Server &server,
                                             server::Client &client,
@@ -225,11 +237,14 @@ int packet::HeartbeatPlayerHandler::handlePacket(
 }
 
 /**
- * @brief Handle a PlayerShootPacket from a client: spawn a projectile, send an ack to the sender, and broadcast the shot to all clients in the room.
+ * @brief Handle a PlayerShootPacket from a client: spawn a projectile, send an
+ * ack to the sender, and broadcast the shot to all clients in the room.
  *
  * @param data Pointer to the serialized PlayerShootPacket buffer.
  * @param size Size of the serialized buffer in bytes.
- * @return int `OK` if the packet was processed and broadcast; `KO` if deserialization fails, the room or player is not found, the packet sequence is not newer, or projectile creation fails.
+ * @return int `OK` if the packet was processed and broadcast; `KO` if
+ * deserialization fails, the room or player is not found, the packet sequence
+ * is not newer, or projectile creation fails.
  */
 int packet::PlayerShootHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -391,15 +406,30 @@ int packet::PlayerDisconnectedHandler::handlePacket(server::Server &server,
       auto &game = room->getGame();
       auto disconnectPacket = PacketBuilder::makePlayerDisconnect(
           client._player_id, game.fetchAndIncrementSequenceNumber());
+      auto disconnectBuffer = std::make_shared<std::vector<std::uint8_t>>(
+          serialization::BitserySerializer::serialize(disconnectPacket));
       broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
           server.getNetworkManager(), roomClients, disconnectPacket);
-
+      for (const auto &roomClient : roomClients) {
+        if (roomClient && roomClient->_player_id != client._player_id) {
+          roomClient->addUnacknowledgedPacket(disconnectPacket.sequence_number,
+                                              disconnectBuffer);
+        }
+      }
       std::string msg = client._player_name + " has disconnected.";
       auto chatMessagePacket = PacketBuilder::makeChatMessage(
           msg, SERVER_SENDER_ID, 255, 255, 0, 255,
           game.fetchAndIncrementSequenceNumber());
+      auto chatMessageBuffer = std::make_shared<std::vector<std::uint8_t>>(
+          serialization::BitserySerializer::serialize(chatMessagePacket));
       broadcast::Broadcast::broadcastMessageToRoom(
           server.getNetworkManager(), roomClients, chatMessagePacket);
+      for (const auto &roomClient : roomClients) {
+        if (roomClient && roomClient->_player_id != client._player_id) {
+          roomClient->addUnacknowledgedPacket(chatMessagePacket.sequence_number,
+                                              chatMessageBuffer);
+        }
+      }
     }
   }
   server.enqueueClientRemoval(client._player_id);
@@ -537,10 +567,11 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a client's JoinRoom request and send a JoinRoomResponse with the result.
+ * @brief Handle a client's JoinRoom request and send a JoinRoomResponse with
+ * the result.
  *
- * Deserializes the incoming JoinRoomPacket, validates room existence and password,
- * attempts to join and initialize the player in the room, and sends a
+ * Deserializes the incoming JoinRoomPacket, validates room existence and
+ * password, attempts to join and initialize the player in the room, and sends a
  * sequence-numbered JoinRoomResponse indicating the resulting RoomError.
  *
  * @param data Pointer to the serialized JoinRoomPacket.
@@ -727,19 +758,22 @@ int packet::ListRoomHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a matchmaking request and place the client into a matchmaking room.
+ * @brief Handle a matchmaking request and place the client into a matchmaking
+ * room.
  *
- * Deserializes a MatchmakingRequestPacket, sends an acknowledgment for the request,
- * then attempts to join the client to an existing suitable room or creates and joins
- * a new matchmaking room. On success the client is transitioned to IN_ROOM_WAITING,
- * initialized in the room, and a success matchmaking response is sent; on failure
- * an appropriate error response is sent and the client's state is restored where applicable.
+ * Deserializes a MatchmakingRequestPacket, sends an acknowledgment for the
+ * request, then attempts to join the client to an existing suitable room or
+ * creates and joins a new matchmaking room. On success the client is
+ * transitioned to IN_ROOM_WAITING, initialized in the room, and a success
+ * matchmaking response is sent; on failure an appropriate error response is
+ * sent and the client's state is restored where applicable.
  *
  * @param server Server managing rooms, clients, and game state.
  * @param client Client issuing the matchmaking request; may be updated.
  * @param data Pointer to the serialized MatchmakingRequestPacket data.
  * @param size Size in bytes of the serialized data buffer.
- * @return int `OK` if the client was placed in a room and initialized, `KO` otherwise.
+ * @return int `OK` if the client was placed in a room and initialized, `KO`
+ * otherwise.
  */
 int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
                                                     server::Client &client,
@@ -838,18 +872,22 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Process a player's movement input and enqueue it for the room's input system.
+ * @brief Process a player's movement input and enqueue it for the room's input
+ * system.
  *
- * Deserializes a PlayerInputPacket from the provided buffer, validates the client
- * and room state, converts the packet into an ecs::PlayerInput, and queues it
- * in the room's ServerInputSystem for the client's entity.
+ * Deserializes a PlayerInputPacket from the provided buffer, validates the
+ * client and room state, converts the packet into an ecs::PlayerInput, and
+ * queues it in the room's ServerInputSystem for the client's entity.
  *
  * @param server Server instance used to access game and network managers.
- * @param client Client that sent the input; used to identify the player entity and room.
- * @param data Pointer to the raw packet data containing a serialized PlayerInputPacket.
+ * @param client Client that sent the input; used to identify the player entity
+ * and room.
+ * @param data Pointer to the raw packet data containing a serialized
+ * PlayerInputPacket.
  * @param size Size of the raw packet data buffer in bytes.
- * @return int `OK` if the packet was deserialized and the input queued; `KO` on error
- * (deserialization failure, missing/inactive room, missing input system, or invalid entity id).
+ * @return int `OK` if the packet was deserialized and the input queued; `KO` on
+ * error (deserialization failure, missing/inactive room, missing input system,
+ * or invalid entity id).
  */
 int packet::PlayerInputHandler::handlePacket(server::Server &server,
                                              server::Client &client,
@@ -890,13 +928,16 @@ int packet::PlayerInputHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle an incoming AckPacket and mark the referenced sequence as acknowledged for the sending client.
+ * @brief Handle an incoming AckPacket and mark the referenced sequence as
+ * acknowledged for the sending client.
  *
- * Validates that the AckPacket's player_id matches the sender and removes the acknowledged sequence number from the client's unacknowledged packet set.
+ * Validates that the AckPacket's player_id matches the sender and removes the
+ * acknowledged sequence number from the client's unacknowledged packet set.
  *
  * @param data Pointer to the serialized AckPacket bytes.
  * @param size Number of bytes available at `data`.
- * @return int `OK` on success, `KO` on failure (for example, deserialization failure or player_id mismatch).
+ * @return int `OK` on success, `KO` on failure (for example, deserialization
+ * failure or player_id mismatch).
  */
 int packet::AckPacketHandler::handlePacket(server::Server &server,
                                            server::Client &client,
@@ -925,21 +966,24 @@ int packet::AckPacketHandler::handlePacket(server::Server &server,
 }
 
 /**
- * @brief Handle a RequestChallengePacket from a client: acknowledge the request,
- *        generate a challenge for the client's room, send a ChallengeResponse,
- *        and track the response as unacknowledged.
+ * @brief Handle a RequestChallengePacket from a client: acknowledge the
+ * request, generate a challenge for the client's room, send a
+ * ChallengeResponse, and track the response as unacknowledged.
  *
  * Validates packet deserialization and room existence. On success an AckPacket
- * for the incoming request is sent to the client, a challenge string is created,
- * a ChallengeResponse packet is built using the room's sequence number, sent to
- * the client, and the serialized response is stored as an unacknowledged packet
- * tied to the response's sequence number.
+ * for the incoming request is sent to the client, a challenge string is
+ * created, a ChallengeResponse packet is built using the room's sequence
+ * number, sent to the client, and the serialized response is stored as an
+ * unacknowledged packet tied to the response's sequence number.
  *
- * @param server Server instance used for room lookup, challenge creation and network I/O.
- * @param client Client that sent the request; used for player id and unacknowledged tracking.
+ * @param server Server instance used for room lookup, challenge creation and
+ * network I/O.
+ * @param client Client that sent the request; used for player id and
+ * unacknowledged tracking.
  * @param data Pointer to the incoming packet bytes.
  * @param size Size in bytes of the incoming packet data.
- * @return int `OK` on success, `KO` on failure (deserialization, missing room, or serialization error).
+ * @return int `OK` on success, `KO` on failure (deserialization, missing room,
+ * or serialization error).
  */
 int packet::RequestChallengeHandler::handlePacket(server::Server &server,
                                                   server::Client &client,

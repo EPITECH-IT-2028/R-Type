@@ -43,7 +43,8 @@ namespace network {
       /**
        * @brief Sets a callback to be invoked when the server is stopped.
        *
-       * The provided callback will be stored and called during shutdown/stop processing.
+       * The provided callback will be stored and called during shutdown/stop
+       * processing.
        *
        * @param callback Function to call when the server stops.
        */
@@ -56,10 +57,12 @@ namespace network {
       void stop() override;
 
       /**
-       * @brief Cancels pending operations and closes the underlying socket if it is open.
+       * @brief Cancels pending operations and closes the underlying socket if
+       * it is open.
        *
-       * If the socket is open, this will cancel any outstanding asynchronous operations and then close the socket.
-       * If the socket is already closed, the call has no effect.
+       * If the socket is open, this will cancel any outstanding asynchronous
+       * operations and then close the socket. If the socket is already closed,
+       * the call has no effect.
        */
       void closeSocket() {
         if (_socket.is_open()) {
@@ -72,7 +75,8 @@ namespace network {
        * @brief Retrieve the UDP endpoint associated with a player ID.
        *
        * @param player_id Player identifier used as the lookup key.
-       * @return asio::ip::udp::endpoint The stored UDP endpoint for the given player.
+       * @return asio::ip::udp::endpoint The stored UDP endpoint for the given
+       * player.
        * @throws std::out_of_range If no endpoint is registered for `player_id`.
        */
       asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
@@ -92,7 +96,7 @@ namespace network {
       std::shared_ptr<asio::steady_timer> _clearSeqTimer;
       std::unordered_map<int, asio::ip::udp::endpoint> _clientEndpoints;
       std::function<void()> _stopCallback;
-      bool _isRunning = false;
+      std::atomic<bool> _isRunning = false;
       bool _unacknowledgedScheduled = false;
       bool _timeoutScheduled = false;
       bool _eventScheduled = false;

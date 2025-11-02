@@ -102,7 +102,7 @@ void ServerNetworkManager::send(
  */
 void ServerNetworkManager::checkSignals() {
   _signals.async_wait([this](const asio::error_code &error, int signal_number) {
-    if (!error && _isRunning) {
+    if (!error && _isRunning.load()) {
       this->stop();
       _io_context.stop();
     }
@@ -117,12 +117,12 @@ void ServerNetworkManager::checkSignals() {
  * If the manager is already stopped, this function returns without performing any actions.
  */
 void ServerNetworkManager::stop() {
-  if (!_isRunning) {
+  if (!_isRunning.load()) {
     return;
   }
 
   std::cout << "[CONSOLE] Stopping network manager..." << std::endl;
-  _isRunning = false;
+  _isRunning.store(false);
 
   _signals.cancel();
 
@@ -145,8 +145,6 @@ void ServerNetworkManager::stop() {
     _stopCallback();
   }
 
-  _isRunning = false;
-
   std::cout << "[CONSOLE] Network manager stopped completely." << std::endl;
 }
 
@@ -168,11 +166,11 @@ void ServerNetworkManager::startReceive(
         if (!error && bytes_transferred > 0) {
           callback(_recv_buffer.data(), bytes_transferred);
         } else if (error && error != asio::error::operation_aborted) {
-          if (_isRunning)
+          if (_isRunning.load())
             std::cerr << "[WARNING] Receive failed: " << error.message()
                       << std::endl;
         }
-        if (_isRunning && _socket.is_open())
+        if (_isRunning.load() && _socket.is_open())
           startReceive(callback);
       });
 }
@@ -189,7 +187,7 @@ void ServerNetworkManager::startReceive(
  */
 void ServerNetworkManager::scheduleEventProcessing(
     std::chrono::milliseconds interval, const std::function<void()> &callback) {
-  if (_eventScheduled || !_isRunning)
+  if (_eventScheduled || !_isRunning.load())
     return;
   _eventScheduled = true;
 
@@ -201,7 +199,7 @@ void ServerNetworkManager::scheduleEventProcessing(
   _eventTimer->async_wait(
       [this, interval, callback](const asio::error_code &error) {
         _eventScheduled = false;
-        if (!error && _isRunning) {
+        if (!error && _isRunning.load()) {
           callback();
           scheduleEventProcessing(interval, callback);
         }
@@ -227,7 +225,7 @@ void ServerNetworkManager::scheduleTimeout(
   _timeoutTimer->async_wait(
       [this, interval, callback](const asio::error_code &error) {
         _timeoutScheduled = false;
-        if (!error && _isRunning) {
+        if (!error && _isRunning.load()) {
           callback();
           scheduleTimeout(interval, callback);
         }
@@ -253,7 +251,7 @@ void ServerNetworkManager::scheduleUnacknowledgedPacketsCheck(
   _unacknowledgedTimer->async_wait(
       [this, interval, callback](const asio::error_code &error) {
         _unacknowledgedScheduled = false;
-        if (!error && _isRunning) {
+        if (!error && _isRunning.load()) {
           callback();
           scheduleUnacknowledgedPacketsCheck(interval, callback);
         }
@@ -273,7 +271,7 @@ void ServerNetworkManager::scheduleUnacknowledgedPacketsCheck(
  */
 void ServerNetworkManager::scheduleClearLastProcessedSeq(
     std::chrono::seconds interval, const std::function<void()> &callback) {
-  if (_clearSeqScheduled || !_isRunning)
+  if (_clearSeqScheduled || !_isRunning.load())
     return;
   _clearSeqScheduled = true;
   if (!_clearSeqTimer) {
@@ -283,7 +281,7 @@ void ServerNetworkManager::scheduleClearLastProcessedSeq(
   _clearSeqTimer->async_wait(
       [this, interval, callback](const asio::error_code &error) {
         _clearSeqScheduled = false;
-        if (!error && _isRunning) {
+        if (!error && _isRunning.load()) {
           callback();
           scheduleClearLastProcessedSeq(interval, callback);
         }
