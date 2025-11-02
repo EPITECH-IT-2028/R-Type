@@ -405,6 +405,10 @@ namespace client {
 
       void getScoreboard();
 
+      ecs::ECSManager &getEcsManager() {
+        return _ecsManager;
+      };
+
     private:
       void resendPackets();
 

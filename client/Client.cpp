@@ -187,8 +187,7 @@ namespace client {
     {
       Signature signature;
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
-      signature.set(
-          _ecsManager.getComponentType<ecs::StateHistoryComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::StateHistoryComponent>());
       signature.set(
           _ecsManager.getComponentType<ecs::RemoteEntityTagComponent>());
       _ecsManager.setSystemSignature<ecs::InterpolationSystem>(signature);
@@ -313,8 +312,12 @@ namespace client {
       _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(player, {});
       ecs::StateHistoryComponent stateHistory;
       ecs::EntityState initialState{packet.x, packet.y, GetTime()};
-      stateHistory.states.push_back(initialState);
-      _ecsManager.addComponent<ecs::StateHistoryComponent>(player, stateHistory);
+      {
+        std::lock_guard<std::mutex> lock(*stateHistory.mutex);
+        stateHistory.states.push_back(initialState);
+      }
+      _ecsManager.addComponent<ecs::StateHistoryComponent>(player,
+                                                           stateHistory);
     }
 
     _playerEntities[packet.player_id] = player;
@@ -366,7 +369,10 @@ namespace client {
     _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(enemy, {});
     ecs::StateHistoryComponent stateHistory;
     ecs::EntityState initialState{packet.x, packet.y, GetTime()};
-    stateHistory.states.push_back(initialState);
+    {
+      std::lock_guard<std::mutex> lock(*stateHistory.mutex);
+      stateHistory.states.push_back(initialState);
+    }
     _ecsManager.addComponent<ecs::StateHistoryComponent>(enemy, stateHistory);
 
     _enemyEntities[packet.enemy_id] = enemy;

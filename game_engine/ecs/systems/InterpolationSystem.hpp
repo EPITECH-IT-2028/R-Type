@@ -16,19 +16,22 @@ namespace ecs {
    * slightly in the past to ensure fluid movement.
    */
   class InterpolationSystem : public System {
-   public:
-    explicit InterpolationSystem(
-        ECSManager &ecsManager = ECSManager::getInstance())
-        : _ecsManager(ecsManager) {
-    }
+    public:
+      explicit InterpolationSystem(
+          ECSManager &ecsManager = ECSManager::getInstance())
+          : _ecsManager(ecsManager) {
+      }
 
-    void update(float deltaTime) override;
+      void update(float deltaTime) override;
 
-   private:
-    ECSManager &_ecsManager;
-    float linterpolation(float a, float b, float t) const;
-    bool getInterpolatedStates(const StateHistoryComponent &stateHistory,
-                               double currentTime, EntityState &state0,
-                               EntityState &state1, float &alpha) const;
+    private:
+      ECSManager &_ecsManager;
+      float linterpolation(float a, float b, float t) const;
+      bool getInterpolatedStates(const StateHistoryComponent &stateHistory,
+                                 double currentTime, EntityState &state0,
+                                 EntityState &state1, float &alpha) const;
+      bool getInterpolatedStatesInternal(
+          const StateHistoryComponent &stateHistory, double currentTime,
+          EntityState &state0, EntityState &state1, float &alpha) const;
   };
 }  // namespace ecs

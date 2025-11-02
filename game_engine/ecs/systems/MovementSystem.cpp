@@ -1,4 +1,5 @@
 #include "MovementSystem.hpp"
+#include "LocalPlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "VelocityComponent.hpp"
@@ -29,6 +30,13 @@ namespace ecs {
 
       position.x += velocity.vx * deltaTime;
       position.y += velocity.vy * deltaTime;
+      if (_ecsManager.hasComponent<ecs::LocalPlayerTagComponent>(entity)) {
+        position.x = std::clamp(
+            position.x, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
+        position.y =
+            std::clamp(position.y, 0.0f,
+                       static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
+      }
     }
   }
 }  // namespace ecs
