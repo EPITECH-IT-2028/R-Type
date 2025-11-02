@@ -1,4 +1,5 @@
 #include "MovementSystem.hpp"
+#include <algorithm>
 #include "LocalPlayerTagComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
