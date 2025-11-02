@@ -396,12 +396,14 @@ void server::Server::handleReceive(const char *data,
   if (compression::Compressor::isCompressed(packetData)) {
     auto originalSize = packetData.size();
     auto decompressed = compression::Compressor::decompress(packetData);
-    if (decompressed.size() == originalSize) {
+    if (decompressed.size() == originalSize &&
+        compression::Compressor::isCompressed(decompressed)) {
       std::cerr << "[WARNING] Decompression may have failed, treating as "
                    "compressed data"
                 << std::endl;
+      return;
     }
-    packetData = decompressed;
+    packetData = std::move(decompressed);
     if (packetData.size() < sizeof(PacketHeader)) {
       std::cerr << "[ERROR] Packet too small after decompression, dropping"
                 << std::endl;
