@@ -71,6 +71,10 @@ inline std::string packetTypeToString(PacketType type) {
       return "ChallengeResponse";
     case PacketType::CreateRoomResponse:
       return "CreateRoomResponse";
+    case PacketType::ScoreboardRequest:
+      return "ScoreboardRequest";
+    case PacketType::ScoreboardResponse:
+      return "ScoreboardResponse";
     default:
       std::stringstream ss;
       ss << "Unknown(" << static_cast<int>(type) << ")";

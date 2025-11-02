@@ -860,4 +860,48 @@ struct PacketBuilder {
         return {};
       return packet;
     }
+
+    /**
+     * @brief Creates a ScoreboardRequest packet to fetch top scores.
+     *
+     * @param limit Maximum number of scores to retrieve (e.g., 10 for top 10).
+     * @return ScoreboardRequestPacket with header.type set to
+     * ScoreboardRequest.
+     */
+    static ScoreboardRequestPacket makeScoreboardRequest(
+        std::uint32_t limit = 10) {
+      ScoreboardRequestPacket packet{};
+      packet.header.type = PacketType::ScoreboardRequest;
+      packet.limit = limit;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeScoreboardRequest"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * @brief Creates a ScoreboardResponse packet with player scores.
+     *
+     * @param scores Vector of ScoreEntry containing player names and scores.
+     * @return ScoreboardResponsePacket with scores sorted by highest score
+     * first.
+     */
+    static ScoreboardResponsePacket makeScoreboardResponse(
+        const std::vector<ScoreEntry> &scores) {
+      ScoreboardResponsePacket packet{};
+      packet.header.type = PacketType::ScoreboardResponse;
+
+      if (scores.size() > std::numeric_limits<std::uint32_t>::max()) {
+        std::cerr << "Error: Too many scores to fit in ScoreboardResponsePacket"
+                  << std::endl;
+        return {};
+      }
+
+      packet.entry_count = static_cast<std::uint32_t>(scores.size());
+      packet.scores = scores;
+
+      if (!setPayloadSizeFromSerialization(packet, "makeScoreboardResponse"))
+        return {};
+      return packet;
+    }
 };

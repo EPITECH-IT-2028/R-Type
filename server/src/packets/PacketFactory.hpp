@@ -43,6 +43,8 @@ namespace packet {
                []() { return std::make_unique<PlayerInputHandler>(); }},
               {PacketType::RequestChallenge,
                []() { return std::make_unique<RequestChallengeHandler>(); }},
+              {PacketType::ScoreboardRequest,
+               []() { return std::make_unique<ScoreboardRequestHandler>(); }},
       };
   };
 

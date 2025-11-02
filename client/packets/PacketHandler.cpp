@@ -635,3 +635,34 @@ int packet::CreateRoomResponseHandler::handlePacket(client::Client &client,
   }
   return OK;
 }
+
+int packet::ScoreboardResponseHandler::handlePacket(client::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ScoreboardResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize ScoreboardResponsePacket"
+              << std::endl;
+    return KO;
+  }
+
+  const ScoreboardResponsePacket &packet = deserializedPacket.value();
+
+  std::cout << "\nScoreboard" << std::endl;
+  std::cout << "Rank | Player Name | Score" << std::endl;
+  std::cout << "" << std::endl;
+
+  int rank = 1;
+  for (const auto &entry : packet.scores) {
+    std::cout << rank << " | " << entry.player_name << " | " << entry.score
+              << std::endl;
+    rank++;
+  }
+
+  return OK;
+}

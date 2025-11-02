@@ -93,6 +93,8 @@ namespace game {
         return _deltaTime.load();
       }
 
+      std::unordered_map<int, int> getPlayerScores() const;
+
     private:
       void gameLoop();
       void initECS();

@@ -159,13 +159,10 @@ void game::Game::start() {
 }
 
 void game::Game::stop() {
-  if (!_running || !_gameThread.joinable()) {
-    return;
-  }
-
   _running = false;
-
-  _gameThread.join();
+  if (_gameThread.joinable()) {
+    _gameThread.join();
+  }
 
   clearAllEntities();
 }
@@ -184,22 +181,34 @@ void game::Game::stop() {
  * (enemy, projectile, collision) is not available, in which case the running
  * flag is cleared and the loop stops.
  */
+
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
+  auto gameStartTime = std::chrono::high_resolution_clock::now();
   constexpr std::chrono::nanoseconds tickDuration(NANOSECONDS_IN_SECOND / TPS);
 
   while (_running) {
     auto frameStart = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<float> elapsedTime = frameStart - gameStartTime;
+    if (elapsedTime.count() >= GAME_DURATION) {
+      queue::GameEndEvent endEvent;
+      endEvent.game_ended = true;
+      _eventQueue.addRequest(endEvent);
+      _running = false;
+      break;
+    }
     if (!_enemySystem || !_projectileSystem || !_collisionSystem) {
       std::cerr << "Error: ECS Manager or Systems not initialized."
                 << std::endl;
       _running = false;
       break;
     }
+
     std::chrono::duration<float> deltaTime = frameStart - lastTime;
     _deltaTime.store(deltaTime.count());
     lastTime = frameStart;
@@ -208,7 +217,6 @@ void game::Game::gameLoop() {
     _enemySystem->update(deltaTime.count());
     _projectileSystem->update(deltaTime.count());
     _collisionSystem->update(deltaTime.count());
-
     spawnEnemy(deltaTime.count());
 
     auto frameEnd = std::chrono::high_resolution_clock::now();
@@ -260,14 +268,14 @@ std::shared_ptr<game::Player> game::Game::createPlayer(
 /**
  * @brief Removes a player and its associated ECS entity from the game.
  *
- * Destroys the ECS entity owned by the player with the given id and removes the
- * player from the internal registry. If no player with that id exists, the
- * function has no effect.
+ * Destroys the ECS entity owned by the player with the given id and removes
+ * the player from the internal registry. If no player with that id exists,
+ * the function has no effect.
  *
  * @param player_id Identifier of the player to remove.
  */
 void game::Game::destroyPlayer(int player_id) {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   auto it = _players.find(player_id);
   if (it != _players.end()) {
     std::uint32_t entity_id = it->second->getEntityId();
@@ -277,13 +285,13 @@ void game::Game::destroyPlayer(int player_id) {
 }
 
 std::shared_ptr<game::Player> game::Game::getPlayer(int player_id) {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   auto it = _players.find(player_id);
   return (it != _players.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
-  std::scoped_lock lock(_playerMutex);
+  std::lock_guard<std::mutex> lock(_playerMutex);
   std::vector<std::shared_ptr<Player>> playerList;
   playerList.reserve(_players.size());
   for (const auto &pair : _players) {
@@ -334,11 +342,11 @@ void game::Game::spawnEnemy(float deltaTime) {
  */
 std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
                                                      const EnemyType type) {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   std::uint32_t entity;
   switch (type) {
     case EnemyType::BASIC_FIGHTER: {
-      std::scoped_lock ecsLock(_ecsMutex);
+      std::lock_guard<std::mutex> lock(_ecsMutex);
       entity = _ecsManager->createEntity();
 
       float spawnY =
@@ -373,16 +381,16 @@ std::shared_ptr<game::Enemy> game::Game::createEnemy(int enemy_id,
  * @brief Removes the enemy with the given id, marks it as dead, and destroys
  * its ECS entity.
  *
- * If the enemy exists, its EnemyComponent (if present) will have `is_alive` set
- * to `false`, the corresponding ECS entity will be destroyed, and the enemy
- * will be removed from the registry. The operation is guarded by the internal
- * enemy mutex.
+ * If the enemy exists, its EnemyComponent (if present) will have `is_alive`
+ * set to `false`, the corresponding ECS entity will be destroyed, and the
+ * enemy will be removed from the registry. The operation is guarded by the
+ * internal enemy mutex.
  *
- * @param enemy_id Identifier of the enemy to destroy. No action is taken if no
- * enemy with this id exists.
+ * @param enemy_id Identifier of the enemy to destroy. No action is taken if
+ * no enemy with this id exists.
  */
 void game::Game::destroyEnemy(int enemy_id) {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   auto it = _enemies.find(enemy_id);
   if (it != _enemies.end()) {
     auto enemy = it->second;
@@ -400,13 +408,13 @@ void game::Game::destroyEnemy(int enemy_id) {
 }
 
 std::shared_ptr<game::Enemy> game::Game::getEnemy(int enemy_id) {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   auto it = _enemies.find(enemy_id);
   return (it != _enemies.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Enemy>> game::Game::getAllEnemies() const {
-  std::scoped_lock lock(_enemyMutex);
+  std::lock_guard<std::mutex> lock(_enemyMutex);
   std::vector<std::shared_ptr<Enemy>> enemyList;
   enemyList.reserve(_enemies.size());
   for (const auto &pair : _enemies) {
@@ -435,7 +443,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
   std::shared_ptr<Projectile> projectile;
   std::uint32_t entity;
   {
-    std::scoped_lock ecsLock(_ecsMutex);
+    std::lock_guard<std::mutex> lock(_ecsMutex);
     entity = _ecsManager->createEntity();
     _ecsManager->addComponent<ecs::PositionComponent>(entity, {x, y});
     _ecsManager->addComponent<ecs::SpeedComponent>(entity, {10.0f});
@@ -451,7 +459,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
                                               *_ecsManager);
   }
   {
-    std::scoped_lock lk(_projectileMutex);
+    std::lock_guard<std::mutex> lock(_projectileMutex);
     _projectiles[projectile_id] = projectile;
   }
 
@@ -479,7 +487,7 @@ std::shared_ptr<game::Projectile> game::Game::createProjectile(
  * @param projectile_id Identifier of the projectile to remove.
  */
 void game::Game::destroyProjectile(std::uint32_t projectile_id) {
-  std::scoped_lock lock(_projectileMutex);
+  std::lock_guard<std::mutex> lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   if (it != _projectiles.end()) {
     auto projectile = it->second;
@@ -498,7 +506,7 @@ void game::Game::destroyProjectile(std::uint32_t projectile_id) {
     _eventQueue.addRequest(event);
 
     {
-      std::scoped_lock ecsLock(_ecsMutex);
+      std::lock_guard<std::mutex> lock(_ecsMutex);
       _ecsManager->destroyEntity(entity_id);
     }
     _projectiles.erase(it);
@@ -507,14 +515,14 @@ void game::Game::destroyProjectile(std::uint32_t projectile_id) {
 
 std::shared_ptr<game::Projectile> game::Game::getProjectile(
     std::uint32_t projectile_id) {
-  std::scoped_lock lock(_projectileMutex);
+  std::lock_guard<std::mutex> lock(_projectileMutex);
   auto it = _projectiles.find(projectile_id);
   return (it != _projectiles.end()) ? it->second : nullptr;
 }
 
 std::vector<std::shared_ptr<game::Projectile>> game::Game::getAllProjectiles()
     const {
-  std::scoped_lock lock(_projectileMutex);
+  std::lock_guard<std::mutex> lock(_projectileMutex);
   std::vector<std::shared_ptr<Projectile>> projectileList;
   projectileList.reserve(_projectiles.size());
   for (const auto &pair : _projectiles) {
@@ -539,4 +547,19 @@ void game::Game::clearAllEntities() {
   _nextEnemyId = 0;
   _nextProjectileId.store(0, std::memory_order_relaxed);
   _enemySpawnTimer = 0.0f;
+}
+
+std::unordered_map<int, int> game::Game::getPlayerScores() const {
+  std::unordered_map<int, int> scores;
+  std::scoped_lock lock(_playerMutex, _ecsMutex);
+  for (const auto &pair : _players) {
+    int playerId = pair.first;
+    auto player = pair.second;
+    if (player) {
+      auto &scoreComp =
+          _ecsManager->getComponent<ecs::ScoreComponent>(player->getEntityId());
+      scores[playerId] = scoreComp.score;
+    }
+  }
+  return scores;
 }

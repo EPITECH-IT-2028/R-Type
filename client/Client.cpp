@@ -513,4 +513,13 @@ namespace client {
     if (_chatMessages.size() > CHAT_MAX_MESSAGES)
       _chatMessages.erase(_chatMessages.begin());
   }
+
+  void Client::getScoreboard() {
+    try {
+      ScoreboardRequestPacket packet = PacketBuilder::makeScoreboardRequest();
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SCOREBOARD REQUEST] Exception: %s", e.what());
+    }
+  }
 }  // namespace client
