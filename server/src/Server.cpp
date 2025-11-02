@@ -394,9 +394,17 @@ void server::Server::handleReceive(const char *data,
       reinterpret_cast<const std::uint8_t *>(data) + bytes_transferred);
 
   if (compression::Compressor::isCompressed(packetData)) {
-    packetData = compression::Compressor::decompress(packetData);
-    if (packetData.empty()) {
-      std::cerr << "[ERROR] Decompression failed, dropping packet" << std::endl;
+    auto originalSize = packetData.size();
+    auto decompressed = compression::Compressor::decompress(packetData);
+    if (decompressed.size() == originalSize) {
+      std::cerr << "[WARNING] Decompression may have failed, treating as "
+                   "compressed data"
+                << std::endl;
+    }
+    packetData = decompressed;
+    if (packetData.size() < sizeof(PacketHeader)) {
+      std::cerr << "[ERROR] Packet too small after decompression, dropping"
+                << std::endl;
       return;
     }
   }
