@@ -34,7 +34,7 @@ namespace ecs {
       ChatMessagesUI() = default;
 
       client::Client *_client;
-      std::optional<Entity> _chatEntity;
+      std::optional<Entity> _chatEntity{};
   };
 
   class MenuUI {
