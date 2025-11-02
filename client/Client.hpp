@@ -463,7 +463,6 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
-      void createStartMenuEntity();
 
       uint32_t _pingSeq = 0;
       network::PacketLossMonitor _packetLossMonitor;

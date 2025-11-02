@@ -83,7 +83,6 @@ namespace client {
       renderSystem->setClient(this);
 
     createBackgroundEntities();
-    createStartMenuEntity();
     createChatMessageUIEntity();
   }
 
@@ -252,21 +251,7 @@ namespace client {
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
   }
 
-  void Client::createStartMenuEntity() {
-    Image startScreenImage =
-        asset::AssetManager::loadImage(renderManager::START_SCREEN_PATH);
-    float screenWidth = GetScreenWidth();
-    float scaleX = 0;
-    if (startScreenImage.data != nullptr && startScreenImage.width > 0)
-      scaleX = screenWidth / startScreenImage.width;
 
-    auto startScreen = _ecsManager.createEntity();
-    _ecsManager.addComponent<ecs::RenderComponent>(
-        startScreen, {renderManager::START_SCREEN_PATH});
-    _ecsManager.addComponent<ecs::PositionComponent>(startScreen, {0.0f, 0.0f});
-    _ecsManager.addComponent<ecs::ScaleComponent>(startScreen,
-                                                  {scaleX, scaleX});
-  }
 
   /**
    * @brief Create an ECS player entity from a NewPlayerPacket and register it

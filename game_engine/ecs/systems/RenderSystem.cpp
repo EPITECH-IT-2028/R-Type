@@ -127,7 +127,7 @@ void ecs::RenderSystem::update(float deltaTime) {
 
   if (_menuUI.getShowMenu() == true &&
       _client->getClientState() == client::ClientState::IN_CONNECTED_MENU) {
-    _menuUI.drawMenuButtons();
+    _menuUI.drawMenu();
   }
 
   for (auto const &entity : _ecsManager.getAllEntities()) {
@@ -248,7 +248,37 @@ void ecs::ChatMessagesUI::drawMessageInputField(const ChatComponent &chat) {
       WHITE);
 }
 
-void ecs::MenuUI::drawMenuButtons() {
+void ecs::MenuUI::loadTexture() {
+  if (!_textureLoaded) {
+    _startScreenTexture =
+        asset::AssetManager::loadTexture(renderManager::START_SCREEN_PATH);
+    if (_startScreenTexture.id != 0) {
+      _textureLoaded = true;
+    } else {
+      TraceLog(LOG_WARNING, "MenuUI::loadTexture: failed to load %s",
+               renderManager::START_SCREEN_PATH);
+    }
+  }
+}
+
+void ecs::MenuUI::drawMenuBackground() {
+  loadTexture();
+  if (!_textureLoaded)
+    return;
+
+  float screenWidth = GetScreenWidth();
+  float scale = screenWidth / _startScreenTexture.width;
+
+  Rectangle sourceRec = {0.0f, 0.0f, (float)_startScreenTexture.width,
+                         (float)_startScreenTexture.height};
+  Rectangle destRec = {0.0f, 0.0f, (float)_startScreenTexture.width * scale,
+                       (float)_startScreenTexture.height * scale};
+  Vector2 origin = {0.0f, 0.0f};
+  DrawTexturePro(_startScreenTexture, sourceRec, destRec, origin, 0.0f, WHITE);
+}
+
+void ecs::MenuUI::drawMenu() {
+  drawMenuBackground();
   drawStartButton();
 }
 

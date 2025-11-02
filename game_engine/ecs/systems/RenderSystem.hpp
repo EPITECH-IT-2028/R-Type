@@ -55,15 +55,19 @@ namespace ecs {
         _showMenu = showMenu;
       }
 
-      void drawMenuButtons();
-      void drawStartButton();
+      void drawMenu();
 
     private:
-      MenuUI() : _showMenu(true) {
-      }
+      MenuUI() : _showMenu(true), _textureLoaded(false) {}
+
+      void loadTexture();
+      void drawMenuBackground();
+      void drawStartButton();
 
       client::Client *_client;
       bool _showMenu;
+      Texture2D _startScreenTexture;
+      bool _textureLoaded;
   };
 
   class RenderSystem : public System {
