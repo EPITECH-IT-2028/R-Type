@@ -89,7 +89,7 @@ namespace ecs {
       void drawInputField(const char *label, Rectangle bounds, std::string &text,
                         ActiveField field, bool isPassword);
 
-      client::Client *_client;
+      client::Client *_client = nullptr;
       bool _showMenu;
       Texture2D _startScreenTexture;
       bool _textureLoaded;
