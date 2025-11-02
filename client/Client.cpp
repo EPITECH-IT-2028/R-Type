@@ -26,6 +26,7 @@
 #include "RenderManager.hpp"
 #include "RenderSystem.hpp"
 #include "ScaleComponent.hpp"
+#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
@@ -94,6 +95,7 @@ namespace client {
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
+    _ecsManager.registerComponent<ecs::SpeedComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
     _ecsManager.registerComponent<ecs::SpriteComponent>();
     _ecsManager.registerComponent<ecs::ScaleComponent>();
@@ -171,6 +173,8 @@ namespace client {
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
@@ -282,6 +286,8 @@ namespace client {
     playerComp.is_alive = true;
     playerComp.connected = true;
     _ecsManager.addComponent<ecs::PlayerComponent>(player, playerComp);
+    _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::SpeedComponent>(player, {packet.speed});
 
     ecs::SpriteAnimationComponent anim;
     anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
