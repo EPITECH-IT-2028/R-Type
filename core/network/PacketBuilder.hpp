@@ -959,6 +959,24 @@ struct PacketBuilder {
     }
 
     /**
+     * @brief Constructs a PingPacket with the specified timestamp.
+     *
+     * @param timestamp Timestamp to include in the ping packet.
+     * @return PingPacket Packet with header.type set to Ping, header.size set
+     * to the packet size, and timestamp set to the provided value.
+     */
+    static PingPacket makePing(std::uint32_t timestamp, std::uint32_t sequence_number) {
+      PingPacket packet{};
+      packet.header.type = PacketType::Ping;
+      packet.timestamp = timestamp;
+      packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePing"))
+        return {};
+      return packet;
+    }
+
+    /**
      * @brief Creates a ScoreboardRequest packet to fetch top scores.
      *
      * @param limit Maximum number of scores to retrieve (e.g., 10 for top 10).
@@ -972,6 +990,24 @@ struct PacketBuilder {
       packet.limit = limit;
 
       if (!setPayloadSizeFromSerialization(packet, "makeScoreboardRequest"))
+        return {};
+      return packet;
+    }
+
+    /**
+     * @brief Constructs a PongPacket with the specified timestamp.
+     *
+     * @param timestamp Timestamp to include in the pong packet.
+     * @return PongPacket Packet with header.type set to Pong, header.size set
+     * to the packet size, and timestamp set to the provided value.
+     */
+    static PongPacket makePong(std::uint32_t timestamp, std::uint32_t sequence_number) {
+      PongPacket packet{};
+      packet.header.type = PacketType::Pong;
+      packet.timestamp = timestamp;
+      packet.sequence_number = sequence_number;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePong"))
         return {};
       return packet;
     }

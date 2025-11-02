@@ -68,6 +68,10 @@ inline std::string packetTypeToString(PacketType type) {
       return "MatchmakingResponse";
     case PacketType::PlayerInput:
       return "PlayerInput";
+    case PacketType::Ping:
+      return "Ping";
+    case PacketType::Pong:
+      return "Pong";
     case PacketType::Ack:
       return "Ack";
     case PacketType::RequestChallenge:

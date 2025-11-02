@@ -41,6 +41,8 @@ namespace packet {
                []() { return std::make_unique<MatchmakingRequestHandler>(); }},
               {PacketType::PlayerInput,
                []() { return std::make_unique<PlayerInputHandler>(); }},
+              {PacketType::Ping,
+               []() { return std::make_unique<PingHandler>(); }},
               {PacketType::Ack,
                []() { return std::make_unique<AckPacketHandler>(); }},
               {PacketType::RequestChallenge,

@@ -18,6 +18,7 @@
 #include "EntityManager.hpp"
 #include "Macro.hpp"
 #include "PacketBuilder.hpp"
+#include "PacketLossMonitor.hpp"
 #include "PacketSender.hpp"
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
@@ -391,6 +392,13 @@ namespace client {
         _state.store(state, std::memory_order_release);
       }
 
+      double calculatePacketLoss(uint32_t seq) {
+        std::lock_guard<std::mutex> lock(_packetLossMutex);
+        _packetLossMonitor.onReceived(seq);
+
+        return _packetLossMonitor.lossRatio();
+      }
+
       /**
        * @brief Accesses the client's Challenge instance.
        *
@@ -405,6 +413,14 @@ namespace client {
 
       void getScoreboard();
 
+      uint32_t getPingSeq() const {
+        return _pingSeq;
+      }
+      
+      void updatePingSeq() {
+        _pingSeq++;
+      }
+      
       ecs::ECSManager &getEcsManager() {
         return _ecsManager;
       };
@@ -418,7 +434,6 @@ namespace client {
 
       void resendUnacknowledgedPackets();
 
-    private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
       std::atomic<bool> _running;
@@ -448,6 +463,10 @@ namespace client {
       void signSystem();
 
       void createBackgroundEntities();
+
+      uint32_t _pingSeq = 0;
+      network::PacketLossMonitor _packetLossMonitor;
+      mutable std::mutex _packetLossMutex;
 
       Challenge _challenge;
       ecs::ECSManager &_ecsManager;

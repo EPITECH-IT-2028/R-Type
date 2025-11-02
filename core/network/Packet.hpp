@@ -34,12 +34,14 @@ enum class PacketType : std::uint8_t {
   MatchmakingResponse = 0x19,
   JoinRoomResponse = 0x1A,
   PlayerInput = 0x1B,
-  Ack = 0x1C,
-  RequestChallenge = 0x1D,
-  ChallengeResponse = 0x1E,
-  CreateRoomResponse = 0x1F,
-  ScoreboardRequest = 0x20,
-  ScoreboardResponse = 0x21
+  RequestChallenge = 0x1C,
+  ChallengeResponse = 0x1D,
+  CreateRoomResponse = 0x1E,
+  Ping = 0x1F,
+  Pong = 0x20,
+  Ack = 0x21,
+  ScoreboardRequest = 0x22,
+  ScoreboardResponse = 0x23
 };
 
 enum class EnemyType : std::uint8_t {
@@ -664,6 +666,28 @@ struct ALIGNED MatchmakingResponsePacket {
 struct ALIGNED PlayerInputPacket {
     PacketHeader header;
     std::uint8_t input;
+    std::uint32_t sequence_number;
+};
+
+/**
+ * @brief Ping packet sent from client to server to measure latency.
+ *
+ * Contains the common packet header and a timestamp representing when the ping was sent.
+ */
+struct ALIGNED PingPacket {
+    PacketHeader header;
+    std::uint32_t timestamp;
+    std::uint32_t sequence_number;
+};
+
+/**
+ * @brief Pong packet sent from server to client in response to a ping.
+ *
+ * Contains the common packet header and a timestamp representing when the original ping was received.
+ */
+struct ALIGNED PongPacket {
+    PacketHeader header;
+    std::uint32_t timestamp;
     std::uint32_t sequence_number;
 };
 

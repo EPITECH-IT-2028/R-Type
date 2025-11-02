@@ -32,6 +32,9 @@
 #include "SpriteComponent.hpp"
 #include "StateHistoryComponent.hpp"
 #include "VelocityComponent.hpp"
+#include "PacketLossComponent.hpp"
+#include "PingComponent.hpp"
+#include "MetricsSystem.hpp"
 
 namespace client {
   /**
@@ -52,6 +55,7 @@ namespace client {
         _playerName("Unknown"),
         _sequence_number{0},
         _packet_count{0},
+        _packetLossMonitor(),
         _ecsManager(ecs::ECSManager::getInstance()),
         _state(ClientState::DISCONNECTED) {
     _resendThreadRunning.store(true, std::memory_order_release);
@@ -108,6 +112,8 @@ namespace client {
     _ecsManager.registerComponent<ecs::StateHistoryComponent>();
     _ecsManager.registerComponent<ecs::RemoteEntityTagComponent>();
     _ecsManager.registerComponent<ecs::ChatComponent>();
+    _ecsManager.registerComponent<ecs::PingComponent>();
+    _ecsManager.registerComponent<ecs::PacketLossComponent>();
     _ecsManager.registerComponent<ecs::PlayerComponent>();
   }
 
@@ -123,9 +129,10 @@ namespace client {
     _ecsManager.registerSystem<ecs::MovementSystem>();
     _ecsManager.registerSystem<ecs::InputSystem>();
     _ecsManager.registerSystem<ecs::SpriteAnimationSystem>();
-    _ecsManager.registerSystem<ecs::InterpolationSystem>();
     _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
+    _ecsManager.registerSystem<ecs::MetricsSystem>();
+    _ecsManager.registerSystem<ecs::InterpolationSystem>();
   }
 
   /**
@@ -198,6 +205,11 @@ namespace client {
       signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
       signature.set(_ecsManager.getComponentType<ecs::ProjectileComponent>());
       _ecsManager.setSystemSignature<ecs::ProjectileSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::LocalPlayerTagComponent>());
+      _ecsManager.setSystemSignature<ecs::MetricsSystem>(signature);
     }
   }
 
@@ -319,6 +331,8 @@ namespace client {
       _ecsManager.addComponent<ecs::StateHistoryComponent>(player,
                                                            stateHistory);
     }
+    _ecsManager.addComponent<ecs::PingComponent>(player, {});
+    _ecsManager.addComponent<ecs::PacketLossComponent>(player, {});
 
     _playerEntities[packet.player_id] = player;
     _playerNames[packet.player_id] = packet.player_name;
