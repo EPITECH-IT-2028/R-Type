@@ -4,6 +4,8 @@
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
 #include "Packet.hpp"
+#include "PacketLossComponent.hpp"
+#include "PingComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSpriteConfig.hpp"
@@ -14,8 +16,33 @@
 #include "SpriteComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "raylib.h"
-#include "PingComponent.hpp"
-#include "PacketLossComponent.hpp"
+
+namespace {
+  /**
+   * @brief Conditionally emits an ACK packet for a processed packet.
+   *
+   * Sends an ACK for the given packet sequence if the packet type requires
+   * acknowledgment and the client has a valid player ID; logs a warning and
+   * does nothing if the player ID is not set.
+   *
+   * @param c Client instance used to obtain the player ID and send the ACK.
+   * @param t Packet type being acknowledged.
+   * @param seq Sequence number of the packet to acknowledge.
+   */
+  inline void sendAckIfNeeded(client::Client &c, PacketType t,
+                              std::uint32_t seq) {
+    if (!shouldAcknowledgePacketType(t))
+      return;
+    auto playerId = c.getPlayerId();
+    if (playerId == INVALID_ID) {
+      TraceLog(LOG_WARNING,
+               "[ACK] Trying to send ACK but player ID is not set yet (seq=%u)",
+               seq);
+      return;
+    }
+    c.send(PacketBuilder::makeAckPacket(seq, playerId));
+  }
+}  // namespace
 
 /**
  * @brief Handle an incoming chat message packet and store it for the specified
@@ -216,18 +243,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
         ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
     position.x = packet.x;
     position.y = packet.y;
-
-    if (client.getPlayerId() == packet.player_id) {
-      client.updateSequenceNumber(packet.sequence_number);
-
-      if (ecsManager.hasComponent<ecs::PacketLossComponent>(playerEntity)) {
-        auto &packetLossComp =
-            ecsManager.getComponent<ecs::PacketLossComponent>(playerEntity);
-                TraceLog(LOG_INFO, "[PLAYER MOVE] Packet loss for player %u: %f.   %d",
-                 packet.player_id, client.calculatePacketLoss(packet.sequence_number), packet.sequence_number);
-        packetLossComp.packetLoss = client.calculatePacketLoss(packet.sequence_number);
-      }
-    }
 
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s",
@@ -618,8 +633,16 @@ int packet::PongHandler::handlePacket(client::Client &client, const char *data,
   auto playerEntity = client.getPlayerEntity(client.getPlayerId());
   if (playerEntity != INVALID_ENTITY) {
     if (ecsManager.hasComponent<ecs::PingComponent>(playerEntity)) {
-      auto &pingComp = ecsManager.getComponent<ecs::PingComponent>(playerEntity);
+      auto &pingComp =
+          ecsManager.getComponent<ecs::PingComponent>(playerEntity);
       pingComp.ping = ping;
+    }
+
+    if (ecsManager.hasComponent<ecs::PacketLossComponent>(playerEntity)) {
+      auto &packetLossComp =
+          ecsManager.getComponent<ecs::PacketLossComponent>(playerEntity);
+      packetLossComp.packetLoss =
+          client.calculatePacketLoss(packet.sequence_number);
     }
   }
   return packet::OK;
@@ -671,5 +694,123 @@ int packet::CreateRoomResponseHandler::handlePacket(client::Client &client,
         "[CREATE ROOM RESPONSE] Failed to create/join room, error code: %d",
         static_cast<int>(packet.error_code));
   }
+  return OK;
+}
+
+/**
+ * @brief Handle a GameStartPacket by entering in-game state and acknowledging
+ * it.
+ *
+ * Deserializes a GameStartPacket from the provided buffer; on success sets the
+ * client's state to IN_GAME and sends an ACK for the packet.
+ *
+ * @param client Client instance used to update state and send the ACK.
+ * @param data Pointer to the serialized packet data.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` on successful processing, `packet::KO` if
+ * deserialization fails.
+ */
+int packet::GameStartHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<GameStartPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[GAME START] Failed to deserialize packet");
+    return packet::KO;
+  }
+
+  const GameStartPacket &packet = packetOpt.value();
+  TraceLog(LOG_INFO, "[DEBUG] Game is starting!");
+
+  client.setClientState(client::ClientState::IN_GAME);
+
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+  return packet::OK;
+}
+
+/**
+ * @brief Handle a PlayerShoot packet and acknowledge it if required.
+ *
+ * Deserializes a PlayerShootPacket from the provided buffer and, on success,
+ * sends an ACK using the packet's sequence number and this client's player ID.
+ *
+ * @param client Client used to obtain the local player ID and to send the ACK.
+ * @param data Pointer to the serialized packet data.
+ * @param size Number of bytes available at `data`.
+ * @return int `packet::OK` on successful processing, `packet::KO` if
+ * deserialization fails.
+ */
+int packet::PlayerShootHandler::handlePacket(client::Client &client,
+                                             const char *data,
+                                             std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<PlayerShootPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[PLAYER SHOOT] Failed to deserialize packet");
+    return packet::KO;
+  }
+
+  const PlayerShootPacket &packet = packetOpt.value();
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+  return packet::OK;
+}
+
+/**
+ * @brief Handle an ACK packet and remove the acknowledged packet from client
+ * tracking.
+ *
+ * Deserializes an AckPacket from the provided buffer and instructs the client
+ * to remove the packet identified by the packet's sequence number.
+ *
+ * @return int `packet::OK` on success, `packet::KO` if deserialization fails.
+ */
+int packet::AckPacketHandler::handlePacket(client::Client &client,
+                                           const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto packetOpt =
+      serialization::BitserySerializer::deserialize<AckPacket>(buffer);
+  if (!packetOpt) {
+    TraceLog(LOG_ERROR, "[ACK] Failed to deserialize packet");
+    return packet::KO;
+  }
+
+  const AckPacket &packet = packetOpt.value();
+  client.removeAcknowledgedPacket(packet.sequence_number);
+  return packet::OK;
+}
+
+int packet::ScoreboardResponseHandler::handlePacket(client::Client &client,
+                                                    const char *data,
+                                                    std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<ScoreboardResponsePacket>(
+          buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize ScoreboardResponsePacket"
+              << std::endl;
+    return KO;
+  }
+
+  const ScoreboardResponsePacket &packet = deserializedPacket.value();
+
+  std::cout << "\nScoreboard" << std::endl;
+  std::cout << "Rank | Player Name | Score" << std::endl;
+  std::cout << "" << std::endl;
+
+  int rank = 1;
+  for (const auto &entry : packet.scores) {
+    std::cout << rank << " | " << entry.player_name << " | " << entry.score
+              << std::endl;
+    rank++;
+  }
+
   return OK;
 }

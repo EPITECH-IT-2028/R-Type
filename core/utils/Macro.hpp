@@ -20,8 +20,6 @@ constexpr float CONVERT_MS_TO_S = 1000.0f;
 constexpr int CLIENT_TIMEOUT = 45;
 constexpr int HEARTBEAT_INTERVAL_CLIENT = 15;
 
-constexpr int PING_INTERVAL_CLIENT = 5;
-
 constexpr float TOLERANCE = 2.0f;
 constexpr float FPS = 60.0f;
 constexpr float PLAYER_SPEED = 250.0f;
@@ -38,6 +36,8 @@ constexpr int MARGIN_WINDOW = 30;
 constexpr int COUNTDOWN_TIME = 5;
 constexpr float GAME_DURATION = 10.0f;
 constexpr int TPS = 60;
+
+constexpr int PING_INTERVAL_CLIENT = 1;
 
 /* Network/Protocol */
 constexpr std::size_t BUFFER_SIZE = 2048;

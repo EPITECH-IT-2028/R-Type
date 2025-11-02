@@ -1,6 +1,8 @@
 #pragma once
 
 #include <raylib.h>
+#include <sys/stat.h>
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -8,6 +10,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include "Challenge.hpp"
 #include "ClientNetworkManager.hpp"
@@ -410,6 +413,14 @@ namespace client {
 
       void getScoreboard();
 
+      uint32_t getPingSeq() const {
+        return _pingSeq;
+      }
+      
+      void updatePingSeq() {
+        _pingSeq++;
+      }
+
     private:
       void resendPackets();
 
@@ -419,7 +430,6 @@ namespace client {
 
       void resendUnacknowledgedPackets();
 
-    private:
       std::array<char, 2048> _recv_buffer;
       std::atomic<std::uint32_t> _sequence_number;
       std::atomic<bool> _running;
@@ -450,6 +460,7 @@ namespace client {
 
       void createBackgroundEntities();
 
+      uint32_t _pingSeq = 0;
       network::PacketLossMonitor _packetLossMonitor;
       mutable std::mutex _packetLossMutex;
 

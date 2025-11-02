@@ -965,13 +965,14 @@ struct PacketBuilder {
      * @return PingPacket Packet with header.type set to Ping, header.size set
      * to the packet size, and timestamp set to the provided value.
      */
-    static PingPacket makePing(std::uint32_t timestamp) {
+    static PingPacket makePing(std::uint32_t timestamp, std::uint32_t sequence_number) {
       PingPacket packet{};
       packet.header.type = PacketType::Ping;
       packet.timestamp = timestamp;
+      packet.sequence_number = sequence_number;
 
       if (!setPayloadSizeFromSerialization(packet, "makePing"))
-        return {};;
+        return {};
       return packet;
     }
 
@@ -1000,11 +1001,12 @@ struct PacketBuilder {
      * @return PongPacket Packet with header.type set to Pong, header.size set
      * to the packet size, and timestamp set to the provided value.
      */
-    static PongPacket makePong(std::uint32_t timestamp) {
+    static PongPacket makePong(std::uint32_t timestamp, std::uint32_t sequence_number) {
       PongPacket packet{};
       packet.header.type = PacketType::Pong;
       packet.timestamp = timestamp;
-      
+      packet.sequence_number = sequence_number;
+
       if (!setPayloadSizeFromSerialization(packet, "makePong"))
         return {};
       return packet;

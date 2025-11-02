@@ -1125,8 +1125,8 @@ int packet::ScoreboardRequestHandler::handlePacket(server::Server &server,
 }
 
 int packet::PingHandler::handlePacket([[maybe_unused]] server::Server &server,
-                                    server::Client &client,
-                                    const char *data, std::size_t size) {
+                                      server::Client &client, const char *data,
+                                      std::size_t size) {
   serialization::Buffer buffer(data, data + size);
 
   auto deserializedPacket =
@@ -1140,7 +1140,8 @@ int packet::PingHandler::handlePacket([[maybe_unused]] server::Server &server,
 
   const PingPacket &packet = deserializedPacket.value();
 
-  auto pongPacket = PacketBuilder::makePong(packet.timestamp);
+  auto pongPacket =
+      PacketBuilder::makePong(packet.timestamp, packet.sequence_number);
 
   auto serializedBuffer =
       serialization::BitserySerializer::serialize(pongPacket);

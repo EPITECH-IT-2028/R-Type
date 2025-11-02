@@ -677,6 +677,7 @@ struct ALIGNED PlayerInputPacket {
 struct ALIGNED PingPacket {
     PacketHeader header;
     std::uint32_t timestamp;
+    std::uint32_t sequence_number;
 };
 
 /**
@@ -687,6 +688,7 @@ struct ALIGNED PingPacket {
 struct ALIGNED PongPacket {
     PacketHeader header;
     std::uint32_t timestamp;
+    std::uint32_t sequence_number;
 };
 
 /**
