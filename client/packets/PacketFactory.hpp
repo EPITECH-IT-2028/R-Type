@@ -40,6 +40,12 @@ namespace packet {
                []() { return std::make_unique<EnemyMoveHandler>(); }},
               {PacketType::EnemyDeath,
                []() { return std::make_unique<EnemyDeathHandler>(); }},
+              {PacketType::GameStart,
+               []() { return std::make_unique<GameStartHandler>(); }},
+              {PacketType::PlayerShoot,
+               []() { return std::make_unique<PlayerShootHandler>(); }},
+              {PacketType::Ack,
+               []() { return std::make_unique<AckPacketHandler>(); }},
               {PacketType::JoinRoomResponse,
                []() { return std::make_unique<JoinRoomResponseHandler>(); }},
               {PacketType::MatchmakingResponse,
@@ -49,6 +55,9 @@ namespace packet {
               {PacketType::ChallengeResponse,
                []() { return std::make_unique<ChallengeResponseHandler>(); }},
               {PacketType::CreateRoomResponse,
-               []() { return std::make_unique<CreateRoomResponseHandler>(); }}};
+               []() { return std::make_unique<CreateRoomResponseHandler>(); }},
+              {PacketType::ScoreboardResponse,
+               []() { return std::make_unique<ScoreboardResponseHandler>(); }},
+      };
   };
 }  // namespace packet

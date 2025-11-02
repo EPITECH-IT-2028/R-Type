@@ -99,6 +99,8 @@ int main(int ac, char **av) {
   char passwordInput[64] = "";
   bool waitingForChallenge = false;
 
+  client.getScoreboard();
+
   while (!renderer.shouldClose()) {
     if (IsWindowResized())
       renderer.resizeWindow();

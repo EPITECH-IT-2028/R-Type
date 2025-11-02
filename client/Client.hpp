@@ -14,10 +14,11 @@
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
 #include "Macro.hpp"
-#include "Packet.hpp"
 #include "PacketBuilder.hpp"
 #include "PacketLossMonitor.hpp"
 #include "PacketSender.hpp"
+#include "PacketUtils.hpp"
+#include "Serializer.hpp"
 
 #define TIMEOUT_MS 100
 
@@ -91,8 +92,26 @@ namespace client {
   class Client {
     public:
       Client(const std::string &host, const std::uint16_t &port);
-      ~Client() = default;
+      /**
+       * @brief Stops the resend thread and joins it during client destruction.
+       *
+       * Signals the resend thread to stop and joins the thread if it is
+       * joinable to ensure the background resend mechanism is terminated before
+       * destruction.
+       */
+      ~Client() {
+        _resendThreadRunning.store(false, std::memory_order_release);
+        if (_resendThread.joinable()) {
+          _resendThread.join();
+        }
+      }
 
+      /**
+       * @brief Reports whether the client has an active network connection.
+       *
+       * @return `true` if the underlying network manager reports a connection,
+       * `false` otherwise.
+       */
       bool isConnected() const {
         return _networkManager.isConnected();
       }
@@ -109,37 +128,40 @@ namespace client {
        * @brief Connects to the server, transitions the client to the connected
        * menu state, and announces the local player.
        *
-       * Initiates a network connection; if the connection is established, sets
-       * the client state to ClientState::IN_CONNECTED_MENU and sends a
-       * PlayerInfo packet containing the current local player name.
+       * If the connection succeeds, sets the client state to
+       * ClientState::IN_CONNECTED_MENU and sends a PlayerInfo packet containing
+       * the current player name and the current outgoing sequence number.
        */
       void connect() {
         _networkManager.connect();
         if (isConnected()) {
           setClientState(ClientState::IN_CONNECTED_MENU);
 
-          PlayerInfoPacket packet =
-              PacketBuilder::makePlayerInfo(getPlayerName());
+          PlayerInfoPacket packet = PacketBuilder::makePlayerInfo(
+              getPlayerName(), _sequence_number.load());
           send(packet);
         }
       }
 
       /**
-       * @brief Disconnects the client from the server and stops the client's
-       * main loop.
+       * @brief Disconnects the client from the server and stops its main and
+       * resend loops.
        *
-       * If the local player ID is valid, a PlayerDisconnect packet for that
-       * player is sent before the network connection is closed. In all cases
-       * the network manager is disconnected and the running flag is cleared.
+       * If a local player ID is assigned, sends a PlayerDisconnect packet using
+       * the current outgoing sequence number before closing the network
+       * connection. In all cases the network manager is disconnected and the
+       * client's running flags are cleared.
        */
       void disconnect() {
+        _resendThreadRunning.store(false, std::memory_order_release);
+
         if (getPlayerId() == static_cast<std::uint32_t>(-1)) {
           _networkManager.disconnect();
           _running.store(false, std::memory_order_release);
           return;
         }
-        PlayerDisconnectPacket packet =
-            PacketBuilder::makePlayerDisconnect(getPlayerId());
+        PlayerDisconnectPacket packet = PacketBuilder::makePlayerDisconnect(
+            getPlayerId(), _sequence_number.load());
         send(packet);
         _networkManager.disconnect();
         _running.store(false, std::memory_order_release);
@@ -147,12 +169,15 @@ namespace client {
 
       template <typename PacketType>
       /**
-       * @brief Sends a packet to the server using the client's network manager.
+       * @brief Transmit a packet to the server and update sequencing and
+       * retransmission bookkeeping.
        *
-       * If the client is not connected, the call returns without sending. On
-       * successful transmission the client's internal packet counter and
-       * outgoing sequence number are incremented. Exceptions thrown during send
-       * are caught and not propagated.
+       * If the client is not connected the function returns without sending. On
+       * successful transmission the internal packet counter and outgoing
+       * sequence number are advanced. If the packet type requires
+       * acknowledgement and carries a sequence number, the serialized packet is
+       * recorded for potential resending. Exceptions thrown during send are
+       * caught and not propagated.
        *
        * @tparam PacketType Type of the packet to send.
        * @param packet Packet to transmit over the network.
@@ -165,9 +190,18 @@ namespace client {
         }
 
         try {
+          auto serializedData = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(packet));
+
           packet::PacketSender::sendPacket(_networkManager, packet);
           ++_packet_count;
-          ++_sequence_number;
+
+          if constexpr (requires { packet.sequence_number; }) {
+            if (shouldAcknowledgePacketType(packet.header.type)) {
+              addUnacknowledgedPacket(packet.sequence_number, serializedData);
+            }
+          }
+          _sequence_number.fetch_add(1, std::memory_order_release);
         } catch (std::exception &e) {
           std::cerr << "Send error: " << e.what() << std::endl;
         }
@@ -249,7 +283,7 @@ namespace client {
       void removeProjectileEntity(std::uint32_t projectileId);
 
       /**
-       * @brief Retrieve the local player's identifier.
+       * @brief Retrieves the local player's identifier.
        *
        * @return std::uint32_t The local player ID; returns `(std::uint32_t)-1`
        * if no player is assigned.
@@ -336,7 +370,7 @@ namespace client {
       }
 
       /**
-       * @brief Retrieve the client's current connection/game state.
+       * @brief Retrieves the client's current connection/game state.
        *
        * @return ClientState The current client state.
        */
@@ -362,9 +396,28 @@ namespace client {
         return _packetLossMonitor.lossRatio();
       }
 
+      /**
+       * @brief Accesses the client's Challenge instance.
+       *
+       * @return Challenge& Reference to the client's Challenge object
+       * (mutable).
+       */
       Challenge &getChallenge() {
         return _challenge;
       }
+
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
+
+      void getScoreboard();
+
+    private:
+      void resendPackets();
+
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+
+      void resendUnacknowledgedPackets();
 
     private:
       std::array<char, 2048> _recv_buffer;
@@ -384,6 +437,12 @@ namespace client {
       std::vector<ChatMessage> _chatMessages;
       mutable std::mutex _chatMutex;
       std::atomic<ClientState> _state{ClientState::DISCONNECTED};
+
+      std::thread _resendThread;
+      mutable std::mutex _unacknowledgedPacketsMutex;
+      std::atomic<bool> _resendThreadRunning{false};
+      std::unordered_map<std::uint32_t, UnacknowledgedPacket>
+          _unacknowledged_packets;
 
       void registerComponent();
       void registerSystem();

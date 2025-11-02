@@ -71,7 +71,19 @@ namespace packet {
                        std::size_t size) override;
   };
 
+  class GameStartHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
   class JoinRoomResponseHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class PlayerShootHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
@@ -89,6 +101,12 @@ namespace packet {
                        std::size_t size) override;
   };
   
+  class AckPacketHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+  
   class ChallengeResponseHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
@@ -96,6 +114,12 @@ namespace packet {
   };
 
   class CreateRoomResponseHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
+  class ScoreboardResponseHandler : public IPacket {
     public:
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;

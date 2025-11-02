@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <limits>
 #include "Macro.hpp"
+#include "PacketUtils.hpp"
+#include "ServerNetworkManager.hpp"
 
 namespace server {
   enum class ClientState {
@@ -45,9 +47,24 @@ namespace server {
       std::uint32_t _room_id = NO_ROOM;
       std::string _player_name = "";
       std::string _ip_address = "";
+      int _database_player_id = INVALID_ID;
+      int _score = 0;
       ClientState _state = ClientState::CONNECTED_MENU;
       std::chrono::steady_clock::time_point _last_heartbeat;
       std::chrono::steady_clock::time_point _last_position_update;
       std::uint32_t _entity_id = std::numeric_limits<std::uint32_t>::max();
+
+      mutable std::mutex _unacknowledgedPacketsMutex;
+
+      std::unordered_map<std::uint32_t, UnacknowledgedPacket>
+          _unacknowledged_packets;
+
+      void resendUnacknowledgedPackets(
+          network::ServerNetworkManager &networkManager);
+
+      void addUnacknowledgedPacket(
+          std::uint32_t sequence_number,
+          std::shared_ptr<std::vector<uint8_t>> packetData);
+      void removeAcknowledgedPacket(std::uint32_t sequence_number);
   };
 }  // namespace server

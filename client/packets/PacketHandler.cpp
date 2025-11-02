@@ -223,6 +223,8 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       if (ecsManager.hasComponent<ecs::PacketLossComponent>(playerEntity)) {
         auto &packetLossComp =
             ecsManager.getComponent<ecs::PacketLossComponent>(playerEntity);
+                TraceLog(LOG_INFO, "[PLAYER MOVE] Packet loss for player %u: %f.   %d",
+                 packet.player_id, client.calculatePacketLoss(packet.sequence_number), packet.sequence_number);
         packetLossComp.packetLoss = client.calculatePacketLoss(packet.sequence_number);
       }
     }

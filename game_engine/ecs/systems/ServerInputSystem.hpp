@@ -1,12 +1,14 @@
 #pragma once
 
 #include <chrono>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 #include "ECSManager.hpp"
 #include "Packet.hpp"
 #include "Queue.hpp"
 #include "System.hpp"
+#include <mutex>
 
 namespace ecs {
   struct PlayerInput {
@@ -35,7 +37,9 @@ namespace ecs {
       ECSManager *_ecsManagerPtr = nullptr;
       queue::EventQueue *_eventQueue = nullptr;
       std::unordered_map<Entity, std::vector<PlayerInput>> _pendingInputs;
+      mutable std::mutex _inputMutex;
       std::unordered_map<Entity, std::chrono::steady_clock::time_point>
           _lastInputTime;
+      std::mutex _pendingInputsMutex;
   };
 }  // namespace ecs

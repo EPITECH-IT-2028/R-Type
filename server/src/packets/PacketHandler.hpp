@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstdint>
 #include "APacket.hpp"
 #include "Packet.hpp"
 
@@ -13,11 +14,13 @@ namespace packet {
   class ResponseHelper {
     public:
       static void sendJoinRoomResponse(server::Server &server,
-                                       std::uint32_t player_id,
+                                       server::Client &client,
+                                       std::uint32_t sequence_number,
                                        RoomError error);
 
       static void sendMatchmakingResponse(server::Server &server,
-                                          std::uint32_t player_id,
+                                          server::Client &client,
+                                          std::uint32_t sequence_number,
                                           RoomError error);
   };
 
@@ -99,7 +102,19 @@ namespace packet {
                        const char *data, std::size_t size) override;
   };
   
+  class AckPacketHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
+  
   class RequestChallengeHandler : public APacket {
+    public:
+      int handlePacket(server::Server &server, server::Client &client,
+                       const char *data, std::size_t size) override;
+  };
+
+  class ScoreboardRequestHandler : public APacket {
     public:
       int handlePacket(server::Server &server, server::Client &client,
                        const char *data, std::size_t size) override;

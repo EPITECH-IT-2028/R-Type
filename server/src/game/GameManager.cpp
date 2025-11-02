@@ -160,10 +160,20 @@ bool game::GameManager::joinAnyRoom(std::shared_ptr<server::Client> client) {
   return false;
 }
 
+/**
+ * @brief Removes a client from its current room and cleans up the room if it becomes empty.
+ *
+ * If the client is not assigned to any room, the function returns immediately.
+ * When the client is in a room, the client is removed from that room; if the room becomes empty
+ * as a result, the room is removed from the manager and stopped after releasing the manager lock.
+ *
+ * @param client Shared pointer to the client to remove from its room. The client's room assignment
+ *               is not modified by this method.
+ */
 void game::GameManager::leaveRoom(std::shared_ptr<server::Client> client) {
   std::shared_ptr<GameRoom> roomToStop;
   {
-    std::scoped_lock lock(_roomMutex);
+    std::lock_guard<std::mutex> lock(_roomMutex);
     if (client->_room_id == NO_ROOM)
       return;
 
@@ -187,9 +197,13 @@ void game::GameManager::leaveRoom(std::shared_ptr<server::Client> client) {
     std::cout << "[ROOM] Room " << roomToStop->getRoomId()
               << " destroyed and cleaned." << std::endl;
   }
-  client->_room_id = NO_ROOM;
 }
 
+/**
+ * @brief Returns a snapshot of all managed game rooms.
+ *
+ * @return std::vector<std::shared_ptr<game::GameRoom>> Vector containing shared pointers to every managed GameRoom in the manager.
+ */
 std::vector<std::shared_ptr<game::GameRoom>> game::GameManager::getAllRooms()
     const {
   std::scoped_lock lock(_roomMutex);
