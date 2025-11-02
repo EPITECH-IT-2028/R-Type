@@ -6,7 +6,9 @@
 #include "Packet.hpp"
 #include "PositionComponent.hpp"
 #include "RaylibUtils.hpp"
+#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
+#include "VelocityComponent.hpp"
 #include "raylib.h"
 
 namespace ecs {
@@ -97,6 +99,28 @@ namespace ecs {
       if (inputs != 0 && _client != nullptr)
         _client->sendInput(inputs);
 
+      if (_ecsManager.hasComponent<VelocityComponent>(entity) &&
+          _ecsManager.hasComponent<SpeedComponent>(entity) && clientState == client::ClientState::IN_GAME) {
+        auto &velocity = _ecsManager.getComponent<VelocityComponent>(entity);
+        const auto &speed = _ecsManager.getComponent<SpeedComponent>(entity);
+
+        float deltaX = 0.0f;
+        float deltaY = 0.0f;
+        if (upPressed) deltaY -= 1.0f;
+        if (downPressed) deltaY += 1.0f;
+        if (leftPressed) deltaX -= 1.0f;
+        if (rightPressed) deltaX += 1.0f;
+
+        float length = std::sqrt(deltaX * deltaX + deltaY * deltaY);
+        if (length > 0.0f) {
+          velocity.vx = (deltaX / length) * speed.speed;
+          velocity.vy = (deltaY / length) * speed.speed;
+        } else {
+          velocity.vx = 0.0f;
+          velocity.vy = 0.0f;
+        }
+      }
+
       if (upPressed && !downPressed) {
         if (animation.frameTime < 0 || !animation.isPlaying) {
           animation.currentFrame = animation.neutralFrame;
@@ -114,7 +138,7 @@ namespace ecs {
         animation.currentFrame = animation.neutralFrame;
         animation.frameTime = std::abs(animation.frameTime);
       }
-
+      
       if (IsKeyPressed(KEY_SPACE) && _client != nullptr) {
         auto &position = _ecsManager.getComponent<PositionComponent>(entity);
         _client->sendShoot(position.x, position.y);

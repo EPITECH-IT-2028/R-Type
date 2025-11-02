@@ -11,6 +11,7 @@
 #include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "InputSystem.hpp"
+#include "InterpolationSystem.hpp"
 #include "LocalPlayerTagComponent.hpp"
 #include "Macro.hpp"
 #include "MovementSystem.hpp"
@@ -20,13 +21,16 @@
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSystem.hpp"
+#include "RemoteEntityTagComponent.hpp"
 #include "RenderComponent.hpp"
 #include "RenderManager.hpp"
 #include "RenderSystem.hpp"
 #include "ScaleComponent.hpp"
+#include "SpeedComponent.hpp"
 #include "SpriteAnimationComponent.hpp"
 #include "SpriteAnimationSystem.hpp"
 #include "SpriteComponent.hpp"
+#include "StateHistoryComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "PacketLossComponent.hpp"
 #include "PingComponent.hpp"
@@ -95,6 +99,7 @@ namespace client {
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
     _ecsManager.registerComponent<ecs::VelocityComponent>();
+    _ecsManager.registerComponent<ecs::SpeedComponent>();
     _ecsManager.registerComponent<ecs::RenderComponent>();
     _ecsManager.registerComponent<ecs::SpriteComponent>();
     _ecsManager.registerComponent<ecs::ScaleComponent>();
@@ -104,6 +109,8 @@ namespace client {
     _ecsManager.registerComponent<ecs::SpriteAnimationComponent>();
     _ecsManager.registerComponent<ecs::ProjectileComponent>();
     _ecsManager.registerComponent<ecs::EnemyComponent>();
+    _ecsManager.registerComponent<ecs::StateHistoryComponent>();
+    _ecsManager.registerComponent<ecs::RemoteEntityTagComponent>();
     _ecsManager.registerComponent<ecs::ChatComponent>();
     _ecsManager.registerComponent<ecs::PingComponent>();
     _ecsManager.registerComponent<ecs::PacketLossComponent>();
@@ -113,8 +120,9 @@ namespace client {
   /**
    * @brief Registers core ECS systems with the ECS manager.
    *
-   * Registers the background, movement, input, sprite animation, projectile,
-   * and render systems so they are created and managed by the ECS manager.
+   * Registers the background, movement, input, sprite animation, interpolation,
+   * projectile, and render systems so they are created and managed by the ECS
+   * manager.
    */
   void Client::registerSystem() {
     _ecsManager.registerSystem<ecs::BackgroundSystem>();
@@ -124,6 +132,7 @@ namespace client {
     _ecsManager.registerSystem<ecs::ProjectileSystem>();
     _ecsManager.registerSystem<ecs::RenderSystem>();
     _ecsManager.registerSystem<ecs::MetricsSystem>();
+    _ecsManager.registerSystem<ecs::InterpolationSystem>();
   }
 
   /**
@@ -138,6 +147,8 @@ namespace client {
    * - InputSystem: LocalPlayerTagComponent, SpriteAnimationComponent,
    * PositionComponent
    * - SpriteAnimationSystem: SpriteComponent, SpriteAnimationComponent
+   * - InterpolationSystem: PositionComponent, StateHistoryComponent,
+   * RemoteEntityTagComponent
    * - ProjectileSystem: PositionComponent, VelocityComponent,
    * ProjectileComponent
    */
@@ -169,6 +180,8 @@ namespace client {
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::VelocityComponent>());
+      signature.set(_ecsManager.getComponentType<ecs::SpeedComponent>());
       _ecsManager.setSystemSignature<ecs::InputSystem>(signature);
     }
     {
@@ -177,6 +190,15 @@ namespace client {
       signature.set(
           _ecsManager.getComponentType<ecs::SpriteAnimationComponent>());
       _ecsManager.setSystemSignature<ecs::SpriteAnimationSystem>(signature);
+    }
+    {
+      Signature signature;
+      signature.set(_ecsManager.getComponentType<ecs::PositionComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::StateHistoryComponent>());
+      signature.set(
+          _ecsManager.getComponentType<ecs::RemoteEntityTagComponent>());
+      _ecsManager.setSystemSignature<ecs::InterpolationSystem>(signature);
     }
     {
       Signature signature;
@@ -276,6 +298,8 @@ namespace client {
     playerComp.is_alive = true;
     playerComp.connected = true;
     _ecsManager.addComponent<ecs::PlayerComponent>(player, playerComp);
+    _ecsManager.addComponent<ecs::VelocityComponent>(player, {0.0f, 0.0f});
+    _ecsManager.addComponent<ecs::SpeedComponent>(player, {packet.speed});
 
     ecs::SpriteAnimationComponent anim;
     anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
@@ -296,10 +320,13 @@ namespace client {
     if (isLocalPlayer) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      TraceLog(LOG_INFO, "[CREATE PLAYER] Set local player ID to %u (%s)",
-               _player_id, _playerName.c_str());
-    } else if (packet.player_id == _player_id) {
-      _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
+      _playerName.assign(packet.player_name);
+    } else {
+      _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(player, {});
+      ecs::StateHistoryComponent stateHistory;
+      ecs::EntityState initialState{packet.x, packet.y, GetTime()};
+      stateHistory.states.push_back(initialState);
+      _ecsManager.addComponent<ecs::StateHistoryComponent>(player, stateHistory);
     }
     _ecsManager.addComponent<ecs::PingComponent>(player, {});
     _ecsManager.addComponent<ecs::PacketLossComponent>(player, {});
@@ -312,9 +339,10 @@ namespace client {
    * @brief Creates and registers an enemy entity from spawn packet data.
    *
    * Creates an ECS entity populated with position, velocity, render, sprite,
-   * scale, and animation components, then records the mapping from the packet's
-   * enemy_id to the created entity. If an entity with the same enemy_id already
-   * exists, logs a warning and returns without creating a new entity.
+   * scale, animation, and interpolation components, then records the mapping
+   * from the packet's enemy_id to the created entity. If an entity with the
+   * same enemy_id already exists, logs a warning and returns without creating a
+   * new entity. Enemies are tagged as remote entities for interpolation.
    *
    * @param packet Spawn packet containing `enemy_id` and initial position `x`,
    * `y`.
@@ -348,6 +376,12 @@ namespace client {
     anim.loop = false;
     anim.neutralFrame = static_cast<int>(EnemySpriteFrameIndex::NEUTRAL);
     _ecsManager.addComponent<ecs::SpriteAnimationComponent>(enemy, anim);
+
+    _ecsManager.addComponent<ecs::RemoteEntityTagComponent>(enemy, {});
+    ecs::StateHistoryComponent stateHistory;
+    ecs::EntityState initialState{packet.x, packet.y, GetTime()};
+    stateHistory.states.push_back(initialState);
+    _ecsManager.addComponent<ecs::StateHistoryComponent>(enemy, stateHistory);
 
     _enemyEntities[packet.enemy_id] = enemy;
   }

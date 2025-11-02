@@ -21,6 +21,7 @@ set(ECS_SOURCES
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/SpriteAnimationSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/ProjectileSystem.cpp
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/MetricsSystem.cpp
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/InterpolationSystem.cpp
 )
 
 set(CORE_SOURCES
