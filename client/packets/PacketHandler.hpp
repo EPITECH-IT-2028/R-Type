@@ -112,4 +112,11 @@ namespace packet {
       int handlePacket(client::Client &client, const char *data,
                        std::size_t size) override;
   };
+
+  class ScoreboardResponseHandler : public IPacket {
+    public:
+      int handlePacket(client::Client &client, const char *data,
+                       std::size_t size) override;
+  };
+
 }  // namespace packet

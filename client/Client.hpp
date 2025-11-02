@@ -111,7 +111,8 @@ namespace client {
       /**
        * @brief Reports whether the client has an active network connection.
        *
-       * @return `true` if the underlying network manager reports a connection, `false` otherwise.
+       * @return `true` if the underlying network manager reports a connection,
+       * `false` otherwise.
        */
       bool isConnected() const {
         return _networkManager.isConnected();
@@ -126,10 +127,12 @@ namespace client {
       }
 
       /**
-       * @brief Connects to the server, transitions the client to the connected menu state, and announces the local player.
+       * @brief Connects to the server, transitions the client to the connected
+       * menu state, and announces the local player.
        *
-       * If the connection succeeds, sets the client state to ClientState::IN_CONNECTED_MENU and sends a PlayerInfo packet
-       * containing the current player name and the current outgoing sequence number.
+       * If the connection succeeds, sets the client state to
+       * ClientState::IN_CONNECTED_MENU and sends a PlayerInfo packet containing
+       * the current player name and the current outgoing sequence number.
        */
       void connect() {
         _networkManager.connect();
@@ -143,11 +146,13 @@ namespace client {
       }
 
       /**
-       * @brief Disconnects the client from the server and stops its main and resend loops.
+       * @brief Disconnects the client from the server and stops its main and
+       * resend loops.
        *
-       * If a local player ID is assigned, sends a PlayerDisconnect packet using the current
-       * outgoing sequence number before closing the network connection. In all cases the
-       * network manager is disconnected and the client's running flags are cleared.
+       * If a local player ID is assigned, sends a PlayerDisconnect packet using
+       * the current outgoing sequence number before closing the network
+       * connection. In all cases the network manager is disconnected and the
+       * client's running flags are cleared.
        */
       void disconnect() {
         _resendThreadRunning.store(false, std::memory_order_release);
@@ -166,13 +171,15 @@ namespace client {
 
       template <typename PacketType>
       /**
-       * @brief Transmit a packet to the server and update sequencing and retransmission bookkeeping.
+       * @brief Transmit a packet to the server and update sequencing and
+       * retransmission bookkeeping.
        *
        * If the client is not connected the function returns without sending. On
-       * successful transmission the internal packet counter and outgoing sequence
-       * number are advanced. If the packet type requires acknowledgement and carries
-       * a sequence number, the serialized packet is recorded for potential resending.
-       * Exceptions thrown during send are caught and not propagated.
+       * successful transmission the internal packet counter and outgoing
+       * sequence number are advanced. If the packet type requires
+       * acknowledgement and carries a sequence number, the serialized packet is
+       * recorded for potential resending. Exceptions thrown during send are
+       * caught and not propagated.
        *
        * @tparam PacketType Type of the packet to send.
        * @param packet Packet to transmit over the network.
@@ -387,13 +394,17 @@ namespace client {
       /**
        * @brief Accesses the client's Challenge instance.
        *
-       * @return Challenge& Reference to the client's Challenge object (mutable).
+       * @return Challenge& Reference to the client's Challenge object
+       * (mutable).
        */
       Challenge &getChallenge() {
         return _challenge;
       }
 
       void removeAcknowledgedPacket(std::uint32_t sequence_number);
+
+      void getScoreboard();
+
     private:
       void resendPackets();
 

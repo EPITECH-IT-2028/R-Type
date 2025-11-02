@@ -1,6 +1,5 @@
 #include "Client.hpp"
 #include <chrono>
-#include <iostream>
 #include <unordered_map>
 #include <vector>
 #include "Macro.hpp"
@@ -46,13 +45,16 @@ void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
 }
 
 /**
- * @brief Retransmits unacknowledged packets to this client and drops those that exceeded retry limits.
+ * @brief Retransmits unacknowledged packets to this client and drops those that
+ * exceeded retry limits.
  *
- * For each stored unacknowledged packet whose last send time is older than MIN_RESEND_PACKET_DELAY,
- * increments its resend count and sends it to the client; packets whose resend count is greater than
- * or equal to MAX_RESEND_ATTEMPTS are removed and not retransmitted.
+ * For each stored unacknowledged packet whose last send time is older than
+ * MIN_RESEND_PACKET_DELAY, increments its resend count and sends it to the
+ * client; packets whose resend count is greater than or equal to
+ * MAX_RESEND_ATTEMPTS are removed and not retransmitted.
  *
- * @param networkManager Server network manager used to send packets to the client.
+ * @param networkManager Server network manager used to send packets to the
+ * client.
  */
 void server::Client::resendUnacknowledgedPackets(
     network::ServerNetworkManager &networkManager) {

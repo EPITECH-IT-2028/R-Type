@@ -31,9 +31,14 @@
 
 namespace client {
   /**
-   * @brief Constructs a Client configured to connect to the given host and port and starts the background resend thread.
+   * @brief Constructs a Client configured to connect to the given host and port
+   * and starts the background resend thread.
    *
-   * Initializes the network manager with the provided host and port, sets the default player name to "Unknown", initializes sequence and packet counters to zero, obtains the ECS manager singleton, sets the client's initial state to DISCONNECTED, starts the resend thread, and sets the running flag to false.
+   * Initializes the network manager with the provided host and port, sets the
+   * default player name to "Unknown", initializes sequence and packet counters
+   * to zero, obtains the ECS manager singleton, sets the client's initial state
+   * to DISCONNECTED, starts the resend thread, and sets the running flag to
+   * false.
    *
    * @param host Server hostname or IP address.
    * @param port Server port number.
@@ -215,26 +220,30 @@ namespace client {
   }
 
   /**
-   * @brief Create an ECS player entity from a NewPlayerPacket and register it with the client.
+   * @brief Create an ECS player entity from a NewPlayerPacket and register it
+   * with the client.
    *
-   * Creates a new player entity, attaches the player's components, records the mapping
-   * from player ID to entity and player name, prevents duplicate creation for the same
-   * player ID, and assigns the local player tag and local player ID when appropriate.
+   * Creates a new player entity, attaches the player's components, records the
+   * mapping from player ID to entity and player name, prevents duplicate
+   * creation for the same player ID, and assigns the local player tag and local
+   * player ID when appropriate.
    *
-   * @param packet Packet containing the player's ID, null-terminated name, and initial position (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and
+   * initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     std::unique_lock<std::shared_mutex> lock(_playerStateMutex);
-    
+
     if (_playerEntities.find(packet.player_id) != _playerEntities.end()) {
       TraceLog(LOG_WARNING,
-               "[DUPLICATE PREVENTION] Player entity already exists for player_id: %u",
+               "[DUPLICATE PREVENTION] Player entity already exists for "
+               "player_id: %u",
                packet.player_id);
       return;
     }
 
     lock.unlock();
-    
+
     auto player = _ecsManager.createEntity();
     _ecsManager.addComponent<ecs::PositionComponent>(player,
                                                      {packet.x, packet.y});
@@ -248,14 +257,14 @@ namespace client {
     _ecsManager.addComponent<ecs::ScaleComponent>(
         player, {PlayerSpriteConfig::SCALE, PlayerSpriteConfig::SCALE});
     _ecsManager.addComponent<ecs::PlayerTagComponent>(player, {});
-    
+
     ecs::PlayerComponent playerComp;
     playerComp.player_id = packet.player_id;
     playerComp.name = packet.player_name;
     playerComp.is_alive = true;
     playerComp.connected = true;
     _ecsManager.addComponent<ecs::PlayerComponent>(player, playerComp);
-    
+
     ecs::SpriteAnimationComponent anim;
     anim.totalColumns = PlayerSpriteConfig::TOTAL_COLUMNS;
     anim.totalRows = PlayerSpriteConfig::TOTAL_ROWS;
@@ -269,17 +278,18 @@ namespace client {
 
     lock.lock();
 
-    bool isLocalPlayer = (_player_id == INVALID_ID && packet.player_name == _playerName);
-    
+    bool isLocalPlayer =
+        (_player_id == INVALID_ID && packet.player_name == _playerName);
+
     if (isLocalPlayer) {
       _player_id = packet.player_id;
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
-      TraceLog(LOG_INFO, "[CREATE PLAYER] Set local player ID to %u (%s)", 
+      TraceLog(LOG_INFO, "[CREATE PLAYER] Set local player ID to %u (%s)",
                _player_id, _playerName.c_str());
     } else if (packet.player_id == _player_id) {
       _ecsManager.addComponent<ecs::LocalPlayerTagComponent>(player, {});
     }
-    
+
     _playerEntities[packet.player_id] = player;
     _playerNames[packet.player_id] = packet.player_name;
   }
@@ -409,9 +419,11 @@ namespace client {
   }
 
   /**
-   * @brief Send a player shoot action to the server at the specified world coordinates.
+   * @brief Send a player shoot action to the server at the specified world
+   * coordinates.
    *
-   * If the local player ID is not assigned, the function returns without sending.
+   * If the local player ID is not assigned, the function returns without
+   * sending.
    *
    * @param x World-space X coordinate where the player is shooting.
    * @param y World-space Y coordinate where the player is shooting.
@@ -475,12 +487,15 @@ namespace client {
   /**
    * @brief Resends unacknowledged packets that are eligible for retransmission.
    *
-   * Scans the client's unacknowledged-packet table and resends entries whose last-sent time is older than the minimum resend interval.
-   * Each resent entry has its `resend_count` incremented and `last_sent` updated. Entries that reach `MAX_RESEND_ATTEMPTS` are removed and will not be retried.
+   * Scans the client's unacknowledged-packet table and resends entries whose
+   * last-sent time is older than the minimum resend interval. Each resent entry
+   * has its `resend_count` incremented and `last_sent` updated. Entries that
+   * reach `MAX_RESEND_ATTEMPTS` are removed and will not be retried.
    *
    * @details
    * - Resent packets are transmitted via the client's network manager.
-   * - Constants used: `MIN_RESEND_PACKET_DELAY` (minimum interval) and `MAX_RESEND_ATTEMPTS` (maximum attempts).
+   * - Constants used: `MIN_RESEND_PACKET_DELAY` (minimum interval) and
+   * `MAX_RESEND_ATTEMPTS` (maximum attempts).
    */
   void Client::resendUnacknowledgedPackets() {
     const auto MIN_RESEND_INTERVAL =
@@ -536,7 +551,8 @@ namespace client {
    */
   void Client::sendMatchmakingRequest() {
     try {
-      MatchmakingRequestPacket packet = PacketBuilder::makeMatchmakingRequest(_sequence_number.load());
+      MatchmakingRequestPacket packet =
+          PacketBuilder::makeMatchmakingRequest(_sequence_number.load());
       send(packet);
       TraceLog(LOG_INFO, "[MATCHMAKING] Sent matchmaking request");
     } catch (const std::exception &e) {
@@ -545,11 +561,13 @@ namespace client {
   }
 
   /**
-   * @brief Initiates a challenge request for the specified room and sends the corresponding packet to the server.
+   * @brief Initiates a challenge request for the specified room and sends the
+   * corresponding packet to the server.
    *
-   * Marks the internal challenge object as waiting for a challenge, constructs a RequestChallengePacket
-   * using the current outgoing sequence number, and sends it. If an exception occurs while building
-   * or sending the packet, the waiting flag is cleared.
+   * Marks the internal challenge object as waiting for a challenge, constructs
+   * a RequestChallengePacket using the current outgoing sequence number, and
+   * sends it. If an exception occurs while building or sending the packet, the
+   * waiting flag is cleared.
    *
    * @param room_id ID of the room for which to request a challenge.
    */
@@ -570,7 +588,8 @@ namespace client {
   }
 
   /**
-   * @brief Sends a request to join a room on the server using the provided credentials.
+   * @brief Sends a request to join a room on the server using the provided
+   * credentials.
    *
    * The provided plaintext password is hashed with SHA-256 before being sent.
    * If a challenge for the same room has been received, the challenge string is
@@ -592,9 +611,8 @@ namespace client {
         password_hash = crypto::Crypto::sha256(generateString);
       }
 
-      JoinRoomPacket packet =
-          PacketBuilder::makeJoinRoom(room_id, password_hash, 
-                                      _sequence_number.load());
+      JoinRoomPacket packet = PacketBuilder::makeJoinRoom(
+          room_id, password_hash, _sequence_number.load());
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[JOIN ROOM] Exception: %s", e.what());
@@ -604,20 +622,21 @@ namespace client {
   /**
    * @brief Requests creation of a game room on the server.
    *
-   * Hashes the provided plaintext password with SHA-256, builds a CreateRoom packet
-   * (max players fixed to 4) using the client's current outgoing sequence number,
-   * and sends it to the server. Exceptions during packet construction or sending
-   * are caught and logged.
+   * Hashes the provided plaintext password with SHA-256, builds a CreateRoom
+   * packet (max players fixed to 4) using the client's current outgoing
+   * sequence number, and sends it to the server. Exceptions during packet
+   * construction or sending are caught and logged.
    *
    * @param room_name Name of the room to create.
-   * @param password Plaintext password for the room; will be hashed with SHA-256 before sending.
+   * @param password Plaintext password for the room; will be hashed with
+   * SHA-256 before sending.
    */
   void Client::createRoom(const std::string &room_name,
                           const std::string &password) {
     try {
       auto pwd_hash = crypto::Crypto::sha256(password);
-      CreateRoomPacket packet =
-          PacketBuilder::makeCreateRoom(room_name, 4, _sequence_number.load(), pwd_hash);
+      CreateRoomPacket packet = PacketBuilder::makeCreateRoom(
+          room_name, 4, _sequence_number.load(), pwd_hash);
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());
@@ -663,5 +682,14 @@ namespace client {
     _chatMessages.push_back({author, message, color});
     if (_chatMessages.size() > CHAT_MAX_MESSAGES)
       _chatMessages.erase(_chatMessages.begin());
+  }
+
+  void Client::getScoreboard() {
+    try {
+      ScoreboardRequestPacket packet = PacketBuilder::makeScoreboardRequest();
+      send(packet);
+    } catch (const std::exception &e) {
+      TraceLog(LOG_ERROR, "[SCOREBOARD REQUEST] Exception: %s", e.what());
+    }
   }
 }  // namespace client

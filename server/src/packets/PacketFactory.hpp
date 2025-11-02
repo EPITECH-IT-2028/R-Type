@@ -44,7 +44,9 @@ namespace packet {
               {PacketType::Ack,
                []() { return std::make_unique<AckPacketHandler>(); }},
               {PacketType::RequestChallenge,
-               []() { return std::make_unique<RequestChallengeHandler>(); }}
+               []() { return std::make_unique<RequestChallengeHandler>(); }},
+              {PacketType::ScoreboardRequest,
+               []() { return std::make_unique<ScoreboardRequestHandler>(); }},
       };
   };
 

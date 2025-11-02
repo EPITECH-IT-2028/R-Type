@@ -53,6 +53,9 @@ namespace packet {
               {PacketType::ChallengeResponse,
                []() { return std::make_unique<ChallengeResponseHandler>(); }},
               {PacketType::CreateRoomResponse,
-               []() { return std::make_unique<CreateRoomResponseHandler>(); }}};
+               []() { return std::make_unique<CreateRoomResponseHandler>(); }},
+              {PacketType::ScoreboardResponse,
+               []() { return std::make_unique<ScoreboardResponseHandler>(); }},
+      };
   };
 }  // namespace packet
