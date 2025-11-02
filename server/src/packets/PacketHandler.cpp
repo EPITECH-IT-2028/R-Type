@@ -23,9 +23,10 @@
 void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
                                                   server::Client &client,
                                                   RoomError error) {
-  auto &game = server.getGameManager().getRoom(client._room_id)->getGame();
+  auto room = server.getGameManager().getRoom(client._room_id);
+
   auto response = PacketBuilder::makeJoinRoomResponse(
-      error, game.fetchAndIncrementSequenceNumber());
+      error, room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber() : 0);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
   if (serializedBuffer.empty()) {
     std::cerr << "[ERROR] Failed to serialize JoinRoomResponse for client "
@@ -57,9 +58,10 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
 void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
                                                      server::Client &client,
                                                      RoomError error) {
-  auto &game = server.getGameManager().getRoom(client._room_id)->getGame();
+  auto room = server.getGameManager().getRoom(client._room_id);
+
   auto response = PacketBuilder::makeMatchmakingResponse(
-      error, game.fetchAndIncrementSequenceNumber());
+      error, room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber() : 0);
   auto serializedBuffer = serialization::BitserySerializer::serialize(response);
   if (serializedBuffer.empty()) {
     std::cerr << "[ERROR] Failed to serialize MatchmakingResponse for client "

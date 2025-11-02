@@ -103,7 +103,6 @@ void ServerNetworkManager::send(
 void ServerNetworkManager::checkSignals() {
   _signals.async_wait([this](const asio::error_code &error, int signal_number) {
     if (!error && _isRunning) {
-      _isRunning = false;
       this->stop();
       _io_context.stop();
     }
@@ -145,6 +144,8 @@ void ServerNetworkManager::stop() {
   if (_stopCallback) {
     _stopCallback();
   }
+
+  _isRunning = false;
 
   std::cout << "[CONSOLE] Network manager stopped completely." << std::endl;
 }
