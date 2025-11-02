@@ -420,6 +420,10 @@ namespace client {
       void updatePingSeq() {
         _pingSeq++;
       }
+      
+      ecs::ECSManager &getEcsManager() {
+        return _ecsManager;
+      };
 
     private:
       void resendPackets();

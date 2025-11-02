@@ -2,12 +2,16 @@
 #include <cstring>
 #include "Client.hpp"
 #include "ECSManager.hpp"
+#include "EnemyComponent.hpp"
 #include "EntityManager.hpp"
 #include "LocalPlayerTagComponent.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketLossComponent.hpp"
 #include "PingComponent.hpp"
+#include "PacketBuilder.hpp"
+#include "PacketUtils.hpp"
+#include "PlayerComponent.hpp"
 #include "PositionComponent.hpp"
 #include "ProjectileComponent.hpp"
 #include "ProjectileSpriteConfig.hpp"
@@ -244,7 +248,6 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
     }
 
     bool isLocalPlayer = (client.getPlayerId() == packet.player_id);
-
     if (isLocalPlayer) {
       auto &position =
           ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
@@ -254,6 +257,7 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       if (ecsManager.hasComponent<ecs::StateHistoryComponent>(playerEntity)) {
         auto &stateHistory =
             ecsManager.getComponent<ecs::StateHistoryComponent>(playerEntity);
+        std::lock_guard<std::mutex> lock(*stateHistory.mutex);
 
         double currentTime = GetTime();
         ecs::EntityState newState{packet.x, packet.y, currentTime};
@@ -334,6 +338,7 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
     if (ecsManager.hasComponent<ecs::StateHistoryComponent>(enemyEntity)) {
       auto &stateHistory =
           ecsManager.getComponent<ecs::StateHistoryComponent>(enemyEntity);
+      std::lock_guard<std::mutex> lock(*stateHistory.mutex);
 
       double currentTime = GetTime();
       ecs::EntityState newState{packet.x, packet.y, currentTime};
@@ -849,6 +854,35 @@ int packet::ScoreboardResponseHandler::handlePacket(client::Client &client,
               << std::endl;
     rank++;
   }
+
+  return OK;
+}
+
+int packet::GameEndHandler::handlePacket(client::Client &client,
+                                         const char *data, std::size_t size) {
+  serialization::Buffer buffer(data, data + size);
+
+  auto deserializedPacket =
+      serialization::BitserySerializer::deserialize<GameEndPacket>(buffer);
+
+  if (!deserializedPacket) {
+    std::cerr << "[ERROR] Failed to deserialize GameEndPacket" << std::endl;
+    return KO;
+  }
+
+  const GameEndPacket &packet = deserializedPacket.value();
+
+  client.setClientState(client::ClientState::IN_CONNECTED_MENU);
+  for (auto entity : client.getEcsManager().getAllEntities()) {
+    if (client.getEcsManager().hasComponent<ecs::PlayerComponent>(entity) ||
+        client.getEcsManager().hasComponent<ecs::EnemyComponent>(entity) ||
+        client.getEcsManager().hasComponent<ecs::LocalPlayerTagComponent>(
+            entity) ||
+        client.getEcsManager().hasComponent<ecs::ProjectileComponent>(entity)) {
+      client.getEcsManager().destroyEntity(entity);
+    }
+  }
+  std::cout << "\nGame Ended" << std::endl;
 
   return OK;
 }

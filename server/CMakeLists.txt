@@ -36,7 +36,7 @@ add_executable(${PROJECT_NAME}
 )
 
 if(WIN32)
-  target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0A00)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0A00)
 endif()
 
 add_compile_options(-W -Wall -Wextra)
@@ -57,4 +57,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/components/
   ${CMAKE_SOURCE_DIR}/game_engine/ecs/systems/
+  ${CMAKE_SOURCE_DIR}/game_engine/ecs/tags/
 )
