@@ -89,21 +89,27 @@ struct PacketBuilder {
 
   public:
     /**
-     * @brief Build a ChatMessagePacket containing a chat message, sender, color, timestamp, and sequence number.
+     * @brief Build a ChatMessagePacket containing a chat message, sender,
+     * color, timestamp, and sequence number.
      *
-     * Constructs a ChatMessagePacket with header.type set to ChatMessage, timestamp set to the current time,
-     * message truncated to at most SERIALIZE_512_BYTES bytes (stored null-terminated), the provided player ID,
-     * RGBA color components, and sequence_number. The packet's header.size is computed from the packet's serialization;
-     * on sizing failure an empty/default packet is returned by the caller.
+     * Constructs a ChatMessagePacket with header.type set to ChatMessage,
+     * timestamp set to the current time, message truncated to at most
+     * SERIALIZE_512_BYTES bytes (stored null-terminated), the provided player
+     * ID, RGBA color components, and sequence_number. The packet's header.size
+     * is computed from the packet's serialization; on sizing failure an
+     * empty/default packet is returned by the caller.
      *
-     * @param msg Chat text to include in the packet; will be truncated to SERIALIZE_512_BYTES bytes if longer.
+     * @param msg Chat text to include in the packet; will be truncated to
+     * SERIALIZE_512_BYTES bytes if longer.
      * @param player_id ID of the player sending the message.
      * @param r Red color component (0–255).
      * @param g Green color component (0–255).
      * @param b Blue color component (0–255).
      * @param a Alpha (opacity) component (0–255).
-     * @param sequence_number Sequence number assigned to the packet for ordering.
-     * @return ChatMessagePacket Packet with populated fields and header.size set to the serialized packet size.
+     * @param sequence_number Sequence number assigned to the packet for
+     * ordering.
+     * @return ChatMessagePacket Packet with populated fields and header.size
+     * set to the serialized packet size.
      */
     static ChatMessagePacket makeChatMessage(const std::string &msg,
                                              std::uint32_t player_id,
@@ -127,14 +133,22 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Builds a ChatMessagePacket with white color (RGBA 255,255,255,255).
+     * @brief Builds a ChatMessagePacket with white color (RGBA
+     * 255,255,255,255).
      *
-     * The packet's message is truncated to SERIALIZE_512_BYTES if necessary and timestamped with the current time.
+     * The packet's message is truncated to SERIALIZE_512_BYTES if necessary and
+     * timestamped with the current time.
      *
-     * @param msg Text to include in the message packet; may be truncated to SERIALIZE_512_BYTES.
+     * @param msg Text to include in the message packet; may be truncated to
+     * SERIALIZE_512_BYTES.
      * @param player_id Identifier of the player who sent the message.
-     * @param sequence_number Sequence number to include in the packet for ordering.
-     * @return ChatMessagePacket Packet with header.type == PacketType::ChatMessage, message set (null-terminated) and truncated as needed, color set to white, player_id and sequence_number populated, and header.size computed from serialization; returns a default-constructed packet on failure.
+     * @param sequence_number Sequence number to include in the packet for
+     * ordering.
+     * @return ChatMessagePacket Packet with header.type ==
+     * PacketType::ChatMessage, message set (null-terminated) and truncated as
+     * needed, color set to white, player_id and sequence_number populated, and
+     * header.size computed from serialization; returns a default-constructed
+     * packet on failure.
      */
     static ChatMessagePacket makeChatMessage(const std::string &msg,
                                              std::uint32_t player_id,
@@ -144,18 +158,23 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Construct a NewPlayerPacket populated with identity, position, motion, health, and sequence metadata.
+     * @brief Construct a NewPlayerPacket populated with identity, position,
+     * motion, health, and sequence metadata.
      *
-     * The provided player_name is truncated to 32 bytes before assignment. The packet's header.size is computed from the serialized payload; if sizing fails an empty/default packet is returned.
+     * The provided player_name is truncated to 32 bytes before assignment. The
+     * packet's header.size is computed from the serialized payload; if sizing
+     * fails an empty/default packet is returned.
      *
      * @param player_id Unique identifier for the player.
      * @param player_name Player display name (will be truncated to 32 bytes).
      * @param x Initial X position.
      * @param y Initial Y position.
      * @param speed Initial movement speed.
-     * @param sequence_number Sequence number assigned to this packet for ordering.
+     * @param sequence_number Sequence number assigned to this packet for
+     * ordering.
      * @param max_health Maximum health for the player (default: 100).
-     * @return NewPlayerPacket A packet with the fields set and header populated, or an empty/default packet if payload sizing failed.
+     * @return NewPlayerPacket A packet with the fields set and header
+     * populated, or an empty/default packet if payload sizing failed.
      */
     static NewPlayerPacket makeNewPlayer(std::uint32_t player_id,
                                          const std::string &player_name,
@@ -204,13 +223,16 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create a PlayerInfo packet containing the player's name and sequence number.
+     * @brief Create a PlayerInfo packet containing the player's name and
+     * sequence number.
      *
      * The provided name is truncated to 32 bytes when stored in the packet.
      *
-     * @param name Player name to store in the packet; truncated to 32 bytes if necessary.
+     * @param name Player name to store in the packet; truncated to 32 bytes if
+     * necessary.
      * @param sequence_number Sequence number assigned to the packet.
-     * @return PlayerInfoPacket Packet with header.type set to PacketType::PlayerInfo and header.size set to the serialized packet size.
+     * @return PlayerInfoPacket Packet with header.type set to
+     * PacketType::PlayerInfo and header.size set to the serialized packet size.
      */
     static PlayerInfoPacket makePlayerInfo(const std::string &name,
                                            std::uint32_t sequence_number) {
@@ -323,7 +345,8 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create an EnemyDeath packet recording an enemy's death and awarded score.
+     * @brief Create an EnemyDeath packet recording an enemy's death and awarded
+     * score.
      *
      * @param enemy_id ID of the enemy that died.
      * @param death_x X coordinate of the death location.
@@ -331,7 +354,10 @@ struct PacketBuilder {
      * @param player_id ID of the player credited with the kill.
      * @param score Score awarded to the player.
      * @param sequence_number Sequence number for ordering this packet.
-     * @return EnemyDeathPacket Packet with `header.type` set to `PacketType::EnemyDeath`, fields populated, and `header.size` set to the computed serialized size on success; returns a default-constructed packet if size computation fails.
+     * @return EnemyDeathPacket Packet with `header.type` set to
+     * `PacketType::EnemyDeath`, fields populated, and `header.size` set to the
+     * computed serialized size on success; returns a default-constructed packet
+     * if size computation fails.
      */
     static EnemyDeathPacket makeEnemyDeath(std::uint32_t enemy_id,
                                            float death_x, float death_y,
@@ -455,7 +481,9 @@ struct PacketBuilder {
      * @param hit_x X coordinate of the hit location.
      * @param hit_y Y coordinate of the hit location.
      * @param target_is_player `1` if the target is a player, `0` otherwise.
-     * @return ProjectileHitPacket Packet with `header.type` set to `ProjectileHit`, hit fields populated, and `header.size` computed from serialization; returns an empty/default packet if sizing fails.
+     * @return ProjectileHitPacket Packet with `header.type` set to
+     * `ProjectileHit`, hit fields populated, and `header.size` computed from
+     * serialization; returns an empty/default packet if sizing fails.
      */
     static ProjectileHitPacket makeProjectileHit(
         std::uint32_t projectile_id, std::uint32_t target_id, float hit_x,
@@ -474,13 +502,16 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create a ProjectileDestroyPacket populated with projectile id, position, and sequence number.
+     * @brief Create a ProjectileDestroyPacket populated with projectile id,
+     * position, and sequence number.
      *
      * @param projectile_id Identifier of the projectile.
      * @param x X coordinate where the projectile was destroyed.
      * @param y Y coordinate where the projectile was destroyed.
      * @param sequence_number Sequence number associated with this packet.
-     * @return ProjectileDestroyPacket The packet with its fields set and `header.type` set to `PacketType::ProjectileDestroy`. The function does not modify `header.size`.
+     * @return ProjectileDestroyPacket The packet with its fields set and
+     * `header.type` set to `PacketType::ProjectileDestroy`. The function does
+     * not modify `header.size`.
      */
     static ProjectileDestroyPacket makeProjectileDestroy(
         std::uint32_t projectile_id, float x, float y,
@@ -491,16 +522,20 @@ struct PacketBuilder {
       packet.x = x;
       packet.y = y;
       packet.sequence_number = sequence_number;
+      if (!setPayloadSizeFromSerialization(packet, "makeProjectileDestroy"))
+        return {};
       return packet;
     }
 
     /**
-     * @brief Create a GameStartPacket that records whether the game has started.
+     * @brief Create a GameStartPacket that records whether the game has
+     * started.
      *
      * @param started Whether the game has started.
      * @param sequence_number Sequence identifier assigned to the packet.
-     * @return GameStartPacket Packet with header.type set to GameStart, header.size computed,
-     *         and the `game_start` and `sequence_number` fields populated.
+     * @return GameStartPacket Packet with header.type set to GameStart,
+     * header.size computed, and the `game_start` and `sequence_number` fields
+     * populated.
      */
     static GameStartPacket makeGameStart(bool started,
                                          std::uint32_t sequence_number) {
@@ -520,7 +555,9 @@ struct PacketBuilder {
      *
      * @param ended Whether the game has ended.
      * @param sequence_number Packet sequence number for ordering.
-     * @return GameEndPacket Packet with `header.type` set to `PacketType::GameEnd`, `game_end` set to `ended`, and `sequence_number` populated.
+     * @return GameEndPacket Packet with `header.type` set to
+     * `PacketType::GameEnd`, `game_end` set to `ended`, and `sequence_number`
+     * populated.
      */
     static GameEndPacket makeGameEnd(bool ended,
                                      std::uint32_t sequence_number) {
@@ -535,15 +572,20 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Build a PlayerDeathPacket describing a player's death position and sequence.
+     * @brief Build a PlayerDeathPacket describing a player's death position and
+     * sequence.
      *
-     * Constructs a packet with PacketType::PlayerDeath, sets player identifier, world coordinates, and sequence number, then computes and assigns the serialized payload size; returns a default-constructed packet if payload sizing fails.
+     * Constructs a packet with PacketType::PlayerDeath, sets player identifier,
+     * world coordinates, and sequence number, then computes and assigns the
+     * serialized payload size; returns a default-constructed packet if payload
+     * sizing fails.
      *
      * @param player_id Identifier of the player who died.
      * @param x World X coordinate of the death location.
      * @param y World Y coordinate of the death location.
      * @param sequence_number Sequence number associated with this packet.
-     * @return PlayerDeathPacket Populated packet with header.size set on success, a default-constructed (empty) packet on failure.
+     * @return PlayerDeathPacket Populated packet with header.size set on
+     * success, a default-constructed (empty) packet on failure.
      */
     static PlayerDeathPacket makePlayerDeath(std::uint32_t player_id, float x,
                                              float y,
@@ -565,7 +607,10 @@ struct PacketBuilder {
      *
      * @param player_id ID of the disconnected player.
      * @param sequence_number Packet sequence number for ordering.
-     * @return PlayerDisconnectPacket Packet with header.type set to PacketType::PlayerDisconnected, player_id and sequence_number populated, and header.size set to the computed serialized size. Returns a default-constructed packet if payload sizing fails.
+     * @return PlayerDisconnectPacket Packet with header.type set to
+     * PacketType::PlayerDisconnected, player_id and sequence_number populated,
+     * and header.size set to the computed serialized size. Returns a
+     * default-constructed packet if payload sizing fails.
      */
     static PlayerDisconnectPacket makePlayerDisconnect(
         std::uint32_t player_id, std::uint32_t sequence_number) {
@@ -636,15 +681,19 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Builds a CreateRoomResponsePacket indicating the result of a create-room request.
+     * @brief Builds a CreateRoomResponsePacket indicating the result of a
+     * create-room request.
      *
      * @param error_code Result code to set in the packet.
      * @param room_id Identifier of the created room (or 0 when not applicable).
      * @param sequence_number Sequence number for ordering the packet.
-     * @return CreateRoomResponsePacket Packet with header.type set to CreateRoomResponse, error_code, room_id and sequence_number populated, and header.size computed from serialization.
+     * @return CreateRoomResponsePacket Packet with header.type set to
+     * CreateRoomResponse, error_code, room_id and sequence_number populated,
+     * and header.size computed from serialization.
      */
     static CreateRoomResponsePacket makeCreateRoomResponse(
-        const RoomError &error_code, std::uint32_t room_id, std::uint32_t sequence_number) {
+        const RoomError &error_code, std::uint32_t room_id,
+        std::uint32_t sequence_number) {
       CreateRoomResponsePacket packet{};
       packet.header.type = PacketType::CreateRoomResponse;
       packet.error_code = error_code;
@@ -659,17 +708,17 @@ struct PacketBuilder {
     /**
      * @brief Creates a JoinRoomPacket for joining a specific room.
      *
-     * Builds a packet with the specified room ID, password, and sequence number,
-     * sets the packet type to PacketType::JoinRoom, and computes/assigns the
-     * serialized payload size to header.size.
+     * Builds a packet with the specified room ID, password, and sequence
+     * number, sets the packet type to PacketType::JoinRoom, and
+     * computes/assigns the serialized payload size to header.size.
      *
      * @param room_id ID of the room to join.
-     * @param password Password for the room; empty string means no password. If the
-     *        password exceeds the allowed size it is truncated to 32 bytes.
+     * @param password Password for the room; empty string means no password. If
+     * the password exceeds the allowed size it is truncated to 32 bytes.
      * @param sequence_number Sequence number to include in the packet.
-     * @return JoinRoomPacket Packet with header.type set to JoinRoom, header.size
-     *         set to the computed serialized size, and room_id, password, and
-     *         sequence_number populated.
+     * @return JoinRoomPacket Packet with header.type set to JoinRoom,
+     * header.size set to the computed serialized size, and room_id, password,
+     * and sequence_number populated.
      */
     static JoinRoomPacket makeJoinRoom(std::uint32_t room_id,
                                        const std::string &password,
@@ -686,11 +735,14 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Builds a JoinRoomResponsePacket populated with the provided error code and sequence number.
+     * @brief Builds a JoinRoomResponsePacket populated with the provided error
+     * code and sequence number.
      *
      * @param error_code RoomError to store in the packet's error_code field.
-     * @param sequence_number Sequence number to store in the packet's sequence_number field.
-     * @return JoinRoomResponsePacket Packet with header.type set to JoinRoomResponse and header.size set to the computed serialized size.
+     * @param sequence_number Sequence number to store in the packet's
+     * sequence_number field.
+     * @return JoinRoomResponsePacket Packet with header.type set to
+     * JoinRoomResponse and header.size set to the computed serialized size.
      */
     static JoinRoomResponsePacket makeJoinRoomResponse(
         const RoomError &error_code, std::uint32_t sequence_number) {
@@ -765,12 +817,17 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Construct a MatchmakingRequestPacket with header.type set and sequence number assigned.
+     * @brief Construct a MatchmakingRequestPacket with header.type set and
+     * sequence number assigned.
      *
      * @param sequence_number Sequence number for packet ordering.
-     * @return MatchmakingRequestPacket whose header.type is PacketType::MatchmakingRequest and whose header.size is set to the packet's serialized size; an empty default-constructed packet is returned if payload sizing fails.
+     * @return MatchmakingRequestPacket whose header.type is
+     * PacketType::MatchmakingRequest and whose header.size is set to the
+     * packet's serialized size; an empty default-constructed packet is returned
+     * if payload sizing fails.
      */
-    static MatchmakingRequestPacket makeMatchmakingRequest(std::uint32_t sequence_number) {
+    static MatchmakingRequestPacket makeMatchmakingRequest(
+        std::uint32_t sequence_number) {
       MatchmakingRequestPacket packet{};
       packet.header.type = PacketType::MatchmakingRequest;
       packet.sequence_number = sequence_number;
@@ -781,13 +838,16 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Construct a MatchmakingResponsePacket representing the result of a matchmaking request.
+     * @brief Construct a MatchmakingResponsePacket representing the result of a
+     * matchmaking request.
      *
      * @param error_code Matchmaking result code.
-     * @param sequence_number Sequence number for the packet (used for ordering).
-     * @return MatchmakingResponsePacket Packet with header.type set to MatchmakingResponse, `error_code`
-     * and `sequence_number` assigned, and header.size set to the computed serialized size; returns an
-     * empty/default packet if payload sizing fails.
+     * @param sequence_number Sequence number for the packet (used for
+     * ordering).
+     * @return MatchmakingResponsePacket Packet with header.type set to
+     * MatchmakingResponse, `error_code` and `sequence_number` assigned, and
+     * header.size set to the computed serialized size; returns an empty/default
+     * packet if payload sizing fails.
      */
     static MatchmakingResponsePacket makeMatchmakingResponse(
         const RoomError &error_code, std::uint32_t sequence_number) {
@@ -852,12 +912,15 @@ struct PacketBuilder {
      * @brief Constructs a RequestChallengePacket for a specific room.
      *
      * @param room_id Identifier of the room to request a challenge for.
-     * @param sequence_number Sequence number associated with the packet (used for ordering).
-     * @return RequestChallengePacket Packet with `header.type` set to `PacketType::RequestChallenge`,
-     * `room_id` and `sequence_number` populated, and `header.size` computed from serialization.
-     * Returns an empty/default packet if payload sizing via serialization fails.
+     * @param sequence_number Sequence number associated with the packet (used
+     * for ordering).
+     * @return RequestChallengePacket Packet with `header.type` set to
+     * `PacketType::RequestChallenge`, `room_id` and `sequence_number`
+     * populated, and `header.size` computed from serialization. Returns an
+     * empty/default packet if payload sizing via serialization fails.
      */
-    static RequestChallengePacket makeRequestChallenge(std::uint32_t room_id, std::uint32_t sequence_number) {
+    static RequestChallengePacket makeRequestChallenge(
+        std::uint32_t room_id, std::uint32_t sequence_number) {
       RequestChallengePacket packet{};
       packet.header.type = PacketType::RequestChallenge;
       packet.room_id = room_id;
@@ -869,15 +932,21 @@ struct PacketBuilder {
     }
 
     /**
-     * @brief Create a ChallengeResponsePacket populated with the provided challenge, timestamp, and sequence number.
+     * @brief Create a ChallengeResponsePacket populated with the provided
+     * challenge, timestamp, and sequence number.
      *
-     * @param challenge Hex-encoded challenge string to store in the packet; expected length is CHALLENGE_HEX_LEN characters.
+     * @param challenge Hex-encoded challenge string to store in the packet;
+     * expected length is CHALLENGE_HEX_LEN characters.
      * @param timestamp Timestamp associated with the challenge response.
      * @param sequence_number Sequence number assigned to the packet.
-     * @return ChallengeResponsePacket Packet whose header.type is PacketType::ChallengeResponse, whose payload fields (challenge, timestamp, sequence_number) are set, and whose header.size is computed from the serialized packet.
+     * @return ChallengeResponsePacket Packet whose header.type is
+     * PacketType::ChallengeResponse, whose payload fields (challenge,
+     * timestamp, sequence_number) are set, and whose header.size is computed
+     * from the serialized packet.
      */
     static ChallengeResponsePacket makeChallengeResponse(
-        const std::string challenge, std::uint32_t timestamp, std::uint32_t sequence_number) {
+        const std::string challenge, std::uint32_t timestamp,
+        std::uint32_t sequence_number) {
       ChallengeResponsePacket packet{};
       packet.header.type = PacketType::ChallengeResponse;
       packet.challenge = challenge;

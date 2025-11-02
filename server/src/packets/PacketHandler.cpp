@@ -792,13 +792,7 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
     return KO;
   }
 
-  MatchmakingRequestPacket packet;
-  try {
-    packet = deserializedPacket.value();
-  } catch (std::bad_optional_access &e) {
-    std::cerr << "Can't retrieve packet" << std::endl;
-    return KO;
-  }
+  const MatchmakingRequestPacket &packet = deserializedPacket.value();
 
   auto ackPacket =
       PacketBuilder::makeAckPacket(packet.sequence_number, client._player_id);

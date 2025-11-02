@@ -96,7 +96,7 @@ namespace network {
       std::shared_ptr<asio::steady_timer> _clearSeqTimer;
       std::unordered_map<int, asio::ip::udp::endpoint> _clientEndpoints;
       std::function<void()> _stopCallback;
-      std::atomic<bool> _isRunning = false;
+      std::atomic<bool> _isRunning;
       bool _unacknowledgedScheduled = false;
       bool _timeoutScheduled = false;
       bool _eventScheduled = false;
