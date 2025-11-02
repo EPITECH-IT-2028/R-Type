@@ -158,8 +158,17 @@ void game::Game::start() {
   _gameThread = std::thread(&Game::Game::gameLoop, this);
 }
 
+/**
+ * @brief Stops the game loop, joins the game thread, and clears all entities.
+ *
+ * If the game is not running or the internal thread is not joinable, this is a
+ * no-op. Otherwise it sets the running flag to false, joins the thread if
+ * joinable, and releases all game entities and related resources via
+ * clearAllEntities().
+ */
 void game::Game::stop() {
   _running = false;
+
   if (_gameThread.joinable()) {
     _gameThread.join();
   }
@@ -168,8 +177,8 @@ void game::Game::stop() {
 }
 
 /**
- * @brief Executes the main game loop, updating systems and handling enemy
- * spawns.
+ * @brief Run the game's main loop: advance time, update systems, and spawn
+ * enemies.
  *
  * Enqueues a GameStartEvent immediately, then repeatedly:
  * - calculates and stores frame delta time in `_deltaTime`,
@@ -177,14 +186,15 @@ void game::Game::stop() {
  * - runs enemy spawn logic,
  * - dynamically sleeps to maintain a consistent tick rate.
  *
- * The loop exits when `_running` becomes false or when any required system
- * (enemy, projectile, collision) is not available, in which case the running
- * flag is cleared and the loop stops.
+ * The loop ends when `_running` becomes false or if any required system
+ * (enemy, projectile, collision) is unavailable, in which case `_running` is
+ * cleared and the loop stops.
  */
 
 void game::Game::gameLoop() {
   queue::GameStartEvent startEvent;
   startEvent.game_started = true;
+  startEvent.sequence_number = fetchAndIncrementSequenceNumber();
   _eventQueue.addRequest(startEvent);
 
   auto lastTime = std::chrono::high_resolution_clock::now();
@@ -198,6 +208,7 @@ void game::Game::gameLoop() {
     if (elapsedTime.count() >= GAME_DURATION) {
       queue::GameEndEvent endEvent;
       endEvent.game_ended = true;
+      endEvent.sequence_number = fetchAndIncrementSequenceNumber();
       _eventQueue.addRequest(endEvent);
       _running = false;
       break;
@@ -300,6 +311,18 @@ std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
   return playerList;
 }
 
+/**
+ * @brief Advances the enemy spawn timer and spawns a BASIC_FIGHTER when the
+ * interval elapses.
+ *
+ * Increments the internal spawn accumulator by the provided delta and, if the
+ * configured spawn interval is reached or exceeded, resets the accumulator,
+ * creates a BASIC_FIGHTER enemy, and enqueues an EnemySpawnEvent containing the
+ * new enemy's id, type, position, velocity, health, max health, and a sequence
+ * number.
+ *
+ * @param deltaTime Time elapsed since the last update in seconds.
+ */
 void game::Game::spawnEnemy(float deltaTime) {
   _enemySpawnTimer += deltaTime;
 
@@ -322,6 +345,7 @@ void game::Game::spawnEnemy(float deltaTime) {
       event.vy = vel.second;
       event.health = health;
       event.max_health = max_health;
+      event.sequence_number = fetchAndIncrementSequenceNumber();
       _eventQueue.addRequest(event);
     }
   }

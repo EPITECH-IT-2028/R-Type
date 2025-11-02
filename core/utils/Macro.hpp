@@ -39,6 +39,9 @@ constexpr int TPS = 60;
 /* Network/Protocol */
 constexpr std::size_t BUFFER_SIZE = 2048;
 constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
+constexpr int RESEND_PACKET_DELAY = 500;  // number in milliseconds
+constexpr int MAX_RESEND_ATTEMPTS = 5;
+constexpr int MIN_RESEND_PACKET_DELAY = 200;
 constexpr int MAX_ROOMS = 10;
 constexpr int CHALLENGE_HEX_LEN = 129;
 constexpr std::uint32_t INVALID_ID = std::numeric_limits<std::uint32_t>::max();

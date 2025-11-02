@@ -4,10 +4,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <queue>
+#include <shared_mutex>
+#include <unordered_map>
 #include <vector>
 #include "Client.hpp"
 #include "DatabaseManager.hpp"
 #include "Events.hpp"
+#include "GameManager.hpp"
 #include "PacketFactory.hpp"
 #include "ServerNetworkManager.hpp"
 #include "game/Challenge.hpp"
@@ -24,7 +28,15 @@ namespace server {
     public:
       Server(std::uint16_t port, std::uint8_t max_clients,
              std::uint8_t max_clients_per_room);
-      ~Server() = default;
+      /**
+       * @brief Stops the server and releases networking and game resources.
+       *
+       * Ensures a clean shutdown of networking, timers, and any background activity
+       * associated with the server so resources are released when the instance is destroyed.
+       */
+      ~Server() {
+        stop();
+      }
 
       void start();
       void stop();
@@ -69,11 +81,63 @@ namespace server {
 
       std::shared_ptr<Client> getClientById(int player_id) const;
 
+      /**
+       * @brief Initialize a connected client as a player inside its assigned
+       * game room.
+       *
+       * Validates the client's state, room assignment, and name; creates a
+       * player entity in the room's game, stores the entity id on the client,
+       * sends the new-player state to the client, broadcasts existing players
+       * and the new player to the room, and starts the room countdown when
+       * conditions are met.
+       *
+       * @param client Client instance to initialize (modified in-place).
+       * @return true if the player was successfully initialized in the room,
+       * false otherwise.
+       */
+
       bool initializePlayerInRoom(Client &client);
 
+      /**
+       * @brief Accesses the server's challenge manager.
+       *
+       * @return game::Challenge& Reference to the server's challenge manager instance.
+       */
       game::Challenge &getChallengeManager() {
         return _challenge;
       }
+
+      /**
+       * @brief Retrieve the last processed sequence number for a player.
+       *
+       * @param player_id ID of the player whose last processed sequence is requested.
+       * @return std::optional<std::uint64_t> Optional containing the last processed sequence number for the player if present, `std::nullopt` otherwise.
+       */
+      std::optional<std::uint64_t> getLastProcessedSeq(
+          std::uint32_t player_id) const {
+        std::lock_guard<std::mutex> g(_lastProcessedSeqMutex);
+        if (auto it = _lastProcessedSeq.find(player_id);
+            it != _lastProcessedSeq.end())
+          return it->second;
+        return std::nullopt;
+      }
+      /**
+       * @brief Update the last processed sequence number for a player.
+       *
+       * Records or overwrites the stored sequence number for the given player ID in a
+       * thread-safe manner.
+       *
+       * @param player_id Identifier of the player whose sequence number is being set.
+       * @param sequence_number Sequence number to store for the player.
+       */
+      void setLastProcessedSeq(std::uint32_t player_id,
+                               std::uint64_t sequence_number) {
+        std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
+        _lastProcessedSeq[player_id] = sequence_number;
+      }
+
+      void enqueueClientRemoval(std::uint32_t player_id);
+      void processPendingClientRemovals();
       void checkIsPlayerBan();
 
     private:
@@ -81,9 +145,7 @@ namespace server {
       void handleReceive(const char *data, std::size_t bytes_transferred);
 
       void handleTimeout();
-      void scheduleTimeoutCheck();
 
-      void scheduleEventProcessing();
       void processGameEvents();
       void handleGameEvent(const queue::GameEvent &event, std::uint32_t roomId);
 
@@ -94,6 +156,11 @@ namespace server {
 
       std::shared_ptr<Client> getClient(std::size_t idx) const;
 
+      void handleUnacknowledgedPackets();
+
+      void clearLastProcessedSeq();
+
+    private:
       void handleCountdown(std::shared_ptr<game::GameRoom> room,
                            std::shared_ptr<asio::steady_timer> timer);
 
@@ -109,11 +176,20 @@ namespace server {
       game::Challenge _challenge;
       std::shared_ptr<database::DatabaseManager> _databaseManager;
 
+      mutable std::shared_mutex _clientsMutex;
+
+      mutable std::mutex _lastProcessedSeqMutex;
+      std::unordered_map<uint32_t, uint64_t> _lastProcessedSeq;
+
+      mutable std::mutex _clientsToRemoveMutex;
+      std::queue<std::uint32_t> _clientsToRemove;
+
       std::uint8_t _max_clients;
       std::uint8_t _max_clients_per_room = 4;
       std::uint16_t _port;
       int _player_count;
       int _next_player_id;
       std::uint32_t _projectile_count;
+
   };
 }  // namespace server

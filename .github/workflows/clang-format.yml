@@ -1,10 +1,8 @@
 name: Clang Format Check & Auto Fix
-
 on:
   push:
     branches: ["main"]
   pull_request:
-
 jobs:
   check_formatting:
     name: Check Code Formatting
@@ -12,12 +10,14 @@ jobs:
     permissions:
       contents: write
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install clang-format 22
         run: |
           set -e

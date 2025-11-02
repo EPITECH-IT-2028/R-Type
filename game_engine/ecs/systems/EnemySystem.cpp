@@ -19,7 +19,12 @@
  * @param deltaTime Time elapsed since the last update, in seconds.
  */
 void ecs::EnemySystem::update(float deltaTime) {
-  for (auto entity : _entities) {
+  std::set<Entity> entities;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    entities = _entities;
+  }
+  for (auto entity : entities) {
     if (!_ecsManager->hasComponent<EnemyComponent>(entity)) {
       continue;
     }

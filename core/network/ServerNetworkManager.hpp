@@ -31,8 +31,23 @@ namespace network {
                                    const std::function<void()> &callback);
       void scheduleTimeout(std::chrono::seconds interval,
                            const std::function<void()> &callback);
+      void scheduleUnacknowledgedPacketsCheck(
+          std::chrono::milliseconds interval,
+          const std::function<void()> &callback);
+
+      void scheduleClearLastProcessedSeq(std::chrono::seconds interval,
+                                         const std::function<void()> &callback);
+
       void checkSignals();
 
+      /**
+       * @brief Sets a callback to be invoked when the server is stopped.
+       *
+       * The provided callback will be stored and called during shutdown/stop
+       * processing.
+       *
+       * @param callback Function to call when the server stops.
+       */
       void setStopCallback(const std::function<void()> &callback) {
         _stopCallback = callback;
       }
@@ -41,10 +56,29 @@ namespace network {
 
       void stop() override;
 
+      /**
+       * @brief Cancels pending operations and closes the underlying socket if
+       * it is open.
+       *
+       * If the socket is open, this will cancel any outstanding asynchronous
+       * operations and then close the socket. If the socket is already closed,
+       * the call has no effect.
+       */
       void closeSocket() {
-        return;
+        if (_socket.is_open()) {
+          _socket.cancel();
+          _socket.close();
+        }
       };
 
+      /**
+       * @brief Retrieve the UDP endpoint associated with a player ID.
+       *
+       * @param player_id Player identifier used as the lookup key.
+       * @return asio::ip::udp::endpoint The stored UDP endpoint for the given
+       * player.
+       * @throws std::out_of_range If no endpoint is registered for `player_id`.
+       */
       asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
         return _clientEndpoints.at(player_id);
       }
@@ -58,10 +92,15 @@ namespace network {
       asio::signal_set _signals;
       std::shared_ptr<asio::steady_timer> _eventTimer;
       std::shared_ptr<asio::steady_timer> _timeoutTimer;
+      std::shared_ptr<asio::steady_timer> _unacknowledgedTimer;
+      std::shared_ptr<asio::steady_timer> _clearSeqTimer;
       std::unordered_map<int, asio::ip::udp::endpoint> _clientEndpoints;
       std::function<void()> _stopCallback;
-      bool _isRunning = true;
+      std::atomic<bool> _isRunning;
+      bool _unacknowledgedScheduled = false;
       bool _timeoutScheduled = false;
+      bool _eventScheduled = false;
+      bool _clearSeqScheduled = false;
   };
 
 }  // namespace network
