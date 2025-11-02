@@ -3,6 +3,7 @@
 #include "Client.hpp"
 #include "ECSManager.hpp"
 #include "EntityManager.hpp"
+#include "LocalPlayerTagComponent.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
 #include "PacketBuilder.hpp"
@@ -15,6 +16,7 @@
 #include "ScaleComponent.hpp"
 #include "Serializer.hpp"
 #include "SpriteComponent.hpp"
+#include "StateHistoryComponent.hpp"
 #include "VelocityComponent.hpp"
 #include "raylib.h"
 
@@ -236,6 +238,12 @@ int packet::PlayerDisconnectedHandler::handlePacket(client::Client &client,
  *
  * @param client Reference to the client used to resolve player entities and
  * state.
+ *
+ * Processes a PlayerMovePacket carried in the provided byte buffer. For remote
+ * players, adds the new state to their StateHistoryComponent for interpolation.
+ * For the local player, updates the PositionComponent directly and updates the
+ * sequence number.
+ *
  * @param data Pointer to the start of the received packet buffer.
  * @param size Number of bytes available at `data`.
  * @return int `packet::OK` if the packet was handled (including when the target
@@ -264,10 +272,32 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       return packet::OK;
     }
 
-    auto &position =
-        ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
-    position.x = packet.x;
-    position.y = packet.y;
+    bool isLocalPlayer = (client.getPlayerId() == packet.player_id);
+
+    if (isLocalPlayer) {
+      auto &position =
+          ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+      position.x = packet.x;
+      position.y = packet.y;
+    } else {
+      if (ecsManager.hasComponent<ecs::StateHistoryComponent>(playerEntity)) {
+        auto &stateHistory =
+            ecsManager.getComponent<ecs::StateHistoryComponent>(playerEntity);
+        
+        double currentTime = GetTime();
+        ecs::EntityState newState{packet.x, packet.y, currentTime};
+        stateHistory.states.push_back(newState);
+        while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
+          stateHistory.states.pop_front();
+        }
+      } else {
+        auto &position =
+            ecsManager.getComponent<ecs::PositionComponent>(playerEntity);
+        position.x = packet.x;
+        position.y = packet.y;
+      }
+    }
+
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[PLAYER MOVE] Failed to update player %u: %s",
              packet.player_id, e.what());
@@ -342,10 +372,23 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
                packet.enemy_id);
       return packet::KO;
     }
-    auto &position =
-        ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
-    position.x = packet.x;
-    position.y = packet.y;
+
+    if (ecsManager.hasComponent<ecs::StateHistoryComponent>(enemyEntity)) {
+      auto &stateHistory =
+          ecsManager.getComponent<ecs::StateHistoryComponent>(enemyEntity);
+      
+      double currentTime = GetTime();
+      ecs::EntityState newState{packet.x, packet.y, currentTime};
+      stateHistory.states.push_back(newState);
+      while (stateHistory.states.size() > ecs::MAX_INTERPOLATION_STATES) {
+        stateHistory.states.pop_front();
+      }
+    } else {
+      auto &position =
+          ecsManager.getComponent<ecs::PositionComponent>(enemyEntity);
+      position.x = packet.x;
+      position.y = packet.y;
+    }
   } catch (const std::exception &e) {
     TraceLog(LOG_ERROR, "[ENEMY MOVE] Failed to update enemy %u: %s",
              packet.enemy_id, e.what());
