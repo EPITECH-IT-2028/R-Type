@@ -37,7 +37,7 @@ constexpr int COUNTDOWN_TIME = 5;
 constexpr float GAME_DURATION = 10.0f;
 constexpr int TPS = 60;
 
-constexpr int PING_INTERVAL_CLIENT = 1;
+constexpr int PING_INTERVAL_CLIENT = 50;
 
 /* Network/Protocol */
 constexpr std::size_t BUFFER_SIZE = 2048;

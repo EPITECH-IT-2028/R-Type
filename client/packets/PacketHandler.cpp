@@ -254,7 +254,7 @@ int packet::PlayerMoveHandler::handlePacket(client::Client &client,
       if (ecsManager.hasComponent<ecs::StateHistoryComponent>(playerEntity)) {
         auto &stateHistory =
             ecsManager.getComponent<ecs::StateHistoryComponent>(playerEntity);
-        
+
         double currentTime = GetTime();
         ecs::EntityState newState{packet.x, packet.y, currentTime};
         stateHistory.states.push_back(newState);
@@ -334,7 +334,7 @@ int packet::EnemyMoveHandler::handlePacket(client::Client &client,
     if (ecsManager.hasComponent<ecs::StateHistoryComponent>(enemyEntity)) {
       auto &stateHistory =
           ecsManager.getComponent<ecs::StateHistoryComponent>(enemyEntity);
-      
+
       double currentTime = GetTime();
       ecs::EntityState newState{packet.x, packet.y, currentTime};
       stateHistory.states.push_back(newState);
