@@ -56,8 +56,8 @@ void ServerNetworkManager::sendToClient(
 
   std::shared_ptr<std::vector<std::uint8_t>> dataToSend = buffer;
   if (buffer->size() > COMPRESSION_THRESHOLD) {
-    auto compressed = compression::LZ4Compressor::compress(*buffer);
-    if (compression::LZ4Compressor::isCompressed(compressed)) {
+    auto compressed = compression::Compressor::compress(*buffer);
+    if (compression::Compressor::isCompressed(compressed)) {
       dataToSend = std::make_shared<std::vector<std::uint8_t>>(compressed);
     }
   }
@@ -85,8 +85,8 @@ void ServerNetworkManager::sendToAll(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   std::shared_ptr<std::vector<std::uint8_t>> data = buffer;
   if (buffer->size() > COMPRESSION_THRESHOLD) {
-    auto compressed = compression::LZ4Compressor::compress(*buffer);
-    if (compression::LZ4Compressor::isCompressed(compressed)) {
+    auto compressed = compression::Compressor::compress(*buffer);
+    if (compression::Compressor::isCompressed(compressed)) {
       data = std::make_shared<std::vector<std::uint8_t>>(compressed);
     }
   }

@@ -20,7 +20,7 @@ namespace compression {
    *
    * The header is 12 bytes total.
    */
-  class LZ4Compressor {
+  class Compressor {
     public:
       static std::vector<std::uint8_t> compress(
           const std::vector<std::uint8_t> &input, float ratio = 0.9f) {
@@ -34,7 +34,7 @@ namespace compression {
         if (destSize <= 0) {
           std::cerr << "[ERROR] LZ4_compressBound returned invalid size"
                     << std::endl;
-          return input;
+          throw std::runtime_error("LZ4_compressBound failed");
         }
 
         std::vector<std::uint8_t> compressed;
@@ -46,7 +46,7 @@ namespace compression {
 
         if (compressedSize <= 0) {
           std::cerr << "[ERROR] LZ4 compression failed!" << std::endl;
-          return input;
+          throw std::runtime_error("LZ4_compress_default failed");
         }
 
         const std::size_t finalSize = HEADER_SIZE_LZ4 + compressedSize;
@@ -68,6 +68,22 @@ namespace compression {
         result.push_back('Z');
         result.push_back('4');
         result.push_back(0);
+
+        /*
+         * Original size (4) and Compressed size (4)
+         */
+        result.push_back(static_cast<std::uint8_t>((srcSize >> 24) & 0xFF));
+        result.push_back(static_cast<std::uint8_t>((srcSize >> 16) & 0xFF));
+        result.push_back(static_cast<std::uint8_t>((srcSize >> 8) & 0xFF));
+        result.push_back(static_cast<std::uint8_t>(srcSize & 0xFF));
+
+        result.push_back(
+            static_cast<std::uint8_t>((compressedSize >> 24) & 0xFF));
+        result.push_back(
+            static_cast<std::uint8_t>((compressedSize >> 16) & 0xFF));
+        result.push_back(
+            static_cast<std::uint8_t>((compressedSize >> 8) & 0xFF));
+        result.push_back(static_cast<std::uint8_t>(compressedSize & 0xFF));
 
         result.insert(result.end(), compressed.begin(),
                       compressed.begin() + compressedSize);

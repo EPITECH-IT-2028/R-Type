@@ -14,7 +14,9 @@ namespace packet {
                              const T &packet) {
         auto serialized = serialization::BitserySerializer::serialize(packet);
 
-        serialized = compression::LZ4Compressor::compress(serialized);
+        if (serialized.size() > COMPRESSION_THRESHOLD) {
+          serialized = compression::Compressor::compress(serialized);
+        }
 
         auto buffer = std::make_shared<std::vector<std::uint8_t>>(serialized);
         networkManager.send(buffer);

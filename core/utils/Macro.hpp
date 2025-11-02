@@ -34,10 +34,10 @@ constexpr float PLAYER_HEIGHT = 37.0f;
 constexpr int MARGIN_WINDOW = 30;
 constexpr int COUNTDOWN_TIME = 5;
 constexpr float GAME_DURATION = 10.0f;
-constexpr int TPS = 60;
+constexpr int TPS = 20;
 
 /* Network/Protocol */
-constexpr std::size_t BUFFER_SIZE = 1024;
+constexpr std::size_t BUFFER_SIZE = 2048;
 constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
 constexpr int RESEND_PACKET_DELAY = 500;  // number in milliseconds
 constexpr int MAX_RESEND_ATTEMPTS = 5;

@@ -393,8 +393,8 @@ void server::Server::handleReceive(const char *data,
       reinterpret_cast<const std::uint8_t *>(data),
       reinterpret_cast<const std::uint8_t *>(data) + bytes_transferred);
 
-  if (compression::LZ4Compressor::isCompressed(packetData)) {
-    packetData = compression::LZ4Compressor::decompress(packetData);
+  if (compression::Compressor::isCompressed(packetData)) {
+    packetData = compression::Compressor::decompress(packetData);
     if (packetData.empty()) {
       std::cerr << "[ERROR] Decompression failed, dropping packet" << std::endl;
       return;

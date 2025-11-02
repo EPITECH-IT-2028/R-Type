@@ -45,8 +45,8 @@ void ClientNetworkManager::send(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   std::shared_ptr<std::vector<std::uint8_t>> data = buffer;
   if (buffer->size() > COMPRESSION_THRESHOLD) {
-    auto compressed = compression::LZ4Compressor::compress(*buffer);
-    if (compression::LZ4Compressor::isCompressed(compressed)) {
+    auto compressed = compression::Compressor::compress(*buffer);
+    if (compression::Compressor::isCompressed(compressed)) {
       data = std::make_shared<std::vector<std::uint8_t>>(compressed);
     }
   }
@@ -179,10 +179,18 @@ void ClientNetworkManager::processPacket(const char *data, std::size_t size,
       reinterpret_cast<const std::uint8_t *>(data),
       reinterpret_cast<const std::uint8_t *>(data) + size);
 
-  if (compression::LZ4Compressor::isCompressed(packetData)) {
-    packetData = compression::LZ4Compressor::decompress(packetData);
-    if (packetData.empty()) {
-      std::cerr << "[ERROR] Decompression failed, dropping packet" << std::endl;
+  if (compression::Compressor::isCompressed(packetData)) {
+    auto originalSize = packetData.size();
+    auto decompressed = compression::Compressor::decompress(packetData);
+    if (decompressed.size() == originalSize) {
+      std::cerr << "[WARNING] Decompression may have failed, treating as "
+                   "compressed data"
+                << std::endl;
+    }
+    packetData = decompressed;
+    if (packetData.size() < sizeof(PacketHeader)) {
+      std::cerr << "[ERROR] Packet too small after decompression, dropping"
+                << std::endl;
       return;
     }
   }
