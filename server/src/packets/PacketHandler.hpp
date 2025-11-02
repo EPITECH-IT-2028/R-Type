@@ -14,10 +14,13 @@ namespace packet {
   class ResponseHelper {
     public:
       static void sendJoinRoomResponse(server::Server &server,
-                                       server::Client &client, RoomError error);
+                                       server::Client &client,
+                                       std::uint32_t sequence_number,
+                                       RoomError error);
 
       static void sendMatchmakingResponse(server::Server &server,
                                           server::Client &client,
+                                          std::uint32_t sequence_number,
                                           RoomError error);
   };
 

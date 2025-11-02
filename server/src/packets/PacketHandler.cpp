@@ -26,6 +26,7 @@
  */
 void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
                                                   server::Client &client,
+                                                  std::uint32_t sequence_number,
                                                   RoomError error) {
   auto room = server.getGameManager().getRoom(client._room_id);
 
@@ -62,9 +63,9 @@ void packet::ResponseHelper::sendJoinRoomResponse(server::Server &server,
  * player id are used.
  * @param error Result code describing the matchmaking outcome.
  */
-void packet::ResponseHelper::sendMatchmakingResponse(server::Server &server,
-                                                     server::Client &client,
-                                                     RoomError error) {
+void packet::ResponseHelper::sendMatchmakingResponse(
+    server::Server &server, server::Client &client,
+    std::uint32_t sequence_number, RoomError error) {
   auto room = server.getGameManager().getRoom(client._room_id);
 
   auto response = PacketBuilder::makeMatchmakingResponse(
@@ -328,8 +329,9 @@ int packet::PlayerShootHandler::handlePacket(server::Server &server,
       server.getNetworkManager(), roomClients, playerShotPacket);
 
   for (auto &client : roomClients) {
-    client->addUnacknowledgedPacket(playerShotPacket.sequence_number,
-                                    playerShotBuffer);
+    if (client)
+      client->addUnacknowledgedPacket(playerShotPacket.sequence_number,
+                                      playerShotBuffer);
   }
   return OK;
 }
@@ -474,16 +476,20 @@ int packet::CreateRoomHandler::handlePacket(server::Server &server,
               << " already in room " << client._room_id
               << ", ignoring duplicate create request" << std::endl;
 
-    auto &game = server.getGameManager().getRoom(client._room_id)->getGame();
+    auto room = server.getGameManager().getRoom(client._room_id);
     auto response = PacketBuilder::makeCreateRoomResponse(
         RoomError::SUCCESS, client._room_id,
-        game.fetchAndIncrementSequenceNumber());
+        room != nullptr ? room->getGame().fetchAndIncrementSequenceNumber()
+                        : packet.sequence_number);
     auto serializedBuffer =
         serialization::BitserySerializer::serialize(response);
     server.getNetworkManager().sendToClient(
         client._player_id,
         reinterpret_cast<const char *>(serializedBuffer.data()),
         serializedBuffer.size());
+    client.addUnacknowledgedPacket(
+        response.sequence_number,
+        std::make_shared<std::vector<std::uint8_t>>(serializedBuffer));
     return OK;
   }
 
@@ -604,7 +610,7 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
       ackBuffer->size());
   auto room = server.getGameManager().getRoom(packet.room_id);
   if (!room) {
-    ResponseHelper::sendJoinRoomResponse(server, client,
+    ResponseHelper::sendJoinRoomResponse(server, client, packet.sequence_number,
                                          RoomError::ROOM_NOT_FOUND);
     return KO;
   }
@@ -620,15 +626,15 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
       std::cerr << "[WARN] Invalid password for room " << packet.room_id
                 << " from player " << client._player_id << std::endl;
 
-      ResponseHelper::sendJoinRoomResponse(server, client,
-                                           RoomError::WRONG_PASSWORD);
+      ResponseHelper::sendJoinRoomResponse(
+          server, client, packet.sequence_number, RoomError::WRONG_PASSWORD);
       return KO;
     }
   }
 
   auto sharedClient = server.getClientById(client._player_id);
   if (!sharedClient) {
-    ResponseHelper::sendJoinRoomResponse(server, client,
+    ResponseHelper::sendJoinRoomResponse(server, client, packet.sequence_number,
                                          RoomError::UNKNOWN_ERROR);
     return KO;
   }
@@ -636,7 +642,8 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   bool joinSuccess =
       server.getGameManager().joinRoom(packet.room_id, sharedClient);
   if (!joinSuccess) {
-    ResponseHelper::sendJoinRoomResponse(server, client, RoomError::ROOM_FULL);
+    ResponseHelper::sendJoinRoomResponse(server, client, packet.sequence_number,
+                                         RoomError::ROOM_FULL);
     return KO;
   }
 
@@ -645,13 +652,14 @@ int packet::JoinRoomHandler::handlePacket(server::Server &server,
   if (!server.initializePlayerInRoom(client)) {
     std::cerr << "[ERROR] Failed to initialize player in room" << std::endl;
     server.getGameManager().leaveRoom(sharedClient);
-    ResponseHelper::sendJoinRoomResponse(server, client,
+    ResponseHelper::sendJoinRoomResponse(server, client, packet.sequence_number,
                                          RoomError::UNKNOWN_ERROR);
     client._state = server::ClientState::CONNECTED_MENU;
     return KO;
   }
 
-  ResponseHelper::sendJoinRoomResponse(server, client, RoomError::SUCCESS);
+  ResponseHelper::sendJoinRoomResponse(server, client, packet.sequence_number,
+                                       RoomError::SUCCESS);
 
   std::cout << "[SUCCESS] Player " << client._player_id << " joined room "
             << packet.room_id << std::endl;
@@ -805,8 +813,8 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
 
   auto sharedClient = server.getClientById(client._player_id);
   if (!sharedClient) {
-    ResponseHelper::sendMatchmakingResponse(server, client,
-                                            RoomError::UNKNOWN_ERROR);
+    ResponseHelper::sendMatchmakingResponse(
+        server, client, packet.sequence_number, RoomError::UNKNOWN_ERROR);
     return KO;
   }
   bool joinSuccess = server.getGameManager().joinAnyRoom(sharedClient);
@@ -816,8 +824,8 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
     if (!newRoom) {
       std::cerr << "[ERROR] Client " << client._player_id
                 << " failed to create new room for matchmaking" << std::endl;
-      ResponseHelper::sendMatchmakingResponse(server, client,
-                                              RoomError::UNKNOWN_ERROR);
+      ResponseHelper::sendMatchmakingResponse(
+          server, client, packet.sequence_number, RoomError::UNKNOWN_ERROR);
       return KO;
     }
     auto joinSuccess =
@@ -836,14 +844,14 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
         return KO;
       }
 
-      ResponseHelper::sendMatchmakingResponse(server, client,
-                                              RoomError::SUCCESS);
+      ResponseHelper::sendMatchmakingResponse(
+          server, client, packet.sequence_number, RoomError::SUCCESS);
     } else {
       std::cerr << "[ERROR] Client " << client._player_id
                 << " failed to create/join new room for matchmaking"
                 << std::endl;
-      ResponseHelper::sendMatchmakingResponse(server, client,
-                                              RoomError::UNKNOWN_ERROR);
+      ResponseHelper::sendMatchmakingResponse(
+          server, client, packet.sequence_number, RoomError::UNKNOWN_ERROR);
       return KO;
     }
   } else {
@@ -859,7 +867,8 @@ int packet::MatchmakingRequestHandler::handlePacket(server::Server &server,
       return KO;
     }
 
-    ResponseHelper::sendMatchmakingResponse(server, client, RoomError::SUCCESS);
+    ResponseHelper::sendMatchmakingResponse(
+        server, client, packet.sequence_number, RoomError::SUCCESS);
   }
 
   return OK;
