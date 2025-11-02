@@ -1,0 +1,135 @@
+\chapter{R-\/\+Type Build System }
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d}{}\label{md__r_e_a_d_m_e___b_u_i_l_d}\index{R-\/Type Build System@{R-\/Type Build System}}
+\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md121}%
+\Hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md121}%
+
+
+This project uses CMake with Conan for dependency management. You can build either the client, server, or both.\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md122}{}\doxysection{\texorpdfstring{Prerequisites}{Prerequisites}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md122}
+
+\begin{DoxyItemize}
+\item CMake 3.\+27.\+4 or higher
+\item Conan 2.\+x
+\item C++20 compatible compiler
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md123}{}\doxysection{\texorpdfstring{Quick Start}{Quick Start}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md123}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md124}{}\doxysection{\texorpdfstring{Build Script Usage}{Build Script Usage}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md124}
+The build script automatically handles dependency installation and build configuration. Here are the supported usage patterns\+:\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md125}{}\doxysubsection{\texorpdfstring{No arguments (default)}{No arguments (default)}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md125}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./build.sh}
+
+\end{DoxyCode}
+
+
+Builds both client and server in Release mode.\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md126}{}\doxysubsection{\texorpdfstring{Single argument -\/ Build Type}{Single argument -\/ Build Type}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md126}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./build.sh\ debug\ \ \ \ \#\ Builds\ both\ client\ and\ server\ in\ Debug\ mode}
+\DoxyCodeLine{./build.sh\ release\ \ \#\ Builds\ both\ client\ and\ server\ in\ Release\ mode}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md127}{}\doxysubsection{\texorpdfstring{Single argument -\/ Target}{Single argument -\/ Target}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md127}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./build.sh\ client\ \ \ \#\ Builds\ client\ only\ in\ Release\ mode}
+\DoxyCodeLine{./build.sh\ server\ \ \ \#\ Builds\ server\ only\ in\ Release\ mode}
+\DoxyCodeLine{./build.sh\ both\ \ \ \ \ \#\ Builds\ both\ client\ and\ server\ in\ Release\ mode}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md128}{}\doxysubsection{\texorpdfstring{Single argument -\/ Clean}{Single argument -\/ Clean}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md128}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./build.sh\ clean\ \ \ \ \#\ Removes\ all\ build\ files\ and\ directories}
+
+\end{DoxyCode}
+
+
+This will remove\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily .build/} directory
+\item {\ttfamily build/} directory (if it exists)
+\item {\ttfamily CMake\+Cache.\+txt} file (if it exists)
+\item {\ttfamily CMake\+Files/} directory (if it exists)
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md129}{}\doxysubsection{\texorpdfstring{Two arguments -\/ Any order}{Two arguments -\/ Any order}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md129}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\ Target\ first,\ build\ type\ second}
+\DoxyCodeLine{./build.sh\ client\ debug}
+\DoxyCodeLine{./build.sh\ server\ release}
+\DoxyCodeLine{./build.sh\ both\ debug}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\ Build\ type\ first,\ target\ second}
+\DoxyCodeLine{./build.sh\ debug\ client}
+\DoxyCodeLine{./build.sh\ release\ server}
+\DoxyCodeLine{./build.sh\ debug\ both}
+
+\end{DoxyCode}
+
+
+{\bfseries{Note\+:}} The script automatically cleans the build directory and reinstalls dependencies on each run to ensure a clean build.\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md130}{}\doxysubsection{\texorpdfstring{Manual build\+:}{Manual build\+:}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md130}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md131}{}\doxysubsubsection{\texorpdfstring{Building the Client}{Building the Client}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md131}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conan\ install\ .\ -\/-\/output-\/folder=.build\ -\/-\/build=missing\ -\/-\/profile:build=default\ -\/-\/profile:host=default\ -\/s\ build\_type=Release}
+\DoxyCodeLine{cmake\ -\/B\ .build\ -\/DCMAKE\_TOOLCHAIN\_FILE="{}.build/conan\_toolchain.cmake"{}\ -\/DBUILD\_CLIENT=ON\ -\/DBUILD\_SERVER=OFF\ -\/DCMAKE\_BUILD\_TYPE=Release}
+\DoxyCodeLine{cmake\ -\/-\/build\ .build\ -\/-\/config\ Release}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md132}{}\doxysubsubsection{\texorpdfstring{Building the Server}{Building the Server}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md132}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conan\ install\ .\ -\/-\/output-\/folder=.build\ -\/-\/build=missing\ -\/-\/profile:build=default\ -\/-\/profile:host=default\ -\/s\ build\_type=Release}
+\DoxyCodeLine{cmake\ -\/B\ .build\ -\/DCMAKE\_TOOLCHAIN\_FILE="{}.build/conan\_toolchain.cmake"{}\ -\/DBUILD\_CLIENT=OFF\ -\/DBUILD\_SERVER=ON\ -\/DCMAKE\_BUILD\_TYPE=Release}
+\DoxyCodeLine{cmake\ -\/-\/build\ .build\ -\/-\/config\ Release}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md133}{}\doxysubsubsection{\texorpdfstring{Building Both}{Building Both}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md133}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conan\ install\ .\ -\/-\/output-\/folder=.build\ -\/-\/build=missing\ -\/-\/profile:build=default\ -\/-\/profile:host=default\ -\/s\ build\_type=Release}
+\DoxyCodeLine{cmake\ -\/B\ .build\ -\/DCMAKE\_TOOLCHAIN\_FILE="{}.build/conan\_toolchain.cmake"{}\ -\/DBUILD\_CLIENT=ON\ -\/DBUILD\_SERVER=ON\ -\/DCMAKE\_BUILD\_TYPE=Release}
+\DoxyCodeLine{cmake\ -\/-\/build\ .build\ -\/-\/config\ Release}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md134}{}\doxysection{\texorpdfstring{Dependencies}{Dependencies}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md134}
+
+\begin{DoxyItemize}
+\item {\bfseries{Client}}\+: raylib (managed by Conan)
+\item {\bfseries{Server}}\+: asio (managed by Conan)
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md135}{}\doxysection{\texorpdfstring{Output}{Output}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md135}
+Executables will be created at the root of the project\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily r\+\_\+type\+\_\+client} -\/ The game client
+\item {\ttfamily r\+\_\+type\+\_\+server} -\/ The game server
+\item {\ttfamily unit\+\_\+tests} -\/ Unit tests executable
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md136}{}\doxysection{\texorpdfstring{Debug Builds}{Debug Builds}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md136}
+For debug builds, use\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./build.sh\ debug}
+
+\end{DoxyCode}
+
+
+Or manually\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{conan\ install\ .\ -\/-\/output-\/folder=.build\ -\/-\/build=missing\ -\/-\/profile:build=default\ -\/-\/profile:host=default\ -\/s\ build\_type=Debug}
+\DoxyCodeLine{cmake\ -\/B\ .build\ -\/DCMAKE\_TOOLCHAIN\_FILE="{}.build/conan\_toolchain.cmake"{}\ -\/DBUILD\_CLIENT=ON\ -\/DBUILD\_SERVER=ON\ -\/DCMAKE\_BUILD\_TYPE=Debug}
+\DoxyCodeLine{cmake\ -\/-\/build\ .build\ -\/-\/config\ Debug}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md137}{}\doxysection{\texorpdfstring{CMake Options}{CMake Options}}\label{md__r_e_a_d_m_e___b_u_i_l_d_autotoc_md137}
+
+\begin{DoxyItemize}
+\item {\ttfamily BUILD\+\_\+\+CLIENT}\+: Build the client (OFF by default)
+\item {\ttfamily BUILD\+\_\+\+SERVER}\+: Build the server (OFF by default)
+\item {\ttfamily CMAKE\+\_\+\+BUILD\+\_\+\+TYPE}\+: Release or Debug (Release by default)
+\end{DoxyItemize}
+
+At least one of {\ttfamily BUILD\+\_\+\+CLIENT} or {\ttfamily BUILD\+\_\+\+SERVER} must be ON. 

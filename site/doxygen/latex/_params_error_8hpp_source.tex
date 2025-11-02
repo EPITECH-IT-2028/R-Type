@@ -1,0 +1,20 @@
+\doxysection{Params\+Error.\+hpp}
+\hypertarget{_params_error_8hpp_source}{}\label{_params_error_8hpp_source}\index{core/errors/ParamsError.hpp@{core/errors/ParamsError.hpp}}
+\mbox{\hyperlink{_params_error_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <exception>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_params_error_ad8fda437f3bcc01a13b7e2e77ac4bd15}{ParamsError}}\ :\ \textcolor{keyword}{public}\ std::exception\ \{}
+\DoxyCodeLine{00007\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \mbox{\hyperlink{class_params_error_ad8fda437f3bcc01a13b7e2e77ac4bd15}{ParamsError}}(\textcolor{keyword}{const}\ std::string\ \&msg)\ :\ \_msg(msg)\ \{\}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{class_params_error_a305c0f1eb86860d0733948cd294da72d}{what}}()\ const\ noexcept\textcolor{keyword}{\ override\ }\{\ \textcolor{keywordflow}{return}\ \_msg.c\_str();\ \}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00013\ \ \ std::string\ \_msg;}
+\DoxyCodeLine{00014\ \};}
+
+\end{DoxyCode}

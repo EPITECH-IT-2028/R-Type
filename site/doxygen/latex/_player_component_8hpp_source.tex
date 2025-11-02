@@ -1,0 +1,22 @@
+\doxysection{Player\+Component.\+hpp}
+\hypertarget{_player_component_8hpp_source}{}\label{_player_component_8hpp_source}\index{game\_engine/ecs/components/PlayerComponent.hpp@{game\_engine/ecs/components/PlayerComponent.hpp}}
+\mbox{\hyperlink{_player_component_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structecs_1_1_player_component}{PlayerComponent}}\ \{}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structecs_1_1_player_component_a9542bedeef3a21112feccfdb49063bea}{player\_id}}\ =\ UINT32\_MAX;}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ std::string\ \mbox{\hyperlink{structecs_1_1_player_component_a4ba62c392a32ab8ecf0622d3827bc062}{name}};}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_player_component_afb29432e62fac80ab951f240bffa724f}{is\_alive}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{structecs_1_1_player_component_a26f70fe30f5124f654ce1ade6be47a1d}{sequence\_number}}\ =\ 0;}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_player_component_aa9a9bb882c1aa369a05849962fa2eb65}{connected}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00015\ \ \ \};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

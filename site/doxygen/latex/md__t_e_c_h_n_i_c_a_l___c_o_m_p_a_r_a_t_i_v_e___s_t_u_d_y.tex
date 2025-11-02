@@ -1,0 +1,299 @@
+\chapter{R-\/\+Type -\/ Technical Comparative Study }
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y}{}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y}\index{R-\/Type -\/ Technical Comparative Study@{R-\/Type -\/ Technical Comparative Study}}
+\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md138}%
+\Hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md138}%
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md139}{}\doxysection{\texorpdfstring{📋 Executive Summary}{📋 Executive Summary}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md139}
+This document presents a comparative analysis of the main technologies and design decisions used in the R-\/\+Type project, covering programming languages, libraries, data structures, networking protocols, and security considerations.
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md141}{}\doxysection{\texorpdfstring{🔧 Programming Language Choice}{🔧 Programming Language Choice}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md141}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md142}{}\doxysubsection{\texorpdfstring{C++20 vs Alternatives}{C++20 vs Alternatives}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md142}
+{\bfseries{Selected}}\+: C++20 ~\newline
+ {\bfseries{Considered}}\+: C++17, Rust, C\#, Java
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{5}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Criteria  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ C++20  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Rust  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ C\#  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Java  }\\\cline{1-5}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Criteria  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ C++20  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Rust  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ C\#  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Java  }\\\cline{1-5}
+\endhead
+{\bfseries{Performance}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐⭐  &⭐⭐⭐  &⭐⭐⭐  \\\cline{1-5}
+{\bfseries{Real-\/time Gaming}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐  &⭐⭐⭐  &⭐⭐  \\\cline{1-5}
+{\bfseries{Library Ecosystem}}  &⭐⭐⭐⭐  &⭐⭐⭐  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐⭐  \\\cline{1-5}
+\end{longtabu}
+
+
+{\bfseries{Why C++20?}}
+
+
+\begin{DoxyItemize}
+\item Zero-\/cost abstractions for real-\/time performance
+\item Manual memory management prevents garbage collection pauses
+\item Mature ecosystem for game development
+\item Modern features (concepts, modules) improve code safety
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md144}{}\doxysection{\texorpdfstring{🎨 Graphics Library Analysis}{🎨 Graphics Library Analysis}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md144}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md145}{}\doxysubsection{\texorpdfstring{Raylib vs Alternatives}{Raylib vs Alternatives}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md145}
+{\bfseries{Selected}}\+: Raylib 5.\+5 ~\newline
+ {\bfseries{Considered}}\+: SFML, SDL2, Open\+GL
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{4}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Criteria  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Raylib  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ SFML  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ SDL2  }\\\cline{1-4}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Criteria  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Raylib  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ SFML  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ SDL2  }\\\cline{1-4}
+\endhead
+{\bfseries{Simplicity}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐  &⭐⭐⭐  \\\cline{1-4}
+{\bfseries{Learning Curve}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐  &⭐⭐⭐  \\\cline{1-4}
+{\bfseries{2D Performance}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐  \\\cline{1-4}
+\end{longtabu}
+
+
+{\bfseries{Raylib Advantages}}\+:
+
+
+\begin{DoxyItemize}
+\item Simple API with minimal boilerplate
+\item Integrated audio, input, and collision systems
+\item Lightweight (\texorpdfstring{$\sim$}{\string~}2\+MB) perfect for educational projects
+\item Excellent documentation and examples
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md147}{}\doxysection{\texorpdfstring{🌐 Networking Technology}{🌐 Networking Technology}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md147}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md148}{}\doxysubsection{\texorpdfstring{ASIO vs Alternatives}{ASIO vs Alternatives}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md148}
+{\bfseries{Selected}}\+: ASIO 1.\+36.\+0 (Standalone) {\bfseries{Considered}}\+: Boost.\+Asio, Raw Sockets, libuv
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{4}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Criteria  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ ASIO  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Raw Sockets  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ libuv  }\\\cline{1-4}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Criteria  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ ASIO  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Raw Sockets  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ libuv  }\\\cline{1-4}
+\endhead
+{\bfseries{Async Performance}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐  &⭐⭐⭐⭐⭐  \\\cline{1-4}
+{\bfseries{C++ Integration}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐  &⭐⭐⭐  \\\cline{1-4}
+{\bfseries{Cross-\/platform}}  &⭐⭐⭐⭐⭐  &⭐⭐  &⭐⭐⭐⭐⭐  \\\cline{1-4}
+\end{longtabu}
+
+
+{\bfseries{ASIO Benefits}}\+:
+
+
+\begin{DoxyItemize}
+\item Header-\/only library (no linking dependencies)
+\item Excellent async I/O for handling multiple clients
+\item Optimized for UDP low-\/latency gaming
+\item Standard-\/compliant networking implementation
+\end{DoxyItemize}\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md149}{}\doxysubsection{\texorpdfstring{Protocol Choice\+: UDP vs TCP}{Protocol Choice\+: UDP vs TCP}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md149}
+{\bfseries{Selected}}\+: UDP {\bfseries{Reason}}\+: Real-\/time games require low latency LAN (1-\/5ms) \& WLAN (≈20–100+ ms) over reliability
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Custom\ reliability\ layer\ implementation}}
+\DoxyCodeLine{\textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \{}
+\DoxyCodeLine{\ \ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}}\ \mbox{\hyperlink{struct_packet_header_a526f239021c9d07360790bea5c78eff1}{type}};}
+\DoxyCodeLine{\ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_packet_header_a8efaae40ec9869d97c70ef87b0b02479}{size}};}
+\DoxyCodeLine{\ \ \ \ uint32\_t\ sequence\_number;}
+\DoxyCodeLine{\};}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md151}{}\doxysection{\texorpdfstring{🏗️ Architecture and Data Structures}{🏗️ Architecture and Data Structures}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md151}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md152}{}\doxysubsection{\texorpdfstring{Entity-\/\+Component-\/\+System (ECS)}{Entity-\/\+Component-\/\+System (ECS)}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md152}
+{\bfseries{Selected}}\+: Custom ECS Implementation ~\newline
+ {\bfseries{Alternatives}}\+: Object-\/\+Oriented Hierarchy, Component-\/\+Based Architecture
+
+{\bfseries{ECS Advantages}}\+:
+
+
+\begin{DoxyItemize}
+\item Cache-\/efficient data layout
+\item Flexible component composition
+\item Easy parallelization of systems
+\item Scalable to thousands of entities
+\end{DoxyItemize}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Cache-\/friendly\ component\ storage}}
+\DoxyCodeLine{\textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{\textcolor{keyword}{class\ }Component\ :\ \textcolor{keyword}{public}\ IComponentArray\ \{}
+\DoxyCodeLine{\ \ \ \ std::array<T,\ MAX\_ENTITIES>\ \_componentArray;}
+\DoxyCodeLine{\ \ \ \ std::unordered\_map<Entity,\ size\_t>\ \_entityToIndexMap;}
+\DoxyCodeLine{\};}
+
+\end{DoxyCode}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md153}{}\doxysubsection{\texorpdfstring{Network Data Structures}{Network Data Structures}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md153}
+{\bfseries{Thread-\/safe Event Queue}}\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keyword}{class\ }EventQueue\ \{}
+\DoxyCodeLine{\ \ \ \ std::queue<GameEvent>\ \_queue;}
+\DoxyCodeLine{\ \ \ \ \textcolor{keyword}{mutable}\ std::mutex\ \_mutex;}
+\DoxyCodeLine{\};}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md155}{}\doxysection{\texorpdfstring{💾 Storage and Configuration}{💾 Storage and Configuration}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md155}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md156}{}\doxysubsection{\texorpdfstring{Configuration Format}{Configuration Format}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md156}
+{\bfseries{Selected}}\+: Properties File ~\newline
+ {\bfseries{Alternatives}}\+: JSON, XML
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{4}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Format  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Properties  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ JSON  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ XML  }\\\cline{1-4}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Format  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Properties  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ JSON  }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ XML  }\\\cline{1-4}
+\endhead
+{\bfseries{Simplicity}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐  &⭐⭐  \\\cline{1-4}
+{\bfseries{Parsing Speed}}  &⭐⭐⭐⭐⭐  &⭐⭐⭐⭐  &⭐⭐⭐  \\\cline{1-4}
+\end{longtabu}
+
+
+{\bfseries{Properties file chosen for}}\+:
+
+
+\begin{DoxyItemize}
+\item Human-\/readable format
+\item Fast parsing
+\item Simple key=value structure
+\end{DoxyItemize}\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md157}{}\doxysubsection{\texorpdfstring{Memory Management}{Memory Management}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md157}
+{\bfseries{Strategy}}\+: RAII with Smart Pointers
+
+
+\begin{DoxyItemize}
+\item {\ttfamily std\+::unique\+\_\+ptr} for exclusive ownership
+\item {\ttfamily std\+::shared\+\_\+ptr} for shared resources
+\item Automatic resource cleanup
+\item Exception safety
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md159}{}\doxysection{\texorpdfstring{🔒 Security Analysis}{🔒 Security Analysis}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md159}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md160}{}\doxysubsection{\texorpdfstring{Current Security Measures}{Current Security Measures}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md160}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md161}{}\doxysubsubsection{\texorpdfstring{Network Security}{Network Security}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md161}
+
+\begin{DoxyItemize}
+\item Client endpoint validation
+\item Packet size validation
+\end{DoxyItemize}\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md162}{}\doxysubsubsection{\texorpdfstring{Anti-\/\+Cheat Implementation}{Anti-\/\+Cheat Implementation}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md162}
+
+\begin{DoxyItemize}
+\item Server-\/side position validation
+\item Movement speed checks
+\item Server authority model
+\end{DoxyItemize}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Position\ validation\ example}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ validatePlayerPosition(Player\&\ player,\ \textcolor{keywordtype}{float}\ newX,\ \textcolor{keywordtype}{float}\ newY)\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordtype}{float}\ maxDistance\ =\ player.getSpeed()\ *\ deltaTime;}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordtype}{float}\ actualDistance\ =\ calculateDistance(player.getPosition(),\ \{newX,\ newY\});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{if}\ (actualDistance\ >\ maxDistance)\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reject\ suspicious\ movement}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md164}{}\doxysection{\texorpdfstring{🚀 Build System}{🚀 Build System}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md164}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md165}{}\doxysubsection{\texorpdfstring{CMake + Conan}{CMake + Conan}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md165}
+{\bfseries{Selected}}\+: CMake 3.\+27.\+4 + Conan 2.\+x ~\newline
+ {\bfseries{Alternatives}}\+: Premake, vcpkg, Git Submodules
+
+{\bfseries{Benefits}}\+:
+
+
+\begin{DoxyItemize}
+\item Cross-\/platform build system
+\item Dependency management with Conan
+\item IDE integration
+\item Binary caching for faster builds
+\end{DoxyItemize}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\ Simplified\ dependency\ management}}
+\DoxyCodeLine{[\textcolor{keyword}{requires}]}
+\DoxyCodeLine{raylib/5.5}
+\DoxyCodeLine{asio/1.36.0}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md167}{}\doxysection{\texorpdfstring{📊 Performance Considerations}{📊 Performance Considerations}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md167}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md168}{}\doxysubsection{\texorpdfstring{Benchmarks}{Benchmarks}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md168}
+{\bfseries{Network Performance}}\+:
+
+
+\begin{DoxyItemize}
+\item Packet processing\+: 10,000 packets/second
+\item Average latency\+: 2-\/5 ms (LAN), ≈20–100+ ms (WLAN)
+\item Bandwidth\+: \texorpdfstring{$\sim$}{\string~}50 KB/s per client
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md170}{}\doxysection{\texorpdfstring{🔮 Future Improvements}{🔮 Future Improvements}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md170}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md171}{}\doxysubsection{\texorpdfstring{Short-\/term}{Short-\/term}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md171}
+
+\begin{DoxyItemize}
+\item Enhanced packet validation
+\item Rate limiting for DoS protection
+\item Client authentication system
+\end{DoxyItemize}\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md172}{}\doxysubsection{\texorpdfstring{Long-\/term}{Long-\/term}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md172}
+
+\begin{DoxyItemize}
+\item Database integration for persistence
+\item Advanced anti-\/cheat systems
+\item Cross-\/platform client support
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md174}{}\doxysection{\texorpdfstring{📝 Conclusion}{📝 Conclusion}}\label{md__t_e_c_h_n_i_c_a_l___c_o_m_p_a_r_a_t_i_v_e___s_t_u_d_y_autotoc_md174}
+The chosen technology stack balances\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Performance}}\+: Real-\/time gaming requirements
+\item {\bfseries{Simplicity}}\+: Rapid development and maintenance
+\item {\bfseries{Security}}\+: Basic protection with room for enhancement
+\item {\bfseries{Scalability}}\+: Architecture supports future growth
+\end{DoxyItemize}
+
+{\bfseries{Key strengths}}\+: Low-\/latency networking, cache-\/efficient ECS, simple build system ~\newline
+ {\bfseries{Areas for improvement}}\+: Enhanced security, data persistence, monitoring
+
+\DoxyHorRuler{0}
+
+
+{\bfseries{Document Version}}\+: 1.\+0 ~\newline
+ {\bfseries{Last Updated}}\+: October 2nd 2025 {\bfseries{Team}}\+: R-\/\+Type Development Team 

@@ -1,0 +1,44 @@
+\chapter{Asset Management }
+\hypertarget{md_docs_2wiki_2_asset_management}{}\label{md_docs_2wiki_2_asset_management}\index{Asset Management@{Asset Management}}
+\label{md_docs_2wiki_2_asset_management_autotoc_md62}%
+\Hypertarget{md_docs_2wiki_2_asset_management_autotoc_md62}%
+
+
+This section details how game assets (sprites, backgrounds, etc.) are managed and loaded within the R-\/\+Type project, primarily focusing on the client-\/side implementation.\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md63}{}\doxysection{\texorpdfstring{Overview}{Overview}}\label{md_docs_2wiki_2_asset_management_autotoc_md63}
+The R-\/\+Type client employs an {\ttfamily Asset\+Manager} to handle the loading and management of various game assets, such as textures and images. A key feature of this system is the ability to embed assets directly into the executable at compile-\/time, reducing reliance on external files at runtime. This is particularly useful for ensuring all necessary assets are present and loaded efficiently.\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md64}{}\doxysection{\texorpdfstring{{\ttfamily Asset\+Manager} ({\ttfamily client/\+Asset\+Manager.\+hpp})}{{\ttfamily Asset\+Manager} ({\ttfamily client/\+Asset\+Manager.\+hpp})}}\label{md_docs_2wiki_2_asset_management_autotoc_md64}
+The {\ttfamily \doxylink{classasset_1_1_asset_manager}{asset\+::\+Asset\+Manager}} class is responsible for\+:
+
+
+\begin{DoxyItemize}
+\item {\bfseries{Embedded Asset Handling}}\+: It can export image files as C header files ({\ttfamily export\+Image\+As\+Code}) which contain the image data as static arrays. These embedded assets can then be registered ({\ttfamily register\+Embedded\+Image}) and loaded at runtime using a special {\ttfamily embedded\+://} scheme.
+\item {\bfseries{Runtime Loading}}\+: Provides methods ({\ttfamily load\+Texture}, {\ttfamily load\+Image}) to load assets. It first attempts to load from embedded data; if not found or if the path doesn\textquotesingle{}t use the {\ttfamily embedded\+://} scheme, it falls back to loading from the file system.
+\item {\bfseries{Texture and Image Management}}\+: Utilizes {\ttfamily raylib} functions for handling {\ttfamily Texture2D} and {\ttfamily Image} types.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md65}{}\doxysubsection{\texorpdfstring{Key Methods\+:}{Key Methods\+:}}\label{md_docs_2wiki_2_asset_management_autotoc_md65}
+
+\begin{DoxyItemize}
+\item {\ttfamily static bool export\+Image\+As\+Code(const std\+::string \&image\+Path, const std\+::string \&output\+Header\+Path)}\+: Exports an image to a C header file for embedding.
+\item {\ttfamily static Texture2D load\+Texture(const std\+::string \&path)}\+: Loads a texture, prioritizing embedded assets.
+\item {\ttfamily static Image load\+Image(const std\+::string \&path)}\+: Loads an image, prioritizing embedded assets.
+\item {\ttfamily static void register\+Embedded\+Image(const std\+::string \&name, void \texorpdfstring{$\ast$}{*}data, int width, int height, int format)}\+: Registers an embedded image with a given name and its properties.
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md66}{}\doxysection{\texorpdfstring{{\ttfamily Render\+Manager} ({\ttfamily client/\+Render\+Manager.\+hpp})}{{\ttfamily Render\+Manager} ({\ttfamily client/\+Render\+Manager.\+hpp})}}\label{md_docs_2wiki_2_asset_management_autotoc_md66}
+The {\ttfamily \doxylink{classrender_manager_1_1_renderer}{render\+Manager\+::\+Renderer}} class, while primarily focused on rendering operations, defines constants for the paths to various core game assets. These paths often point to embedded assets, indicating their importance and how they are accessed by the rendering system.\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md67}{}\doxysubsection{\texorpdfstring{Asset Paths Defined\+:}{Asset Paths Defined\+:}}\label{md_docs_2wiki_2_asset_management_autotoc_md67}
+
+\begin{DoxyItemize}
+\item {\ttfamily WINDOW\+\_\+\+WIDTH}, {\ttfamily WINDOW\+\_\+\+HEIGHT}\+: Window dimensions.
+\item {\ttfamily SCROLL\+\_\+\+SPEED}\+: Speed for background scrolling.
+\item {\ttfamily BG\+\_\+\+PATH}\+: Path to the background asset (e.\+g., {\ttfamily embedded\+://background}).
+\item {\ttfamily PLAYER\+\_\+\+PATH}\+: Path to the player spritesheet (e.\+g., {\ttfamily embedded\+://players}).
+\item {\ttfamily PROJECTILE\+\_\+\+PATH}\+: Path to the projectile spritesheet (e.\+g., {\ttfamily embedded\+://projectiles}).
+\item {\ttfamily ENEMY\+\_\+\+PATH}\+: Path to the enemy spritesheet (e.\+g., {\ttfamily embedded\+://enemy}).
+\end{DoxyItemize}\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md68}{}\doxysection{\texorpdfstring{Asset Resources ({\ttfamily client/resources/})}{Asset Resources ({\ttfamily client/resources/})}}\label{md_docs_2wiki_2_asset_management_autotoc_md68}
+This directory contains the raw image files that are used as game assets. These files are typically processed by the {\ttfamily Asset\+Manager} (e.\+g., embedded) or loaded directly at runtime.\hypertarget{md_docs_2wiki_2_asset_management_autotoc_md69}{}\doxysubsection{\texorpdfstring{Contents\+:}{Contents\+:}}\label{md_docs_2wiki_2_asset_management_autotoc_md69}
+
+\begin{DoxyItemize}
+\item {\ttfamily background.\+png}\+: The main background image for the game.
+\item {\ttfamily enemies.\+gif}\+: Spritesheet or animation for enemy characters.
+\item {\ttfamily players.\+gif}\+: Spritesheet or animation for player characters.
+\item {\ttfamily projectiles.\+gif}\+: Spritesheet or animation for projectiles.
+\item {\ttfamily start\+\_\+screen.\+png}\+: Image for the game\textquotesingle{}s start screen.
+\end{DoxyItemize}
+
+By combining embedded assets with a fallback to file-\/system loading, the R-\/\+Type client ensures efficient asset delivery and flexibility during development. 

@@ -1,0 +1,75 @@
+\doxysection{System\+Manager.\+hpp}
+\hypertarget{_system_manager_8hpp_source}{}\label{_system_manager_8hpp_source}\index{game\_engine/ecs/SystemManager.hpp@{game\_engine/ecs/SystemManager.hpp}}
+\mbox{\hyperlink{_system_manager_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_entity_manager_8hpp}{EntityManager.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_system_8hpp}{System.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <typeindex>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_system_manager}{SystemManager}}\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ std::shared\_ptr<T>\ \mbox{\hyperlink{classecs_1_1_system_manager_acdd0e6ddb2c16f4023d6107d3e2afbc9}{registerSystem}}()\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \ \ std::type\_index\ ti(\textcolor{keyword}{typeid}(T));}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\_systems.find(ti)\ !=\ \_systems.end())\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Cannot\ register\ system:\ System\ already\ registered."{}});}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ system\ =\ std::make\_shared<T>();}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ \_systems.insert(\{ti,\ system\});}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ system;}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_system_manager_a022ee5d17ab1b51f8305046c909dd031}{setSignature}}(\mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}\ signature)\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \ \ std::type\_index\ ti(\textcolor{keyword}{typeid}(T));}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \_signatures.insert(\{ti,\ signature\});}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ std::shared\_ptr<T>\ \mbox{\hyperlink{classecs_1_1_system_manager_a294b8df9f5079458dca29dbb94be5506}{getSystem}}()\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ std::type\_index\ ti(\textcolor{keyword}{typeid}(T));}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ \_systems.find(ti);}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ \_systems.end())\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::static\_pointer\_cast<T>(it-\/>second);}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_system_manager_ae2abf3bd633b0acd7f6d4ca00f3241e3}{entityDestroyed}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&pair\ :\ \_systems)\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ pair.second-\/>\_entities.erase(entityId);}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_system_manager_ad345bcb888518e7fc2040a0019f55142}{entitySignatureChanged}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entityId,\ \mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}\ entitySignature)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ \&pair\ :\ \_systems)\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ \&type\ =\ pair.first;}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ \&system\ =\ pair.second;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \textcolor{keyword}{const}\ \&systemSignature\ =\ \_signatures[type];}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((entitySignature\ \&\ systemSignature)\ ==\ systemSignature)\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system-\/>\_entities.insert(entityId);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ system-\/>\_entities.erase(entityId);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_system_manager_a01a89648a01bfafedf4887a4756a24f8}{update}}(\textcolor{keywordtype}{float}\ dt)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \textcolor{keyword}{const}\&\ [type,\ system]\ :\ \_systems)}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ system-\/>update(dt);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ std::unordered\_map<std::type\_index,\ std::shared\_ptr<System>>\ \_systems;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ std::unordered\_map<std::type\_index,\ Signature>\ \_signatures;}
+\DoxyCodeLine{00068\ \ \ \ \ \};}
+\DoxyCodeLine{00069\ \}}
+
+\end{DoxyCode}

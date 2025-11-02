@@ -1,0 +1,40 @@
+\doxysection{Client\+Network\+Manager.\+hpp}
+\hypertarget{_client_network_manager_8hpp_source}{}\label{_client_network_manager_8hpp_source}\index{core/network/ClientNetworkManager.hpp@{core/network/ClientNetworkManager.hpp}}
+\mbox{\hyperlink{_client_network_manager_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_base_network_manager_8hpp}{BaseNetworkManager.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}PacketFactory.hpp"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacenetwork}{network}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classnetwork_1_1_client_network_manager_aafbb51454b362bbee7d40cc090e2946c}{ClientNetworkManager}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classnetwork_1_1_base_network_manager_a5edac7c211396b6c1c5212903b8c4a22}{BaseNetworkManager}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_aafbb51454b362bbee7d40cc090e2946c}{ClientNetworkManager}}(\textcolor{keyword}{const}\ std::string\ \&host,\ std::uint16\_t\ port);}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a86ccdb2caaeebe4220073b8488e48675}{startReceive}}(\textcolor{keyword}{const}\ std::function<\textcolor{keywordtype}{void}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *,\ std::size\_t)>}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&callback)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a3aecc28b4c0f22db9ad3234fda249311}{send}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,\ std::size\_t\ size)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a2c5b1a5fdbb84c600af076c8436fe279}{run}}()\textcolor{keyword}{\ override\ }\{\};}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a940de10a9d365c288b0854fbee352101}{stop}}()\textcolor{keyword}{\ override\ }\{\};}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_ab4d6c5399b5e089cde31d9f79a610619}{connect}}();}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a9c6320afb892087e890f21f355bdf5bf}{disconnect}}();}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_ad52073cbd4cf8e65565a31dac65f268b}{receivePackets}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}});}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a85616569a047323086af6624aa3ea0e7}{isConnected}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_running.load(std::memory\_order\_acquire);}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ std::string\ \_host;}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ std::uint16\_t\ \_port;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ asio::ip::udp::endpoint\ \_server\_endpoint;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ asio::ip::udp::endpoint\ \_remote\_endpoint;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ std::atomic<bool>\ \_running;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ std::chrono::milliseconds\ \_timeout;}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory}{packet::PacketHandlerFactory}}\ \_packetFactory;}
+\DoxyCodeLine{00032\ \ \ \};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \}\ \ \textcolor{comment}{//\ namespace\ network}}
+
+\end{DoxyCode}

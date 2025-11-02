@@ -1,0 +1,247 @@
+\doxysection{Packet\+Builder.\+hpp}
+\hypertarget{_packet_builder_8hpp_source}{}\label{_packet_builder_8hpp_source}\index{core/network/PacketBuilder.hpp@{core/network/PacketBuilder.hpp}}
+\mbox{\hyperlink{_packet_builder_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <ctime>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{struct_packet_builder}{PacketBuilder}}\ \{}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_message_packet}{MessagePacket}}\ \mbox{\hyperlink{struct_packet_builder_acaba56e5be0e6e18d9a12ca2c1877306}{makeMessage}}(\textcolor{keyword}{const}\ std::string\ \&msg)\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \mbox{\hyperlink{struct_message_packet}{MessagePacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4}{PacketType::Message}};}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.timestamp\ =\ \textcolor{keyword}{static\_cast<}uint32\_t\textcolor{keyword}{>}(time(\textcolor{keyword}{nullptr}));}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ strncpy(\mbox{\hyperlink{namespacepacket}{packet}}.message,\ msg.c\_str(),\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}}.message)\ -\/\ 1);}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.message[\textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}}.message)\ -\/\ 1]\ =\ \textcolor{charliteral}{'\(\backslash\)0'};}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00018\ \ \ \ \ \}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_new_player_packet}{NewPlayerPacket}}\ \mbox{\hyperlink{struct_packet_builder_ada2ad0174d694295c33b2d6fbe6d3a4b}{makeNewPlayer}}(uint32\_t\ player\_id,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ speed,}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ max\_health\ =\ 100)\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \mbox{\hyperlink{struct_new_player_packet}{NewPlayerPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a31435ad802459589a67356c4eb44ee2f}{PacketType::NewPlayer}};}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.speed\ =\ speed;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.max\_health\ =\ max\_health;}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00032\ \ \ \ \ \}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_position_packet}{PositionPacket}}\ \mbox{\hyperlink{struct_packet_builder_a7e756d5398dc6fecd059939b14e5f27d}{makePosition}}(\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ uint32\_t\ seq)\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \mbox{\hyperlink{struct_position_packet}{PositionPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a52f5e0bc3859bc5f5e25130b6c7e8881}{PacketType::Position}};}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.sequence\_number\ =\ seq;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00042\ \ \ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_move_packet}{MovePacket}}\ \mbox{\hyperlink{struct_packet_builder_a19f19a5e6c274273acc4b22c9f518df7}{makeMove}}(uint32\_t\ player\_id,\ uint32\_t\ seq,\ \textcolor{keywordtype}{float}\ x,}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ y)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \mbox{\hyperlink{struct_move_packet}{MovePacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a6bc362dbf494c61ea117fe3c71ca48a5}{PacketType::Move}};}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.sequence\_number\ =\ seq;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_player_info_packet}{PlayerInfoPacket}}\ \mbox{\hyperlink{struct_packet_builder_a417cf5ff13fc713e4a692f1f7fefa9dc}{makePlayerInfo}}(\textcolor{keyword}{const}\ std::string\ \&name)\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \mbox{\hyperlink{struct_player_info_packet}{PlayerInfoPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf}{PacketType::PlayerInfo}};}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ strncpy(\mbox{\hyperlink{namespacepacket}{packet}}.name,\ name.c\_str(),\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}}.name)\ -\/\ 1);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.name[\textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}}.name)\ -\/\ 1]\ =\ \textcolor{charliteral}{'\(\backslash\)0'};}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_player_hit_packet}{PlayerHitPacket}}\ \mbox{\hyperlink{struct_packet_builder_a82eba457f8057ba10d28591994f5b054}{makePlayerHit}}(std::uint32\_t\ player\_id,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::uint32\_t\ damage,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sequence\_number)\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \mbox{\hyperlink{struct_player_hit_packet}{PlayerHitPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a63ae15ec306649a88bd42ec52d28a042}{PacketType::PlayerHit}};}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.damage\ =\ damage;}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.sequence\_number\ =\ sequence\_number;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00098\ \ \ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_enemy_spawn_packet}{EnemySpawnPacket}}\ \mbox{\hyperlink{struct_packet_builder_a222956b54e8c7bde7cbd3564659dec5d}{makeEnemySpawn}}(uint32\_t\ enemy\_id,\ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{EnemyType}}\ type,}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ vx,\ \textcolor{keywordtype}{float}\ vy,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ health,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ max\_health)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \mbox{\hyperlink{struct_enemy_spawn_packet}{EnemySpawnPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b}{PacketType::EnemySpawn}};}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.enemy\_id\ =\ enemy\_id;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.enemy\_type\ =\ type;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.velocity\_x\ =\ vx;}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.velocity\_y\ =\ vy;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.health\ =\ health;}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.max\_health\ =\ max\_health;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_enemy_move_packet}{EnemyMovePacket}}\ \mbox{\hyperlink{struct_packet_builder_a290e0eb23fe1587fc5a5e177b7cabc8a}{makeEnemyMove}}(uint32\_t\ enemy\_id,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ velocity\_x,\ \textcolor{keywordtype}{float}\ velocity\_y,}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ seq)\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \mbox{\hyperlink{struct_enemy_move_packet}{EnemyMovePacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4}{PacketType::EnemyMove}};}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.enemy\_id\ =\ enemy\_id;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.velocity\_x\ =\ velocity\_x;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.velocity\_y\ =\ velocity\_y;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.sequence\_number\ =\ seq;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00146\ \ \ \ \ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_enemy_death_packet}{EnemyDeathPacket}}\ \mbox{\hyperlink{struct_packet_builder_a80fe6a5cc757ec5be262e52e93ca6df9}{makeEnemyDeath}}(uint32\_t\ enemy\_id,\ \textcolor{keywordtype}{float}\ death\_x,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ death\_y,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::uint32\_t\ player\_id,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::uint32\_t\ score)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \mbox{\hyperlink{struct_enemy_death_packet}{EnemyDeathPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c}{PacketType::EnemyDeath}};}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.enemy\_id\ =\ enemy\_id;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.death\_x\ =\ death\_x;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.death\_y\ =\ death\_y;}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.score\ =\ score;}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00174\ \ \ \ \ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_enemy_hit_packet}{EnemyHitPacket}}\ \mbox{\hyperlink{struct_packet_builder_a1437ef28500847a8037e5cd80a275d59}{makeEnemyHit}}(uint32\_t\ enemy\_id,\ \textcolor{keywordtype}{float}\ hit\_x,}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ hit\_y,\ \textcolor{keywordtype}{float}\ damage,}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sequence\_number)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \mbox{\hyperlink{struct_enemy_hit_packet}{EnemyHitPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6}{PacketType::EnemyHit}};}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.enemy\_id\ =\ enemy\_id;}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.hit\_x\ =\ hit\_x;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.hit\_y\ =\ hit\_y;}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.damage\ =\ damage;}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.sequence\_number\ =\ sequence\_number;}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00199\ \ \ \ \ \}}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_player_shoot_packet}{PlayerShootPacket}}\ \mbox{\hyperlink{struct_packet_builder_a35b0771e51b4523f96bde856d1bdab1d}{makePlayerShoot}}(\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ projectile\_type,}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ seq)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \mbox{\hyperlink{struct_player_shoot_packet}{PlayerShootPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab8c261cbfda10bf4a28e8e34ed4358c5}{PacketType::PlayerShoot}};}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.projectile\_type\ =\ projectile\_type;}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.sequence\_number\ =\ seq;}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00223\ \ \ \ \ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_projectile_spawn_packet}{ProjectileSpawnPacket}}\ \mbox{\hyperlink{struct_packet_builder_ac557513835043ca6d0b5cd5ecd8978ee}{makeProjectileSpawn}}(}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ uint32\_t\ projectile\_id,\ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ type,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ vel\_x,\ \textcolor{keywordtype}{float}\ vel\_y,\ \textcolor{keywordtype}{bool}\ is\_enemy,\ uint32\_t\ damage,}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ uint32\_t\ owner\_id)\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \mbox{\hyperlink{struct_projectile_spawn_packet}{ProjectileSpawnPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a16164d21abaa91f4ff410c8ebab62f1d}{PacketType::ProjectileSpawn}};}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.projectile\_id\ =\ projectile\_id;}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.projectile\_type\ =\ type;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.velocity\_x\ =\ vel\_x;}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.velocity\_y\ =\ vel\_y;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.is\_enemy\_projectile\ =\ is\_enemy;}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.damage\ =\ damage;}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.owner\_id\ =\ owner\_id;}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00242\ \ \ \ \ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_projectile_hit_packet}{ProjectileHitPacket}}\ \mbox{\hyperlink{struct_packet_builder_a1f87b3b69ea99a79d4f797584b2a3593}{makeProjectileHit}}(uint32\_t\ projectile\_id,}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ target\_id,}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ hit\_x,\ \textcolor{keywordtype}{float}\ hit\_y,}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ target\_is\_player)\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \mbox{\hyperlink{struct_projectile_hit_packet}{ProjectileHitPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56acbda45001b65945889cb6008e0120a70}{PacketType::ProjectileHit}};}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.projectile\_id\ =\ projectile\_id;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.target\_id\ =\ target\_id;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.hit\_x\ =\ hit\_x;}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.hit\_y\ =\ hit\_y;}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.target\_is\_player\ =\ target\_is\_player;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00257\ \ \ \ \ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_projectile_destroy_packet}{ProjectileDestroyPacket}}\ \mbox{\hyperlink{struct_packet_builder_a106cfcccc4e04df15d5050c72c3c2520}{makeProjectileDestroy}}(uint32\_t\ projectile\_id,}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y)\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \mbox{\hyperlink{struct_projectile_destroy_packet}{ProjectileDestroyPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56aea51190bde5a3322efb2a4c930c6ad2f}{PacketType::ProjectileDestroy}};}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.projectile\_id\ =\ projectile\_id;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00268\ \ \ \ \ \}}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_game_start_packet}{GameStartPacket}}\ \mbox{\hyperlink{struct_packet_builder_ab12ea116136952f753364f1c61cbf75c}{makeGameStart}}(\textcolor{keywordtype}{bool}\ started)\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \mbox{\hyperlink{struct_game_start_packet}{GameStartPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a492785297322c6add81eb6abe8744bdf}{PacketType::GameStart}};}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.game\_start\ =\ started;}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00276\ \ \ \ \ \}}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00286\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_game_end_packet}{GameEndPacket}}\ \mbox{\hyperlink{struct_packet_builder_a60f751058630218ed3f54fcbdfcbb86c}{makeGameEnd}}(\textcolor{keywordtype}{bool}\ ended)\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \mbox{\hyperlink{struct_game_end_packet}{GameEndPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56abd6252bdc40fb60b3044db4eace65340}{PacketType::GameEnd}};}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.game\_end\ =\ ended;}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00292\ \ \ \ \ \}}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_player_death_packet}{PlayerDeathPacket}}\ \mbox{\hyperlink{struct_packet_builder_af93044fa8ab14aa5d9d0d855643f2d41}{makePlayerDeath}}(uint32\_t\ player\_id,\ \textcolor{keywordtype}{float}\ x,}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ y)\ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \mbox{\hyperlink{struct_player_death_packet}{PlayerDeathPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab9fbac179f1be377fe125f9deb1a4ba9}{PacketType::PlayerDeath}};}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.x\ =\ x;}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.y\ =\ y;}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00315\ \ \ \ \ \}}
+\DoxyCodeLine{00316\ }
+\DoxyCodeLine{00325\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_player_disconnect_packet}{PlayerDisconnectPacket}}\ \mbox{\hyperlink{struct_packet_builder_a4aa27520e8a5d3201216a13b0dda5cbb}{makePlayerDisconnect}}(uint32\_t\ player\_id)\ \{}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \mbox{\hyperlink{struct_player_disconnect_packet}{PlayerDisconnectPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}{PacketType::PlayerDisconnected}};}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00331\ \ \ \ \ \}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00341\ \ \ \ \ \textcolor{keyword}{static}\ \mbox{\hyperlink{struct_heartbeat_player_packet}{HeartbeatPlayerPacket}}\ \mbox{\hyperlink{struct_packet_builder_a0f7073daa3803a59d121f0bdb8a3a5bf}{makeHeartbeatPlayer}}(uint32\_t\ player\_id)\ \{}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \mbox{\hyperlink{struct_heartbeat_player_packet}{HeartbeatPlayerPacket}}\ \mbox{\hyperlink{namespacepacket}{packet}}\{\};}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.type\ =\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e}{PacketType::Heartbeat}};}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.header.size\ =\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \mbox{\hyperlink{namespacepacket}{packet}}.player\_id\ =\ player\_id;}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespacepacket}{packet}};}
+\DoxyCodeLine{00347\ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \};}
+
+\end{DoxyCode}

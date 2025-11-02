@@ -1,0 +1,124 @@
+\doxysection{network\+::Base\+Network\+Manager Class Reference}
+\hypertarget{classnetwork_1_1_base_network_manager}{}\label{classnetwork_1_1_base_network_manager}\index{network::BaseNetworkManager@{network::BaseNetworkManager}}
+
+
+{\ttfamily \#include $<$Base\+Network\+Manager.\+hpp$>$}
+
+
+
+Inheritance diagram for network\+::Base\+Network\+Manager\+:
+% FIG 0
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classnetwork_1_1_base_network_manager_a5edac7c211396b6c1c5212903b8c4a22}{Base\+Network\+Manager}} (std\+::uint16\+\_\+t port)
+\item 
+virtual \mbox{\hyperlink{classnetwork_1_1_base_network_manager_a6c82318c6824ff632dd4e4d9cb9f0856}{\texorpdfstring{$\sim$}{\string~}\+Base\+Network\+Manager}} ()=default
+\item 
+virtual void \mbox{\hyperlink{classnetwork_1_1_base_network_manager_aa5b64c41a36f5e9673064ec49e454e7a}{start\+Receive}} (const std\+::function$<$ void(const char \texorpdfstring{$\ast$}{*}, std\+::size\+\_\+t)$>$ \&callback)=0
+\item 
+virtual void \mbox{\hyperlink{classnetwork_1_1_base_network_manager_af617910160df4e3acfe4ad50582e84b6}{send}} (const char \texorpdfstring{$\ast$}{*}data, std\+::size\+\_\+t size)=0
+\item 
+virtual void \mbox{\hyperlink{classnetwork_1_1_base_network_manager_af3e0f4c2b2b300e549329f3fa8e50df5}{run}} ()=0
+\item 
+virtual void \mbox{\hyperlink{classnetwork_1_1_base_network_manager_ae4907730692ac57f674a87812f6644f3}{stop}} ()=0
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+asio\+::io\+\_\+context \mbox{\hyperlink{classnetwork_1_1_base_network_manager_a0a89be910bc4b147d73b4687579b875a}{\+\_\+io\+\_\+context}}
+\item 
+asio\+::ip\+::udp\+::socket \mbox{\hyperlink{classnetwork_1_1_base_network_manager_aee6f87f8271af91b4f47394e0dd1c776}{\+\_\+socket}}
+\item 
+std\+::array$<$ char, \mbox{\hyperlink{_macro_8hpp_a01c5fb279d6b80ebed829be7a804dde2}{BUFFER\+\_\+\+SIZE}} $>$ \mbox{\hyperlink{classnetwork_1_1_base_network_manager_a692cecfddd9d29562f98270d718e0af3}{\+\_\+recv\+\_\+buffer}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classnetwork_1_1_base_network_manager_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classnetwork_1_1_base_network_manager_a5edac7c211396b6c1c5212903b8c4a22}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!BaseNetworkManager@{BaseNetworkManager}}
+\index{BaseNetworkManager@{BaseNetworkManager}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{BaseNetworkManager()}{BaseNetworkManager()}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_a5edac7c211396b6c1c5212903b8c4a22} 
+network\+::\+Base\+Network\+Manager\+::\+Base\+Network\+Manager (\begin{DoxyParamCaption}\item[{std\+::uint16\+\_\+t}]{port}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+\Hypertarget{classnetwork_1_1_base_network_manager_a6c82318c6824ff632dd4e4d9cb9f0856}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!````~BaseNetworkManager@{\texorpdfstring{$\sim$}{\string~}BaseNetworkManager}}
+\index{````~BaseNetworkManager@{\texorpdfstring{$\sim$}{\string~}BaseNetworkManager}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}BaseNetworkManager()}{\string~BaseNetworkManager()}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_a6c82318c6824ff632dd4e4d9cb9f0856} 
+virtual network\+::\+Base\+Network\+Manager\+::\texorpdfstring{$\sim$}{\string~}\+Base\+Network\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classnetwork_1_1_base_network_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classnetwork_1_1_base_network_manager_af3e0f4c2b2b300e549329f3fa8e50df5}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!run@{run}}
+\index{run@{run}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_af3e0f4c2b2b300e549329f3fa8e50df5} 
+virtual void network\+::\+Base\+Network\+Manager\+::run (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a2c5b1a5fdbb84c600af076c8436fe279}{network\+::\+Client\+Network\+Manager}}, and \mbox{\hyperlink{classnetwork_1_1_server_network_manager_a5e1b8b7329b2435e81aa5a68baf687a0}{network\+::\+Server\+Network\+Manager}}.
+
+\Hypertarget{classnetwork_1_1_base_network_manager_af617910160df4e3acfe4ad50582e84b6}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!send@{send}}
+\index{send@{send}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_af617910160df4e3acfe4ad50582e84b6} 
+virtual void network\+::\+Base\+Network\+Manager\+::send (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{std\+::size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a3aecc28b4c0f22db9ad3234fda249311}{network\+::\+Client\+Network\+Manager}}, and \mbox{\hyperlink{classnetwork_1_1_server_network_manager_afd372d8e89e07f1ddc6960f743068c04}{network\+::\+Server\+Network\+Manager}}.
+
+\Hypertarget{classnetwork_1_1_base_network_manager_aa5b64c41a36f5e9673064ec49e454e7a}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!startReceive@{startReceive}}
+\index{startReceive@{startReceive}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{startReceive()}{startReceive()}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_aa5b64c41a36f5e9673064ec49e454e7a} 
+virtual void network\+::\+Base\+Network\+Manager\+::start\+Receive (\begin{DoxyParamCaption}\item[{const std\+::function$<$ void(const char \texorpdfstring{$\ast$}{*}, std\+::size\+\_\+t)$>$ \&}]{callback}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a86ccdb2caaeebe4220073b8488e48675}{network\+::\+Client\+Network\+Manager}}, and \mbox{\hyperlink{classnetwork_1_1_server_network_manager_a484ad5a93c714cda5f41e1aca0c01ed9}{network\+::\+Server\+Network\+Manager}}.
+
+\Hypertarget{classnetwork_1_1_base_network_manager_ae4907730692ac57f674a87812f6644f3}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!stop@{stop}}
+\index{stop@{stop}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{stop()}{stop()}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_ae4907730692ac57f674a87812f6644f3} 
+virtual void network\+::\+Base\+Network\+Manager\+::stop (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classnetwork_1_1_client_network_manager_a940de10a9d365c288b0854fbee352101}{network\+::\+Client\+Network\+Manager}}, and \mbox{\hyperlink{classnetwork_1_1_server_network_manager_a98d070f1aad2c4b6232e6fc508358380}{network\+::\+Server\+Network\+Manager}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{classnetwork_1_1_base_network_manager_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classnetwork_1_1_base_network_manager_a0a89be910bc4b147d73b4687579b875a}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!\_io\_context@{\_io\_context}}
+\index{\_io\_context@{\_io\_context}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{\_io\_context}{\_io\_context}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_a0a89be910bc4b147d73b4687579b875a} 
+asio\+::io\+\_\+context network\+::\+Base\+Network\+Manager\+::\+\_\+io\+\_\+context\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{classnetwork_1_1_base_network_manager_a692cecfddd9d29562f98270d718e0af3}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!\_recv\_buffer@{\_recv\_buffer}}
+\index{\_recv\_buffer@{\_recv\_buffer}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{\_recv\_buffer}{\_recv\_buffer}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_a692cecfddd9d29562f98270d718e0af3} 
+std\+::array$<$char, \mbox{\hyperlink{_macro_8hpp_a01c5fb279d6b80ebed829be7a804dde2}{BUFFER\+\_\+\+SIZE}}$>$ network\+::\+Base\+Network\+Manager\+::\+\_\+recv\+\_\+buffer\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{classnetwork_1_1_base_network_manager_aee6f87f8271af91b4f47394e0dd1c776}\index{network::BaseNetworkManager@{network::BaseNetworkManager}!\_socket@{\_socket}}
+\index{\_socket@{\_socket}!network::BaseNetworkManager@{network::BaseNetworkManager}}
+\doxysubsubsection{\texorpdfstring{\_socket}{\_socket}}
+{\footnotesize\ttfamily \label{classnetwork_1_1_base_network_manager_aee6f87f8271af91b4f47394e0dd1c776} 
+asio\+::ip\+::udp\+::socket network\+::\+Base\+Network\+Manager\+::\+\_\+socket\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_base_network_manager_8hpp}{Base\+Network\+Manager.\+hpp}}\end{DoxyCompactItemize}

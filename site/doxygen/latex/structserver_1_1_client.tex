@@ -1,0 +1,84 @@
+\doxysection{server\+::Client Struct Reference}
+\hypertarget{structserver_1_1_client}{}\label{structserver_1_1_client}\index{server::Client@{server::Client}}
+
+
+{\ttfamily \#include $<$Server.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structserver_1_1_client_a0414aef7d965966228a5510a7ffaae0a}{Client}} (int id)
+\item 
+\mbox{\hyperlink{structserver_1_1_client_a24cf2ce30063967cad1240f12d6e4e6e}{\texorpdfstring{$\sim$}{\string~}\+Client}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{structserver_1_1_client_a47bd11c5cff8735a9e737ca34f12456d}{\+\_\+connected}} = false
+\item 
+int \mbox{\hyperlink{structserver_1_1_client_a56ba0d172c00dcd14e0772e393de3050}{\+\_\+player\+\_\+id}} = -\/1
+\item 
+std\+::chrono\+::steady\+\_\+clock\+::time\+\_\+point \mbox{\hyperlink{structserver_1_1_client_a65aaca302348c4171d973eb0cb2e7f0c}{\+\_\+last\+\_\+heartbeat}}
+\item 
+std\+::chrono\+::steady\+\_\+clock\+::time\+\_\+point \mbox{\hyperlink{structserver_1_1_client_ac5cd93a2d49407aec7959b7688751828}{\+\_\+last\+\_\+position\+\_\+update}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{structserver_1_1_client_a9fa1c36d1c1ac536b79ec3f45246b482}{\+\_\+entity\+\_\+id}} = std\+::numeric\+\_\+limits$<$uint32\+\_\+t$>$\+::max()
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{structserver_1_1_client_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structserver_1_1_client_a0414aef7d965966228a5510a7ffaae0a}\index{server::Client@{server::Client}!Client@{Client}}
+\index{Client@{Client}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{Client()}{Client()}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_a0414aef7d965966228a5510a7ffaae0a} 
+server\+::\+Client\+::\+Client (\begin{DoxyParamCaption}\item[{int}]{id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{structserver_1_1_client_a24cf2ce30063967cad1240f12d6e4e6e}\index{server::Client@{server::Client}!````~Client@{\texorpdfstring{$\sim$}{\string~}Client}}
+\index{````~Client@{\texorpdfstring{$\sim$}{\string~}Client}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Client()}{\string~Client()}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_a24cf2ce30063967cad1240f12d6e4e6e} 
+server\+::\+Client\+::\texorpdfstring{$\sim$}{\string~}\+Client (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structserver_1_1_client_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structserver_1_1_client_a47bd11c5cff8735a9e737ca34f12456d}\index{server::Client@{server::Client}!\_connected@{\_connected}}
+\index{\_connected@{\_connected}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{\_connected}{\_connected}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_a47bd11c5cff8735a9e737ca34f12456d} 
+bool server\+::\+Client\+::\+\_\+connected = false}
+
+\Hypertarget{structserver_1_1_client_a9fa1c36d1c1ac536b79ec3f45246b482}\index{server::Client@{server::Client}!\_entity\_id@{\_entity\_id}}
+\index{\_entity\_id@{\_entity\_id}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{\_entity\_id}{\_entity\_id}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_a9fa1c36d1c1ac536b79ec3f45246b482} 
+uint32\+\_\+t server\+::\+Client\+::\+\_\+entity\+\_\+id = std\+::numeric\+\_\+limits$<$uint32\+\_\+t$>$\+::max()}
+
+\Hypertarget{structserver_1_1_client_a65aaca302348c4171d973eb0cb2e7f0c}\index{server::Client@{server::Client}!\_last\_heartbeat@{\_last\_heartbeat}}
+\index{\_last\_heartbeat@{\_last\_heartbeat}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{\_last\_heartbeat}{\_last\_heartbeat}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_a65aaca302348c4171d973eb0cb2e7f0c} 
+std\+::chrono\+::steady\+\_\+clock\+::time\+\_\+point server\+::\+Client\+::\+\_\+last\+\_\+heartbeat}
+
+\Hypertarget{structserver_1_1_client_ac5cd93a2d49407aec7959b7688751828}\index{server::Client@{server::Client}!\_last\_position\_update@{\_last\_position\_update}}
+\index{\_last\_position\_update@{\_last\_position\_update}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{\_last\_position\_update}{\_last\_position\_update}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_ac5cd93a2d49407aec7959b7688751828} 
+std\+::chrono\+::steady\+\_\+clock\+::time\+\_\+point server\+::\+Client\+::\+\_\+last\+\_\+position\+\_\+update}
+
+\Hypertarget{structserver_1_1_client_a56ba0d172c00dcd14e0772e393de3050}\index{server::Client@{server::Client}!\_player\_id@{\_player\_id}}
+\index{\_player\_id@{\_player\_id}!server::Client@{server::Client}}
+\doxysubsubsection{\texorpdfstring{\_player\_id}{\_player\_id}}
+{\footnotesize\ttfamily \label{structserver_1_1_client_a56ba0d172c00dcd14e0772e393de3050} 
+int server\+::\+Client\+::\+\_\+player\+\_\+id = -\/1}
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/src/\mbox{\hyperlink{_server_8hpp}{Server.\+hpp}}\item 
+server/src/\mbox{\hyperlink{_server_8cpp}{Server.\+cpp}}\end{DoxyCompactItemize}

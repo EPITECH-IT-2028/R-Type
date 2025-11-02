@@ -1,0 +1,47 @@
+\doxysection{Render\+Manager.\+hpp}
+\hypertarget{_render_manager_8hpp_source}{}\label{_render_manager_8hpp_source}\index{client/RenderManager.hpp@{client/RenderManager.hpp}}
+\mbox{\hyperlink{_render_manager_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdarg>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}raylib.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacerender_manager}{renderManager}}\ \{}
+\DoxyCodeLine{00007\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespacerender_manager_afee1c0771a58b02cf306911e17f5342e}{WINDOW\_WIDTH}}\ =\ 1200;}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{namespacerender_manager_ac903075fc1b74479cd761b1d7ef4222f}{WINDOW\_HEIGHT}}\ =\ 750;}
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{namespacerender_manager_a2fe7cc183080d74a3e9c2f7e19c94d94}{SCROLL\_SPEED}}\ =\ 250.0f;}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{namespacerender_manager_aeb6a901f9acb8689fe7b1877993aed10}{BG\_PATH}}\ =\ \textcolor{stringliteral}{"{}embedded://background"{}};}
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{namespacerender_manager_abf8018f3bfedadd2f7c4e1ebf79385da}{PLAYER\_PATH}}\ =\ \textcolor{stringliteral}{"{}embedded://players"{}};}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{namespacerender_manager_af9d909b11c8d4d91aebd24c4c544c3ed}{PROJECTILE\_PATH}}\ =\ \textcolor{stringliteral}{"{}embedded://projectiles"{}};}
+\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\mbox{\hyperlink{namespacerender_manager_ae6ac34b69c2ce6e9a3172c4d59e3663f}{ENEMY\_PATH}}\ =\ \textcolor{stringliteral}{"{}embedded://enemy"{}};}
+\DoxyCodeLine{00014\ \}\ \ \textcolor{comment}{//\ namespace\ renderManager}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacerender_manager}{renderManager}}\ \{}
+\DoxyCodeLine{00017\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}(\textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *title);}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \mbox{\hyperlink{classrender_manager_1_1_renderer_a29a3109536c4914e5952edf794808ce3}{Renderer}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \&\mbox{\hyperlink{classrender_manager_1_1_renderer_a1fca5a03d5e3ba9ac49a5143f7b65a74}{operator=}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \mbox{\hyperlink{classrender_manager_1_1_renderer_a75ce81ce7545666b16a967a27f51a44f}{Renderer}}(\mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \&\&)\ noexcept\ =\ default;}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \&operator=(\mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}\ \&\&)\ noexcept\ =\ default;}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \string~\mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}}();}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_aee06d7b9e97416bfd8eeb721a5360b3c}{InitSucceeded}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_initSucceeded;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_a384ca568af694990442a0b6494560393}{shouldClose}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_a63be5987a6c5028d99d602b341a8bc26}{beginDrawing}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_a22aae92209ad75e6e43563158cff6f5d}{clearBackground}}(Color\ color)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_af9a452c63de764a93c30f59fbaa3666f}{drawText}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *text,\ \textcolor{keywordtype}{int}\ posX,\ \textcolor{keywordtype}{int}\ posY,\ \textcolor{keywordtype}{int}\ fontSize,}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Color\ color)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_a57b03d4577ed2428ea0d411c82363ff2}{endDrawing}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classrender_manager_1_1_renderer_ab5fa78081980389da0051a658c53c944}{resizeWindow}}();}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \_initSucceeded\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ coloredLog(\textcolor{keywordtype}{int}\ msgType,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *text,\ va\_list\ args);}
+\DoxyCodeLine{00040\ \ \ \};}
+\DoxyCodeLine{00041\ \}\ \ \textcolor{comment}{//\ namespace\ renderManager}}
+
+\end{DoxyCode}

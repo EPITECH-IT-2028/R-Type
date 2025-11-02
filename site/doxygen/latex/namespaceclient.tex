@@ -1,0 +1,101 @@
+\doxysection{client Namespace Reference}
+\hypertarget{namespaceclient}{}\label{namespaceclient}\index{client@{client}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classclient_1_1_client}{Client}}
+\item 
+struct \mbox{\hyperlink{structclient_1_1_enemy_sprite_config}{Enemy\+Sprite\+Config}}
+\item 
+struct \mbox{\hyperlink{structclient_1_1_player_sprite_config}{Player\+Sprite\+Config}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{namespaceclient_a656845c885c89b865c1a22b1a8ea126e}{Player\+Sprite\+Frame\+Index}} \{ \mbox{\hyperlink{namespaceclient_a656845c885c89b865c1a22b1a8ea126ead56b9d9a14f698222a54001f89593b54}{SELECTED\+\_\+\+ROW}} = 0
+, \mbox{\hyperlink{namespaceclient_a656845c885c89b865c1a22b1a8ea126ea31ba17aa58cdb681423f07ca21a6efc7}{NEUTRAL}} = 2
+, \mbox{\hyperlink{namespaceclient_a656845c885c89b865c1a22b1a8ea126eab1a326c06d88bf042f73d70f50197905}{END}} = 4
+ \}
+\item 
+enum class \mbox{\hyperlink{namespaceclient_ae67200518de7d87d42b0e15b6b59370f}{Enemy\+Sprite\+Frame\+Index}} \{ \mbox{\hyperlink{namespaceclient_ae67200518de7d87d42b0e15b6b59370fad56b9d9a14f698222a54001f89593b54}{SELECTED\+\_\+\+ROW}} = 0
+, \mbox{\hyperlink{namespaceclient_ae67200518de7d87d42b0e15b6b59370fa31ba17aa58cdb681423f07ca21a6efc7}{NEUTRAL}} = 0
+, \mbox{\hyperlink{namespaceclient_ae67200518de7d87d42b0e15b6b59370fab1a326c06d88bf042f73d70f50197905}{END}} = 2
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr int \mbox{\hyperlink{namespaceclient_a66b1ad236b798b3fc124db0a7fc5f60c}{OK}} = 0
+\item 
+constexpr int \mbox{\hyperlink{namespaceclient_a8adfa2ab7d4679d3072adcc49bf7bdbb}{KO}} = 1
+\item 
+constexpr float \mbox{\hyperlink{namespaceclient_a83a9623a07ac38b5ac990247399fd12f}{PLAYER\+\_\+\+SPEED}} = 500.\+0f
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{namespaceclient_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{namespaceclient_ae67200518de7d87d42b0e15b6b59370f}\index{client@{client}!EnemySpriteFrameIndex@{EnemySpriteFrameIndex}}
+\index{EnemySpriteFrameIndex@{EnemySpriteFrameIndex}!client@{client}}
+\doxysubsubsection{\texorpdfstring{EnemySpriteFrameIndex}{EnemySpriteFrameIndex}}
+{\footnotesize\ttfamily \label{namespaceclient_ae67200518de7d87d42b0e15b6b59370f} 
+enum class \mbox{\hyperlink{namespaceclient_ae67200518de7d87d42b0e15b6b59370f}{client\+::\+Enemy\+Sprite\+Frame\+Index}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SELECTED\_ROW@{SELECTED\_ROW}!client@{client}}\index{client@{client}!SELECTED\_ROW@{SELECTED\_ROW}}}\Hypertarget{namespaceclient_ae67200518de7d87d42b0e15b6b59370fad56b9d9a14f698222a54001f89593b54}\label{namespaceclient_ae67200518de7d87d42b0e15b6b59370fad56b9d9a14f698222a54001f89593b54} 
+SELECTED\+\_\+\+ROW&Row for basic movement/idle. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NEUTRAL@{NEUTRAL}!client@{client}}\index{client@{client}!NEUTRAL@{NEUTRAL}}}\Hypertarget{namespaceclient_ae67200518de7d87d42b0e15b6b59370fa31ba17aa58cdb681423f07ca21a6efc7}\label{namespaceclient_ae67200518de7d87d42b0e15b6b59370fa31ba17aa58cdb681423f07ca21a6efc7} 
+NEUTRAL&Starting frame. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{END@{END}!client@{client}}\index{client@{client}!END@{END}}}\Hypertarget{namespaceclient_ae67200518de7d87d42b0e15b6b59370fab1a326c06d88bf042f73d70f50197905}\label{namespaceclient_ae67200518de7d87d42b0e15b6b59370fab1a326c06d88bf042f73d70f50197905} 
+END&Last frame (3 frames\+: 0-\/2) \\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{namespaceclient_a656845c885c89b865c1a22b1a8ea126e}\index{client@{client}!PlayerSpriteFrameIndex@{PlayerSpriteFrameIndex}}
+\index{PlayerSpriteFrameIndex@{PlayerSpriteFrameIndex}!client@{client}}
+\doxysubsubsection{\texorpdfstring{PlayerSpriteFrameIndex}{PlayerSpriteFrameIndex}}
+{\footnotesize\ttfamily \label{namespaceclient_a656845c885c89b865c1a22b1a8ea126e} 
+enum class \mbox{\hyperlink{namespaceclient_a656845c885c89b865c1a22b1a8ea126e}{client\+::\+Player\+Sprite\+Frame\+Index}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+Frame indices for player animation. These map directly to specific sprite-\/sheet frames and must match the order/layout of the player sprite asset. \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SELECTED\_ROW@{SELECTED\_ROW}!client@{client}}\index{client@{client}!SELECTED\_ROW@{SELECTED\_ROW}}}\Hypertarget{namespaceclient_a656845c885c89b865c1a22b1a8ea126ead56b9d9a14f698222a54001f89593b54}\label{namespaceclient_a656845c885c89b865c1a22b1a8ea126ead56b9d9a14f698222a54001f89593b54} 
+SELECTED\+\_\+\+ROW&Row for basic movement/idle. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{NEUTRAL@{NEUTRAL}!client@{client}}\index{client@{client}!NEUTRAL@{NEUTRAL}}}\Hypertarget{namespaceclient_a656845c885c89b865c1a22b1a8ea126ea31ba17aa58cdb681423f07ca21a6efc7}\label{namespaceclient_a656845c885c89b865c1a22b1a8ea126ea31ba17aa58cdb681423f07ca21a6efc7} 
+NEUTRAL&Neutral frame index. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{END@{END}!client@{client}}\index{client@{client}!END@{END}}}\Hypertarget{namespaceclient_a656845c885c89b865c1a22b1a8ea126eab1a326c06d88bf042f73d70f50197905}\label{namespaceclient_a656845c885c89b865c1a22b1a8ea126eab1a326c06d88bf042f73d70f50197905} 
+END&End frame index (e.\+g., tilt/extreme) \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-var-members}
+\Hypertarget{namespaceclient_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespaceclient_a8adfa2ab7d4679d3072adcc49bf7bdbb}\index{client@{client}!KO@{KO}}
+\index{KO@{KO}!client@{client}}
+\doxysubsubsection{\texorpdfstring{KO}{KO}}
+{\footnotesize\ttfamily \label{namespaceclient_a8adfa2ab7d4679d3072adcc49bf7bdbb} 
+int client\+::\+KO = 1\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\Hypertarget{namespaceclient_a66b1ad236b798b3fc124db0a7fc5f60c}\index{client@{client}!OK@{OK}}
+\index{OK@{OK}!client@{client}}
+\doxysubsubsection{\texorpdfstring{OK}{OK}}
+{\footnotesize\ttfamily \label{namespaceclient_a66b1ad236b798b3fc124db0a7fc5f60c} 
+int client\+::\+OK = 0\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\Hypertarget{namespaceclient_a83a9623a07ac38b5ac990247399fd12f}\index{client@{client}!PLAYER\_SPEED@{PLAYER\_SPEED}}
+\index{PLAYER\_SPEED@{PLAYER\_SPEED}!client@{client}}
+\doxysubsubsection{\texorpdfstring{PLAYER\_SPEED}{PLAYER\_SPEED}}
+{\footnotesize\ttfamily \label{namespaceclient_a83a9623a07ac38b5ac990247399fd12f} 
+float client\+::\+PLAYER\+\_\+\+SPEED = 500.\+0f\hspace{0.3cm}{\ttfamily [constexpr]}}
+

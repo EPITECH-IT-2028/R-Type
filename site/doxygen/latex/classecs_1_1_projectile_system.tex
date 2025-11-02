@@ -1,0 +1,88 @@
+\doxysection{ecs\+::Projectile\+System Class Reference}
+\hypertarget{classecs_1_1_projectile_system}{}\label{classecs_1_1_projectile_system}\index{ecs::ProjectileSystem@{ecs::ProjectileSystem}}
+
+
+{\ttfamily \#include $<$Projectile\+System.\+hpp$>$}
+
+
+
+Inheritance diagram for ecs\+::Projectile\+System\+:
+% FIG 0
+
+
+Collaboration diagram for ecs\+::Projectile\+System\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classecs_1_1_projectile_system_a1664779d7f7ba7586f906eabf67cac1b}{Projectile\+System}} (\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \&ecs\+Manager=\mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager\+::get\+Instance}}())
+\item 
+void \mbox{\hyperlink{classecs_1_1_projectile_system_aa6f55a5ace71b5d10d27025677c9291c}{set\+ECSManager}} (\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \texorpdfstring{$\ast$}{*}ecs\+Manager)
+\item 
+void \mbox{\hyperlink{classecs_1_1_projectile_system_a1205d4e8ce19a9d1b55ccc1fa7f5c93a}{update}} (float dt) override
+\item 
+void \mbox{\hyperlink{classecs_1_1_projectile_system_a2f06bf5cc9d352808fa9025e3bb8cd9e}{move\+Basics}} (const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&entity, float dt)
+\item 
+bool \mbox{\hyperlink{classecs_1_1_projectile_system_a819f19674125f04271c2ab7d35ab164f}{is\+Out\+Of\+Bounds}} (const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&entity, float screen\+Width, float screen\+Height)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classecs_1_1_system_ab0ae8f1804130e3b8cfa2bbe2b0c5e6b}{\texorpdfstring{$\sim$}{\string~}\+System}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+std\+::set$<$ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} $>$ \mbox{\hyperlink{classecs_1_1_system_aac90f58f0dc1a58487ae1b35a84087a6}{\+\_\+entities}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classecs_1_1_projectile_system_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classecs_1_1_projectile_system_a1664779d7f7ba7586f906eabf67cac1b}\index{ecs::ProjectileSystem@{ecs::ProjectileSystem}!ProjectileSystem@{ProjectileSystem}}
+\index{ProjectileSystem@{ProjectileSystem}!ecs::ProjectileSystem@{ecs::ProjectileSystem}}
+\doxysubsubsection{\texorpdfstring{ProjectileSystem()}{ProjectileSystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_projectile_system_a1664779d7f7ba7586f906eabf67cac1b} 
+ecs\+::\+Projectile\+System\+::\+Projectile\+System (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \&}]{ecs\+Manager}{ = {\ttfamily \mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager\+::get\+Instance}}()}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_projectile_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_projectile_system_a819f19674125f04271c2ab7d35ab164f}\index{ecs::ProjectileSystem@{ecs::ProjectileSystem}!isOutOfBounds@{isOutOfBounds}}
+\index{isOutOfBounds@{isOutOfBounds}!ecs::ProjectileSystem@{ecs::ProjectileSystem}}
+\doxysubsubsection{\texorpdfstring{isOutOfBounds()}{isOutOfBounds()}}
+{\footnotesize\ttfamily \label{classecs_1_1_projectile_system_a819f19674125f04271c2ab7d35ab164f} 
+bool ecs\+::\+Projectile\+System\+::is\+Out\+Of\+Bounds (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&}]{entity}{, }\item[{float}]{screen\+Width}{, }\item[{float}]{screen\+Height}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classecs_1_1_projectile_system_a2f06bf5cc9d352808fa9025e3bb8cd9e}\index{ecs::ProjectileSystem@{ecs::ProjectileSystem}!moveBasics@{moveBasics}}
+\index{moveBasics@{moveBasics}!ecs::ProjectileSystem@{ecs::ProjectileSystem}}
+\doxysubsubsection{\texorpdfstring{moveBasics()}{moveBasics()}}
+{\footnotesize\ttfamily \label{classecs_1_1_projectile_system_a2f06bf5cc9d352808fa9025e3bb8cd9e} 
+void ecs\+::\+Projectile\+System\+::move\+Basics (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \&}]{entity}{, }\item[{float}]{dt}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classecs_1_1_projectile_system_aa6f55a5ace71b5d10d27025677c9291c}\index{ecs::ProjectileSystem@{ecs::ProjectileSystem}!setECSManager@{setECSManager}}
+\index{setECSManager@{setECSManager}!ecs::ProjectileSystem@{ecs::ProjectileSystem}}
+\doxysubsubsection{\texorpdfstring{setECSManager()}{setECSManager()}}
+{\footnotesize\ttfamily \label{classecs_1_1_projectile_system_aa6f55a5ace71b5d10d27025677c9291c} 
+void ecs\+::\+Projectile\+System\+::set\+ECSManager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \texorpdfstring{$\ast$}{*}}]{ecs\+Manager}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_projectile_system_a1205d4e8ce19a9d1b55ccc1fa7f5c93a}\index{ecs::ProjectileSystem@{ecs::ProjectileSystem}!update@{update}}
+\index{update@{update}!ecs::ProjectileSystem@{ecs::ProjectileSystem}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classecs_1_1_projectile_system_a1205d4e8ce19a9d1b55ccc1fa7f5c93a} 
+void ecs\+::\+Projectile\+System\+::update (\begin{DoxyParamCaption}\item[{float}]{dt}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classecs_1_1_system_a84b6aff0b9dd3932497b4c0dca03fa35}{ecs\+::\+System}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_projectile_system_8hpp}{Projectile\+System.\+hpp}}\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_projectile_system_8cpp}{Projectile\+System.\+cpp}}\end{DoxyCompactItemize}

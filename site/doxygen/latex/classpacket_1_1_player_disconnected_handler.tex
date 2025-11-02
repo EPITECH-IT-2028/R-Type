@@ -1,0 +1,68 @@
+\doxysection{packet\+::Player\+Disconnected\+Handler Class Reference}
+\hypertarget{classpacket_1_1_player_disconnected_handler}{}\label{classpacket_1_1_player_disconnected_handler}\index{packet::PlayerDisconnectedHandler@{packet::PlayerDisconnectedHandler}}
+
+
+{\ttfamily \#include $<$Packet\+Handler.\+hpp$>$}
+
+
+
+Inheritance diagram for packet\+::Player\+Disconnected\+Handler\+:
+% FIG 0
+
+
+Collaboration diagram for packet\+::Player\+Disconnected\+Handler\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classpacket_1_1_player_disconnected_handler_a3579c56a7ffc0912133ffbac3d42fe31}{handle\+Packet}} (\mbox{\hyperlink{classclient_1_1_client}{client\+::\+Client}} \&client, const char \texorpdfstring{$\ast$}{*}data, std\+::size\+\_\+t size) override
+\item 
+int \mbox{\hyperlink{classpacket_1_1_player_disconnected_handler_adcea88e62a215c9fc11bfa8ac1306485}{handle\+Packet}} (\mbox{\hyperlink{classserver_1_1_server}{server\+::\+Server}} \&server, \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} \&client, const char \texorpdfstring{$\ast$}{*}data, std\+::size\+\_\+t size) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classpacket_1_1_i_packet}{packet\+::\+IPacket}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_i_packet_a36d3b7ff905210b6b1f58083ebc8e78a}{\texorpdfstring{$\sim$}{\string~}\+IPacket}} ()=default
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_i_packet_a36d3b7ff905210b6b1f58083ebc8e78a}{\texorpdfstring{$\sim$}{\string~}\+IPacket}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classpacket_1_1_a_packet}{packet\+::\+APacket}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_a_packet_a23c9c5b1d44769de0ac4c680fe7816f6}{\texorpdfstring{$\sim$}{\string~}\+APacket}} ()=default
+\item 
+virtual \mbox{\hyperlink{classpacket_1_1_a_packet_a23c9c5b1d44769de0ac4c680fe7816f6}{\texorpdfstring{$\sim$}{\string~}\+APacket}} ()=default
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{classpacket_1_1_player_disconnected_handler_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classpacket_1_1_player_disconnected_handler_a3579c56a7ffc0912133ffbac3d42fe31}\index{packet::PlayerDisconnectedHandler@{packet::PlayerDisconnectedHandler}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!packet::PlayerDisconnectedHandler@{packet::PlayerDisconnectedHandler}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classpacket_1_1_player_disconnected_handler_a3579c56a7ffc0912133ffbac3d42fe31} 
+int packet\+::\+Player\+Disconnected\+Handler\+::handle\+Packet (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classclient_1_1_client}{client\+::\+Client}} \&}]{client}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{std\+::size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classpacket_1_1_i_packet_a2bbe8ea25315508fc1c8649b10e37d10}{packet\+::\+IPacket}}.
+
+\Hypertarget{classpacket_1_1_player_disconnected_handler_adcea88e62a215c9fc11bfa8ac1306485}\index{packet::PlayerDisconnectedHandler@{packet::PlayerDisconnectedHandler}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!packet::PlayerDisconnectedHandler@{packet::PlayerDisconnectedHandler}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classpacket_1_1_player_disconnected_handler_adcea88e62a215c9fc11bfa8ac1306485} 
+int packet\+::\+Player\+Disconnected\+Handler\+::handle\+Packet (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classserver_1_1_server}{server\+::\+Server}} \&}]{server}{, }\item[{\mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} \&}]{client}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{std\+::size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classpacket_1_1_i_packet_a05038f5c80eaf2b2b1b9e12f45193d7a}{packet\+::\+IPacket}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+client/packets/\mbox{\hyperlink{client_2packets_2_packet_handler_8hpp}{Packet\+Handler.\+hpp}}\item 
+server/src/packets/\mbox{\hyperlink{server_2src_2packets_2_packet_handler_8hpp}{Packet\+Handler.\+hpp}}\item 
+client/packets/\mbox{\hyperlink{client_2packets_2_packet_handler_8cpp}{Packet\+Handler.\+cpp}}\item 
+server/src/packets/\mbox{\hyperlink{server_2src_2packets_2_packet_handler_8cpp}{Packet\+Handler.\+cpp}}\end{DoxyCompactItemize}

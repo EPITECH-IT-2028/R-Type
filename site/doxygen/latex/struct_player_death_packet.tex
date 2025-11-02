@@ -1,0 +1,61 @@
+\doxysection{Player\+Death\+Packet Struct Reference}
+\hypertarget{struct_player_death_packet}{}\label{struct_player_death_packet}\index{PlayerDeathPacket@{PlayerDeathPacket}}
+
+
+{\ttfamily \#include $<$Packet.\+hpp$>$}
+
+
+
+Collaboration diagram for Player\+Death\+Packet\+:
+% FIG 0
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} \mbox{\hyperlink{struct_player_death_packet_ad08a5b66e4bd4f8b1a5c602940532444}{header}}
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{struct_player_death_packet_a4a4b55d6f1b4ad09680fde7875a882c3}{player\+\_\+id}}
+\begin{DoxyCompactList}\small\item\em Informs clients that a player has died and where the death occurred. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_player_death_packet_a5eda443cc90c624575914e199bea64b1}{x}}
+\item 
+float \mbox{\hyperlink{struct_player_death_packet_a2abc5cccd17b30a4b53eb305d98f225c}{y}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-variable-members}
+\Hypertarget{struct_player_death_packet_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_player_death_packet_ad08a5b66e4bd4f8b1a5c602940532444}\index{PlayerDeathPacket@{PlayerDeathPacket}!header@{header}}
+\index{header@{header}!PlayerDeathPacket@{PlayerDeathPacket}}
+\doxysubsubsection{\texorpdfstring{header}{header}}
+{\footnotesize\ttfamily \label{struct_player_death_packet_ad08a5b66e4bd4f8b1a5c602940532444} 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} Player\+Death\+Packet\+::header}
+
+\Hypertarget{struct_player_death_packet_a4a4b55d6f1b4ad09680fde7875a882c3}\index{PlayerDeathPacket@{PlayerDeathPacket}!player\_id@{player\_id}}
+\index{player\_id@{player\_id}!PlayerDeathPacket@{PlayerDeathPacket}}
+\doxysubsubsection{\texorpdfstring{player\_id}{player\_id}}
+{\footnotesize\ttfamily \label{struct_player_death_packet_a4a4b55d6f1b4ad09680fde7875a882c3} 
+std\+::uint32\+\_\+t Player\+Death\+Packet\+::player\+\_\+id}
+
+
+
+Informs clients that a player has died and where the death occurred. 
+
+Carries the player identifier and the world coordinates of the death location.
+
+ID of the player who died. \Hypertarget{struct_player_death_packet_a5eda443cc90c624575914e199bea64b1}\index{PlayerDeathPacket@{PlayerDeathPacket}!x@{x}}
+\index{x@{x}!PlayerDeathPacket@{PlayerDeathPacket}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{struct_player_death_packet_a5eda443cc90c624575914e199bea64b1} 
+float Player\+Death\+Packet\+::x}
+
+X coordinate of the death location. \Hypertarget{struct_player_death_packet_a2abc5cccd17b30a4b53eb305d98f225c}\index{PlayerDeathPacket@{PlayerDeathPacket}!y@{y}}
+\index{y@{y}!PlayerDeathPacket@{PlayerDeathPacket}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{struct_player_death_packet_a2abc5cccd17b30a4b53eb305d98f225c} 
+float Player\+Death\+Packet\+::y}
+
+Y coordinate of the death location. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_8hpp}{Packet.\+hpp}}\end{DoxyCompactItemize}

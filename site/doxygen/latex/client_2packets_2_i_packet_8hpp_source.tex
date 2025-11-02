@@ -1,0 +1,23 @@
+\doxysection{IPacket.\+hpp}
+\hypertarget{client_2packets_2_i_packet_8hpp_source}{}\label{client_2packets_2_i_packet_8hpp_source}\index{client/packets/IPacket.hpp@{client/packets/IPacket.hpp}}
+\mbox{\hyperlink{client_2packets_2_i_packet_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceclient}{client}}\ \{}
+\DoxyCodeLine{00006\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classclient_1_1_client}{Client}};}
+\DoxyCodeLine{00007\ \}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_i_packet}{IPacket}}\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classpacket_1_1_i_packet_a36d3b7ff905210b6b1f58083ebc8e78a}{\string~IPacket}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classpacket_1_1_i_packet_a2bbe8ea25315508fc1c8649b10e37d10}{handlePacket}}(\mbox{\hyperlink{classclient_1_1_client}{client::Client}}\ \&\mbox{\hyperlink{namespaceclient}{client}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *data,}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ size)\ =\ 0;}
+\DoxyCodeLine{00016\ \ \ \};}
+\DoxyCodeLine{00017\ \}\ \ \textcolor{comment}{//\ namespace\ packet}}
+
+\end{DoxyCode}

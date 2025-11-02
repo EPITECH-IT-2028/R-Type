@@ -1,0 +1,68 @@
+\doxysection{game\+\_\+engine/ecs/\+Entity\+Manager.hpp File Reference}
+\hypertarget{_entity_manager_8hpp}{}\label{_entity_manager_8hpp}\index{game\_engine/ecs/EntityManager.hpp@{game\_engine/ecs/EntityManager.hpp}}
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$bitset$>$}\newline
+{\ttfamily \#include $<$queue$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+Include dependency graph for Entity\+Manager.\+hpp\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classecs_1_1_entity_manager}{ecs\+::\+Entity\+Manager}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceecs}{ecs}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} = std\+::uint32\+\_\+t
+\item 
+using \mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}} = std\+::bitset$<$\mbox{\hyperlink{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69}{MAX\+\_\+\+COMPONENTS}}$>$
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr int \mbox{\hyperlink{_entity_manager_8hpp_a7a228dc9d5bc738008aae7189b96f1cc}{MAX\+\_\+\+ENTITIES}} = 5000
+\item 
+constexpr int \mbox{\hyperlink{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69}{MAX\+\_\+\+COMPONENTS}} = 32
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{_entity_manager_8hpp_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}\index{EntityManager.hpp@{EntityManager.hpp}!Entity@{Entity}}
+\index{Entity@{Entity}!EntityManager.hpp@{EntityManager.hpp}}
+\doxysubsubsection{\texorpdfstring{Entity}{Entity}}
+{\footnotesize\ttfamily \label{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e} 
+using \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} = std\+::uint32\+\_\+t}
+
+\Hypertarget{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}\index{EntityManager.hpp@{EntityManager.hpp}!Signature@{Signature}}
+\index{Signature@{Signature}!EntityManager.hpp@{EntityManager.hpp}}
+\doxysubsubsection{\texorpdfstring{Signature}{Signature}}
+{\footnotesize\ttfamily \label{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807} 
+using \mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}} = std\+::bitset$<$\mbox{\hyperlink{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69}{MAX\+\_\+\+COMPONENTS}}$>$}
+
+
+
+\label{doc-var-members}
+\Hypertarget{_entity_manager_8hpp_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69}\index{EntityManager.hpp@{EntityManager.hpp}!MAX\_COMPONENTS@{MAX\_COMPONENTS}}
+\index{MAX\_COMPONENTS@{MAX\_COMPONENTS}!EntityManager.hpp@{EntityManager.hpp}}
+\doxysubsubsection{\texorpdfstring{MAX\_COMPONENTS}{MAX\_COMPONENTS}}
+{\footnotesize\ttfamily \label{_entity_manager_8hpp_accef8305f13c3e9de5f7a7bb9466da69} 
+int MAX\+\_\+\+COMPONENTS = 32\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\Hypertarget{_entity_manager_8hpp_a7a228dc9d5bc738008aae7189b96f1cc}\index{EntityManager.hpp@{EntityManager.hpp}!MAX\_ENTITIES@{MAX\_ENTITIES}}
+\index{MAX\_ENTITIES@{MAX\_ENTITIES}!EntityManager.hpp@{EntityManager.hpp}}
+\doxysubsubsection{\texorpdfstring{MAX\_ENTITIES}{MAX\_ENTITIES}}
+{\footnotesize\ttfamily \label{_entity_manager_8hpp_a7a228dc9d5bc738008aae7189b96f1cc} 
+int MAX\+\_\+\+ENTITIES = 5000\hspace{0.3cm}{\ttfamily [constexpr]}}
+

@@ -1,0 +1,78 @@
+\doxysection{Player.\+hpp}
+\hypertarget{_player_8hpp_source}{}\label{_player_8hpp_source}\index{server/src/player/Player.hpp@{server/src/player/Player.hpp}}
+\mbox{\hyperlink{_player_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacegame}{game}}\ \{}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classgame_1_1_player_a984f09654f74f655355ed969d8bf7a6e}{Player}}\ \{}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_player_a984f09654f74f655355ed969d8bf7a6e}{Player}}(\textcolor{keywordtype}{int}\ player\_id,\ uint32\_t\ entity\_id,\ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs::ECSManager}}\ \&ecsManager);}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \mbox{\hyperlink{classgame_1_1_player_af5b4ba7c390977f64b6b515a2e159897}{\string~Player}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{classgame_1_1_player_afa408aa26103a2db62407ffe2fdee5a7}{getPlayerId}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_player\_id;}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \ \ uint32\_t\ \mbox{\hyperlink{classgame_1_1_player_a21fac393f372c04cacb77b46bf257ce5}{getEntityId}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_entity\_id;}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \ \ std::pair<float,\ float>\ \mbox{\hyperlink{classgame_1_1_player_aea0aea901bd53d00464e047eec983451}{getPosition}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_abe094d0afbec273ffdcc1bee40c673d0}{setPosition}}(\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y);}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_abcdc502249886890459af289fd574358}{move}}(\textcolor{keywordtype}{float}\ deltaX,\ \textcolor{keywordtype}{float}\ deltaY);}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \ \ std::optional<int>\ \mbox{\hyperlink{classgame_1_1_player_aa2d5a8e201ac7a90aa30a5811d195b04}{getHealth}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ std::optional<int>\ \mbox{\hyperlink{classgame_1_1_player_a4c220f0a4cfab04f3be115ef3c4ee7be}{getMaxHealth}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a7ee8a52e59a14747c1674889b3356e8d}{setHealth}}(\textcolor{keywordtype}{int}\ health);}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a028f5ac35dbc222533d16a84a1d86481}{takeDamage}}(\textcolor{keywordtype}{int}\ damage);}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a4aa6fb7fb10e027836f375db46291f71}{heal}}(\textcolor{keywordtype}{int}\ amount);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classgame_1_1_player_a40f112324ff22448b6c08a0289b8fe7b}{isAlive}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{classgame_1_1_player_aaad323e0a42679895b75a7090121d0ec}{getSpeed}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a17378560e0a5f910f3c47fc62310eb0c}{setSpeed}}(\textcolor{keywordtype}{float}\ speed);}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \ \ std::pair<float,\ float>\ \mbox{\hyperlink{classgame_1_1_player_a2075c48f9c89dbb7f6e238f39f92a4b6}{getVelocity}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a39ae5bec464f65e232eaaf35d1bab989}{setVelocity}}(\textcolor{keywordtype}{float}\ vx,\ \textcolor{keywordtype}{float}\ vy);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \ \ std::optional<uint32\_t>\ \mbox{\hyperlink{classgame_1_1_player_af8acee72a60b73944663eaf764ef8714}{getSequenceNumber}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a4522552676da35c387162dd1dfbddde2}{setSequenceNumber}}(uint32\_t\ seq);}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classgame_1_1_player_ab029a3966e34ea5fdad4da0828346435}{isConnected}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a383de950475430f1a25fc15e43878530}{setConnected}}(\textcolor{keywordtype}{bool}\ connected);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&\mbox{\hyperlink{classgame_1_1_player_ad99d47f14da76f4788dcd9199fb6a9d4}{getName}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a0d8aa600723a39934a8bfe8c40984374}{setName}}(\textcolor{keyword}{const}\ std::string\ \&name);}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classgame_1_1_player_a76d6da264941c9c0a82bd51085271b93}{update}}(\textcolor{keywordtype}{float}\ deltaTime);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \_player\_id;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ uint32\_t\ \_entity\_id;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs::ECSManager}}\ \&\_ecsManager;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ T\ \&getComponent()\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_ecsManager.\mbox{\hyperlink{classecs_1_1_e_c_s_manager_a3ae988a197918fd131c52e88da47c03b}{getComponent}}<T>(\_entity\_id);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ hasComponent()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_ecsManager.\mbox{\hyperlink{classecs_1_1_e_c_s_manager_a5f7f129637efdc6998e6b9ba70823a0b}{hasComponent}}<T>(\_entity\_id);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \textcolor{keyword}{const}\ T\ \&getComponent()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \_ecsManager.getComponent<T>(\_entity\_id);}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \};}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \}\ \ \textcolor{comment}{//\ namespace\ game}}
+
+\end{DoxyCode}

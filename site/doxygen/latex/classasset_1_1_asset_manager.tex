@@ -1,0 +1,125 @@
+\doxysection{asset\+::Asset\+Manager Class Reference}
+\hypertarget{classasset_1_1_asset_manager}{}\label{classasset_1_1_asset_manager}\index{asset::AssetManager@{asset::AssetManager}}
+
+
+Manages embedded assets and provides runtime loading capabilities.  
+
+
+
+
+{\ttfamily \#include $<$Asset\+Manager.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \mbox{\hyperlink{classasset_1_1_asset_manager_a9b6b803a715b8f103f08d5460192c4f6}{export\+Image\+As\+Code}} (const std\+::string \&image\+Path, const std\+::string \&output\+Header\+Path)
+\begin{DoxyCompactList}\small\item\em Exports an image file as a C header file with embedded data. \end{DoxyCompactList}\item 
+static Texture2D \mbox{\hyperlink{classasset_1_1_asset_manager_af18444848bf092616913e8548968126f}{load\+Texture}} (const std\+::string \&path)
+\begin{DoxyCompactList}\small\item\em Loads a texture from embedded image data or falls back to file. \end{DoxyCompactList}\item 
+static Image \mbox{\hyperlink{classasset_1_1_asset_manager_a26e67fa292e30650cec3b048ebe6160b}{load\+Image}} (const std\+::string \&path)
+\begin{DoxyCompactList}\small\item\em Loads an Image from embedded data or falls back to file. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classasset_1_1_asset_manager_af1e02e633351c1ba6f528ec5b2377618}{register\+Embedded\+Image}} (const std\+::string \&name, void \texorpdfstring{$\ast$}{*}data, int width, int height, int format)
+\begin{DoxyCompactList}\small\item\em Registers an embedded image for runtime loading. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Manages embedded assets and provides runtime loading capabilities. 
+
+This class encapsulates asset embedding logic, allowing assets to be exported as code at compile-\/time and loaded at runtime without requiring external files. 
+
+\label{doc-func-members}
+\Hypertarget{classasset_1_1_asset_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classasset_1_1_asset_manager_a9b6b803a715b8f103f08d5460192c4f6}\index{asset::AssetManager@{asset::AssetManager}!exportImageAsCode@{exportImageAsCode}}
+\index{exportImageAsCode@{exportImageAsCode}!asset::AssetManager@{asset::AssetManager}}
+\doxysubsubsection{\texorpdfstring{exportImageAsCode()}{exportImageAsCode()}}
+{\footnotesize\ttfamily \label{classasset_1_1_asset_manager_a9b6b803a715b8f103f08d5460192c4f6} 
+bool asset\+::\+Asset\+Manager\+::export\+Image\+As\+Code (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{image\+Path}{, }\item[{const std\+::string \&}]{output\+Header\+Path}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Exports an image file as a C header file with embedded data. 
+
+Uses raylib\textquotesingle{}s Export\+Image\+As\+Code() to generate a header file containing the image data as a static array. The generated file can be included at compile-\/time to embed assets directly in the executable.
+
+
+\begin{DoxyParams}{Parameters}
+{\em image\+Path} & Path to the source image file \\
+\hline
+{\em output\+Header\+Path} & Path where the generated header will be saved \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if export succeeded, false otherwise 
+\end{DoxyReturn}
+\Hypertarget{classasset_1_1_asset_manager_a26e67fa292e30650cec3b048ebe6160b}\index{asset::AssetManager@{asset::AssetManager}!loadImage@{loadImage}}
+\index{loadImage@{loadImage}!asset::AssetManager@{asset::AssetManager}}
+\doxysubsubsection{\texorpdfstring{loadImage()}{loadImage()}}
+{\footnotesize\ttfamily \label{classasset_1_1_asset_manager_a26e67fa292e30650cec3b048ebe6160b} 
+Image asset\+::\+Asset\+Manager\+::load\+Image (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Loads an Image from embedded data or falls back to file. 
+
+Similar to load\+Texture, but returns an Image instead of a Texture2D. Note\+: DO NOT call Unload\+Image() on embedded images, as they use static data.
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & Asset path (use "{}embedded\+://name"{} for embedded assets) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Loaded image (check image.\+data != nullptr for success) 
+\end{DoxyReturn}
+\Hypertarget{classasset_1_1_asset_manager_af18444848bf092616913e8548968126f}\index{asset::AssetManager@{asset::AssetManager}!loadTexture@{loadTexture}}
+\index{loadTexture@{loadTexture}!asset::AssetManager@{asset::AssetManager}}
+\doxysubsubsection{\texorpdfstring{loadTexture()}{loadTexture()}}
+{\footnotesize\ttfamily \label{classasset_1_1_asset_manager_af18444848bf092616913e8548968126f} 
+Texture2D asset\+::\+Asset\+Manager\+::load\+Texture (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{path}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Loads a texture from embedded image data or falls back to file. 
+
+Attempts to load from embedded data first using the "{}embedded\+://"{} scheme. If the asset is not embedded, falls back to loading from the file system.
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & Asset path (use "{}embedded\+://name"{} for embedded assets) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Loaded texture (check texture.\+id != 0 for success) 
+\end{DoxyReturn}
+\Hypertarget{classasset_1_1_asset_manager_af1e02e633351c1ba6f528ec5b2377618}\index{asset::AssetManager@{asset::AssetManager}!registerEmbeddedImage@{registerEmbeddedImage}}
+\index{registerEmbeddedImage@{registerEmbeddedImage}!asset::AssetManager@{asset::AssetManager}}
+\doxysubsubsection{\texorpdfstring{registerEmbeddedImage()}{registerEmbeddedImage()}}
+{\footnotesize\ttfamily \label{classasset_1_1_asset_manager_af1e02e633351c1ba6f528ec5b2377618} 
+void asset\+::\+Asset\+Manager\+::register\+Embedded\+Image (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name}{, }\item[{void \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{int}]{width}{, }\item[{int}]{height}{, }\item[{int}]{format}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Registers an embedded image for runtime loading. 
+
+Associates an embedded image name with its data pointer, allowing the \doxylink{classasset_1_1_asset_manager}{Asset\+Manager} to load it at runtime via \doxylink{classasset_1_1_asset_manager_af18444848bf092616913e8548968126f}{load\+Texture()}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name identifier for the embedded asset \\
+\hline
+{\em data} & Pointer to the embedded image data \\
+\hline
+{\em width} & Width of the embedded image \\
+\hline
+{\em height} & Height of the embedded image \\
+\hline
+{\em format} & Pixel format of the embedded image \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+client/\mbox{\hyperlink{_asset_manager_8hpp}{Asset\+Manager.\+hpp}}\item 
+client/\mbox{\hyperlink{_asset_manager_8cpp}{Asset\+Manager.\+cpp}}\end{DoxyCompactItemize}

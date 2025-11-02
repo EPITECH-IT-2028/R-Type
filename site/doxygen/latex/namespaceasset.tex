@@ -1,0 +1,28 @@
+\doxysection{asset Namespace Reference}
+\hypertarget{namespaceasset}{}\label{namespaceasset}\index{asset@{asset}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classasset_1_1_asset_manager}{Asset\+Manager}}
+\begin{DoxyCompactList}\small\item\em Manages embedded assets and provides runtime loading capabilities. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceasset_af8e096344e9884b07204cb9c29159a7c}{init\+Embedded\+Assets}} ()
+\begin{DoxyCompactList}\small\item\em Initializes all embedded assets by registering them with \doxylink{classasset_1_1_asset_manager}{Asset\+Manager}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{namespaceasset_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceasset_af8e096344e9884b07204cb9c29159a7c}\index{asset@{asset}!initEmbeddedAssets@{initEmbeddedAssets}}
+\index{initEmbeddedAssets@{initEmbeddedAssets}!asset@{asset}}
+\doxysubsubsection{\texorpdfstring{initEmbeddedAssets()}{initEmbeddedAssets()}}
+{\footnotesize\ttfamily \label{namespaceasset_af8e096344e9884b07204cb9c29159a7c} 
+void asset\+::init\+Embedded\+Assets (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Initializes all embedded assets by registering them with \doxylink{classasset_1_1_asset_manager}{Asset\+Manager}. 
+
+This function is called automatically at startup by the Asset\+Initializer. It registers each embedded image with the \doxylink{classasset_1_1_asset_manager}{Asset\+Manager} so they can be accessed via the "{}embedded\+://"{} URL scheme. 

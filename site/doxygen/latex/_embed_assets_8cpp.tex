@@ -1,0 +1,54 @@
+\doxysection{client/\+Embed\+Assets.cpp File Reference}
+\hypertarget{_embed_assets_8cpp}{}\label{_embed_assets_8cpp}\index{client/EmbedAssets.cpp@{client/EmbedAssets.cpp}}
+{\ttfamily \#include $<$filesystem$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include "{}Asset\+Manager.\+hpp"{}}\newline
+Include dependency graph for Embed\+Assets.\+cpp\+:
+% FIG 0
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{_embed_assets_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main}} (int argc, char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}argv)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr int \mbox{\hyperlink{_embed_assets_8cpp_a93a6cff6e7a14b08c6d67db498648ba9}{OK}} = 0
+\begin{DoxyCompactList}\small\item\em Standalone tool to export image assets as C header files. \end{DoxyCompactList}\item 
+constexpr int \mbox{\hyperlink{_embed_assets_8cpp_aefa5a09d48653b7d0eb80bc70151be15}{KO}} = -\/1
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{_embed_assets_8cpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_embed_assets_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}\index{EmbedAssets.cpp@{EmbedAssets.cpp}!main@{main}}
+\index{main@{main}!EmbedAssets.cpp@{EmbedAssets.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{_embed_assets_8cpp_a3c04138a5bfe5d72780bb7e82a18e627} 
+int main (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{argv}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-var-members}
+\Hypertarget{_embed_assets_8cpp_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{_embed_assets_8cpp_aefa5a09d48653b7d0eb80bc70151be15}\index{EmbedAssets.cpp@{EmbedAssets.cpp}!KO@{KO}}
+\index{KO@{KO}!EmbedAssets.cpp@{EmbedAssets.cpp}}
+\doxysubsubsection{\texorpdfstring{KO}{KO}}
+{\footnotesize\ttfamily \label{_embed_assets_8cpp_aefa5a09d48653b7d0eb80bc70151be15} 
+int KO = -\/1\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+\Hypertarget{_embed_assets_8cpp_a93a6cff6e7a14b08c6d67db498648ba9}\index{EmbedAssets.cpp@{EmbedAssets.cpp}!OK@{OK}}
+\index{OK@{OK}!EmbedAssets.cpp@{EmbedAssets.cpp}}
+\doxysubsubsection{\texorpdfstring{OK}{OK}}
+{\footnotesize\ttfamily \label{_embed_assets_8cpp_a93a6cff6e7a14b08c6d67db498648ba9} 
+int OK = 0\hspace{0.3cm}{\ttfamily [constexpr]}}
+
+
+
+Standalone tool to export image assets as C header files. 
+
+This tool runs at compile-\/time to generate header files containing embedded image data. The generated headers are then included in the client executable, eliminating the need for external asset files.
+
+Usage\+: ./embed\+\_\+assets $<$resources\+\_\+dir$>$ $<$output\+\_\+dir$>$ 

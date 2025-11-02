@@ -1,0 +1,865 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://epitech-it-2028.github.io/R-Type/server_how_to/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Server how to - R-Type Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ecs-development-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="R-Type Documentation" class="md-header__button md-logo" aria-label="R-Type Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            R-Type Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Server how to
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/EPITECH-IT-2028/R-Type" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EPITECH-IT-2028/R-Type
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/GettingStarted.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/GameEngineECS.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Game Engine & ECS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/Networking.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Networking
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/AssetManagement.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Asset Management
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/ProjectStructure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/ContributionGuidelines.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contribution Guidelines
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="R-Type Documentation" class="md-nav__button md-logo" aria-label="R-Type Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    R-Type Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/EPITECH-IT-2028/R-Type" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EPITECH-IT-2028/R-Type
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/GettingStarted.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/GameEngineECS.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Game Engine & ECS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/Networking.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Networking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/AssetManagement.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Asset Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/ProjectStructure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project Structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/ContributionGuidelines.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribution Guidelines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Server how to</h1>
+
+<h2 id="ecs-development-guide">🧩 ECS Development Guide</h2>
+<p>Our R-Type project uses a custom Entity-Component-System (ECS) architecture. This guide explains how to extend the system with new components, systems, entities, and network packets.</p>
+<h3 id="adding-a-new-component">🔧 Adding a New Component</h3>
+<p>Components are simple data structures that hold state for entities.</p>
+<p><strong>1. Create the component header file:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// game_engine/ecs/components/NewComponent.hpp</span>
+<span class="cp">#pragma once</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">ecs</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">NewComponent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Add your data members here</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">isActive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span><span class="w">  </span><span class="c1">// namespace ecs</span>
+</code></pre></div></p>
+<p><strong>2. Register the component in your initialization code:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// server/src/game/Game.cpp</span>
+<span class="n">_ecsManager</span><span class="p">.</span><span class="n">registerComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">NewComponent</span><span class="o">&gt;</span><span class="p">();</span>
+</code></pre></div></p>
+<p><strong>3. All methods for components related to a entity:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Add component to entity</span>
+<span class="n">Entity</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ecsManager</span><span class="p">.</span><span class="n">createEntity</span><span class="p">();</span>
+<span class="n">ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">NewComponent</span><span class="p">{</span><span class="mf">1.5f</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">});</span>
+
+<span class="c1">// Get and modify component</span>
+<span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">component</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ecsManager</span><span class="p">.</span><span class="n">getComponent</span><span class="o">&lt;</span><span class="n">NewComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="n">component</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0f</span><span class="p">;</span>
+
+<span class="c1">// Check if entity has component</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ecsManager</span><span class="p">.</span><span class="n">hasComponent</span><span class="o">&lt;</span><span class="n">NewComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Do something</span>
+<span class="p">}</span>
+
+<span class="c1">// Remove component</span>
+<span class="n">ecsManager</span><span class="p">.</span><span class="n">removeComponent</span><span class="o">&lt;</span><span class="n">NewComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+</code></pre></div></p>
+<h3 id="adding-a-new-system">⚙️ Adding a New System</h3>
+<p>Systems contain the logic that operates on entities with specific components.</p>
+<p><strong>1. Create the system header file:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// game_engine/ecs/systems/NewSystem.hpp</span>
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ECSManager.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;System.hpp&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">ecs</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">NewSystem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">System</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="o">:</span>
+<span class="w">      </span><span class="k">explicit</span><span class="w"> </span><span class="n">NewSystem</span><span class="p">(</span><span class="n">ECSManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ecsManager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ECSManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">())</span>
+<span class="w">          </span><span class="o">:</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">(</span><span class="n">ecsManager</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">      </span><span class="kt">void</span><span class="w"> </span><span class="n">update</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">deltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">private</span><span class="o">:</span>
+<span class="w">      </span><span class="n">ECSManager</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">;</span>
+
+<span class="w">      </span><span class="c1">// Add private methods for system logic</span>
+<span class="w">      </span><span class="kt">void</span><span class="w"> </span><span class="nf">processEntity</span><span class="p">(</span><span class="n">Entity</span><span class="w"> </span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">deltaTime</span><span class="p">);</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span><span class="w">  </span><span class="c1">// namespace ecs</span>
+</code></pre></div></p>
+<p><strong>2. Implement the system logic:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// game_engine/ecs/systems/NewSystem.cpp</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NewSystem.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NewComponent.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;PositionComponent.hpp&quot;</span><span class="c1"> // If you need other components</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewSystem::update</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">deltaTime</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="k">const</span><span class="o">&amp;</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_entities</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">processEntity</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">deltaTime</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewSystem::processEntity</span><span class="p">(</span><span class="n">Entity</span><span class="w"> </span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">deltaTime</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Get required components</span>
+<span class="w">  </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">newComp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">getComponent</span><span class="o">&lt;</span><span class="n">NewComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+<span class="w">  </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">getComponent</span><span class="o">&lt;</span><span class="n">PositionComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Implement your system logic here</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newComp</span><span class="p">.</span><span class="n">isActive</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">position</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">newComp</span><span class="p">.</span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">deltaTime</span><span class="p">;</span>
+<span class="w">    </span><span class="n">newComp</span><span class="p">.</span><span class="n">count</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>3. Register and configure the system:</strong></p>
+<p><strong>3.1. Add members to Game.hpp</strong>
+<div class="highlight"><pre><span></span><code>namespace game {
+
+  class Game {
+    public:
+      Game();
+      ~Game();
+    ...
+    private:
+      std::shared_ptr&lt;ecs::NewSystem&gt; _newSystem;
+  }
+}
+</code></pre></div></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// server/src/game/Game.cpp</span>
+
+<span class="c1">// Register the system</span>
+<span class="n">_newSystem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">registerSystem</span><span class="o">&lt;</span><span class="n">NewSystem</span><span class="o">&gt;</span><span class="p">();</span>
+
+
+<span class="c1">// Define which components this system requires</span>
+<span class="n">Signature</span><span class="w"> </span><span class="n">newSignature</span><span class="p">;</span>
+<span class="n">newSignature</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">getComponentType</span><span class="o">&lt;</span><span class="n">NewComponent</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="n">newSignature</span><span class="p">.</span><span class="n">set</span><span class="p">(</span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">getComponentType</span><span class="o">&lt;</span><span class="n">PositionComponent</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="n">_ecsManager</span><span class="p">.</span><span class="n">setSystemSignature</span><span class="o">&lt;</span><span class="n">NewSystem</span><span class="o">&gt;</span><span class="p">(</span><span class="n">newSignature</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="creating-game-entities">🎯 Creating Game Entities</h3>
+<p>Entities are combinations of components that represent game objects.</p>
+<p><strong>Example: Creating a Power-up Entity</strong></p>
+<p>To create a new entity that displays on map you have to add some things to the Game.hpp.</p>
+<div class="highlight"><pre><span></span><code>namespace game {
+
+  class Game {
+    public:
+      Game();
+      ~Game();
+    ...
+    private:
+      std::shared_ptr&lt;ecs::PowerUpSystem&gt; _powerUpSystem;
+      std::unordered_map&lt;std::uint32_t, std::shared_ptr&lt;PowerUp&gt;&gt; _powerUps;
+      mutable std::mutex _powerUpMutex
+  }
+}
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">Entity</span><span class="w"> </span><span class="nf">createPowerUp</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">PowerUpType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PowerUp</span><span class="o">&gt;</span><span class="w"> </span><span class="n">powerUp</span><span class="p">;</span><span class="w"> </span>
+<span class="w">  </span><span class="n">Entity</span><span class="w"> </span><span class="n">entity</span><span class="p">;</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">scoped_lock</span><span class="w"> </span><span class="n">ecsLock</span><span class="p">(</span><span class="n">_ecsMutex</span><span class="p">);</span>
+<span class="w">    </span><span class="n">entity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">createEntity</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Add required components</span>
+<span class="w">    </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">PositionComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">ecs</span><span class="o">::</span><span class="n">PositionComponent</span><span class="p">{</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">});</span>
+<span class="w">    </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">VelocityComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">ecs</span><span class="o">::</span><span class="n">VelocityComponent</span><span class="p">{</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">-50.0f</span><span class="p">});</span><span class="w"> </span><span class="c1">// Moving upward</span>
+<span class="w">    </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">PowerUpComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">PowerUpComponent</span><span class="p">{</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">});</span><span class="w"> </span><span class="c1">// Custom component</span>
+<span class="w">    </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">ColliderComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">ecs</span><span class="o">::</span><span class="n">ColliderComponent</span><span class="p">{</span><span class="mf">20.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">20.0f</span><span class="p">});</span>
+<span class="w">    </span><span class="n">powerUp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">PowerUp</span><span class="o">&gt;</span><span class="p">(</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">scoped_lock</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">_powerUpMutex</span><span class="p">);</span>
+<span class="w">    </span><span class="n">_powerUp</span><span class="p">[</span><span class="n">powerUp_id</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">powerUp</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">powerUp</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Example: Creating an Enemy Entity</strong>
+<div class="highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">game</span><span class="o">::</span><span class="n">Enemy</span><span class="o">&gt;</span><span class="w"> </span><span class="n">game</span><span class="o">::</span><span class="n">Game</span><span class="o">::</span><span class="n">createEnemy</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">enemy_id</span><span class="p">,</span>
+<span class="w">                                                     </span><span class="k">const</span><span class="w"> </span><span class="n">EnemyType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">scoped_lock</span><span class="w"> </span><span class="nf">lock</span><span class="p">(</span><span class="n">_enemyMutex</span><span class="p">);</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">entity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">createEntity</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">EnemyComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">enemy_id</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="p">});</span>
+<span class="w">  </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">PositionComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mf">800.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">50.0f</span><span class="p">});</span>
+<span class="w">  </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">HealthComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">});</span>
+<span class="w">  </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">VelocityComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mf">-3.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">});</span>
+<span class="w">  </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">ShootComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span>
+<span class="w">                                                </span><span class="p">{</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0f</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">});</span>
+<span class="w">  </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">ColliderComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mf">10.f</span><span class="p">,</span><span class="w"> </span><span class="mf">10.f</span><span class="p">});</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">EnemyType</span><span class="o">::</span><span class="no">BASIC_FIGHTER</span><span class="p">:</span>
+<span class="w">      </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">ScoreComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">});</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span>
+<span class="w">      </span><span class="n">_ecsManager</span><span class="p">.</span><span class="n">addComponent</span><span class="o">&lt;</span><span class="n">ecs</span><span class="o">::</span><span class="n">ScoreComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">});</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">enemy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">Enemy</span><span class="o">&gt;</span><span class="p">(</span><span class="n">enemy_id</span><span class="p">,</span><span class="w"> </span><span class="n">entity</span><span class="p">,</span><span class="w"> </span><span class="n">_ecsManager</span><span class="p">);</span>
+<span class="w">  </span><span class="n">_enemies</span><span class="p">[</span><span class="n">enemy_id</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enemy</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">enemy</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<h3 id="adding-network-packets">📡 Adding Network Packets</h3>
+<p>Network packets handle communication between client and server.</p>
+<p><strong>1. Define the packet structure in core/network/Packet.hpp:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Add to PacketType enum</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">PacketType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ... existing types ...</span>
+<span class="w">  </span><span class="n">NewPacketType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x20</span><span class="p">,</span><span class="w"> </span><span class="c1">// Use next available ID</span>
+<span class="p">};</span>
+
+<span class="c1">// Add packet structure</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">ALIGNED</span><span class="w"> </span><span class="n">NewPacketStruct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">PacketHeader</span><span class="w"> </span><span class="n">header</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">playerId</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">someValue</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">someFlag</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Keep structures aligned and size-efficient</span>
+<span class="p">};</span>
+</code></pre></div></p>
+<p><strong>2. Create the packet handler:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// server/src/packets/PacketHandler.hpp</span>
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;APacket.hpp&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">packet</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">NewPacketHandler</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">APacket</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">public</span><span class="o">:</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">handlePacket</span><span class="p">(</span><span class="n">server</span><span class="o">::</span><span class="n">Server</span><span class="o">&amp;</span><span class="w"> </span><span class="n">server</span><span class="p">,</span><span class="w"> </span><span class="n">server</span><span class="o">::</span><span class="n">Client</span><span class="o">&amp;</span><span class="w"> </span><span class="n">client</span><span class="p">,</span>
+<span class="w">                      </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// server/src/packets/PacketHandler.cpp</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;NewPacketHandler.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Packet.hpp&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Server.hpp&quot;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">packet::NewPacketHandler::handlePacket</span><span class="p">(</span><span class="n">server</span><span class="o">::</span><span class="n">Server</span><span class="o">&amp;</span><span class="w"> </span><span class="n">server</span><span class="p">,</span><span class="w"> </span><span class="n">server</span><span class="o">::</span><span class="n">Client</span><span class="o">&amp;</span><span class="w"> </span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">NewPacketStruct</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span><span class="w"> </span><span class="c1">// Invalid packet size</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">*</span><span class="w"> </span><span class="n">packet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">NewPacketStruct</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Validate packet data</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">packet</span><span class="o">-&gt;</span><span class="n">header</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">PacketType</span><span class="o">::</span><span class="n">NewPacketType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">-1</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="p">...</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// Success</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>3. Register the packet handler:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Add to server/src/packets/PacketFactory.hpp</span>
+<span class="k">private</span><span class="o">:</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span>
+<span class="w">          </span><span class="n">PacketType</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">APacket</span><span class="o">&gt;</span><span class="p">()</span><span class="o">&gt;&gt;</span>
+<span class="w">          </span><span class="n">_handlers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{...</span>
+<span class="w">                       </span><span class="p">{</span><span class="n">PacketType</span><span class="o">::</span><span class="n">NewPacket</span><span class="p">,</span>
+<span class="w">                        </span><span class="p">[]()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">NewPacketHandler</span><span class="o">&gt;</span><span class="p">();</span><span class="w"> </span><span class="p">}}};</span>
+</code></pre></div></p>
+<h3 id="best-practices">📋 Best Practices</h3>
+<p><strong>Components:</strong>
+- Keep components simple data containers (no logic)
+- Use descriptive names (e.g., <code>HealthComponent</code>, not <code>HC</code>)
+- Group related data together
+- Consider memory layout and alignment</p>
+<p><strong>Systems:</strong>
+- One responsibility per system
+- Process entities in batches when possible
+- Handle edge cases (empty entity sets, missing components)
+- Consider system update order dependencies</p>
+<p><strong>Entities:</strong>
+- Use factory functions for complex entities
+- Document required component combinations
+- Clean up entities when no longer needed
+- Use entity IDs for cross-system communication</p>
+<p><strong>Packets:</strong>
+- Keep packet structures small and efficient
+- Validate all input data
+- Use proper alignment for network data
+- Handle endianness for cross-platform compatibility
+- Include packet versioning for protocol evolution</p>
+<p><strong>Performance Tips:</strong>
+- Cache component lookups in tight loops
+- Use <code>hasComponent()</code> before <code>getComponent()</code> when uncertain
+- Minimize entity creation/destruction during gameplay
+- Profile system update performance regularly</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

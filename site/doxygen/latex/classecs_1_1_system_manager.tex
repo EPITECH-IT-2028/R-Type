@@ -1,0 +1,70 @@
+\doxysection{ecs\+::System\+Manager Class Reference}
+\hypertarget{classecs_1_1_system_manager}{}\label{classecs_1_1_system_manager}\index{ecs::SystemManager@{ecs::SystemManager}}
+
+
+{\ttfamily \#include $<$System\+Manager.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T$>$ }\\std\+::shared\+\_\+ptr$<$ T $>$ \mbox{\hyperlink{classecs_1_1_system_manager_acdd0e6ddb2c16f4023d6107d3e2afbc9}{register\+System}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\void \mbox{\hyperlink{classecs_1_1_system_manager_a022ee5d17ab1b51f8305046c909dd031}{set\+Signature}} (\mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}} signature)
+\item 
+{\footnotesize template$<$typename T$>$ }\\std\+::shared\+\_\+ptr$<$ T $>$ \mbox{\hyperlink{classecs_1_1_system_manager_a294b8df9f5079458dca29dbb94be5506}{get\+System}} ()
+\item 
+void \mbox{\hyperlink{classecs_1_1_system_manager_ae2abf3bd633b0acd7f6d4ca00f3241e3}{entity\+Destroyed}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id)
+\item 
+void \mbox{\hyperlink{classecs_1_1_system_manager_ad345bcb888518e7fc2040a0019f55142}{entity\+Signature\+Changed}} (\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity\+Id, \mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}} entity\+Signature)
+\item 
+void \mbox{\hyperlink{classecs_1_1_system_manager_a01a89648a01bfafedf4887a4756a24f8}{update}} (float dt)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_system_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_system_manager_ae2abf3bd633b0acd7f6d4ca00f3241e3}\index{ecs::SystemManager@{ecs::SystemManager}!entityDestroyed@{entityDestroyed}}
+\index{entityDestroyed@{entityDestroyed}!ecs::SystemManager@{ecs::SystemManager}}
+\doxysubsubsection{\texorpdfstring{entityDestroyed()}{entityDestroyed()}}
+{\footnotesize\ttfamily \label{classecs_1_1_system_manager_ae2abf3bd633b0acd7f6d4ca00f3241e3} 
+void ecs\+::\+System\+Manager\+::entity\+Destroyed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_system_manager_ad345bcb888518e7fc2040a0019f55142}\index{ecs::SystemManager@{ecs::SystemManager}!entitySignatureChanged@{entitySignatureChanged}}
+\index{entitySignatureChanged@{entitySignatureChanged}!ecs::SystemManager@{ecs::SystemManager}}
+\doxysubsubsection{\texorpdfstring{entitySignatureChanged()}{entitySignatureChanged()}}
+{\footnotesize\ttfamily \label{classecs_1_1_system_manager_ad345bcb888518e7fc2040a0019f55142} 
+void ecs\+::\+System\+Manager\+::entity\+Signature\+Changed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity\+Id}{, }\item[{\mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}}]{entity\+Signature}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_system_manager_a294b8df9f5079458dca29dbb94be5506}\index{ecs::SystemManager@{ecs::SystemManager}!getSystem@{getSystem}}
+\index{getSystem@{getSystem}!ecs::SystemManager@{ecs::SystemManager}}
+\doxysubsubsection{\texorpdfstring{getSystem()}{getSystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_system_manager_a294b8df9f5079458dca29dbb94be5506} 
+template$<$typename T$>$ \\
+std\+::shared\+\_\+ptr$<$ T $>$ ecs\+::\+System\+Manager\+::get\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_system_manager_acdd0e6ddb2c16f4023d6107d3e2afbc9}\index{ecs::SystemManager@{ecs::SystemManager}!registerSystem@{registerSystem}}
+\index{registerSystem@{registerSystem}!ecs::SystemManager@{ecs::SystemManager}}
+\doxysubsubsection{\texorpdfstring{registerSystem()}{registerSystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_system_manager_acdd0e6ddb2c16f4023d6107d3e2afbc9} 
+template$<$typename T$>$ \\
+std\+::shared\+\_\+ptr$<$ T $>$ ecs\+::\+System\+Manager\+::register\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_system_manager_a022ee5d17ab1b51f8305046c909dd031}\index{ecs::SystemManager@{ecs::SystemManager}!setSignature@{setSignature}}
+\index{setSignature@{setSignature}!ecs::SystemManager@{ecs::SystemManager}}
+\doxysubsubsection{\texorpdfstring{setSignature()}{setSignature()}}
+{\footnotesize\ttfamily \label{classecs_1_1_system_manager_a022ee5d17ab1b51f8305046c909dd031} 
+template$<$typename T$>$ \\
+void ecs\+::\+System\+Manager\+::set\+Signature (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_entity_manager_8hpp_aeb9b9235190f907fe8b0994938dd2807}{Signature}}}]{signature}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_system_manager_a01a89648a01bfafedf4887a4756a24f8}\index{ecs::SystemManager@{ecs::SystemManager}!update@{update}}
+\index{update@{update}!ecs::SystemManager@{ecs::SystemManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classecs_1_1_system_manager_a01a89648a01bfafedf4887a4756a24f8} 
+void ecs\+::\+System\+Manager\+::update (\begin{DoxyParamCaption}\item[{float}]{dt}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/\mbox{\hyperlink{_system_manager_8hpp}{System\+Manager.\+hpp}}\end{DoxyCompactItemize}
