@@ -149,6 +149,33 @@ namespace renderManager {
     DrawRectangleRounded(rec, roundness, 16, color);
   }
 
+  void Renderer::drawButton(int posX, int posY, int width, int height,
+                            const char *text, int fontSize, Color textColor,
+                            Color buttonColor) {
+    DrawRectangle(posX, posY, width, height, buttonColor);
+    int textWidth = MeasureText(text, fontSize);
+    int textPosX = posX + (width - textWidth) / 2;
+    int textPosY = posY + (height - fontSize) / 2;
+    DrawText(text, textPosX, textPosY, fontSize, textColor);
+  }
+
+  ButtonState Renderer::handleButton(int posX, int posY, int width,
+                                     int height) {
+    Vector2 mousePoint = GetMousePosition();
+    Rectangle buttonRec = {static_cast<float>(posX), static_cast<float>(posY),
+                           static_cast<float>(width),
+                           static_cast<float>(height)};
+
+    if (CheckCollisionPointRec(mousePoint, buttonRec)) {
+      if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        return ButtonState::CLICKED;
+      else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+        return ButtonState::RELEASED;
+      return ButtonState::HOVER;
+    }
+    return ButtonState::IDLE;
+  }
+
   /**
    * @brief Logs a formatted message to stdout with a colored level prefix.
    *

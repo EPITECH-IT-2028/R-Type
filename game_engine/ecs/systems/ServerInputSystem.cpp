@@ -65,8 +65,8 @@ void ecs::ServerInputSystem::processInput(
   position.x += deltaX;
   position.y += deltaY;
 
-  position.x = std::clamp(position.x, 0.0f, static_cast<float>(WINDOW_WIDTH));
-  position.y = std::clamp(position.y, 0.0f, static_cast<float>(WINDOW_HEIGHT));
+  position.x = std::clamp(position.x, 0.0f, static_cast<float>(WINDOW_WIDTH) - PLAYER_WIDTH);
+  position.y = std::clamp(position.y, 0.0f, static_cast<float>(WINDOW_HEIGHT) - PLAYER_HEIGHT);
 }
 
 void ecs::ServerInputSystem::sendPositionUpdate(Entity entityId) {

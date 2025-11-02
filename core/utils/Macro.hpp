@@ -34,7 +34,7 @@ constexpr float PLAYER_WIDTH = 66.0f;
 constexpr float PLAYER_HEIGHT = 37.0f;
 constexpr int MARGIN_WINDOW = 30;
 constexpr int COUNTDOWN_TIME = 5;
-constexpr float GAME_DURATION = 10.0f;
+constexpr float GAME_DURATION = 20.0f;
 constexpr int TPS = 20;
 
 constexpr int PING_INTERVAL_CLIENT = 50;
@@ -72,6 +72,12 @@ namespace chatUI {
   constexpr int INPUT_TEXT_Y_OFFSET = 35;
   constexpr int INPUT_TEXT_RIGHT_MARGIN = 50;
 }  // namespace chatUI
+
+namespace menuUI {
+  constexpr int BUTTON_WIDTH = 200;
+  constexpr int BUTTON_HEIGHT = 50;
+  constexpr int FONT_SIZE = 20;
+}  // namespace menuUI
 
 /* ASCII characters */
 constexpr unsigned char ASCII_NULL = 0x00;

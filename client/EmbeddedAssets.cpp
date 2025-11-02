@@ -4,9 +4,14 @@
 #include "enemies_data.h"
 #include "players_data.h"
 #include "projectiles_data.h"
+#include "start_screen_data.h"
 
 namespace asset {
   void initEmbeddedAssets() {
+    AssetManager::registerEmbeddedImage(
+        "start_screen", START_SCREEN_DATA_DATA, START_SCREEN_DATA_WIDTH,
+        START_SCREEN_DATA_HEIGHT, START_SCREEN_DATA_FORMAT);
+
     AssetManager::registerEmbeddedImage(
         "background", BACKGROUND_DATA_DATA, BACKGROUND_DATA_WIDTH,
         BACKGROUND_DATA_HEIGHT, BACKGROUND_DATA_FORMAT);

@@ -412,6 +412,7 @@ namespace client {
       void removeAcknowledgedPacket(std::uint32_t sequence_number);
 
       void getScoreboard();
+      void cleanupGameEntities();
 
       uint32_t getPingSeq() const {
         return _pingSeq;

@@ -1,6 +1,5 @@
 #include "Client.hpp"
 #include <raylib.h>
-#include <atomic>
 #include <cstdint>
 #include <cstring>
 #include "AssetManager.hpp"
@@ -252,6 +251,8 @@ namespace client {
     _ecsManager.addComponent<ecs::BackgroundTagComponent>(background2, {});
   }
 
+
+
   /**
    * @brief Create an ECS player entity from a NewPlayerPacket and register it
    * with the client.
@@ -261,8 +262,8 @@ namespace client {
    * creation for the same player ID, and assigns the local player tag and local
    * player ID when appropriate.
    *
-   * @param packet Packet containing the player's ID, null-terminated name, and
-   * initial position (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name,
+   * and initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     std::unique_lock<std::shared_mutex> lock(_playerStateMutex);
@@ -347,8 +348,8 @@ namespace client {
    * same enemy_id already exists, logs a warning and returns without creating a
    * new entity. Enemies are tagged as remote entities for interpolation.
    *
-   * @param packet Spawn packet containing `enemy_id` and initial position `x`,
-   * `y`.
+   * @param packet Spawn packet containing `enemy_id` and initial position
+   * `x`, `y`.
    */
   void Client::createEnemyEntity(EnemySpawnPacket packet) {
     if (_enemyEntities.find(packet.enemy_id) != _enemyEntities.end()) {
@@ -407,7 +408,8 @@ namespace client {
    * @brief Associate a projectile identifier with its ECS entity for later
    * lookup.
    *
-   * Stores the mapping in the client's projectile map in a thread-safe manner.
+   * Stores the mapping in the client's projectile map in a thread-safe
+   * manner.
    *
    * @param projectileId Unique identifier for the projectile.
    * @param entity ECS entity corresponding to the projectileId.
@@ -450,7 +452,8 @@ namespace client {
   /**
    * @brief Transmit the local player's current input flags to the server.
    *
-   * If the client has not been assigned a local player ID, the call is ignored.
+   * If the client has not been assigned a local player ID, the call is
+   * ignored.
    *
    * @param input Bitmask of player input flags (each bit represents an input
    * action).
@@ -700,7 +703,9 @@ namespace client {
   /**
    * @brief Sends a chat message from the local player to the server.
    *
-   * If no local player ID is assigned, the message is not sent.
+   * If the local player ID is not assigned, the function logs a warning and
+   * does nothing. On failure to build or send the packet, the function logs
+   * an error.
    *
    * @param message Text of the chat message to send.
    */
@@ -745,5 +750,33 @@ namespace client {
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[SCOREBOARD REQUEST] Exception: %s", e.what());
     }
+  }
+
+  void Client::cleanupGameEntities() {
+    std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
+    std::lock_guard<std::mutex> projectileLock(_projectileMutex);
+
+    for (auto const &[id, entity] : _playerEntities) {
+      if (_ecsManager.isEntityValid(entity)) {
+        _ecsManager.destroyEntity(entity);
+      }
+    }
+    _playerEntities.clear();
+    _playerNames.clear();
+    _player_id = INVALID_ID;
+
+    for (auto const &[id, entity] : _enemyEntities) {
+      if (_ecsManager.isEntityValid(entity)) {
+        _ecsManager.destroyEntity(entity);
+      }
+    }
+    _enemyEntities.clear();
+
+    for (auto const &[id, entity] : _projectileEntities) {
+      if (_ecsManager.isEntityValid(entity)) {
+        _ecsManager.destroyEntity(entity);
+      }
+    }
+    _projectileEntities.clear();
   }
 }  // namespace client

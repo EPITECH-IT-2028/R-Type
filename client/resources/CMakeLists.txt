@@ -8,7 +8,12 @@ add_executable(embed_assets
 target_link_libraries(embed_assets raylib)
 target_include_directories(embed_assets PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-set(REQUIRED_ASSETS background.png players.gif enemies.gif)
+set(REQUIRED_ASSETS
+  start_screen.png
+  background.png
+  players.gif
+  enemies.gif
+)
 foreach(asset ${REQUIRED_ASSETS})
   if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${asset}")
     message(FATAL_ERROR "Required asset not found: ${asset}")
@@ -18,6 +23,7 @@ endforeach()
 
 add_custom_command(
   OUTPUT
+    ${EMBEDDED_ASSETS_DIR}/start_screen_data.h
     ${EMBEDDED_ASSETS_DIR}/background_data.h
     ${EMBEDDED_ASSETS_DIR}/players_data.h
     ${EMBEDDED_ASSETS_DIR}/enemies_data.h
@@ -26,9 +32,7 @@ add_custom_command(
     ${EMBEDDED_ASSETS_DIR}
   DEPENDS
     embed_assets
-    ${CMAKE_CURRENT_SOURCE_DIR}/background.png
-    ${CMAKE_CURRENT_SOURCE_DIR}/players.gif
-    ${CMAKE_CURRENT_SOURCE_DIR}/enemies.gif
+    ${REQUIRED_ASSETS}
   COMMENT "Generating embedded asset headers..."
   VERBATIM
 )

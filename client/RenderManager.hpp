@@ -5,6 +5,7 @@
 
 namespace renderManager {
   constexpr float SCROLL_SPEED = 250.0f;
+  constexpr const char *START_SCREEN_PATH = "embedded://start_screen";
   constexpr const char *BG_PATH = "embedded://background";
   constexpr const char *PLAYER_PATH = "embedded://players";
   constexpr const char *PROJECTILE_PATH = "embedded://projectiles";
@@ -12,6 +13,13 @@ namespace renderManager {
 }  // namespace renderManager
 
 namespace renderManager {
+  enum class ButtonState {
+    IDLE,
+    HOVER,
+    CLICKED,
+    RELEASED
+  };
+
   class Renderer {
     public:
       Renderer(int width, int height, const char *title);
@@ -36,6 +44,11 @@ namespace renderManager {
       static void drawRectangleRounded(int posX, int posY, int width,
                                        int height, float roundness,
                                        Color color);
+      static void drawButton(int posX, int posY, int width, int height,
+                             const char *text, int fontSize, Color textColor,
+                             Color buttonColor);
+      static ButtonState handleButton(int posX, int posY, int width,
+                                      int height);
 
     private:
       bool _initSucceeded = false;
