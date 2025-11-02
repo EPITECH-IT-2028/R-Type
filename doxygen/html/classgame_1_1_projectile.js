@@ -1,0 +1,26 @@
+var classgame_1_1_projectile =
+[
+    [ "Projectile", "classgame_1_1_projectile.html#ac502d7fbed138ddf87140db9fd5bf8c1", null ],
+    [ "~Projectile", "classgame_1_1_projectile.html#a18e7b82eb6d066e2234c0f2daa25d179", null ],
+    [ "getComponent", "classgame_1_1_projectile.html#a1b5614843a87d62536491c058ce8e1ed", null ],
+    [ "getComponent", "classgame_1_1_projectile.html#a77e5f1cd16e8415e3a949ca8dd164e35", null ],
+    [ "getDamage", "classgame_1_1_projectile.html#af03a6c35e0e1a88b57cfaebc7004e2ce", null ],
+    [ "getEntityId", "classgame_1_1_projectile.html#a731b5765cc7d51f6461f1c99691e85f7", null ],
+    [ "getOwnerId", "classgame_1_1_projectile.html#a892f1497ba8d2f6e9672c1f13b20957c", null ],
+    [ "getPosition", "classgame_1_1_projectile.html#a6cb7cbde693406469f489932574d677a", null ],
+    [ "getProjectileId", "classgame_1_1_projectile.html#ae4daf96324773e1090209d93de8bb4da", null ],
+    [ "getSequenceNumber", "classgame_1_1_projectile.html#a42a863c2a6b316a472dae2821379053c", null ],
+    [ "getSpeed", "classgame_1_1_projectile.html#aea3dca4d065b5af9f8dc0bf58ed9e607", null ],
+    [ "getType", "classgame_1_1_projectile.html#ab5deb7476884a58da4eb173932ae6362", null ],
+    [ "getVelocity", "classgame_1_1_projectile.html#ad3573208b80b632db322e2a4c6649c13", null ],
+    [ "hasComponent", "classgame_1_1_projectile.html#ac31d9d70a517d8fe5cca5bdea0e490dd", null ],
+    [ "isDestroyed", "classgame_1_1_projectile.html#a6452c6d33411ed359232c282f1781bda", null ],
+    [ "move", "classgame_1_1_projectile.html#abc30dc5a3b4fdec47c8502bc08811468", null ],
+    [ "setDamage", "classgame_1_1_projectile.html#aa41b5b6b5b5702b559f32fb1da4bd74c", null ],
+    [ "setPosition", "classgame_1_1_projectile.html#a53f858b8c782e5868d4185e150b65155", null ],
+    [ "setSequenceNumber", "classgame_1_1_projectile.html#aca0a5d597971e2957dba6091abb3aa3c", null ],
+    [ "setSpeed", "classgame_1_1_projectile.html#a7338f218df0c73596152e274a22d815e", null ],
+    [ "setType", "classgame_1_1_projectile.html#a1a5071b352b86f7c61b81bfe71e427eb", null ],
+    [ "setVelocity", "classgame_1_1_projectile.html#a40e5c209885132f09ab70b3af5beac08", null ],
+    [ "update", "classgame_1_1_projectile.html#ae48fac2b5e7abd7a7adbc42dcd1c5ad2", null ]
+];

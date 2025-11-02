@@ -1,0 +1,26 @@
+\doxysection{Packet\+Sender.\+hpp}
+\hypertarget{_packet_sender_8hpp_source}{}\label{_packet_sender_8hpp_source}\index{core/network/PacketSender.hpp@{core/network/PacketSender.hpp}}
+\mbox{\hyperlink{_packet_sender_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <asio.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_base_network_manager_8hpp}{BaseNetworkManager.hpp}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_packet_sender}{PacketSender}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classpacket_1_1_packet_sender_a35adc9484465dda17591e79e2f7cdf3d}{sendPacket}}(\mbox{\hyperlink{classnetwork_1_1_base_network_manager}{network::BaseNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ T\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ buffer\ =\ std::make\_shared<std::vector<uint8\_t>>(\textcolor{keyword}{sizeof}(T));}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ std::memcpy(buffer-\/>data(),\ \&\mbox{\hyperlink{namespacepacket}{packet}},\ \textcolor{keyword}{sizeof}(T));}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ networkManager.\mbox{\hyperlink{classnetwork_1_1_base_network_manager_af617910160df4e3acfe4ad50582e84b6}{send}}(\textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}\ *\textcolor{keyword}{>}(buffer-\/>data()),}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer-\/>size());}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00019\ \ \ \};}
+\DoxyCodeLine{00020\ \}\ \ \textcolor{comment}{//\ namespace\ packet}}
+
+\end{DoxyCode}

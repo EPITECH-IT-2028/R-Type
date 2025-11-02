@@ -1,0 +1,96 @@
+\doxysection{ecs\+::Enemy\+System Class Reference}
+\hypertarget{classecs_1_1_enemy_system}{}\label{classecs_1_1_enemy_system}\index{ecs::EnemySystem@{ecs::EnemySystem}}
+
+
+{\ttfamily \#include $<$Enemy\+System.\+hpp$>$}
+
+
+
+Inheritance diagram for ecs\+::Enemy\+System\+:
+% FIG 0
+
+
+Collaboration diagram for ecs\+::Enemy\+System\+:
+% FIG 1
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classecs_1_1_enemy_system_a69f3f1381a87fe856eb65d52962307b6}{Enemy\+System}} ()=default
+\item 
+\mbox{\hyperlink{classecs_1_1_enemy_system_aa6abb83dd78a3a93ac408bc983d20fc0}{\texorpdfstring{$\sim$}{\string~}\+Enemy\+System}} () override=default
+\item 
+void \mbox{\hyperlink{classecs_1_1_enemy_system_a3ed4d48d03551f9fbc35e27e7f03d3d1}{set\+ECSManager}} (\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \texorpdfstring{$\ast$}{*}ecs\+Manager)
+\item 
+void \mbox{\hyperlink{classecs_1_1_enemy_system_a3a7dc230184e49038d8d03fac143004d}{set\+Game}} (\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \texorpdfstring{$\ast$}{*}game)
+\item 
+void \mbox{\hyperlink{classecs_1_1_enemy_system_a2092a25672c31a0826693efaf5aa8858}{set\+Event\+Queue}} (\mbox{\hyperlink{classqueue_1_1_event_queue}{queue\+::\+Event\+Queue}} \texorpdfstring{$\ast$}{*}event\+Queue)
+\item 
+void \mbox{\hyperlink{classecs_1_1_enemy_system_a328297a4b422629b86e9230e4e0aa464}{update}} (float delta\+Time) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{classecs_1_1_system_ab0ae8f1804130e3b8cfa2bbe2b0c5e6b}{\texorpdfstring{$\sim$}{\string~}\+System}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classecs_1_1_system}{ecs\+::\+System}}}
+\begin{DoxyCompactItemize}
+\item 
+std\+::set$<$ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} $>$ \mbox{\hyperlink{classecs_1_1_system_aac90f58f0dc1a58487ae1b35a84087a6}{\+\_\+entities}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classecs_1_1_enemy_system_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classecs_1_1_enemy_system_a69f3f1381a87fe856eb65d52962307b6}\index{ecs::EnemySystem@{ecs::EnemySystem}!EnemySystem@{EnemySystem}}
+\index{EnemySystem@{EnemySystem}!ecs::EnemySystem@{ecs::EnemySystem}}
+\doxysubsubsection{\texorpdfstring{EnemySystem()}{EnemySystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_enemy_system_a69f3f1381a87fe856eb65d52962307b6} 
+ecs\+::\+Enemy\+System\+::\+Enemy\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{classecs_1_1_enemy_system_aa6abb83dd78a3a93ac408bc983d20fc0}\index{ecs::EnemySystem@{ecs::EnemySystem}!````~EnemySystem@{\texorpdfstring{$\sim$}{\string~}EnemySystem}}
+\index{````~EnemySystem@{\texorpdfstring{$\sim$}{\string~}EnemySystem}!ecs::EnemySystem@{ecs::EnemySystem}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}EnemySystem()}{\string~EnemySystem()}}
+{\footnotesize\ttfamily \label{classecs_1_1_enemy_system_aa6abb83dd78a3a93ac408bc983d20fc0} 
+ecs\+::\+Enemy\+System\+::\texorpdfstring{$\sim$}{\string~}\+Enemy\+System (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classecs_1_1_enemy_system_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classecs_1_1_enemy_system_a3ed4d48d03551f9fbc35e27e7f03d3d1}\index{ecs::EnemySystem@{ecs::EnemySystem}!setECSManager@{setECSManager}}
+\index{setECSManager@{setECSManager}!ecs::EnemySystem@{ecs::EnemySystem}}
+\doxysubsubsection{\texorpdfstring{setECSManager()}{setECSManager()}}
+{\footnotesize\ttfamily \label{classecs_1_1_enemy_system_a3ed4d48d03551f9fbc35e27e7f03d3d1} 
+void ecs\+::\+Enemy\+System\+::set\+ECSManager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}} \texorpdfstring{$\ast$}{*}}]{ecs\+Manager}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_enemy_system_a2092a25672c31a0826693efaf5aa8858}\index{ecs::EnemySystem@{ecs::EnemySystem}!setEventQueue@{setEventQueue}}
+\index{setEventQueue@{setEventQueue}!ecs::EnemySystem@{ecs::EnemySystem}}
+\doxysubsubsection{\texorpdfstring{setEventQueue()}{setEventQueue()}}
+{\footnotesize\ttfamily \label{classecs_1_1_enemy_system_a2092a25672c31a0826693efaf5aa8858} 
+void ecs\+::\+Enemy\+System\+::set\+Event\+Queue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classqueue_1_1_event_queue}{queue\+::\+Event\+Queue}} \texorpdfstring{$\ast$}{*}}]{event\+Queue}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_enemy_system_a3a7dc230184e49038d8d03fac143004d}\index{ecs::EnemySystem@{ecs::EnemySystem}!setGame@{setGame}}
+\index{setGame@{setGame}!ecs::EnemySystem@{ecs::EnemySystem}}
+\doxysubsubsection{\texorpdfstring{setGame()}{setGame()}}
+{\footnotesize\ttfamily \label{classecs_1_1_enemy_system_a3a7dc230184e49038d8d03fac143004d} 
+void ecs\+::\+Enemy\+System\+::set\+Game (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \texorpdfstring{$\ast$}{*}}]{game}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classecs_1_1_enemy_system_a328297a4b422629b86e9230e4e0aa464}\index{ecs::EnemySystem@{ecs::EnemySystem}!update@{update}}
+\index{update@{update}!ecs::EnemySystem@{ecs::EnemySystem}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classecs_1_1_enemy_system_a328297a4b422629b86e9230e4e0aa464} 
+void ecs\+::\+Enemy\+System\+::update (\begin{DoxyParamCaption}\item[{float}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \mbox{\hyperlink{classecs_1_1_system_a84b6aff0b9dd3932497b4c0dca03fa35}{ecs\+::\+System}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_enemy_system_8hpp}{Enemy\+System.\+hpp}}\item 
+game\+\_\+engine/ecs/systems/\mbox{\hyperlink{_enemy_system_8cpp}{Enemy\+System.\+cpp}}\end{DoxyCompactItemize}

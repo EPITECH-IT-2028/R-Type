@@ -1,0 +1,208 @@
+\doxysection{client\+::Client Class Reference}
+\hypertarget{classclient_1_1_client}{}\label{classclient_1_1_client}\index{client::Client@{client::Client}}
+
+
+{\ttfamily \#include $<$Client.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classclient_1_1_client_a2369e9507823071702a627ec9aae1900}{Client}} (const std\+::string \&host, const std\+::uint16\+\_\+t \&port)
+\item 
+\mbox{\hyperlink{classclient_1_1_client_a7ea9ec49a896e2ee80e56d002a2e41a2}{\texorpdfstring{$\sim$}{\string~}\+Client}} ()=default
+\item 
+bool \mbox{\hyperlink{classclient_1_1_client_afbb1e7aa19e7fef7ef313f4cf2557376}{is\+Connected}} () const
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a61a844d94bddc6d4f75a9a251e33ef4d}{initialize\+ECS}} ()
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_ac9739d5a3fde6d0c0e72c69801fdd99e}{start\+Receive}} ()
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a027a933dceffd6d82a0031969c9c5ffd}{connect}} ()
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_ae997526e6f0744926746e0840d64284e}{disconnect}} ()
+\item 
+{\footnotesize template$<$typename \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}}$>$ }\\void \mbox{\hyperlink{classclient_1_1_client_a87509d89a4b08856e8a8ce85b5505118}{send}} (const \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}} \&packet)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classclient_1_1_client_abf5be3cc18ccf60c9f845635bba335e4}{get\+Enemy\+Entity}} (uint32\+\_\+t enemy\+\_\+id) const
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classclient_1_1_client_aa95ed390f8e8171f37e7e3906fb32aad}{get\+Player\+Entity}} (uint32\+\_\+t player\+\_\+id) const
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a9b074bd7c8877a4982d30eaef478325f}{destroy\+Player\+Entity}} (uint32\+\_\+t player\+Id)
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_aaf4c6b7763a8fd14ebe37158032d2bc3}{destroy\+Enemy\+Entity}} (uint32\+\_\+t enemy\+Id)
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a33dd03d4fa4d15d674760fe6cf9bfe06}{create\+Player\+Entity}} (\mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}} packet)
+\begin{DoxyCompactList}\small\item\em Creates and configures the player entity in the ECS. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classclient_1_1_client_aeb0b5ae38e174b1cd505bc7e6c7344ae}{create\+Enemy\+Entity}} (\mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}} packet)
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a496c9d2a833e6cf6f24d47ead03a73be}{add\+Projectile\+Entity}} (uint32\+\_\+t projectile\+Id, \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} entity)
+\item 
+\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} \mbox{\hyperlink{classclient_1_1_client_a52c37f9620035cdc63be03338b5d8042}{get\+Projectile\+Entity}} (uint32\+\_\+t projectile\+Id)
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_aa597ab6b302b044853d4a192717a2e6e}{remove\+Projectile\+Entity}} (uint32\+\_\+t projectile\+Id)
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classclient_1_1_client_a02ee037a39f0a96d3c0d0c3e170ceb1a}{get\+Player\+Id}} () const
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classclient_1_1_client_a5d7a619caccbcebc4b80406264fa7038}{get\+Sequence\+Number}} () const
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a529381f4a8c22cf710d5bcb0c3b29948}{update\+Sequence\+Number}} (uint32\+\_\+t seq)
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_af1a5f87de1b5f4990af1a6bdd035996f}{send\+Position}} ()
+\item 
+void \mbox{\hyperlink{classclient_1_1_client_a1894c8f7a399d098e337c9d319c6ea7a}{send\+Shoot}} (float x, float y)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classclient_1_1_client_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classclient_1_1_client_a2369e9507823071702a627ec9aae1900}\index{client::Client@{client::Client}!Client@{Client}}
+\index{Client@{Client}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{Client()}{Client()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a2369e9507823071702a627ec9aae1900} 
+client\+::\+Client\+::\+Client (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{host}{, }\item[{const std\+::uint16\+\_\+t \&}]{port}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_a7ea9ec49a896e2ee80e56d002a2e41a2}\index{client::Client@{client::Client}!````~Client@{\texorpdfstring{$\sim$}{\string~}Client}}
+\index{````~Client@{\texorpdfstring{$\sim$}{\string~}Client}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Client()}{\string~Client()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a7ea9ec49a896e2ee80e56d002a2e41a2} 
+client\+::\+Client\+::\texorpdfstring{$\sim$}{\string~}\+Client (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classclient_1_1_client_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classclient_1_1_client_a496c9d2a833e6cf6f24d47ead03a73be}\index{client::Client@{client::Client}!addProjectileEntity@{addProjectileEntity}}
+\index{addProjectileEntity@{addProjectileEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{addProjectileEntity()}{addProjectileEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a496c9d2a833e6cf6f24d47ead03a73be} 
+void client\+::\+Client\+::add\+Projectile\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{projectile\+Id}{, }\item[{\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}}]{entity}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_a027a933dceffd6d82a0031969c9c5ffd}\index{client::Client@{client::Client}!connect@{connect}}
+\index{connect@{connect}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{connect()}{connect()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a027a933dceffd6d82a0031969c9c5ffd} 
+void client\+::\+Client\+::connect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_aeb0b5ae38e174b1cd505bc7e6c7344ae}\index{client::Client@{client::Client}!createEnemyEntity@{createEnemyEntity}}
+\index{createEnemyEntity@{createEnemyEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{createEnemyEntity()}{createEnemyEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_aeb0b5ae38e174b1cd505bc7e6c7344ae} 
+void client\+::\+Client\+::create\+Enemy\+Entity (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}}}]{packet}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_a33dd03d4fa4d15d674760fe6cf9bfe06}\index{client::Client@{client::Client}!createPlayerEntity@{createPlayerEntity}}
+\index{createPlayerEntity@{createPlayerEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{createPlayerEntity()}{createPlayerEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a33dd03d4fa4d15d674760fe6cf9bfe06} 
+void client\+::\+Client\+::create\+Player\+Entity (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}}}]{packet}{}\end{DoxyParamCaption})}
+
+
+
+Creates and configures the player entity in the ECS. 
+
+Constructs a player entity and attaches its initial components\+: position, velocity, movement speed, render asset, sprite source rectangle, scale, player tag, and sprite animation metadata.
+
+The created entity is positioned at (100, 100) with zero initial velocity and uses \doxylink{namespacerender_manager_abf8018f3bfedadd2f7c4e1ebf79385da}{render\+Manager\+::\+PLAYER\+\_\+\+PATH} for rendering. Sprite and scale values are taken from \doxylink{structclient_1_1_player_sprite_config}{Player\+Sprite\+Config}. The sprite animation component is initialized with column/row counts, selected/neutral frames, frame timing, and non-\/playing, non-\/looping defaults. \Hypertarget{classclient_1_1_client_aaf4c6b7763a8fd14ebe37158032d2bc3}\index{client::Client@{client::Client}!destroyEnemyEntity@{destroyEnemyEntity}}
+\index{destroyEnemyEntity@{destroyEnemyEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{destroyEnemyEntity()}{destroyEnemyEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_aaf4c6b7763a8fd14ebe37158032d2bc3} 
+void client\+::\+Client\+::destroy\+Enemy\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{enemy\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_a9b074bd7c8877a4982d30eaef478325f}\index{client::Client@{client::Client}!destroyPlayerEntity@{destroyPlayerEntity}}
+\index{destroyPlayerEntity@{destroyPlayerEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{destroyPlayerEntity()}{destroyPlayerEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a9b074bd7c8877a4982d30eaef478325f} 
+void client\+::\+Client\+::destroy\+Player\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_ae997526e6f0744926746e0840d64284e}\index{client::Client@{client::Client}!disconnect@{disconnect}}
+\index{disconnect@{disconnect}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{disconnect()}{disconnect()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_ae997526e6f0744926746e0840d64284e} 
+void client\+::\+Client\+::disconnect (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_abf5be3cc18ccf60c9f845635bba335e4}\index{client::Client@{client::Client}!getEnemyEntity@{getEnemyEntity}}
+\index{getEnemyEntity@{getEnemyEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{getEnemyEntity()}{getEnemyEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_abf5be3cc18ccf60c9f845635bba335e4} 
+uint32\+\_\+t client\+::\+Client\+::get\+Enemy\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{enemy\+\_\+id}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_aa95ed390f8e8171f37e7e3906fb32aad}\index{client::Client@{client::Client}!getPlayerEntity@{getPlayerEntity}}
+\index{getPlayerEntity@{getPlayerEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{getPlayerEntity()}{getPlayerEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_aa95ed390f8e8171f37e7e3906fb32aad} 
+uint32\+\_\+t client\+::\+Client\+::get\+Player\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+\_\+id}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_a02ee037a39f0a96d3c0d0c3e170ceb1a}\index{client::Client@{client::Client}!getPlayerId@{getPlayerId}}
+\index{getPlayerId@{getPlayerId}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{getPlayerId()}{getPlayerId()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a02ee037a39f0a96d3c0d0c3e170ceb1a} 
+uint32\+\_\+t client\+::\+Client\+::get\+Player\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_a52c37f9620035cdc63be03338b5d8042}\index{client::Client@{client::Client}!getProjectileEntity@{getProjectileEntity}}
+\index{getProjectileEntity@{getProjectileEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{getProjectileEntity()}{getProjectileEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a52c37f9620035cdc63be03338b5d8042} 
+\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}} client\+::\+Client\+::get\+Projectile\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{projectile\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_a5d7a619caccbcebc4b80406264fa7038}\index{client::Client@{client::Client}!getSequenceNumber@{getSequenceNumber}}
+\index{getSequenceNumber@{getSequenceNumber}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{getSequenceNumber()}{getSequenceNumber()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a5d7a619caccbcebc4b80406264fa7038} 
+uint32\+\_\+t client\+::\+Client\+::get\+Sequence\+Number (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_a61a844d94bddc6d4f75a9a251e33ef4d}\index{client::Client@{client::Client}!initializeECS@{initializeECS}}
+\index{initializeECS@{initializeECS}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{initializeECS()}{initializeECS()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a61a844d94bddc6d4f75a9a251e33ef4d} 
+void client\+::\+Client\+::initialize\+ECS (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_afbb1e7aa19e7fef7ef313f4cf2557376}\index{client::Client@{client::Client}!isConnected@{isConnected}}
+\index{isConnected@{isConnected}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{isConnected()}{isConnected()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_afbb1e7aa19e7fef7ef313f4cf2557376} 
+bool client\+::\+Client\+::is\+Connected (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_aa597ab6b302b044853d4a192717a2e6e}\index{client::Client@{client::Client}!removeProjectileEntity@{removeProjectileEntity}}
+\index{removeProjectileEntity@{removeProjectileEntity}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{removeProjectileEntity()}{removeProjectileEntity()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_aa597ab6b302b044853d4a192717a2e6e} 
+void client\+::\+Client\+::remove\+Projectile\+Entity (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{projectile\+Id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_a87509d89a4b08856e8a8ce85b5505118}\index{client::Client@{client::Client}!send@{send}}
+\index{send@{send}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{send()}{send()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a87509d89a4b08856e8a8ce85b5505118} 
+template$<$typename \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}}$>$ \\
+void client\+::\+Client\+::send (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{Packet\+Type}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_af1a5f87de1b5f4990af1a6bdd035996f}\index{client::Client@{client::Client}!sendPosition@{sendPosition}}
+\index{sendPosition@{sendPosition}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{sendPosition()}{sendPosition()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_af1a5f87de1b5f4990af1a6bdd035996f} 
+void client\+::\+Client\+::send\+Position (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_a1894c8f7a399d098e337c9d319c6ea7a}\index{client::Client@{client::Client}!sendShoot@{sendShoot}}
+\index{sendShoot@{sendShoot}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{sendShoot()}{sendShoot()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a1894c8f7a399d098e337c9d319c6ea7a} 
+void client\+::\+Client\+::send\+Shoot (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classclient_1_1_client_ac9739d5a3fde6d0c0e72c69801fdd99e}\index{client::Client@{client::Client}!startReceive@{startReceive}}
+\index{startReceive@{startReceive}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{startReceive()}{startReceive()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_ac9739d5a3fde6d0c0e72c69801fdd99e} 
+void client\+::\+Client\+::start\+Receive (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classclient_1_1_client_a529381f4a8c22cf710d5bcb0c3b29948}\index{client::Client@{client::Client}!updateSequenceNumber@{updateSequenceNumber}}
+\index{updateSequenceNumber@{updateSequenceNumber}!client::Client@{client::Client}}
+\doxysubsubsection{\texorpdfstring{updateSequenceNumber()}{updateSequenceNumber()}}
+{\footnotesize\ttfamily \label{classclient_1_1_client_a529381f4a8c22cf710d5bcb0c3b29948} 
+void client\+::\+Client\+::update\+Sequence\+Number (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{seq}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+client/\mbox{\hyperlink{_client_8hpp}{Client.\+hpp}}\item 
+client/\mbox{\hyperlink{_client_8cpp}{Client.\+cpp}}\end{DoxyCompactItemize}

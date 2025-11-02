@@ -1,0 +1,180 @@
+\doxysection{game\+::Enemy Class Reference}
+\hypertarget{classgame_1_1_enemy}{}\label{classgame_1_1_enemy}\index{game::Enemy@{game::Enemy}}
+
+
+{\ttfamily \#include $<$Enemy.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classgame_1_1_enemy_a9b7c52407d07db1f2910848609771858}{Enemy}} (int enemy\+\_\+id, uint32\+\_\+t entity\+\_\+id, \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs\+::\+ECSManager}} \&ecs\+Manager)
+\item 
+\mbox{\hyperlink{classgame_1_1_enemy_a02602c18b1a08c3cd68458f163573e1e}{\texorpdfstring{$\sim$}{\string~}\+Enemy}} ()=default
+\item 
+int \mbox{\hyperlink{classgame_1_1_enemy_a0dbcbecca1e5ea5500852d150974152f}{get\+Enemy\+Id}} () const
+\item 
+uint32\+\_\+t \mbox{\hyperlink{classgame_1_1_enemy_a716bcd13225b54b7cd5ccb902bfe1f12}{get\+Entity\+Id}} () const
+\item 
+std\+::pair$<$ float, float $>$ \mbox{\hyperlink{classgame_1_1_enemy_a80203095c78b70cc202b6e40fbf042f4}{get\+Position}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_adb83201c64f1013475e948cab3e6f2b2}{set\+Position}} (float x, float y)
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_a0e8d90d2e8ef9f12f76ff00bdf2f35b4}{move}} (float deltaX, float deltaY)
+\item 
+std\+::optional$<$ int $>$ \mbox{\hyperlink{classgame_1_1_enemy_a13e03a6f91393a0bc8834f08cd141502}{get\+Health}} () const
+\item 
+std\+::optional$<$ int $>$ \mbox{\hyperlink{classgame_1_1_enemy_adfe732b250dc923fde13756a94082bde}{get\+Max\+Health}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_a43dba8c136935d8a5acc5b321f2e89cc}{set\+Health}} (int health)
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_a271aef73b77a4fea201a849cf9e21112}{take\+Damage}} (int damage)
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_ab0a3edb751278d6a829e65f1db7461f0}{heal}} (int amount)
+\item 
+bool \mbox{\hyperlink{classgame_1_1_enemy_a0591d3adf8dc1e505c003dc847608829}{is\+Alive}} () const
+\item 
+std\+::pair$<$ float, float $>$ \mbox{\hyperlink{classgame_1_1_enemy_ab45367cd87a2cbd840568e521f9f4bcb}{get\+Velocity}} () const
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_a6a9b3460c48229e97afbbc7ab7bc5b49}{set\+Velocity}} (float vx, float vy)
+\item 
+void \mbox{\hyperlink{classgame_1_1_enemy_ab2029142a89fb0ea677fe999b928ccec}{update}} (float delta\+Time)
+\item 
+{\footnotesize template$<$typename T$>$ }\\T \& \mbox{\hyperlink{classgame_1_1_enemy_a852db210e0e938cc571dd4ca5c89b911}{get\+Component}} ()
+\item 
+{\footnotesize template$<$typename T$>$ }\\bool \mbox{\hyperlink{classgame_1_1_enemy_ada3c2188621c09b571145dbabd1b7cef}{has\+Component}} () const
+\item 
+{\footnotesize template$<$typename T$>$ }\\const T \& \mbox{\hyperlink{classgame_1_1_enemy_af7bbc20685a793adce28cb305685aa23}{get\+Component}} () const
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classgame_1_1_enemy_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classgame_1_1_enemy_a9b7c52407d07db1f2910848609771858}\index{game::Enemy@{game::Enemy}!Enemy@{Enemy}}
+\index{Enemy@{Enemy}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{Enemy()}{Enemy()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a9b7c52407d07db1f2910848609771858} 
+game\+::\+Enemy\+::\+Enemy (\begin{DoxyParamCaption}\item[{int}]{enemy\+\_\+id}{, }\item[{uint32\+\_\+t}]{entity\+\_\+id}{, }\item[{\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ecs\+::\+ECSManager}} \&}]{ecs\+Manager}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_enemy_a02602c18b1a08c3cd68458f163573e1e}\index{game::Enemy@{game::Enemy}!````~Enemy@{\texorpdfstring{$\sim$}{\string~}Enemy}}
+\index{````~Enemy@{\texorpdfstring{$\sim$}{\string~}Enemy}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Enemy()}{\string~Enemy()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a02602c18b1a08c3cd68458f163573e1e} 
+game\+::\+Enemy\+::\texorpdfstring{$\sim$}{\string~}\+Enemy (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classgame_1_1_enemy_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classgame_1_1_enemy_a852db210e0e938cc571dd4ca5c89b911}\index{game::Enemy@{game::Enemy}!getComponent@{getComponent}}
+\index{getComponent@{getComponent}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getComponent()}{getComponent()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a852db210e0e938cc571dd4ca5c89b911} 
+template$<$typename T$>$ \\
+T \& game\+::\+Enemy\+::get\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_enemy_af7bbc20685a793adce28cb305685aa23}\index{game::Enemy@{game::Enemy}!getComponent@{getComponent}}
+\index{getComponent@{getComponent}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getComponent()}{getComponent()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_af7bbc20685a793adce28cb305685aa23} 
+template$<$typename T$>$ \\
+const T \& game\+::\+Enemy\+::get\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_enemy_a0dbcbecca1e5ea5500852d150974152f}\index{game::Enemy@{game::Enemy}!getEnemyId@{getEnemyId}}
+\index{getEnemyId@{getEnemyId}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getEnemyId()}{getEnemyId()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a0dbcbecca1e5ea5500852d150974152f} 
+int game\+::\+Enemy\+::get\+Enemy\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_enemy_a716bcd13225b54b7cd5ccb902bfe1f12}\index{game::Enemy@{game::Enemy}!getEntityId@{getEntityId}}
+\index{getEntityId@{getEntityId}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getEntityId()}{getEntityId()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a716bcd13225b54b7cd5ccb902bfe1f12} 
+uint32\+\_\+t game\+::\+Enemy\+::get\+Entity\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_enemy_a13e03a6f91393a0bc8834f08cd141502}\index{game::Enemy@{game::Enemy}!getHealth@{getHealth}}
+\index{getHealth@{getHealth}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getHealth()}{getHealth()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a13e03a6f91393a0bc8834f08cd141502} 
+std\+::optional$<$ int $>$ game\+::\+Enemy\+::get\+Health (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_enemy_adfe732b250dc923fde13756a94082bde}\index{game::Enemy@{game::Enemy}!getMaxHealth@{getMaxHealth}}
+\index{getMaxHealth@{getMaxHealth}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getMaxHealth()}{getMaxHealth()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_adfe732b250dc923fde13756a94082bde} 
+std\+::optional$<$ int $>$ game\+::\+Enemy\+::get\+Max\+Health (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_enemy_a80203095c78b70cc202b6e40fbf042f4}\index{game::Enemy@{game::Enemy}!getPosition@{getPosition}}
+\index{getPosition@{getPosition}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getPosition()}{getPosition()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a80203095c78b70cc202b6e40fbf042f4} 
+std\+::pair$<$ float, float $>$ game\+::\+Enemy\+::get\+Position (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_enemy_ab45367cd87a2cbd840568e521f9f4bcb}\index{game::Enemy@{game::Enemy}!getVelocity@{getVelocity}}
+\index{getVelocity@{getVelocity}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{getVelocity()}{getVelocity()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_ab45367cd87a2cbd840568e521f9f4bcb} 
+std\+::pair$<$ float, float $>$ game\+::\+Enemy\+::get\+Velocity (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_enemy_ada3c2188621c09b571145dbabd1b7cef}\index{game::Enemy@{game::Enemy}!hasComponent@{hasComponent}}
+\index{hasComponent@{hasComponent}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{hasComponent()}{hasComponent()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_ada3c2188621c09b571145dbabd1b7cef} 
+template$<$typename T$>$ \\
+bool game\+::\+Enemy\+::has\+Component (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classgame_1_1_enemy_ab0a3edb751278d6a829e65f1db7461f0}\index{game::Enemy@{game::Enemy}!heal@{heal}}
+\index{heal@{heal}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{heal()}{heal()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_ab0a3edb751278d6a829e65f1db7461f0} 
+void game\+::\+Enemy\+::heal (\begin{DoxyParamCaption}\item[{int}]{amount}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_enemy_a0591d3adf8dc1e505c003dc847608829}\index{game::Enemy@{game::Enemy}!isAlive@{isAlive}}
+\index{isAlive@{isAlive}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{isAlive()}{isAlive()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a0591d3adf8dc1e505c003dc847608829} 
+bool game\+::\+Enemy\+::is\+Alive (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classgame_1_1_enemy_a0e8d90d2e8ef9f12f76ff00bdf2f35b4}\index{game::Enemy@{game::Enemy}!move@{move}}
+\index{move@{move}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{move()}{move()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a0e8d90d2e8ef9f12f76ff00bdf2f35b4} 
+void game\+::\+Enemy\+::move (\begin{DoxyParamCaption}\item[{float}]{deltaX}{, }\item[{float}]{deltaY}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_enemy_a43dba8c136935d8a5acc5b321f2e89cc}\index{game::Enemy@{game::Enemy}!setHealth@{setHealth}}
+\index{setHealth@{setHealth}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{setHealth()}{setHealth()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a43dba8c136935d8a5acc5b321f2e89cc} 
+void game\+::\+Enemy\+::set\+Health (\begin{DoxyParamCaption}\item[{int}]{health}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_enemy_adb83201c64f1013475e948cab3e6f2b2}\index{game::Enemy@{game::Enemy}!setPosition@{setPosition}}
+\index{setPosition@{setPosition}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{setPosition()}{setPosition()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_adb83201c64f1013475e948cab3e6f2b2} 
+void game\+::\+Enemy\+::set\+Position (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_enemy_a6a9b3460c48229e97afbbc7ab7bc5b49}\index{game::Enemy@{game::Enemy}!setVelocity@{setVelocity}}
+\index{setVelocity@{setVelocity}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{setVelocity()}{setVelocity()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a6a9b3460c48229e97afbbc7ab7bc5b49} 
+void game\+::\+Enemy\+::set\+Velocity (\begin{DoxyParamCaption}\item[{float}]{vx}{, }\item[{float}]{vy}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_enemy_a271aef73b77a4fea201a849cf9e21112}\index{game::Enemy@{game::Enemy}!takeDamage@{takeDamage}}
+\index{takeDamage@{takeDamage}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{takeDamage()}{takeDamage()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_a271aef73b77a4fea201a849cf9e21112} 
+void game\+::\+Enemy\+::take\+Damage (\begin{DoxyParamCaption}\item[{int}]{damage}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classgame_1_1_enemy_ab2029142a89fb0ea677fe999b928ccec}\index{game::Enemy@{game::Enemy}!update@{update}}
+\index{update@{update}!game::Enemy@{game::Enemy}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{classgame_1_1_enemy_ab2029142a89fb0ea677fe999b928ccec} 
+void game\+::\+Enemy\+::update (\begin{DoxyParamCaption}\item[{float}]{delta\+Time}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/src/enemy/\mbox{\hyperlink{_enemy_8hpp}{Enemy.\+hpp}}\item 
+server/src/enemy/\mbox{\hyperlink{_enemy_8cpp}{Enemy.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,129 @@
+\doxysection{server\+::Server Class Reference}
+\hypertarget{classserver_1_1_server}{}\label{classserver_1_1_server}\index{server::Server@{server::Server}}
+
+
+{\ttfamily \#include $<$Server.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classserver_1_1_server_a699e6e133b562d9c3c7373848d452507}{Server}} (std\+::uint16\+\_\+t port, std\+::uint16\+\_\+t max\+\_\+clients)
+\item 
+\mbox{\hyperlink{classserver_1_1_server_a0af12a0cdc895b52e8ca880ca57917a7}{\texorpdfstring{$\sim$}{\string~}\+Server}} ()=default
+\item 
+void \mbox{\hyperlink{classserver_1_1_server_a048cceeffcf392c6b2d71a5c4c38195c}{start}} ()
+\item 
+void \mbox{\hyperlink{classserver_1_1_server_a674e85b17ebbd7aa1873a5948b67d4dc}{stop}} ()
+\item 
+\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \& \mbox{\hyperlink{classserver_1_1_server_ad1a36e850f3f2e94e4fe20586d3264c4}{get\+Network\+Manager}} ()
+\item 
+std\+::uint16\+\_\+t \mbox{\hyperlink{classserver_1_1_server_a77feb706ddc1844d3e88cee909b36de8}{get\+Port}} () const
+\item 
+int \mbox{\hyperlink{classserver_1_1_server_a763973e0ad6ac3fb8040d979e3a1390e}{get\+Player\+Count}} () const
+\item 
+std\+::uint32\+\_\+t \mbox{\hyperlink{classserver_1_1_server_aa725b33ec0b63f1957556a1cda5e707f}{get\+Projectile\+Count}} () const
+\item 
+void \mbox{\hyperlink{classserver_1_1_server_a4b0aa1ee2c9ccb751eafb17781edb93f}{set\+Projectile\+Count}} (std\+::uint32\+\_\+t projectile\+\_\+count)
+\item 
+void \mbox{\hyperlink{classserver_1_1_server_a1829559c29e9c329fec3f02016519f92}{set\+Player\+Count}} (int player\+\_\+count)
+\item 
+const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{Client}} $>$ $>$ \& \mbox{\hyperlink{classserver_1_1_server_a70c9df26c5fd894970876b938cb066b3}{get\+Clients}} () const
+\item 
+\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \& \mbox{\hyperlink{classserver_1_1_server_a6d94e1deb9f2672840345a7e0cb04cc9}{get\+Game}} ()
+\item 
+void \mbox{\hyperlink{classserver_1_1_server_a0a4a39bcb1e5041daa8e9a0348ab24ec}{clear\+Client\+Slot}} (int player\+\_\+id)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classserver_1_1_server_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classserver_1_1_server_a699e6e133b562d9c3c7373848d452507}\index{server::Server@{server::Server}!Server@{Server}}
+\index{Server@{Server}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{Server()}{Server()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a699e6e133b562d9c3c7373848d452507} 
+server\+::\+Server\+::\+Server (\begin{DoxyParamCaption}\item[{std\+::uint16\+\_\+t}]{port}{, }\item[{std\+::uint16\+\_\+t}]{max\+\_\+clients}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classserver_1_1_server_a0af12a0cdc895b52e8ca880ca57917a7}\index{server::Server@{server::Server}!````~Server@{\texorpdfstring{$\sim$}{\string~}Server}}
+\index{````~Server@{\texorpdfstring{$\sim$}{\string~}Server}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Server()}{\string~Server()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a0af12a0cdc895b52e8ca880ca57917a7} 
+server\+::\+Server\+::\texorpdfstring{$\sim$}{\string~}\+Server (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classserver_1_1_server_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classserver_1_1_server_a0a4a39bcb1e5041daa8e9a0348ab24ec}\index{server::Server@{server::Server}!clearClientSlot@{clearClientSlot}}
+\index{clearClientSlot@{clearClientSlot}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{clearClientSlot()}{clearClientSlot()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a0a4a39bcb1e5041daa8e9a0348ab24ec} 
+void server\+::\+Server\+::clear\+Client\+Slot (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+id}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classserver_1_1_server_a70c9df26c5fd894970876b938cb066b3}\index{server::Server@{server::Server}!getClients@{getClients}}
+\index{getClients@{getClients}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{getClients()}{getClients()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a70c9df26c5fd894970876b938cb066b3} 
+const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{Client}} $>$ $>$ \& server\+::\+Server\+::get\+Clients (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_a6d94e1deb9f2672840345a7e0cb04cc9}\index{server::Server@{server::Server}!getGame@{getGame}}
+\index{getGame@{getGame}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{getGame()}{getGame()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a6d94e1deb9f2672840345a7e0cb04cc9} 
+\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \& server\+::\+Server\+::get\+Game (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_ad1a36e850f3f2e94e4fe20586d3264c4}\index{server::Server@{server::Server}!getNetworkManager@{getNetworkManager}}
+\index{getNetworkManager@{getNetworkManager}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{getNetworkManager()}{getNetworkManager()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_ad1a36e850f3f2e94e4fe20586d3264c4} 
+\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \& server\+::\+Server\+::get\+Network\+Manager (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_a763973e0ad6ac3fb8040d979e3a1390e}\index{server::Server@{server::Server}!getPlayerCount@{getPlayerCount}}
+\index{getPlayerCount@{getPlayerCount}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{getPlayerCount()}{getPlayerCount()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a763973e0ad6ac3fb8040d979e3a1390e} 
+int server\+::\+Server\+::get\+Player\+Count (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_a77feb706ddc1844d3e88cee909b36de8}\index{server::Server@{server::Server}!getPort@{getPort}}
+\index{getPort@{getPort}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{getPort()}{getPort()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a77feb706ddc1844d3e88cee909b36de8} 
+std\+::uint16\+\_\+t server\+::\+Server\+::get\+Port (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_aa725b33ec0b63f1957556a1cda5e707f}\index{server::Server@{server::Server}!getProjectileCount@{getProjectileCount}}
+\index{getProjectileCount@{getProjectileCount}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{getProjectileCount()}{getProjectileCount()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_aa725b33ec0b63f1957556a1cda5e707f} 
+std\+::uint32\+\_\+t server\+::\+Server\+::get\+Projectile\+Count (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_a1829559c29e9c329fec3f02016519f92}\index{server::Server@{server::Server}!setPlayerCount@{setPlayerCount}}
+\index{setPlayerCount@{setPlayerCount}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{setPlayerCount()}{setPlayerCount()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a1829559c29e9c329fec3f02016519f92} 
+void server\+::\+Server\+::set\+Player\+Count (\begin{DoxyParamCaption}\item[{int}]{player\+\_\+count}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_a4b0aa1ee2c9ccb751eafb17781edb93f}\index{server::Server@{server::Server}!setProjectileCount@{setProjectileCount}}
+\index{setProjectileCount@{setProjectileCount}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{setProjectileCount()}{setProjectileCount()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a4b0aa1ee2c9ccb751eafb17781edb93f} 
+void server\+::\+Server\+::set\+Projectile\+Count (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{projectile\+\_\+count}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classserver_1_1_server_a048cceeffcf392c6b2d71a5c4c38195c}\index{server::Server@{server::Server}!start@{start}}
+\index{start@{start}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{start()}{start()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a048cceeffcf392c6b2d71a5c4c38195c} 
+void server\+::\+Server\+::start (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classserver_1_1_server_a674e85b17ebbd7aa1873a5948b67d4dc}\index{server::Server@{server::Server}!stop@{stop}}
+\index{stop@{stop}!server::Server@{server::Server}}
+\doxysubsubsection{\texorpdfstring{stop()}{stop()}}
+{\footnotesize\ttfamily \label{classserver_1_1_server_a674e85b17ebbd7aa1873a5948b67d4dc} 
+void server\+::\+Server\+::stop (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/src/\mbox{\hyperlink{_server_8hpp}{Server.\+hpp}}\item 
+server/src/\mbox{\hyperlink{_server_8cpp}{Server.\+cpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,212 @@
+\doxysection{Packet.\+hpp}
+\hypertarget{_packet_8hpp_source}{}\label{_packet_8hpp_source}\index{core/network/Packet.hpp@{core/network/Packet.hpp}}
+\mbox{\hyperlink{_packet_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00007\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4}{Message}}\ =\ 0x01,}
+\DoxyCodeLine{00008\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a6bc362dbf494c61ea117fe3c71ca48a5}{Move}}\ =\ 0x02,}
+\DoxyCodeLine{00009\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a31435ad802459589a67356c4eb44ee2f}{NewPlayer}}\ =\ 0x03,}
+\DoxyCodeLine{00010\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf}{PlayerInfo}}\ =\ 0x04,}
+\DoxyCodeLine{00011\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a52f5e0bc3859bc5f5e25130b6c7e8881}{Position}}\ =\ 0x05,}
+\DoxyCodeLine{00012\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b}{EnemySpawn}}\ =\ 0x06,}
+\DoxyCodeLine{00013\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4}{EnemyMove}}\ =\ 0x07,}
+\DoxyCodeLine{00014\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c}{EnemyDeath}}\ =\ 0x08,}
+\DoxyCodeLine{00015\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab8c261cbfda10bf4a28e8e34ed4358c5}{PlayerShoot}}\ =\ 0x09,}
+\DoxyCodeLine{00016\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a16164d21abaa91f4ff410c8ebab62f1d}{ProjectileSpawn}}\ =\ 0x0A,}
+\DoxyCodeLine{00017\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56acbda45001b65945889cb6008e0120a70}{ProjectileHit}}\ =\ 0x0B,}
+\DoxyCodeLine{00018\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56aea51190bde5a3322efb2a4c930c6ad2f}{ProjectileDestroy}}\ =\ 0x0C,}
+\DoxyCodeLine{00019\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a492785297322c6add81eb6abe8744bdf}{GameStart}}\ =\ 0x0D,}
+\DoxyCodeLine{00020\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56abd6252bdc40fb60b3044db4eace65340}{GameEnd}}\ =\ 0x0E,}
+\DoxyCodeLine{00021\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}{PlayerDisconnected}}\ =\ 0x0F,}
+\DoxyCodeLine{00022\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e}{Heartbeat}}\ =\ 0x10,}
+\DoxyCodeLine{00023\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a84e33707c2ca656dfe4fc3575438ece6}{EnemyHit}}\ =\ 0x11,}
+\DoxyCodeLine{00024\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a63ae15ec306649a88bd42ec52d28a042}{PlayerHit}}\ =\ 0x12,}
+\DoxyCodeLine{00025\ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab9fbac179f1be377fe125f9deb1a4ba9}{PlayerDeath}}\ =\ 0x13}
+\DoxyCodeLine{00026\ \};}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{EnemyType}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00029\ \ \ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7aab3ed89adcb1b63e98088a4528803cbf7}{BASIC\_FIGHTER}}\ =\ 0x01}
+\DoxyCodeLine{00030\ \};}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ :\ uint8\_t\ \{}
+\DoxyCodeLine{00033\ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba745874f0e99a8576753624c95e03d43c}{PLAYER\_BASIC}}\ =\ 0x01,}
+\DoxyCodeLine{00034\ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32ba4d42895150dec75f199d31ade6ff3f49}{ENEMY\_BASIC}}\ =\ 0x02}
+\DoxyCodeLine{00035\ \};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#define\ ALIGNED\ alignas(4)}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{/*\ both\ client\ and\ server\ packets\ */}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}}\ \mbox{\hyperlink{struct_packet_header_a526f239021c9d07360790bea5c78eff1}{type}};}
+\DoxyCodeLine{00042\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_packet_header_a8efaae40ec9869d97c70ef87b0b02479}{size}};}
+\DoxyCodeLine{00043\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{comment}{/*\ both\ client\ and\ server\ packets\ */}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_message_packet}{MessagePacket}}\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_message_packet_a2249695db8cb8f96f25b129b5bb42967}{header}};}
+\DoxyCodeLine{00048\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_message_packet_a820b50e27b2111fa9b8462a7add1fc5c}{timestamp}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{char}\ \mbox{\hyperlink{struct_message_packet_a20286b3cf73d9c97cbb6088e3edf7953}{message}}[256];}
+\DoxyCodeLine{00050\ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00053\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_move_packet}{MovePacket}}\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_move_packet_a7c23ae137695c13cd96db85236f20820}{header}};}
+\DoxyCodeLine{00055\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_move_packet_a92d9cbdee94c501ab678bd8f79b2fefb}{player\_id}};}
+\DoxyCodeLine{00056\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_move_packet_aa5ec04f4e23762e1c235ef6d5a4a494d}{sequence\_number}};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_move_packet_acf7eabe56d6925558a8973a92f721e29}{x}};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_move_packet_ac7adf8c386da557413d20b89551f86d5}{y}};}
+\DoxyCodeLine{00059\ \};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00062\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_new_player_packet}{NewPlayerPacket}}\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_new_player_packet_aebea9b7dd9157f8424ee33abc8fa0585}{header}};}
+\DoxyCodeLine{00064\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_new_player_packet_a09039ee70f6e87497df5dcf47e16a6bf}{player\_id}};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_new_player_packet_a02ce4135437c4b0ff869bcf86d408729}{x}};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_new_player_packet_a52bb12c2471d48683743502af76d928f}{y}};}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_new_player_packet_a5c8594febb8258a31a6ef565b4701fd2}{speed}};}
+\DoxyCodeLine{00068\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_new_player_packet_aa028d2c25c94a228209ff1fdbf6b1daa}{max\_health}};}
+\DoxyCodeLine{00069\ \};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{comment}{/*\ Client\ to\ server\ packets\ */}}
+\DoxyCodeLine{00072\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_player_disconnect_packet}{PlayerDisconnectPacket}}\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_player_disconnect_packet_a6d57dce7f67bc6959f4464fe9bec3d0b}{header}};}
+\DoxyCodeLine{00074\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_player_disconnect_packet_a9ead29cadf53429fd0a2a17820cf3cd2}{player\_id}};}
+\DoxyCodeLine{00075\ \};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \textcolor{comment}{/*\ Client\ to\ server\ packets\ */}}
+\DoxyCodeLine{00078\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_heartbeat_player_packet}{HeartbeatPlayerPacket}}\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_heartbeat_player_packet_a6d822ddf93a6b0858c8db67aa8fe7d5d}{header}};}
+\DoxyCodeLine{00080\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_heartbeat_player_packet_ac423dc7aa2d2e4e36b2b8714e26f571c}{player\_id}};}
+\DoxyCodeLine{00081\ \};}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00093\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_player_info_packet}{PlayerInfoPacket}}\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_player_info_packet_a6e586c80edc8682d531fc6a749bc4f63}{header}};}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{char}\ \mbox{\hyperlink{struct_player_info_packet_ad5cc92a100c1aa029e6175bf802fe0cc}{name}}[32];}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00113\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_player_hit_packet}{PlayerHitPacket}}\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_player_hit_packet_ad78aaace4137ef67f44d44149d30e2e3}{header}};}
+\DoxyCodeLine{00115\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_player_hit_packet_af09e469b2b2f50f72e939464b6e05824}{player\_id}};}
+\DoxyCodeLine{00116\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_player_hit_packet_a1d28ec394205c65c99acfbe8904cdf48}{damage}};}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_player_hit_packet_aa9dd6fdad89750f32214b95473d6fa25}{x}};}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_player_hit_packet_a85fb9a5771cb5d6272cec175e6005f42}{y}};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_player_hit_packet_a29ddf543457adbda56f1ee183aa4a89d}{sequence\_number}};}
+\DoxyCodeLine{00120\ \};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00135\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_position_packet}{PositionPacket}}\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_position_packet_ab5e80dbb72f4f6b35726173b69e3c807}{header}};}
+\DoxyCodeLine{00137\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_position_packet_a4a1386bc1f399d5d355b0ecef6ecdb4c}{sequence\_number}};}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_position_packet_a0f5641b5bf7042800900f8fe0f82c836}{x}};}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_position_packet_a35a76679ab35a49d5d3a8598bed178e7}{y}};}
+\DoxyCodeLine{00140\ \};}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \textcolor{comment}{/*\ Enemy\ Packets\ */}}
+\DoxyCodeLine{00143\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00144\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_enemy_spawn_packet}{EnemySpawnPacket}}\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_enemy_spawn_packet_aa4c6d6f7c73a4157f8cb801d7ecc1c1b}{header}};}
+\DoxyCodeLine{00146\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_enemy_spawn_packet_aadd07299619e94ad977a3bde99e4cc03}{enemy\_id}};}
+\DoxyCodeLine{00147\ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{EnemyType}}\ \mbox{\hyperlink{struct_enemy_spawn_packet_a701c7b42e4c56458473e75074c6675e7}{enemy\_type}};}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_spawn_packet_a2faedcb19d7f8f1563364f275f5bf6cf}{x}};}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_spawn_packet_ac437538edc2183e07a2e5fa6161adfa3}{y}};}
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_spawn_packet_a28a0fad0a83c05aa6eb84958c5d6dd55}{velocity\_x}};}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_spawn_packet_a1da15529da73928c06a6ac799dc7ff6a}{velocity\_y}};}
+\DoxyCodeLine{00152\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_enemy_spawn_packet_ac45873ec00e806356e71703f8534a364}{health}};}
+\DoxyCodeLine{00153\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_enemy_spawn_packet_acc825940313d70aaf1825524af50f457}{max\_health}};}
+\DoxyCodeLine{00154\ \};}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00157\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_enemy_move_packet}{EnemyMovePacket}}\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_enemy_move_packet_a4ec4977aa391880bfbc404a5dcb616e8}{header}};}
+\DoxyCodeLine{00159\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_enemy_move_packet_a37aa79e9627cfd6111632dbbc44949e5}{enemy\_id}};}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_move_packet_ae1d27489b8cf91d8b0521995f57d4bd2}{x}};}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_move_packet_a9bae2631a8cc2bf0041d0d1e00c34630}{y}};}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_move_packet_ae9faaea858798c37bb36db02540562c1}{velocity\_x}};}
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_move_packet_ae3b42fe4626004effaf66bb8f71149e9}{velocity\_y}};}
+\DoxyCodeLine{00164\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_enemy_move_packet_a099578b47aac4bb7acffce52272e20b5}{sequence\_number}};}
+\DoxyCodeLine{00165\ \};}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00180\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_enemy_death_packet}{EnemyDeathPacket}}\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_enemy_death_packet_a7b76a4562aa79b3940de0ae4c4db0684}{header}};}
+\DoxyCodeLine{00182\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_enemy_death_packet_a7beff42a8a291d14f8145fde9fb21b90}{enemy\_id}};}
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_death_packet_a0c9c50509c79b924895c9ed28cbbda02}{death\_x}};}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_death_packet_a0d80e07707d7a3dd7b116d30bb24567d}{death\_y}};}
+\DoxyCodeLine{00185\ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{struct_enemy_death_packet_a3c260178434ce88f23f84e8f65196a29}{player\_id}};}
+\DoxyCodeLine{00186\ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{struct_enemy_death_packet_a89947c85867b0a6ef17ac1b47e3b8d37}{score}};}
+\DoxyCodeLine{00187\ \};}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \textcolor{comment}{/*\ Projectile\ Packets\ */}}
+\DoxyCodeLine{00190\ \textcolor{comment}{/*\ Client\ to\ server\ packets\ */}}
+\DoxyCodeLine{00191\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_player_shoot_packet}{PlayerShootPacket}}\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_player_shoot_packet_afa436c386ff9bbc32cbdb8c7db411fd2}{header}};}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_player_shoot_packet_af676c2231c558a573a515c7184d408f9}{x}};}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_player_shoot_packet_ae5b41e45c3f62352dfe29d731be389fe}{y}};}
+\DoxyCodeLine{00195\ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ \mbox{\hyperlink{struct_player_shoot_packet_a937c33d93b04a57919375eed3665670c}{projectile\_type}};}
+\DoxyCodeLine{00196\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_player_shoot_packet_a89d9656c96ec9aa5b57b6866f62664e9}{sequence\_number}};}
+\DoxyCodeLine{00197\ \};}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00200\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_projectile_spawn_packet}{ProjectileSpawnPacket}}\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_projectile_spawn_packet_a3dc4af98cf300dc329cfba687ac54e27}{header}};}
+\DoxyCodeLine{00202\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_projectile_spawn_packet_ae77116ef3dfc1348eb18340817a4a194}{projectile\_id}};}
+\DoxyCodeLine{00203\ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{ProjectileType}}\ \mbox{\hyperlink{struct_projectile_spawn_packet_a002d908f5db74714bb93739974289a9f}{projectile\_type}};}
+\DoxyCodeLine{00204\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_projectile_spawn_packet_aad406d883b1f552287593081692f585d}{owner\_id}};}
+\DoxyCodeLine{00205\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{struct_projectile_spawn_packet_a77cfa4283b1541b3319f2b0d3738da06}{is\_enemy\_projectile}};}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_spawn_packet_a38c423c265690f0e127c34b97111d0df}{x}};}
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_spawn_packet_ac8b001f3d0db8744c52dfca7f6095bcd}{y}};}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_spawn_packet_a835f1992a335634f54ccfa7a263f2a4a}{velocity\_x}};}
+\DoxyCodeLine{00209\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_spawn_packet_aca4badaf48ac8a711a51b5d1bb802e31}{velocity\_y}};}
+\DoxyCodeLine{00210\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_spawn_packet_aed912a5982f3b770a2628914b490eb45}{speed}};}
+\DoxyCodeLine{00211\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_projectile_spawn_packet_a62568e4dd6e47264634f5a7962784ed3}{damage}};}
+\DoxyCodeLine{00212\ \};}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00215\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_projectile_hit_packet}{ProjectileHitPacket}}\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_projectile_hit_packet_a6da078e23e11c66f87daf4ca1f5a0f0e}{header}};}
+\DoxyCodeLine{00217\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_projectile_hit_packet_a88716338d41f88b2436d7b6eaac82c3e}{projectile\_id}};}
+\DoxyCodeLine{00218\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_projectile_hit_packet_a941bc1cb5970405b92e1a0b69c15d2ee}{target\_id}};}
+\DoxyCodeLine{00219\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{struct_projectile_hit_packet_a371219321cd042d17d1e6973da8892b1}{target\_is\_player}};}
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_hit_packet_a47b105bed3dc7e70740a8d83a9f857ff}{hit\_x}};}
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_hit_packet_a7af356f4e0a0495a855e2cf4ab5397d3}{hit\_y}};}
+\DoxyCodeLine{00222\ \};}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00225\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_projectile_destroy_packet}{ProjectileDestroyPacket}}\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_projectile_destroy_packet_a2c033480afd5b616dac3007aa2be11fa}{header}};}
+\DoxyCodeLine{00227\ \ \ \ \ uint32\_t\ \mbox{\hyperlink{struct_projectile_destroy_packet_aff64732e9098dc2ad9e6174127a2f09e}{projectile\_id}};}
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_destroy_packet_a6e042d1466c1281cb4040354e077db44}{x}};}
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_projectile_destroy_packet_a7255df96ee205e6736d24984d196eb0f}{y}};}
+\DoxyCodeLine{00230\ \};}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \textcolor{comment}{/*\ Server\ to\ client\ packets\ */}}
+\DoxyCodeLine{00233\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_game_start_packet}{GameStartPacket}}\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_game_start_packet_ac5aac8c269e15d3cd65c1b1a0b0465a4}{header}};}
+\DoxyCodeLine{00235\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{struct_game_start_packet_a0f5db675d5ca33fcf6f2375420158635}{game\_start}};}
+\DoxyCodeLine{00236\ \};}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00249\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_game_end_packet}{GameEndPacket}}\ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_game_end_packet_afee93b6c4410d96c4112e6e0c9799723}{header}};}
+\DoxyCodeLine{00251\ \ \ \ \ uint8\_t\ \mbox{\hyperlink{struct_game_end_packet_a2ed4cd35679784d544d9bfbadda6aa18}{game\_end}};}
+\DoxyCodeLine{00252\ \};}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00280\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_enemy_hit_packet}{EnemyHitPacket}}\ \{}
+\DoxyCodeLine{00281\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_enemy_hit_packet_a94c082fdac96225b0204dd44d4971418}{header}};}
+\DoxyCodeLine{00282\ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{struct_enemy_hit_packet_ad62974ff2b2c76c4f38074d2df66c4ab}{enemy\_id}};}
+\DoxyCodeLine{00283\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_hit_packet_a2928e34c061238a8d22b8a881e4aee86}{hit\_x}};}
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_hit_packet_af8b3016e31984211dffe6c464f27b833}{hit\_y}};}
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_enemy_hit_packet_ab13ad9980c4a672ed6f3e4dddc355c2f}{damage}};}
+\DoxyCodeLine{00286\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{struct_enemy_hit_packet_ac8d59b5398c4e855e09d395431f8e2cb}{sequence\_number}};}
+\DoxyCodeLine{00287\ \};}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00304\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{_packet_8hpp_a28fa0088bd4a129507814c3366c60bb6}{ALIGNED}}\ \mbox{\hyperlink{struct_player_death_packet}{PlayerDeathPacket}}\ \{}
+\DoxyCodeLine{00305\ \ \ \ \ \mbox{\hyperlink{struct_packet_header}{PacketHeader}}\ \mbox{\hyperlink{struct_player_death_packet_ad08a5b66e4bd4f8b1a5c602940532444}{header}};}
+\DoxyCodeLine{00306\ \ \ \ \ std::uint32\_t\ \mbox{\hyperlink{struct_player_death_packet_a4a4b55d6f1b4ad09680fde7875a882c3}{player\_id}};}
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_player_death_packet_a5eda443cc90c624575914e199bea64b1}{x}};}
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{struct_player_death_packet_a2abc5cccd17b30a4b53eb305d98f225c}{y}};}
+\DoxyCodeLine{00309\ \};}
+
+\end{DoxyCode}

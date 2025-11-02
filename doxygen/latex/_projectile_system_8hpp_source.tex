@@ -1,0 +1,30 @@
+\doxysection{Projectile\+System.\+hpp}
+\hypertarget{_projectile_system_8hpp_source}{}\label{_projectile_system_8hpp_source}\index{game\_engine/ecs/systems/ProjectileSystem.hpp@{game\_engine/ecs/systems/ProjectileSystem.hpp}}
+\mbox{\hyperlink{_projectile_system_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_system_8hpp}{System.hpp}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00007\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_projectile_system_a1664779d7f7ba7586f906eabf67cac1b}{ProjectileSystem}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classecs_1_1_system}{System}}\ \{}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classecs_1_1_projectile_system_a1664779d7f7ba7586f906eabf67cac1b}{ProjectileSystem}}(}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ \&ecsManager\ =\ \mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager::getInstance}}())}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ \ \ :\ \_ecsManager(ecsManager)\ \{\}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_projectile_system_aa6f55a5ace71b5d10d27025677c9291c}{setECSManager}}(\mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ *ecsManager)\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \_ecsManagerPtr\ =\ ecsManager;}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_projectile_system_a1205d4e8ce19a9d1b55ccc1fa7f5c93a}{update}}(\textcolor{keywordtype}{float}\ dt)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_projectile_system_a2f06bf5cc9d352808fa9025e3bb8cd9e}{moveBasics}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ \&entity,\ \textcolor{keywordtype}{float}\ dt);}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classecs_1_1_projectile_system_a819f19674125f04271c2ab7d35ab164f}{isOutOfBounds}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ \&entity,\ \textcolor{keywordtype}{float}\ screenWidth,\ \textcolor{keywordtype}{float}\ screenHeight);}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ \&\_ecsManager;}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ *\_ecsManagerPtr\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00023\ \ \ \};}
+\DoxyCodeLine{00024\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

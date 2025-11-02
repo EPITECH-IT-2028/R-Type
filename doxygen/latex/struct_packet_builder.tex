@@ -1,0 +1,341 @@
+\doxysection{Packet\+Builder Struct Reference}
+\hypertarget{struct_packet_builder}{}\label{struct_packet_builder}\index{PacketBuilder@{PacketBuilder}}
+
+
+{\ttfamily \#include $<$Packet\+Builder.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{struct_message_packet}{Message\+Packet}} \mbox{\hyperlink{struct_packet_builder_acaba56e5be0e6e18d9a12ca2c1877306}{make\+Message}} (const std\+::string \&msg)
+\item 
+static \mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}} \mbox{\hyperlink{struct_packet_builder_ada2ad0174d694295c33b2d6fbe6d3a4b}{make\+New\+Player}} (uint32\+\_\+t player\+\_\+id, float x, float y, float speed, uint32\+\_\+t max\+\_\+health=100)
+\item 
+static \mbox{\hyperlink{struct_position_packet}{Position\+Packet}} \mbox{\hyperlink{struct_packet_builder_a7e756d5398dc6fecd059939b14e5f27d}{make\+Position}} (float x, float y, uint32\+\_\+t seq)
+\item 
+static \mbox{\hyperlink{struct_move_packet}{Move\+Packet}} \mbox{\hyperlink{struct_packet_builder_a19f19a5e6c274273acc4b22c9f518df7}{make\+Move}} (uint32\+\_\+t player\+\_\+id, uint32\+\_\+t seq, float x, float y)
+\item 
+static \mbox{\hyperlink{struct_player_info_packet}{Player\+Info\+Packet}} \mbox{\hyperlink{struct_packet_builder_a417cf5ff13fc713e4a692f1f7fefa9dc}{make\+Player\+Info}} (const std\+::string \&name)
+\begin{DoxyCompactList}\small\item\em Create a Player\+Info packet containing the player\textquotesingle{}s name. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_player_hit_packet}{Player\+Hit\+Packet}} \mbox{\hyperlink{struct_packet_builder_a82eba457f8057ba10d28591994f5b054}{make\+Player\+Hit}} (std\+::uint32\+\_\+t player\+\_\+id, std\+::uint32\+\_\+t damage, float x, float y, int sequence\+\_\+number)
+\begin{DoxyCompactList}\small\item\em Create a \doxylink{struct_player_hit_packet}{Player\+Hit\+Packet} describing a hit applied to a player. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}} \mbox{\hyperlink{struct_packet_builder_a222956b54e8c7bde7cbd3564659dec5d}{make\+Enemy\+Spawn}} (uint32\+\_\+t enemy\+\_\+id, \mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}} type, float x, float y, float vx, float vy, uint32\+\_\+t health, uint32\+\_\+t max\+\_\+health)
+\begin{DoxyCompactList}\small\item\em Constructs an \doxylink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet} with the enemy\textquotesingle{}s identity, type, position, velocity, and health. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_enemy_move_packet}{Enemy\+Move\+Packet}} \mbox{\hyperlink{struct_packet_builder_a290e0eb23fe1587fc5a5e177b7cabc8a}{make\+Enemy\+Move}} (uint32\+\_\+t enemy\+\_\+id, float x, float y, float velocity\+\_\+x, float velocity\+\_\+y, int seq)
+\item 
+static \mbox{\hyperlink{struct_enemy_death_packet}{Enemy\+Death\+Packet}} \mbox{\hyperlink{struct_packet_builder_a80fe6a5cc757ec5be262e52e93ca6df9}{make\+Enemy\+Death}} (uint32\+\_\+t enemy\+\_\+id, float death\+\_\+x, float death\+\_\+y, std\+::uint32\+\_\+t player\+\_\+id, std\+::uint32\+\_\+t score)
+\begin{DoxyCompactList}\small\item\em Create an Enemy\+Death packet describing an enemy\textquotesingle{}s death and awarding score to a player. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_enemy_hit_packet}{Enemy\+Hit\+Packet}} \mbox{\hyperlink{struct_packet_builder_a1437ef28500847a8037e5cd80a275d59}{make\+Enemy\+Hit}} (uint32\+\_\+t enemy\+\_\+id, float hit\+\_\+x, float hit\+\_\+y, float damage, int sequence\+\_\+number)
+\begin{DoxyCompactList}\small\item\em Constructs an Enemy\+Hit packet describing damage dealt to an enemy. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_player_shoot_packet}{Player\+Shoot\+Packet}} \mbox{\hyperlink{struct_packet_builder_a35b0771e51b4523f96bde856d1bdab1d}{make\+Player\+Shoot}} (float x, float y, \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} projectile\+\_\+type, uint32\+\_\+t seq)
+\begin{DoxyCompactList}\small\item\em Create a Player\+Shoot packet containing shot position, projectile type, and sequence number. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_projectile_spawn_packet}{Projectile\+Spawn\+Packet}} \mbox{\hyperlink{struct_packet_builder_ac557513835043ca6d0b5cd5ecd8978ee}{make\+Projectile\+Spawn}} (uint32\+\_\+t projectile\+\_\+id, \mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}} type, float x, float y, float vel\+\_\+x, float vel\+\_\+y, bool is\+\_\+enemy, uint32\+\_\+t damage, uint32\+\_\+t owner\+\_\+id)
+\item 
+static \mbox{\hyperlink{struct_projectile_hit_packet}{Projectile\+Hit\+Packet}} \mbox{\hyperlink{struct_packet_builder_a1f87b3b69ea99a79d4f797584b2a3593}{make\+Projectile\+Hit}} (uint32\+\_\+t projectile\+\_\+id, uint32\+\_\+t target\+\_\+id, float hit\+\_\+x, float hit\+\_\+y, uint8\+\_\+t target\+\_\+is\+\_\+player)
+\item 
+static \mbox{\hyperlink{struct_projectile_destroy_packet}{Projectile\+Destroy\+Packet}} \mbox{\hyperlink{struct_packet_builder_a106cfcccc4e04df15d5050c72c3c2520}{make\+Projectile\+Destroy}} (uint32\+\_\+t projectile\+\_\+id, float x, float y)
+\item 
+static \mbox{\hyperlink{struct_game_start_packet}{Game\+Start\+Packet}} \mbox{\hyperlink{struct_packet_builder_ab12ea116136952f753364f1c61cbf75c}{make\+Game\+Start}} (bool started)
+\item 
+static \mbox{\hyperlink{struct_game_end_packet}{Game\+End\+Packet}} \mbox{\hyperlink{struct_packet_builder_a60f751058630218ed3f54fcbdfcbb86c}{make\+Game\+End}} (bool ended)
+\begin{DoxyCompactList}\small\item\em Constructs a Game\+End packet indicating whether the game has ended. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_player_death_packet}{Player\+Death\+Packet}} \mbox{\hyperlink{struct_packet_builder_af93044fa8ab14aa5d9d0d855643f2d41}{make\+Player\+Death}} (uint32\+\_\+t player\+\_\+id, float x, float y)
+\begin{DoxyCompactList}\small\item\em Constructs a Player\+Death packet describing a player\textquotesingle{}s death location. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_player_disconnect_packet}{Player\+Disconnect\+Packet}} \mbox{\hyperlink{struct_packet_builder_a4aa27520e8a5d3201216a13b0dda5cbb}{make\+Player\+Disconnect}} (uint32\+\_\+t player\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Construct a Player\+Disconnect packet for the given player. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{struct_heartbeat_player_packet}{Heartbeat\+Player\+Packet}} \mbox{\hyperlink{struct_packet_builder_a0f7073daa3803a59d121f0bdb8a3a5bf}{make\+Heartbeat\+Player}} (uint32\+\_\+t player\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Construct a heartbeat packet for the given player. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{struct_packet_builder_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{struct_packet_builder_a80fe6a5cc757ec5be262e52e93ca6df9}\index{PacketBuilder@{PacketBuilder}!makeEnemyDeath@{makeEnemyDeath}}
+\index{makeEnemyDeath@{makeEnemyDeath}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeEnemyDeath()}{makeEnemyDeath()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a80fe6a5cc757ec5be262e52e93ca6df9} 
+\mbox{\hyperlink{struct_enemy_death_packet}{Enemy\+Death\+Packet}} Packet\+Builder\+::make\+Enemy\+Death (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{enemy\+\_\+id}{, }\item[{float}]{death\+\_\+x}{, }\item[{float}]{death\+\_\+y}{, }\item[{std\+::uint32\+\_\+t}]{player\+\_\+id}{, }\item[{std\+::uint32\+\_\+t}]{score}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Create an Enemy\+Death packet describing an enemy\textquotesingle{}s death and awarding score to a player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em enemy\+\_\+id} & Unique identifier of the enemy. \\
+\hline
+{\em death\+\_\+x} & X coordinate of the enemy\textquotesingle{}s death location. \\
+\hline
+{\em death\+\_\+y} & Y coordinate of the enemy\textquotesingle{}s death location. \\
+\hline
+{\em player\+\_\+id} & ID of the player credited with the kill. \\
+\hline
+{\em score} & Score awarded to the player for the kill. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_enemy_death_packet}{Enemy\+Death\+Packet} Populated packet containing enemy\+\_\+id, death coordinates, player\+\_\+id, and score; packet header is set to {\ttfamily \doxylink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c}{Packet\+Type\+::\+Enemy\+Death}} and {\ttfamily header.\+size} is set to the packet\textquotesingle{}s size. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a1437ef28500847a8037e5cd80a275d59}\index{PacketBuilder@{PacketBuilder}!makeEnemyHit@{makeEnemyHit}}
+\index{makeEnemyHit@{makeEnemyHit}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeEnemyHit()}{makeEnemyHit()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a1437ef28500847a8037e5cd80a275d59} 
+\mbox{\hyperlink{struct_enemy_hit_packet}{Enemy\+Hit\+Packet}} Packet\+Builder\+::make\+Enemy\+Hit (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{enemy\+\_\+id}{, }\item[{float}]{hit\+\_\+x}{, }\item[{float}]{hit\+\_\+y}{, }\item[{float}]{damage}{, }\item[{int}]{sequence\+\_\+number}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Constructs an Enemy\+Hit packet describing damage dealt to an enemy. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em enemy\+\_\+id} & Identifier of the enemy that was hit. \\
+\hline
+{\em hit\+\_\+x} & World X coordinate where the hit occurred. \\
+\hline
+{\em hit\+\_\+y} & World Y coordinate where the hit occurred. \\
+\hline
+{\em damage} & Amount of damage applied to the enemy. \\
+\hline
+{\em sequence\+\_\+number} & Sequence number for ordering the event. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_enemy_hit_packet}{Enemy\+Hit\+Packet} Packet populated with header, enemy id, hit position, damage, and sequence number. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a290e0eb23fe1587fc5a5e177b7cabc8a}\index{PacketBuilder@{PacketBuilder}!makeEnemyMove@{makeEnemyMove}}
+\index{makeEnemyMove@{makeEnemyMove}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeEnemyMove()}{makeEnemyMove()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a290e0eb23fe1587fc5a5e177b7cabc8a} 
+\mbox{\hyperlink{struct_enemy_move_packet}{Enemy\+Move\+Packet}} Packet\+Builder\+::make\+Enemy\+Move (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{enemy\+\_\+id}{, }\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{float}]{velocity\+\_\+x}{, }\item[{float}]{velocity\+\_\+y}{, }\item[{int}]{seq}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_a222956b54e8c7bde7cbd3564659dec5d}\index{PacketBuilder@{PacketBuilder}!makeEnemySpawn@{makeEnemySpawn}}
+\index{makeEnemySpawn@{makeEnemySpawn}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeEnemySpawn()}{makeEnemySpawn()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a222956b54e8c7bde7cbd3564659dec5d} 
+\mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}} Packet\+Builder\+::make\+Enemy\+Spawn (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{enemy\+\_\+id}{, }\item[{\mbox{\hyperlink{_packet_8hpp_a8e5148839b6f99970d3343f906623d7a}{Enemy\+Type}}}]{type}{, }\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{float}]{vx}{, }\item[{float}]{vy}{, }\item[{uint32\+\_\+t}]{health}{, }\item[{uint32\+\_\+t}]{max\+\_\+health}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Constructs an \doxylink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet} with the enemy\textquotesingle{}s identity, type, position, velocity, and health. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em enemy\+\_\+id} & Unique identifier for the enemy. \\
+\hline
+{\em type} & Enemy type. \\
+\hline
+{\em x} & Spawn X coordinate. \\
+\hline
+{\em y} & Spawn Y coordinate. \\
+\hline
+{\em vx} & Initial velocity in the X direction. \\
+\hline
+{\em vy} & Initial velocity in the Y direction. \\
+\hline
+{\em health} & Current health. \\
+\hline
+{\em max\+\_\+health} & Maximum health. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet} Packet with fields initialized and its header indicating an Enemy\+Spawn. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a60f751058630218ed3f54fcbdfcbb86c}\index{PacketBuilder@{PacketBuilder}!makeGameEnd@{makeGameEnd}}
+\index{makeGameEnd@{makeGameEnd}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeGameEnd()}{makeGameEnd()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a60f751058630218ed3f54fcbdfcbb86c} 
+\mbox{\hyperlink{struct_game_end_packet}{Game\+End\+Packet}} Packet\+Builder\+::make\+Game\+End (\begin{DoxyParamCaption}\item[{bool}]{ended}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Constructs a Game\+End packet indicating whether the game has ended. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ended} & {\ttfamily true} if the game has ended, {\ttfamily false} if the game is ongoing. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_game_end_packet}{Game\+End\+Packet} Packet with header fields populated and {\ttfamily game\+\_\+end} set to {\ttfamily ended}. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_ab12ea116136952f753364f1c61cbf75c}\index{PacketBuilder@{PacketBuilder}!makeGameStart@{makeGameStart}}
+\index{makeGameStart@{makeGameStart}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeGameStart()}{makeGameStart()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_ab12ea116136952f753364f1c61cbf75c} 
+\mbox{\hyperlink{struct_game_start_packet}{Game\+Start\+Packet}} Packet\+Builder\+::make\+Game\+Start (\begin{DoxyParamCaption}\item[{bool}]{started}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_a0f7073daa3803a59d121f0bdb8a3a5bf}\index{PacketBuilder@{PacketBuilder}!makeHeartbeatPlayer@{makeHeartbeatPlayer}}
+\index{makeHeartbeatPlayer@{makeHeartbeatPlayer}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeHeartbeatPlayer()}{makeHeartbeatPlayer()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a0f7073daa3803a59d121f0bdb8a3a5bf} 
+\mbox{\hyperlink{struct_heartbeat_player_packet}{Heartbeat\+Player\+Packet}} Packet\+Builder\+::make\+Heartbeat\+Player (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+\_\+id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Construct a heartbeat packet for the given player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & Player identifier to embed in the packet. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_heartbeat_player_packet}{Heartbeat\+Player\+Packet} Packet whose header.\+type is \doxylink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a83622997d22f5f18b9b09bd364cb673e}{Packet\+Type\+::\+Heartbeat}, header.\+size is set to the packet size, and player\+\_\+id is set to the provided value. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_acaba56e5be0e6e18d9a12ca2c1877306}\index{PacketBuilder@{PacketBuilder}!makeMessage@{makeMessage}}
+\index{makeMessage@{makeMessage}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeMessage()}{makeMessage()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_acaba56e5be0e6e18d9a12ca2c1877306} 
+\mbox{\hyperlink{struct_message_packet}{Message\+Packet}} Packet\+Builder\+::make\+Message (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{msg}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_a19f19a5e6c274273acc4b22c9f518df7}\index{PacketBuilder@{PacketBuilder}!makeMove@{makeMove}}
+\index{makeMove@{makeMove}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeMove()}{makeMove()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a19f19a5e6c274273acc4b22c9f518df7} 
+\mbox{\hyperlink{struct_move_packet}{Move\+Packet}} Packet\+Builder\+::make\+Move (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+\_\+id}{, }\item[{uint32\+\_\+t}]{seq}{, }\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_ada2ad0174d694295c33b2d6fbe6d3a4b}\index{PacketBuilder@{PacketBuilder}!makeNewPlayer@{makeNewPlayer}}
+\index{makeNewPlayer@{makeNewPlayer}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeNewPlayer()}{makeNewPlayer()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_ada2ad0174d694295c33b2d6fbe6d3a4b} 
+\mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}} Packet\+Builder\+::make\+New\+Player (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+\_\+id}{, }\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{float}]{speed}{, }\item[{uint32\+\_\+t}]{max\+\_\+health}{ = {\ttfamily 100}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_af93044fa8ab14aa5d9d0d855643f2d41}\index{PacketBuilder@{PacketBuilder}!makePlayerDeath@{makePlayerDeath}}
+\index{makePlayerDeath@{makePlayerDeath}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makePlayerDeath()}{makePlayerDeath()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_af93044fa8ab14aa5d9d0d855643f2d41} 
+\mbox{\hyperlink{struct_player_death_packet}{Player\+Death\+Packet}} Packet\+Builder\+::make\+Player\+Death (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+\_\+id}{, }\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Constructs a Player\+Death packet describing a player\textquotesingle{}s death location. 
+
+Builds a \doxylink{struct_player_death_packet}{Player\+Death\+Packet} with the header type and size set, and fills the player identifier and world coordinates where the player died.
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & Identifier of the player who died. \\
+\hline
+{\em x} & World X coordinate of the death location. \\
+\hline
+{\em y} & World Y coordinate of the death location. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_player_death_packet}{Player\+Death\+Packet} Populated packet ready for transmission. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a4aa27520e8a5d3201216a13b0dda5cbb}\index{PacketBuilder@{PacketBuilder}!makePlayerDisconnect@{makePlayerDisconnect}}
+\index{makePlayerDisconnect@{makePlayerDisconnect}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makePlayerDisconnect()}{makePlayerDisconnect()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a4aa27520e8a5d3201216a13b0dda5cbb} 
+\mbox{\hyperlink{struct_player_disconnect_packet}{Player\+Disconnect\+Packet}} Packet\+Builder\+::make\+Player\+Disconnect (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{player\+\_\+id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Construct a Player\+Disconnect packet for the given player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & ID of the player that disconnected. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_player_disconnect_packet}{Player\+Disconnect\+Packet} Packet with header type set to \doxylink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}{Packet\+Type\+::\+Player\+Disconnected}, header size set to the packet\textquotesingle{}s sizeof, and player\+\_\+id populated. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a82eba457f8057ba10d28591994f5b054}\index{PacketBuilder@{PacketBuilder}!makePlayerHit@{makePlayerHit}}
+\index{makePlayerHit@{makePlayerHit}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makePlayerHit()}{makePlayerHit()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a82eba457f8057ba10d28591994f5b054} 
+\mbox{\hyperlink{struct_player_hit_packet}{Player\+Hit\+Packet}} Packet\+Builder\+::make\+Player\+Hit (\begin{DoxyParamCaption}\item[{std\+::uint32\+\_\+t}]{player\+\_\+id}{, }\item[{std\+::uint32\+\_\+t}]{damage}{, }\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{int}]{sequence\+\_\+number}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Create a \doxylink{struct_player_hit_packet}{Player\+Hit\+Packet} describing a hit applied to a player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+\_\+id} & ID of the player who was hit. \\
+\hline
+{\em damage} & Amount of damage applied to the player. \\
+\hline
+{\em x} & X coordinate of the hit location. \\
+\hline
+{\em y} & Y coordinate of the hit location. \\
+\hline
+{\em sequence\+\_\+number} & Sequence number associated with this event. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_player_hit_packet}{Player\+Hit\+Packet} Packet populated with the provided player ID, damage, hit coordinates, and sequence number. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a417cf5ff13fc713e4a692f1f7fefa9dc}\index{PacketBuilder@{PacketBuilder}!makePlayerInfo@{makePlayerInfo}}
+\index{makePlayerInfo@{makePlayerInfo}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makePlayerInfo()}{makePlayerInfo()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a417cf5ff13fc713e4a692f1f7fefa9dc} 
+\mbox{\hyperlink{struct_player_info_packet}{Player\+Info\+Packet}} Packet\+Builder\+::make\+Player\+Info (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Create a Player\+Info packet containing the player\textquotesingle{}s name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Player\textquotesingle{}s name; copied into the packet\textquotesingle{}s name field and truncated if it exceeds the field size. The stored name is guaranteed to be null-\/terminated. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_player_info_packet}{Player\+Info\+Packet} Packet with header.\+type set to \doxylink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3de30a5014977ab44eee11c11e6eb4cf}{Packet\+Type\+::\+Player\+Info}, header.\+size populated, and the name field filled from {\ttfamily name}. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a35b0771e51b4523f96bde856d1bdab1d}\index{PacketBuilder@{PacketBuilder}!makePlayerShoot@{makePlayerShoot}}
+\index{makePlayerShoot@{makePlayerShoot}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makePlayerShoot()}{makePlayerShoot()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a35b0771e51b4523f96bde856d1bdab1d} 
+\mbox{\hyperlink{struct_player_shoot_packet}{Player\+Shoot\+Packet}} Packet\+Builder\+::make\+Player\+Shoot (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}}}]{projectile\+\_\+type}{, }\item[{uint32\+\_\+t}]{seq}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Create a Player\+Shoot packet containing shot position, projectile type, and sequence number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X coordinate of the shot. \\
+\hline
+{\em y} & Y coordinate of the shot. \\
+\hline
+{\em projectile\+\_\+type} & Type of the projectile fired. \\
+\hline
+{\em seq} & Sequence number used for ordering the shot. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_player_shoot_packet}{Player\+Shoot\+Packet} Packet with position, projectile type, and sequence number populated. 
+\end{DoxyReturn}
+\Hypertarget{struct_packet_builder_a7e756d5398dc6fecd059939b14e5f27d}\index{PacketBuilder@{PacketBuilder}!makePosition@{makePosition}}
+\index{makePosition@{makePosition}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makePosition()}{makePosition()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a7e756d5398dc6fecd059939b14e5f27d} 
+\mbox{\hyperlink{struct_position_packet}{Position\+Packet}} Packet\+Builder\+::make\+Position (\begin{DoxyParamCaption}\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{uint32\+\_\+t}]{seq}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_a106cfcccc4e04df15d5050c72c3c2520}\index{PacketBuilder@{PacketBuilder}!makeProjectileDestroy@{makeProjectileDestroy}}
+\index{makeProjectileDestroy@{makeProjectileDestroy}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeProjectileDestroy()}{makeProjectileDestroy()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a106cfcccc4e04df15d5050c72c3c2520} 
+\mbox{\hyperlink{struct_projectile_destroy_packet}{Projectile\+Destroy\+Packet}} Packet\+Builder\+::make\+Projectile\+Destroy (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{projectile\+\_\+id}{, }\item[{float}]{x}{, }\item[{float}]{y}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_a1f87b3b69ea99a79d4f797584b2a3593}\index{PacketBuilder@{PacketBuilder}!makeProjectileHit@{makeProjectileHit}}
+\index{makeProjectileHit@{makeProjectileHit}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeProjectileHit()}{makeProjectileHit()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_a1f87b3b69ea99a79d4f797584b2a3593} 
+\mbox{\hyperlink{struct_projectile_hit_packet}{Projectile\+Hit\+Packet}} Packet\+Builder\+::make\+Projectile\+Hit (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{projectile\+\_\+id}{, }\item[{uint32\+\_\+t}]{target\+\_\+id}{, }\item[{float}]{hit\+\_\+x}{, }\item[{float}]{hit\+\_\+y}{, }\item[{uint8\+\_\+t}]{target\+\_\+is\+\_\+player}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{struct_packet_builder_ac557513835043ca6d0b5cd5ecd8978ee}\index{PacketBuilder@{PacketBuilder}!makeProjectileSpawn@{makeProjectileSpawn}}
+\index{makeProjectileSpawn@{makeProjectileSpawn}!PacketBuilder@{PacketBuilder}}
+\doxysubsubsection{\texorpdfstring{makeProjectileSpawn()}{makeProjectileSpawn()}}
+{\footnotesize\ttfamily \label{struct_packet_builder_ac557513835043ca6d0b5cd5ecd8978ee} 
+\mbox{\hyperlink{struct_projectile_spawn_packet}{Projectile\+Spawn\+Packet}} Packet\+Builder\+::make\+Projectile\+Spawn (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{projectile\+\_\+id}{, }\item[{\mbox{\hyperlink{_packet_8hpp_a686d5ee1bf643b2759989d35915ab32b}{Projectile\+Type}}}]{type}{, }\item[{float}]{x}{, }\item[{float}]{y}{, }\item[{float}]{vel\+\_\+x}{, }\item[{float}]{vel\+\_\+y}{, }\item[{bool}]{is\+\_\+enemy}{, }\item[{uint32\+\_\+t}]{damage}{, }\item[{uint32\+\_\+t}]{owner\+\_\+id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_builder_8hpp}{Packet\+Builder.\+hpp}}\end{DoxyCompactItemize}

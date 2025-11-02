@@ -1,0 +1,38 @@
+\doxysection{Sprite\+Animation\+System.\+hpp}
+\hypertarget{_sprite_animation_system_8hpp_source}{}\label{_sprite_animation_system_8hpp_source}\index{game\_engine/ecs/systems/SpriteAnimationSystem.hpp@{game\_engine/ecs/systems/SpriteAnimationSystem.hpp}}
+\mbox{\hyperlink{_sprite_animation_system_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_e_c_s_manager_8hpp}{ECSManager.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_sprite_animation_component_8hpp}{SpriteAnimationComponent.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_sprite_component_8hpp}{SpriteComponent.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_system_8hpp}{System.hpp}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}raylib.h"{}}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_sprite_animation_system_a2e097cf4b8eb6bafde3f8048417a1091}{SpriteAnimationSystem}}\ :\ \textcolor{keyword}{public}\ \mbox{\hyperlink{classecs_1_1_system}{System}}\ \{}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_a2e097cf4b8eb6bafde3f8048417a1091}{SpriteAnimationSystem}}(}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ \&ecsManager\ =\ \mbox{\hyperlink{classecs_1_1_e_c_s_manager_aefb6b2ea347d306f989c06ba95ad981a}{ECSManager::getInstance}}())}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ :\ \_ecsManager(ecsManager)\ \{\}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_a55511f447c35fed369a4ebd964e1a34b}{initializeAnimation}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keyword}{const}\ std::shared\_ptr<Texture2D>\ \&texture);}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_ae5e660fd6ca324e172ae4e14e26bf06d}{initializeFromTexture}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keywordtype}{int}\ textureWidth,\ \textcolor{keywordtype}{int}\ textureHeight);}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ Rectangle\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_aeb05c1c25252f71ee9236b61831a32b6}{getCurrentFrameRect}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_a6c56c8ebef0301c511f8a02b2ac6f0e7}{update}}(\textcolor{keywordtype}{float}\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_aaa1b16d17cdcb407eb2573b6586ce6be}{setSelectedRow}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keywordtype}{int}\ row);}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_abeb8c0f91c75e323cd51f9c9f0977acd}{setSelectedColumn}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keywordtype}{int}\ column);}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_a017d24d0acf8c737dd81f530d97c8550}{setAnimationRange}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity,\ \textcolor{keywordtype}{int}\ start,\ \textcolor{keywordtype}{int}\ end);}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_aec742ad407758dc47e9d143249a58ea9}{play}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity);}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_a7478cdb2bd79508da8a58fa4e2376d75}{pause}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_a2aae54940b4dbe299943c6f3c78cb4e7}{stop}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity);}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_sprite_animation_system_aa59d1287acf81d771cffef42b7d3036f}{restart}}(\mbox{\hyperlink{_entity_manager_8hpp_a9a522438c9f5d73ebe6349edc3313d5e}{Entity}}\ entity);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \mbox{\hyperlink{classecs_1_1_e_c_s_manager}{ECSManager}}\ \&\_ecsManager;}
+\DoxyCodeLine{00038\ \ \ \};}
+\DoxyCodeLine{00039\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}
