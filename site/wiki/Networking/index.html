@@ -11,6 +11,10 @@
         <link rel="canonical" href="https://epitech-it-2028.github.io/R-Type/wiki/Networking/">
       
       
+        <link rel="prev" href="../GameEngineECS/">
+      
+      
+        <link rel="next" href="../AssetManagement/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -208,7 +212,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/GettingStarted.md" class="md-tabs__link">
+      <a href="../GettingStarted/" class="md-tabs__link">
         
   
   
@@ -227,7 +231,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/GameEngineECS.md" class="md-tabs__link">
+      <a href="../GameEngineECS/" class="md-tabs__link">
         
   
   
@@ -244,9 +248,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../../docs/wiki/Networking.md" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -265,7 +271,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/AssetManagement.md" class="md-tabs__link">
+      <a href="../AssetManagement/" class="md-tabs__link">
         
   
   
@@ -284,7 +290,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/ProjectStructure.md" class="md-tabs__link">
+      <a href="../ProjectStructure/" class="md-tabs__link">
         
   
   
@@ -303,7 +309,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/ContributionGuidelines.md" class="md-tabs__link">
+      <a href="../ContributionGuidelines/" class="md-tabs__link">
         
   
   
@@ -392,7 +398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/GettingStarted.md" class="md-nav__link">
+      <a href="../GettingStarted/" class="md-nav__link">
         
   
   
@@ -414,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/GameEngineECS.md" class="md-nav__link">
+      <a href="../GameEngineECS/" class="md-nav__link">
         
   
   
@@ -433,10 +439,32 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../docs/wiki/Networking.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Networking
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -447,6 +475,104 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basenetworkmanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseNetworkManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clientnetworkmanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClientNetworkManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#servernetworkmanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      ServerNetworkManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#packethpp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Packet.hpp
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r-type-network-protocol-rtnp" class="md-nav__link">
+    <span class="md-ellipsis">
+      R-Type Network Protocol (RTNP)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#communication-flow-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Communication Flow Example
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -458,7 +584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/AssetManagement.md" class="md-nav__link">
+      <a href="../AssetManagement/" class="md-nav__link">
         
   
   
@@ -480,7 +606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/ProjectStructure.md" class="md-nav__link">
+      <a href="../ProjectStructure/" class="md-nav__link">
         
   
   
@@ -502,7 +628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/ContributionGuidelines.md" class="md-nav__link">
+      <a href="../ContributionGuidelines/" class="md-nav__link">
         
   
   

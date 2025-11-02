@@ -17,12 +17,12 @@ theme:
 
 nav:
   - Home: index.md
-  - Getting Started: docs/wiki/GettingStarted.md
-  - Game Engine & ECS: docs/wiki/GameEngineECS.md
-  - Networking: docs/wiki/Networking.md
-  - Asset Management: docs/wiki/AssetManagement.md
-  - Project Structure: docs/wiki/ProjectStructure.md
-  - Contribution Guidelines: docs/wiki/ContributionGuidelines.md
+  - Getting Started: wiki/GettingStarted.md
+  - Game Engine & ECS: wiki/GameEngineECS.md
+  - Networking: wiki/Networking.md
+  - Asset Management: wiki/AssetManagement.md
+  - Project Structure: wiki/ProjectStructure.md
+  - Contribution Guidelines: wiki/ContributionGuidelines.md
 
 markdown_extensions:
   - pymdownx.highlight
