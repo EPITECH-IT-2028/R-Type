@@ -751,4 +751,32 @@ namespace client {
       TraceLog(LOG_ERROR, "[SCOREBOARD REQUEST] Exception: %s", e.what());
     }
   }
+
+  void Client::cleanupGameEntities() {
+    std::lock_guard<std::shared_mutex> lock(_playerStateMutex);
+    std::lock_guard<std::mutex> projectileLock(_projectileMutex);
+
+    for (auto const &[id, entity] : _playerEntities) {
+      if (_ecsManager.isEntityValid(entity)) {
+        _ecsManager.destroyEntity(entity);
+      }
+    }
+    _playerEntities.clear();
+    _playerNames.clear();
+    _player_id = INVALID_ID;
+
+    for (auto const &[id, entity] : _enemyEntities) {
+      if (_ecsManager.isEntityValid(entity)) {
+        _ecsManager.destroyEntity(entity);
+      }
+    }
+    _enemyEntities.clear();
+
+    for (auto const &[id, entity] : _projectileEntities) {
+      if (_ecsManager.isEntityValid(entity)) {
+        _ecsManager.destroyEntity(entity);
+      }
+    }
+    _projectileEntities.clear();
+  }
 }  // namespace client
