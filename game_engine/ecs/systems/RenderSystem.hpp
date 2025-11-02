@@ -56,18 +56,51 @@ namespace ecs {
       }
 
       void drawMenu();
+      void handleInput();
+
+      bool isWaitingForChallenge() const { return _isWaitingForChallenge; }
+      void setWaitingForChallenge(bool waiting) { _isWaitingForChallenge = waiting; }
+      uint32_t getRoomId() const;
+      const std::string &getPassword() const { return _passwordJoinInput; }
 
     private:
-      MenuUI() : _showMenu(true), _textureLoaded(false) {}
+      enum MenuState { MAIN, CREATE_ROOM, JOIN_ROOM };
+      enum ActiveField {
+        NONE,
+        ROOM_NAME_CREATE,
+        PASSWORD_CREATE,
+        ROOM_ID_JOIN,
+        PASSWORD_JOIN
+      };
+
+      MenuUI()
+          : _showMenu(true),
+            _textureLoaded(false),
+            _menuState(MAIN),
+            _activeField(NONE),
+            _isWaitingForChallenge(false) {}
 
       void loadTexture();
       void drawMenuBackground();
-      void drawStartButton();
+      
+      void drawMainMenu();
+      void drawCreateRoomMenu();
+      void drawJoinRoomMenu();
+      void drawInputField(const char *label, Rectangle bounds, std::string &text,
+                        ActiveField field, bool isPassword);
 
       client::Client *_client;
       bool _showMenu;
       Texture2D _startScreenTexture;
       bool _textureLoaded;
+      MenuState _menuState;
+      ActiveField _activeField;
+
+      std::string _roomNameCreateInput;
+      std::string _passwordCreateInput;
+      std::string _roomIdJoinInput;
+      std::string _passwordJoinInput;
+      bool _isWaitingForChallenge;
   };
 
   class RenderSystem : public System {

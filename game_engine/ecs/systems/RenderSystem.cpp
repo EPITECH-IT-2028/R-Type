@@ -127,7 +127,21 @@ void ecs::RenderSystem::update(float deltaTime) {
 
   if (_menuUI.getShowMenu() == true &&
       _client->getClientState() == client::ClientState::IN_CONNECTED_MENU) {
+    _menuUI.handleInput();
     _menuUI.drawMenu();
+  }
+
+  if (_menuUI.isWaitingForChallenge() &&
+      _client->getChallenge().isChallengeReceived()) {
+    try {
+      uint32_t roomId = _menuUI.getRoomId();
+      if (roomId != (uint32_t)-1) {
+        _client->sendJoinRoom(roomId, _menuUI.getPassword());
+      }
+    } catch (const std::exception &e) {
+      TraceLog(LOG_WARNING, "Invalid room ID format.");
+    }
+    _menuUI.setWaitingForChallenge(false);
   }
 
   for (auto const &entity : _ecsManager.getAllEntities()) {
@@ -277,36 +291,210 @@ void ecs::MenuUI::drawMenuBackground() {
   DrawTexturePro(_startScreenTexture, sourceRec, destRec, origin, 0.0f, WHITE);
 }
 
-void ecs::MenuUI::drawMenu() {
-  drawMenuBackground();
-  drawStartButton();
+uint32_t ecs::MenuUI::getRoomId() const {
+  try {
+    return std::stoul(_roomIdJoinInput);
+  } catch (const std::exception &e) {
+    return -1;
+  }
 }
 
-void ecs::MenuUI::drawStartButton() {
-  int posX = (GetScreenWidth() - menuUI::BUTTON_WIDTH) / 2;
-  int posY = (GetScreenHeight() - menuUI::BUTTON_HEIGHT) / 2;
-  Color buttonColor = DARKGRAY;
+void ecs::MenuUI::handleInput() {
+  if (_activeField != NONE) {
+    int key = GetCharPressed();
+    while (key > 0) {
+      if ((key >= 32) && (key <= 125)) {
+        switch (_activeField) {
+        case ROOM_NAME_CREATE:
+          _roomNameCreateInput += (char)key;
+          break;
+        case PASSWORD_CREATE:
+          _passwordCreateInput += (char)key;
+          break;
+        case ROOM_ID_JOIN:
+          _roomIdJoinInput += (char)key;
+          break;
+        case PASSWORD_JOIN:
+          _passwordJoinInput += (char)key;
+          break;
+        default:
+          break;
+        }
+      }
+      key = GetCharPressed();
+    }
 
-  renderManager::ButtonState startButton =
-      renderManager::Renderer::handleButton(posX, posY, menuUI::BUTTON_WIDTH,
-                                            menuUI::BUTTON_HEIGHT);
-  switch (startButton) {
-    case renderManager::ButtonState::HOVER:
-      buttonColor = GRAY;
-      break;
-    case renderManager::ButtonState::CLICKED:
-      buttonColor = LIGHTGRAY;
-      break;
-    case renderManager::ButtonState::RELEASED:
-      _client->sendMatchmakingRequest();
-      break;
-    case renderManager::ButtonState::IDLE:
-    default:
-      buttonColor = DARKGRAY;
-      break;
+    if (IsKeyPressed(KEY_BACKSPACE)) {
+      switch (_activeField) {
+      case ROOM_NAME_CREATE:
+        if (!_roomNameCreateInput.empty()) _roomNameCreateInput.pop_back();
+        break;
+      case PASSWORD_CREATE:
+        if (!_passwordCreateInput.empty()) _passwordCreateInput.pop_back();
+        break;
+      case ROOM_ID_JOIN:
+        if (!_roomIdJoinInput.empty()) _roomIdJoinInput.pop_back();
+        break;
+      case PASSWORD_JOIN:
+        if (!_passwordJoinInput.empty()) _passwordJoinInput.pop_back();
+        break;
+      default:
+        break;
+      }
+    }
   }
+}
 
-  renderManager::Renderer::drawButton(posX, posY, menuUI::BUTTON_WIDTH,
-                                      menuUI::BUTTON_HEIGHT, "Start Game",
-                                      menuUI::FONT_SIZE, WHITE, buttonColor);
+void ecs::MenuUI::drawMenu() {
+  drawMenuBackground();
+  switch (_menuState) {
+  case MAIN:
+    drawMainMenu();
+    break;
+  case CREATE_ROOM:
+    drawCreateRoomMenu();
+    break;
+  case JOIN_ROOM:
+    drawJoinRoomMenu();
+    break;
+  }
+}
+
+void ecs::MenuUI::drawMainMenu() {
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    // Matchmaking Button
+    int startButtonX = (screenWidth - menuUI::BUTTON_WIDTH) / 2;
+    int startButtonY = (screenHeight - menuUI::BUTTON_HEIGHT) / 2 - menuUI::BUTTON_HEIGHT - 10;
+    Color startButtonColor = DARKGRAY;
+    renderManager::ButtonState startButtonState = renderManager::Renderer::handleButton(startButtonX, startButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (startButtonState == renderManager::ButtonState::HOVER) startButtonColor = GRAY;
+    if (startButtonState == renderManager::ButtonState::CLICKED) startButtonColor = LIGHTGRAY;
+    if (startButtonState == renderManager::ButtonState::RELEASED) _client->sendMatchmakingRequest();
+    renderManager::Renderer::drawButton(startButtonX, startButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Matchmaking", menuUI::FONT_SIZE, WHITE, startButtonColor);
+
+    // Create Room Button
+    int createButtonY = startButtonY + menuUI::BUTTON_HEIGHT + 10;
+    Color createButtonColor = DARKGRAY;
+    renderManager::ButtonState createButtonState = renderManager::Renderer::handleButton(startButtonX, createButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (createButtonState == renderManager::ButtonState::HOVER) createButtonColor = GRAY;
+    if (createButtonState == renderManager::ButtonState::CLICKED) createButtonColor = LIGHTGRAY;
+    if (createButtonState == renderManager::ButtonState::RELEASED) _menuState = CREATE_ROOM;
+    renderManager::Renderer::drawButton(startButtonX, createButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Create Room", menuUI::FONT_SIZE, WHITE, createButtonColor);
+
+    // Join Room Button
+    int joinButtonY = createButtonY + menuUI::BUTTON_HEIGHT + 10;
+    Color joinButtonColor = DARKGRAY;
+    renderManager::ButtonState joinButtonState = renderManager::Renderer::handleButton(startButtonX, joinButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (joinButtonState == renderManager::ButtonState::HOVER) joinButtonColor = GRAY;
+    if (joinButtonState == renderManager::ButtonState::CLICKED) joinButtonColor = LIGHTGRAY;
+    if (joinButtonState == renderManager::ButtonState::RELEASED) _menuState = JOIN_ROOM;
+    renderManager::Renderer::drawButton(startButtonX, joinButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Join Room", menuUI::FONT_SIZE, WHITE, joinButtonColor);
+}
+
+void ecs::MenuUI::drawInputField(const char *label, Rectangle bounds, std::string &text, ActiveField field, bool isPassword) {
+    renderManager::Renderer::drawText(label, bounds.x, bounds.y - 25, 20, WHITE);
+    if (CheckCollisionPointRec(GetMousePosition(), bounds)) {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            _activeField = field;
+        }
+    }
+    
+    if (_activeField == field) {
+        renderManager::Renderer::drawRectangle(bounds.x - 2, bounds.y - 2, bounds.width + 4, bounds.height + 4, RED);
+    } else {
+        renderManager::Renderer::drawRectangle(bounds.x - 1, bounds.y - 1, bounds.width + 2, bounds.height + 2, DARKGRAY);
+    }
+
+    renderManager::Renderer::drawRectangle(bounds.x, bounds.y, bounds.width, bounds.height, LIGHTGRAY);
+
+    std::string displayedText = isPassword ? std::string(text.length(), '*') : text;
+    if (_activeField == field) {
+        if (static_cast<int>(GetTime() * 2) % 2 == 0) {
+            displayedText += '_';
+        }
+    }
+    
+    while (MeasureText(displayedText.c_str(), 20) > bounds.width - 10) {
+        if (isPassword) {
+            break;
+        }
+        displayedText.erase(0, 1);
+    }
+
+    renderManager::Renderer::drawText(displayedText.c_str(), bounds.x + 5, bounds.y + 10, 20, BLACK);
+}
+
+void ecs::MenuUI::drawCreateRoomMenu() {
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    Rectangle nameBounds = {static_cast<float>((screenWidth - 300) / 2), static_cast<float>((screenHeight - 100) / 2 - 40), 300, 40};
+    drawInputField("Room Name:", nameBounds, _roomNameCreateInput, ROOM_NAME_CREATE, false);
+
+    Rectangle passBounds = {static_cast<float>((screenWidth - 300) / 2), static_cast<float>((screenHeight - 100) / 2 + 50), 300, 40};
+    drawInputField("Password:", passBounds, _passwordCreateInput, PASSWORD_CREATE, true);
+
+    // Create Button
+    int createButtonX = (screenWidth - menuUI::BUTTON_WIDTH) / 2;
+    int createButtonY = passBounds.y + passBounds.height + 20;
+    Color createButtonColor = DARKGRAY;
+    renderManager::ButtonState createButtonState = renderManager::Renderer::handleButton(createButtonX, createButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (createButtonState == renderManager::ButtonState::HOVER) createButtonColor = GRAY;
+    if (createButtonState == renderManager::ButtonState::CLICKED) createButtonColor = LIGHTGRAY;
+    if (createButtonState == renderManager::ButtonState::RELEASED) {
+        _client->createRoom(_roomNameCreateInput, _passwordCreateInput);
+        _menuState = MAIN;
+    }
+    renderManager::Renderer::drawButton(createButtonX, createButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Create", menuUI::FONT_SIZE, WHITE, createButtonColor);
+
+    // Back Button
+    int backButtonY = createButtonY + menuUI::BUTTON_HEIGHT + 10;
+    Color backButtonColor = DARKGRAY;
+    renderManager::ButtonState backButtonState = renderManager::Renderer::handleButton(createButtonX, backButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (backButtonState == renderManager::ButtonState::HOVER) backButtonColor = GRAY;
+    if (backButtonState == renderManager::ButtonState::CLICKED) backButtonColor = LIGHTGRAY;
+    if (backButtonState == renderManager::ButtonState::RELEASED) _menuState = MAIN;
+    renderManager::Renderer::drawButton(createButtonX, backButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Back", menuUI::FONT_SIZE, WHITE, backButtonColor);
+}
+
+void ecs::MenuUI::drawJoinRoomMenu() {
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    Rectangle idBounds = {static_cast<float>((screenWidth - 300) / 2), static_cast<float>((screenHeight - 100) / 2 - 40), 300, 40};
+    drawInputField("Room ID:", idBounds, _roomIdJoinInput, ROOM_ID_JOIN, false);
+
+    Rectangle passBounds = {static_cast<float>((screenWidth - 300) / 2), static_cast<float>((screenHeight - 100) / 2 + 50), 300, 40};
+    drawInputField("Password:", passBounds, _passwordJoinInput, PASSWORD_JOIN, true);
+
+    // Join Button
+    int joinButtonX = (screenWidth - menuUI::BUTTON_WIDTH) / 2;
+    int joinButtonY = passBounds.y + passBounds.height + 20;
+    Color joinButtonColor = DARKGRAY;
+    renderManager::ButtonState joinButtonState = renderManager::Renderer::handleButton(joinButtonX, joinButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (joinButtonState == renderManager::ButtonState::HOVER) joinButtonColor = GRAY;
+    if (joinButtonState == renderManager::ButtonState::CLICKED) joinButtonColor = LIGHTGRAY;
+    if (joinButtonState == renderManager::ButtonState::RELEASED) {
+        try {
+            uint32_t roomId = getRoomId();
+            if (roomId != (uint32_t)-1) {
+                _client->sendRequestChallenge(roomId);
+                setWaitingForChallenge(true);
+            }
+        } catch (const std::exception &e) {
+            TraceLog(LOG_WARNING, "Invalid room ID format.");
+        }
+    }
+    renderManager::Renderer::drawButton(joinButtonX, joinButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Join", menuUI::FONT_SIZE, WHITE, joinButtonColor);
+
+    // Back Button
+    int backButtonY = joinButtonY + menuUI::BUTTON_HEIGHT + 10;
+    Color backButtonColor = DARKGRAY;
+    renderManager::ButtonState backButtonState = renderManager::Renderer::handleButton(joinButtonX, backButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT);
+    if (backButtonState == renderManager::ButtonState::HOVER) backButtonColor = GRAY;
+    if (backButtonState == renderManager::ButtonState::CLICKED) backButtonColor = LIGHTGRAY;
+    if (backButtonState == renderManager::ButtonState::RELEASED) _menuState = MAIN;
+    renderManager::Renderer::drawButton(joinButtonX, backButtonY, menuUI::BUTTON_WIDTH, menuUI::BUTTON_HEIGHT, "Back", menuUI::FONT_SIZE, WHITE, backButtonColor);
 }
