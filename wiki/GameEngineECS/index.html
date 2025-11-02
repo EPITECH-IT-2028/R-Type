@@ -11,6 +11,10 @@
         <link rel="canonical" href="https://epitech-it-2028.github.io/R-Type/wiki/GameEngineECS/">
       
       
+        <link rel="prev" href="../GettingStarted/">
+      
+      
+        <link rel="next" href="../Networking/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -18,7 +22,7 @@
     
     
       
-        <title>Game Engine (ECS) - R-Type Documentation</title>
+        <title>Game Engine & ECS - R-Type Documentation</title>
       
     
     
@@ -102,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Game Engine (ECS)
+              Game Engine & ECS
             
           </span>
         </div>
@@ -208,7 +212,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/GettingStarted.md" class="md-tabs__link">
+      <a href="../GettingStarted/" class="md-tabs__link">
         
   
   
@@ -225,9 +229,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../../docs/wiki/GameEngineECS.md" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -246,7 +252,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/Networking.md" class="md-tabs__link">
+      <a href="../Networking/" class="md-tabs__link">
         
   
   
@@ -265,7 +271,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/AssetManagement.md" class="md-tabs__link">
+      <a href="../AssetManagement/" class="md-tabs__link">
         
   
   
@@ -284,7 +290,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/ProjectStructure.md" class="md-tabs__link">
+      <a href="../ProjectStructure/" class="md-tabs__link">
         
   
   
@@ -303,7 +309,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../docs/wiki/ContributionGuidelines.md" class="md-tabs__link">
+      <a href="../ContributionGuidelines/" class="md-tabs__link">
         
   
   
@@ -392,7 +398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/GettingStarted.md" class="md-nav__link">
+      <a href="../GettingStarted/" class="md-nav__link">
         
   
   
@@ -411,10 +417,32 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../docs/wiki/GameEngineECS.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Game Engine & ECS
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -425,6 +453,104 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Concepts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ecsmanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      ECSManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entitymanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      EntityManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#componentmanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      ComponentManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systemmanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      SystemManager
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Base Class
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      How it Works Together
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -436,7 +562,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/Networking.md" class="md-nav__link">
+      <a href="../Networking/" class="md-nav__link">
         
   
   
@@ -458,7 +584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/AssetManagement.md" class="md-nav__link">
+      <a href="../AssetManagement/" class="md-nav__link">
         
   
   
@@ -480,7 +606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/ProjectStructure.md" class="md-nav__link">
+      <a href="../ProjectStructure/" class="md-nav__link">
         
   
   
@@ -502,7 +628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/wiki/ContributionGuidelines.md" class="md-nav__link">
+      <a href="../ContributionGuidelines/" class="md-nav__link">
         
   
   
