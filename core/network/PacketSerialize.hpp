@@ -19,10 +19,9 @@ namespace serialization {
  */
 template <typename S>
 /**
- * @brief Serializes a PacketHeader into the provided serializer.
+ * @brief Serializes a PacketHeader by writing its type and size fields.
  *
- * Writes the header's `type` as a one-byte value and `size` as a four-byte
- * value.
+ * Serializes `type` as one byte followed by `size` as four bytes in that order.
  *
  * @param packet PacketHeader whose `type` and `size` fields will be written.
  */
@@ -32,13 +31,13 @@ void serialize(S &s, PacketHeader &packet) {
 }
 
 template <typename S>
-/*
- * @brief Serializes a ChatMessagePacket into the given serializer.
+/**
+ * @brief Serialize a ChatMessagePacket into the provided serializer.
  *
- * Writes the packet fields in order: header type and size, timestamp,
- * message text (up to 512 bytes), player ID, and RGBA color components.
+ * Serializes the packet fields in the following order: header.type, header.size,
+ * timestamp, player_id, message text stored in a fixed 512-byte field (truncated
+ * or padded as needed), color components `r`, `g`, `b`, `a`, and sequence_number.
  *
- * @param s Serializer adapter used to write the packet data.
  * @param packet ChatMessagePacket to serialize.
  */
 void serialize(S &s, ChatMessagePacket &packet) {
@@ -95,6 +94,13 @@ void serialize(S &s, PlayerShootPacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes a PlayerDisconnectPacket into the provided serializer.
+ *
+ * The serialized fields, in order, are: header.type, header.size, player_id, and sequence_number.
+ *
+ * @param packet Packet instance to serialize.
+ */
 void serialize(S &s, PlayerDisconnectPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
@@ -131,14 +137,12 @@ void serialize(S &s, PlayerMovePacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes a NewPlayerPacket into the provided serializer.
+ * @brief Serialize a NewPlayerPacket into the serializer using the protocol's binary layout.
  *
- * Serializes the packet header, player identifier, 32-byte player name,
- * position (x, y), movement speed, and maximum health in the protocol's binary
- * layout.
+ * Writes fields in order: header.type, header.size, player_id, player_name as a 32-byte field,
+ * x, y, speed as 32-bit floats, sequence_number, and max_health.
  *
- * @param packet The NewPlayerPacket whose fields will be written to the
- * serializer.
+ * @param packet The NewPlayerPacket to be serialized.
  */
 void serialize(S &s, NewPlayerPacket &packet) {
   s.value1b(packet.header.type);
@@ -181,6 +185,17 @@ void serialize(S &s, EnemySpawnPacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes an EnemyMovePacket into the provided serializer.
+ *
+ * Serializes fields in order: header.type (1 byte), header.size (4 bytes), enemy_id (4 bytes),
+ * x (32-bit float), y (32-bit float), velocity_x (32-bit float), velocity_y (32-bit float),
+ * and sequence_number (4 bytes).
+ *
+ * @tparam S Serializer type.
+ * @param s Serializer instance to write into.
+ * @param packet EnemyMovePacket to serialize.
+ */
 void serialize(S &s, EnemyMovePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
@@ -227,16 +242,15 @@ void serialize(S &s, EnemyHitPacket &packet) {
  */
 template <typename S>
 /**
- * @brief Serializes a ProjectileSpawnPacket into the provided serializer in
- * wire order.
+ * @brief Serializes a ProjectileSpawnPacket into the serializer using network wire order.
  *
- * Serializes the packet's header then the payload fields in the following
- * order: projectile_id, projectile_type, owner_id, is_enemy_projectile,
- * sequence_number, x, y, velocity_x, velocity_y, speed, and damage.
+ * Writes the packet header followed by payload fields in this order:
+ * projectile_id, projectile_type, owner_id, is_enemy_projectile,
+ * x, y, velocity_x, velocity_y, speed, sequence_number, and damage.
  *
  * @tparam S Serializer type.
- * @param s Serializer instance receiving the serialized data.
- * @param packet Projectile spawn packet to serialize.
+ * @param s Serializer instance that receives the serialized bytes.
+ * @param packet ProjectileSpawnPacket to serialize.
  */
 void serialize(S &s, ProjectileSpawnPacket &packet) {
   s.value1b(packet.header.type);
@@ -255,6 +269,14 @@ void serialize(S &s, ProjectileSpawnPacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes a ProjectileHitPacket into the provided serializer.
+ *
+ * Serializes the header (type and size), projectile and target IDs, the target-is-player flag, and the hit coordinates in that order.
+ *
+ * @param s Serialization adapter.
+ * @param packet Packet to serialize.
+ */
 void serialize(S &s, ProjectileHitPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
@@ -267,14 +289,13 @@ void serialize(S &s, ProjectileHitPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes a ProjectileDestroyPacket into the provided serializer.
+ * @brief Serialize a ProjectileDestroyPacket into the serializer.
  *
- * Writes the packet's header.type (1 byte), header.size (4 bytes),
- * projectile_id (4 bytes), sequence_number (4 bytes), and the x and y
- * coordinates as raw 32-bit floats.
+ * Serializes the packet fields in order: header.type (1 byte), header.size (4 bytes),
+ * projectile_id (4 bytes), x (32-bit float), y (32-bit float), and sequence_number (4 bytes).
  *
  * @param s Serializer adapter to write the packet data into.
- * @param packet ProjectileDestroyPacket instance to serialize.
+ * @param packet ProjectileDestroyPacket to serialize.
  */
 void serialize(S &s, ProjectileDestroyPacket &packet) {
   s.value1b(packet.header.type);
@@ -289,6 +310,14 @@ void serialize(S &s, ProjectileDestroyPacket &packet) {
  * Player Event Packets (Server to Client)
  */
 template <typename S>
+/**
+ * @brief Serializes a PlayerHitPacket into the provided serializer.
+ *
+ * Writes the packet header (type and size), player ID, x and y coordinates
+ * (as 32-bit floats), damage, and sequence number in that order.
+ *
+ * @param packet The PlayerHitPacket to serialize.
+ */
 void serialize(S &s, PlayerHitPacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
@@ -301,11 +330,9 @@ void serialize(S &s, PlayerHitPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes a PlayerDeathPacket into the provided serializer.
+ * @brief Serialize a PlayerDeathPacket into the serializer.
  *
- * Writes the packet header (type as 1 byte, size as 4 bytes), then the
- * player_id (4 bytes), sequence_number (4 bytes), and the death position
- * coordinates x and y as raw 32-bit floats.
+ * Serializes the packet header, then the following fields in order: player_id, x and y coordinates as 32-bit floats, and sequence_number.
  *
  * @param packet The PlayerDeathPacket to serialize.
  */
@@ -323,14 +350,13 @@ void serialize(S &s, PlayerDeathPacket &packet) {
  */
 template <typename S>
 /**
- * @brief Serializes a GameStartPacket into the provided serializer.
+ * @brief Serializes the GameStartPacket into the given serializer.
  *
- * Writes the packet header (type and size), the game_start flag, and the
- * packet's sequence_number into the serializer stream.
+ * Serializes the packet header (type and size), the packet's sequence_number, and the game_start flag.
  *
  * @tparam S Serializer type.
  * @param s Serializer instance to write into.
- * @param packet GameStartPacket whose fields will be serialized.
+ * @param packet Packet to serialize.
  */
 void serialize(S &s, GameStartPacket &packet) {
   s.value1b(packet.header.type);
@@ -341,12 +367,9 @@ void serialize(S &s, GameStartPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serialize a GameEndPacket into the provided serializer.
+ * @brief Serialize a GameEndPacket into the serializer.
  *
- * Writes the packet header (type and size), the `game_end` flag, and the
- * packet's `sequence_number`.
- *
- * @param packet The GameEndPacket to serialize into `s`.
+ * Serializes the header's type and size, then the packet's sequence_number and game_end flag.
  */
 void serialize(S &s, GameEndPacket &packet) {
   s.value1b(packet.header.type);
@@ -360,14 +383,11 @@ void serialize(S &s, GameEndPacket &packet) {
  */
 template <typename S>
 /**
- * @brief Serialize a CreateRoomPacket into the provided serializer.
+ * @brief Serializes a CreateRoomPacket into the provided serializer in network packet order.
  *
- * Writes the packet header (type and size), the room name as a fixed 32-byte
- * field, the maximum player count, the privacy flag, and the password as a
- * fixed 32-byte field.
+ * Serializes the header (type, size), `room_name` as a 32-byte field, `max_players`, `is_private`, `password` as a 64-byte field, and `sequence_number`, in that order.
  *
- * @param packet The CreateRoomPacket to serialize; its header, `room_name` (32
- * bytes), `max_players`, `is_private`, and `password` (32 bytes) are written.
+ * @param packet The CreateRoomPacket to serialize.
  */
 void serialize(S &s, CreateRoomPacket &packet) {
   s.value1b(packet.header.type);
@@ -381,12 +401,11 @@ void serialize(S &s, CreateRoomPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serialize a JoinRoomPacket into the provided serializer.
+ * @brief Serializes a JoinRoomPacket into the provided serializer.
  *
- * Serializes the packet header, the 4-byte room ID, and the password as a fixed
- * 32-byte field (uses SERIALIZE_32_BYTES).
+ * Writes header.type (1 byte), header.size (4 bytes), room_id (4 bytes),
+ * sequence_number (4 bytes), and the password as a fixed 64-byte field.
  *
- * @param s Serializer to write the packet into.
  * @param packet JoinRoomPacket to serialize.
  */
 void serialize(S &s, JoinRoomPacket &packet) {
@@ -399,13 +418,12 @@ void serialize(S &s, JoinRoomPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes a join-room response packet into the given serializer.
+ * @brief Serializes a JoinRoomResponsePacket into the provided serializer.
  *
- * Writes the packet header fields (type as 1 byte, size as 4 bytes) followed by
- * the response error code (1 byte).
+ * Serializes the packet header, then the response `error_code`, and finally the
+ * `sequence_number`, in that order.
  *
- * @param packet Join room response packet containing the header and
- * `error_code`.
+ * @param packet Packet to serialize; its header, `error_code`, and `sequence_number` are written to the serializer.
  */
 void serialize(S &s, JoinRoomResponsePacket &packet) {
   s.value1b(packet.header.type);
@@ -478,10 +496,11 @@ void serialize(S &s, ListRoomResponsePacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes the matchmaking request packet header into the serializer.
+ * @brief Serialize a MatchmakingRequestPacket into the serializer.
  *
- * @param packet MatchmakingRequestPacket whose header `type` (1 byte) and
- * `size` (4 bytes) are written to the serializer.
+ * Writes the packet header's `type` and `size`, then the packet's `sequence_number`.
+ *
+ * @param packet The matchmaking request packet to serialize.
  */
 void serialize(S &s, MatchmakingRequestPacket &packet) {
   s.value1b(packet.header.type);
@@ -491,12 +510,12 @@ void serialize(S &s, MatchmakingRequestPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes a MatchmakingResponsePacket into the serializer.
+ * @brief Serialize a MatchmakingResponsePacket into the serializer.
  *
- * Writes the packet header fields (type and size) followed by the packet's
- * `error_code`.
+ * Writes the packet fields in order: header.type (1 byte), header.size (4 bytes),
+ * error_code (1 byte), and sequence_number (4 bytes).
  *
- * @param s Serializer to write bytes into.
+ * @param s Serializer adapter to write bytes into.
  * @param packet Matchmaking response packet to serialize.
  */
 void serialize(S &s, MatchmakingResponsePacket &packet) {
@@ -508,10 +527,11 @@ void serialize(S &s, MatchmakingResponsePacket &packet) {
 
 template <typename S>
 /**
- * @brief Serialize a PlayerInputPacket into the given serializer.
+ * @brief Serializes a PlayerInputPacket into the provided archive.
  *
- * @param s Serializer/archive to write into.
- * @param packet PlayerInputPacket to serialize.
+ * Writes the header fields (type, size), the input byte, and the packet's sequence_number in that order.
+ *
+ * @param packet Packet to serialize.
  */
 void serialize(S &s, PlayerInputPacket &packet) {
   s.value1b(packet.header.type);
@@ -522,13 +542,13 @@ void serialize(S &s, PlayerInputPacket &packet) {
 
 template <typename S>
 /**
- * @brief Serializes an AckPacket into the provided serializer.
+ * @brief Serialize an AckPacket into the serializer.
  *
- * Writes the packet header's type and size, then serializes the player ID
- * and the packet's sequence number.
+ * Writes the packet fields in order: header.type (1 byte), header.size (4 bytes),
+ * sequence_number (4 bytes), and player_id (4 bytes).
  *
- * @param s Serializer/stream adapter to write serialized data into.
- * @param packet AckPacket instance to serialize.
+ * @param s Serializer adapter to write data into.
+ * @param packet AckPacket to serialize.
  */
 void serialize(S &s, AckPacket &packet) {
   s.value1b(packet.header.type);
@@ -538,6 +558,12 @@ void serialize(S &s, AckPacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes a RequestChallengePacket into the serializer.
+ *
+ * The serialized field order is: header.type (1 byte), header.size (4 bytes),
+ * room_id (4 bytes), and sequence_number (4 bytes).
+ */
 void serialize(S &s, RequestChallengePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
@@ -546,6 +572,13 @@ void serialize(S &s, RequestChallengePacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes a ChallengeResponsePacket into the provided serializer.
+ *
+ * Writes the packet header (type and size), the 128-byte `challenge` field, `timestamp`, and `sequence_number` to the serializer in that order.
+ *
+ * @param packet Packet whose fields will be written to the serializer.
+ */
 void serialize(S &s, ChallengeResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);
@@ -555,6 +588,11 @@ void serialize(S &s, ChallengeResponsePacket &packet) {
 }
 
 template <typename S>
+/**
+ * @brief Serializes a CreateRoomResponsePacket into the provided serializer.
+ *
+ * Serializes fields in order: header.type (1 byte), header.size (4 bytes), error_code (1 byte), room_id (4 bytes), and sequence_number (4 bytes).
+ */
 void serialize(S &s, CreateRoomResponsePacket &packet) {
   s.value1b(packet.header.type);
   s.value4b(packet.header.size);

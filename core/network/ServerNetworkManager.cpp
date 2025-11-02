@@ -4,6 +4,13 @@
 
 using namespace network;
 
+/**
+ * @brief Constructs a ServerNetworkManager bound to a specific port.
+ *
+ * Initializes the server manager and prepares internal signal handling and timers needed for running the network service.
+ *
+ * @param port UDP port number the server will listen on.
+ */
 ServerNetworkManager::ServerNetworkManager(std::uint16_t port)
     : BaseNetworkManager(port),
       _isRunning(true),
@@ -13,6 +20,14 @@ ServerNetworkManager::ServerNetworkManager(std::uint16_t port)
       _unacknowledgedTimer(std::make_shared<asio::steady_timer>(_io_context)) {
 }
 
+/**
+ * @brief Associate a client identifier with its UDP endpoint for future communication.
+ *
+ * Stores or updates the mapping from the given client `id` to the provided UDP `endpoint`.
+ *
+ * @param id Client identifier used as the key for the mapping.
+ * @param endpoint UDP endpoint (address and port) associated with the client.
+ */
 void ServerNetworkManager::registerClient(
     int id, const asio::ip::udp::endpoint &endpoint) {
   _clientEndpoints[id] = endpoint;
@@ -68,11 +83,23 @@ void ServerNetworkManager::send(const char *data, std::size_t size) {
   sendToAll(data, size);
 }
 
+/**
+ * @brief Sends the provided byte buffer to all registered clients.
+ *
+ * @param buffer Shared pointer to a vector of bytes containing the payload to send to every connected client.
+ */
 void ServerNetworkManager::send(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
   sendToAll(buffer);
 }
 
+/**
+ * @brief Registers asynchronous OS signal handlers that initiate an orderly shutdown.
+ *
+ * Sets up an asynchronous wait on the internal signal set so that when a registered
+ * signal is received and the server is running, the manager is marked not running,
+ * stop() is invoked, and the io_context is stopped.
+ */
 void ServerNetworkManager::checkSignals() {
   _signals.async_wait([this](const asio::error_code &error, int signal_number) {
     if (!error && _isRunning) {
@@ -83,6 +110,13 @@ void ServerNetworkManager::checkSignals() {
   });
 }
 
+/**
+ * @brief Stops the network manager and performs full shutdown cleanup.
+ *
+ * Sets the manager as not running, cancels signal handlers and any active timers,
+ * closes the network socket, and invokes the optional stop callback if provided.
+ * If the manager is already stopped, this function returns without performing any actions.
+ */
 void ServerNetworkManager::stop() {
   if (!_isRunning) {
     return;
@@ -115,6 +149,15 @@ void ServerNetworkManager::stop() {
   std::cout << "[CONSOLE] Network manager stopped completely." << std::endl;
 }
 
+/**
+ * @brief Begins and continuously receives datagrams from the socket, invoking the provided callback for each received packet.
+ *
+ * The function keeps posting receive operations while the manager is running and the socket remains open.
+ * On a successful receive with data, the callback is invoked with a pointer to the received bytes and the number of bytes.
+ * Receive errors other than `asio::error::operation_aborted` are logged as warnings when the manager is running.
+ *
+ * @param callback Function invoked for each received packet; receives a pointer to the data buffer and the number of bytes received.
+ */
 void ServerNetworkManager::startReceive(
     const std::function<void(const char *, std::size_t)> &callback) {
   _socket.async_receive_from(
@@ -133,6 +176,16 @@ void ServerNetworkManager::startReceive(
       });
 }
 
+/**
+ * @brief Schedules a recurring event-processing callback to run at the given interval.
+ *
+ * If an event is already scheduled or the server is not running, this call has no effect.
+ * The provided callback is invoked only when the server remains running; after each successful
+ * invocation the timer re-schedules itself to continue periodic execution.
+ *
+ * @param interval Time between callback invocations.
+ * @param callback Function to execute on each scheduled event.
+ */
 void ServerNetworkManager::scheduleEventProcessing(
     std::chrono::milliseconds interval, const std::function<void()> &callback) {
   if (_eventScheduled || !_isRunning)
@@ -154,6 +207,16 @@ void ServerNetworkManager::scheduleEventProcessing(
       });
 }
 
+/**
+ * @brief Schedules a recurring timeout callback at the specified interval.
+ *
+ * If a timeout is already scheduled, this call has no effect. When the timer
+ * expires and the server is running, the provided callback is invoked and the
+ * timeout is re-scheduled with the same interval.
+ *
+ * @param interval Delay between consecutive callback invocations.
+ * @param callback Function to invoke when the timer expires.
+ */
 void ServerNetworkManager::scheduleTimeout(
     std::chrono::seconds interval, const std::function<void()> &callback) {
   if (_timeoutScheduled)
@@ -170,6 +233,16 @@ void ServerNetworkManager::scheduleTimeout(
       });
 }
 
+/**
+ * @brief Schedules recurring checks for unacknowledged packets at a fixed interval.
+ *
+ * If a check is already scheduled, this call has no effect. When the timer expires
+ * and the manager is running, the provided callback is invoked and the check is
+ * rescheduled to run again after the same interval.
+ *
+ * @param interval Time between consecutive checks.
+ * @param callback Function to call when a check is due.
+ */
 void ServerNetworkManager::scheduleUnacknowledgedPacketsCheck(
     std::chrono::milliseconds interval, const std::function<void()> &callback) {
   if (_unacknowledgedScheduled)
@@ -186,6 +259,17 @@ void ServerNetworkManager::scheduleUnacknowledgedPacketsCheck(
       });
 }
 
+/**
+ * @brief Schedule repeated execution of a callback to clear the last processed sequence.
+ *
+ * Sets up an internal timer to invoke the provided callback every given interval while the
+ * server remains running. If a clear-sequence timer is already scheduled or the manager is
+ * not running, the call is a no-op. The timer re-schedules itself after each successful
+ * invocation.
+ *
+ * @param interval Duration between consecutive callback invocations.
+ * @param callback Function invoked to clear the last processed sequence when the timer expires.
+ */
 void ServerNetworkManager::scheduleClearLastProcessedSeq(
     std::chrono::seconds interval, const std::function<void()> &callback) {
   if (_clearSeqScheduled || !_isRunning)

@@ -29,12 +29,10 @@ namespace server {
       Server(std::uint16_t port, std::uint8_t max_clients,
              std::uint8_t max_clients_per_room);
       /**
-       * @brief Stops the server and releases networking and game resources when
-       * the Server is destroyed.
+       * @brief Stops the server and releases networking and game resources.
        *
-       * Ensures the server is cleanly stopped — shutting down networking,
-       * timers, and any background resend activity — before the instance is
-       * destroyed.
+       * Ensures a clean shutdown of networking, timers, and any background activity
+       * associated with the server so resources are released when the instance is destroyed.
        */
       ~Server() {
         stop();
@@ -100,10 +98,21 @@ namespace server {
 
       bool initializePlayerInRoom(Client &client);
 
+      /**
+       * @brief Accesses the server's challenge manager.
+       *
+       * @return game::Challenge& Reference to the server's challenge manager instance.
+       */
       game::Challenge &getChallengeManager() {
         return _challenge;
       }
 
+      /**
+       * @brief Retrieve the last processed sequence number for a player.
+       *
+       * @param player_id ID of the player whose last processed sequence is requested.
+       * @return std::optional<std::uint64_t> Optional containing the last processed sequence number for the player if present, `std::nullopt` otherwise.
+       */
       std::optional<std::uint64_t> getLastProcessedSeq(
           std::uint32_t player_id) const {
         std::lock_guard<std::mutex> g(_lastProcessedSeqMutex);
@@ -112,6 +121,15 @@ namespace server {
           return it->second;
         return std::nullopt;
       }
+      /**
+       * @brief Update the last processed sequence number for a player.
+       *
+       * Records or overwrites the stored sequence number for the given player ID in a
+       * thread-safe manner.
+       *
+       * @param player_id Identifier of the player whose sequence number is being set.
+       * @param sequence_number Sequence number to store for the player.
+       */
       void setLastProcessedSeq(std::uint32_t player_id,
                                std::uint64_t sequence_number) {
         std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
