@@ -37,7 +37,7 @@ constexpr float GAME_DURATION = 10.0f;
 constexpr int TPS = 60;
 
 /* Network/Protocol */
-constexpr std::size_t BUFFER_SIZE = 2048;
+constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr std::uint32_t NO_ROOM = std::numeric_limits<std::uint32_t>::max();
 constexpr int RESEND_PACKET_DELAY = 500;  // number in milliseconds
 constexpr int MAX_RESEND_ATTEMPTS = 5;
@@ -78,3 +78,6 @@ constexpr unsigned char ASCII_DEL = 0x7f;
 /* General Utility */
 constexpr int OK = 0;
 constexpr int KO = -1;
+
+constexpr int COMPRESSION_THRESHOLD = 150;
+static constexpr int HEADER_SIZE_LZ4 = 12;

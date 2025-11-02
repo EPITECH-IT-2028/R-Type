@@ -4,6 +4,7 @@
 #include <queue>
 #include "Client.hpp"
 #include "Packet.hpp"
+#include "PacketCompressor.hpp"
 #include "PacketUtils.hpp"
 #include "Serializer.hpp"
 
@@ -42,9 +43,17 @@ void ClientNetworkManager::send(const char *data, std::size_t size) {
 
 void ClientNetworkManager::send(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
+  std::shared_ptr<std::vector<std::uint8_t>> dataToSend = buffer;
+  if (buffer->size() > COMPRESSION_THRESHOLD) {
+    auto compressed = compression::LZ4Compressor::compress(*buffer);
+    if (compression::LZ4Compressor::isCompressed(compressed)) {
+      dataToSend = std::make_shared<std::vector<std::uint8_t>>(compressed);
+    }
+  }
+
   _socket.async_send_to(
-      asio::buffer(*buffer), _server_endpoint,
-      [buffer](const asio::error_code &ec, std::size_t) {
+      asio::buffer(*dataToSend), _server_endpoint,
+      [dataToSend](const asio::error_code &ec, std::size_t) {
         if (ec) {
           std::cerr << "[WARNING] Send failed: " << ec.message() << std::endl;
         }
@@ -166,9 +175,19 @@ void ClientNetworkManager::processReceivedPackets(client::Client &client) {
 
 void ClientNetworkManager::processPacket(const char *data, std::size_t size,
                                          client::Client &client) {
-  serialization::Buffer buffer(
+  std::vector<std::uint8_t> packetData(
       reinterpret_cast<const std::uint8_t *>(data),
       reinterpret_cast<const std::uint8_t *>(data) + size);
+
+  if (compression::LZ4Compressor::isCompressed(packetData)) {
+    packetData = compression::LZ4Compressor::decompress(packetData);
+    if (packetData.empty()) {
+      std::cerr << "[ERROR] Decompression failed, dropping packet" << std::endl;
+      return;
+    }
+  }
+
+  serialization::Buffer buffer(packetData.begin(), packetData.end());
   auto headerOpt =
       serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
 
@@ -178,13 +197,13 @@ void ClientNetworkManager::processPacket(const char *data, std::size_t size,
   }
 
   PacketHeader header = headerOpt.value();
-
-  std::memcpy(&header, data, HEADER_SIZE);
   PacketType packet_type = static_cast<PacketType>(header.type);
 
   auto handler = _packetFactory.createHandler(packet_type);
   if (handler) {
-    int result = handler->handlePacket(client, data, size);
+    int result = handler->handlePacket(
+        client, reinterpret_cast<const char *>(packetData.data()),
+        packetData.size());
     if (result != 0) {
       std::cerr << "Error handling packet of type "
                 << packetTypeToString(packet_type) << ": " << result
