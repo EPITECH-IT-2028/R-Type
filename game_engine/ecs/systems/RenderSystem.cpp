@@ -125,7 +125,7 @@ void ecs::RenderSystem::update(float deltaTime) {
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
   }
 
-  if (_menuUI.getShowMenu() == true &&
+  if (_client != nullptr && _menuUI.getShowMenu() == true &&
       _client->getClientState() == client::ClientState::IN_CONNECTED_MENU) {
     _menuUI.handleInput();
     _menuUI.drawMenu();
