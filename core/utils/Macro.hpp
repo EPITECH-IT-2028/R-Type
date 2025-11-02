@@ -34,7 +34,7 @@ constexpr float PLAYER_WIDTH = 66.0f;
 constexpr float PLAYER_HEIGHT = 37.0f;
 constexpr int MARGIN_WINDOW = 30;
 constexpr int COUNTDOWN_TIME = 5;
-constexpr float GAME_DURATION = 10.0f;
+constexpr float GAME_DURATION = 20.0f;
 constexpr int TPS = 20;
 
 constexpr int PING_INTERVAL_CLIENT = 50;
