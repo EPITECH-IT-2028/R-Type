@@ -870,13 +870,16 @@ struct PacketBuilder {
      * @brief Constructs a PingPacket with the specified timestamp.
      *
      * @param timestamp Timestamp to include in the ping packet.
-     * @return PingPacket Packet with header.type set to Ping, header.size set to the packet size, and timestamp set to the provided value.
+     * @return PingPacket Packet with header.type set to Ping, header.size set
+     * to the packet size, and timestamp set to the provided value.
      */
     static PingPacket makePing(std::uint32_t timestamp) {
       PingPacket packet{};
       packet.header.type = PacketType::Ping;
-      packet.header.size = sizeof(packet);
       packet.timestamp = timestamp;
+
+      if (!setPayloadSizeFromSerialization(packet, "makePing"))
+        return {};
       return packet;
     }
 
@@ -884,13 +887,16 @@ struct PacketBuilder {
      * @brief Constructs a PongPacket with the specified timestamp.
      *
      * @param timestamp Timestamp to include in the pong packet.
-     * @return PongPacket Packet with header.type set to Pong, header.size set to the packet size, and timestamp set to the provided value.
+     * @return PongPacket Packet with header.type set to Pong, header.size set
+     * to the packet size, and timestamp set to the provided value.
      */
     static PongPacket makePong(std::uint32_t timestamp) {
       PongPacket packet{};
       packet.header.type = PacketType::Pong;
-      packet.header.size = sizeof(packet);
       packet.timestamp = timestamp;
+      
+      if (!setPayloadSizeFromSerialization(packet, "makePong"))
+        return {};
       return packet;
     }
 };
