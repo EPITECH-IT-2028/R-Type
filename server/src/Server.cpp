@@ -13,6 +13,7 @@
 #include "IPacket.hpp"
 #include "Macro.hpp"
 #include "Packet.hpp"
+#include "PacketCompressor.hpp"
 
 /**
  * @brief Initialize a Server bound to the given UDP port with client limits.
@@ -388,7 +389,29 @@ void server::Server::startReceive() {
  */
 void server::Server::handleReceive(const char *data,
                                    std::size_t bytes_transferred) {
-  serialization::Buffer buffer(data, data + bytes_transferred);
+  std::vector<std::uint8_t> packetData(
+      reinterpret_cast<const std::uint8_t *>(data),
+      reinterpret_cast<const std::uint8_t *>(data) + bytes_transferred);
+
+  if (compression::Compressor::isCompressed(packetData)) {
+    auto originalSize = packetData.size();
+    auto decompressed = compression::Compressor::decompress(packetData);
+    if (decompressed.size() == originalSize &&
+        compression::Compressor::isCompressed(decompressed)) {
+      std::cerr << "[WARNING] Decompression may have failed, treating as "
+                   "compressed data"
+                << std::endl;
+      return;
+    }
+    packetData = std::move(decompressed);
+    if (packetData.size() < sizeof(PacketHeader)) {
+      std::cerr << "[ERROR] Packet too small after decompression, dropping"
+                << std::endl;
+      return;
+    }
+  }
+
+  serialization::Buffer buffer(packetData.begin(), packetData.end());
 
   auto headerOpt =
       serialization::BitserySerializer::deserialize<PacketHeader>(buffer);
@@ -401,14 +424,17 @@ void server::Server::handleReceive(const char *data,
   PacketHeader header = headerOpt.value();
 
   if (header.type == PacketType::PlayerInfo) {
-    handlePlayerInfoPacket(data, bytes_transferred);
+    handlePlayerInfoPacket(reinterpret_cast<const char *>(packetData.data()),
+                           packetData.size());
     return;
   }
 
   int client_idx = findExistingClient();
   if (client_idx == KO)
     return;
-  handleClientData(client_idx, data, bytes_transferred);
+  handleClientData(client_idx,
+                   reinterpret_cast<const char *>(packetData.data()),
+                   packetData.size());
 }
 
 /**

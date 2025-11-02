@@ -35,7 +35,7 @@ constexpr float PLAYER_HEIGHT = 37.0f;
 constexpr int MARGIN_WINDOW = 30;
 constexpr int COUNTDOWN_TIME = 5;
 constexpr float GAME_DURATION = 10.0f;
-constexpr int TPS = 60;
+constexpr int TPS = 20;
 
 constexpr int PING_INTERVAL_CLIENT = 50;
 
@@ -81,3 +81,6 @@ constexpr unsigned char ASCII_DEL = 0x7f;
 /* General Utility */
 constexpr int OK = 0;
 constexpr int KO = -1;
+
+constexpr int COMPRESSION_THRESHOLD = 150;
+static constexpr int HEADER_SIZE_LZ4 = 12;
