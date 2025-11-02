@@ -40,6 +40,13 @@ namespace network {
 
       void checkSignals();
 
+      /**
+       * @brief Sets a callback to be invoked when the server is stopped.
+       *
+       * The provided callback will be stored and called during shutdown/stop processing.
+       *
+       * @param callback Function to call when the server stops.
+       */
       void setStopCallback(const std::function<void()> &callback) {
         _stopCallback = callback;
       }
@@ -48,6 +55,12 @@ namespace network {
 
       void stop() override;
 
+      /**
+       * @brief Cancels pending operations and closes the underlying socket if it is open.
+       *
+       * If the socket is open, this will cancel any outstanding asynchronous operations and then close the socket.
+       * If the socket is already closed, the call has no effect.
+       */
       void closeSocket() {
         if (_socket.is_open()) {
           _socket.cancel();
@@ -55,6 +68,13 @@ namespace network {
         }
       };
 
+      /**
+       * @brief Retrieve the UDP endpoint associated with a player ID.
+       *
+       * @param player_id Player identifier used as the lookup key.
+       * @return asio::ip::udp::endpoint The stored UDP endpoint for the given player.
+       * @throws std::out_of_range If no endpoint is registered for `player_id`.
+       */
       asio::ip::udp::endpoint getClientEndpoint(std::uint32_t player_id) {
         return _clientEndpoints.at(player_id);
       }

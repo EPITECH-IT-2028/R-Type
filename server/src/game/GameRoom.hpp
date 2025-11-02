@@ -58,11 +58,21 @@ namespace game {
         return _room_id;
       }
 
+      /**
+       * @brief Gets the room's name.
+       *
+       * @return The current room name.
+       */
       std::string getRoomName() const {
         std::shared_lock<std::shared_mutex> lock(_mutex);
         return _room_name;
       }
 
+      /**
+       * @brief Set the room's display name.
+       *
+       * @param name New display name for the room.
+       */
       void setRoomName(const std::string &name) {
         std::lock_guard<std::shared_mutex> lock(_mutex);
         _room_name = name;
@@ -132,6 +142,15 @@ namespace game {
         return true;
       }
 
+      /**
+       * @brief Remove the first connected client with the given player ID from the room.
+       *
+       * Acquires the room mutex, finds the first client whose `_player_id` equals `player_id`,
+       * sets that client's `_room_id` to `NO_ROOM`, and removes the client from the room's
+       * client list. If no matching client is found, the function returns without changes.
+       *
+       * @param player_id The player identifier of the client to remove.
+       */
       void removeClient(int player_id) {
         std::lock_guard<std::shared_mutex> lock(_mutex);
         for (auto it = _clients.begin(); it != _clients.end(); ++it) {

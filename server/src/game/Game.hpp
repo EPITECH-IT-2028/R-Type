@@ -103,19 +103,31 @@ namespace game {
         _sequence_number = value;
       }
       /**
-       * @brief Atomically increments the internal sequence number by one and
-       * return the new value.
+       * @brief Fetches the current sequence number and atomically increments it.
        *
-       * Advances the game's sequence number used for event and update ordering.
+       * Atomically increments the game's internal sequence counter and returns the value
+       * that was held prior to the increment.
+       *
+       * @return std::uint32_t The previous sequence number before the increment.
        */
       std::uint32_t fetchAndIncrementSequenceNumber() {
         return _sequence_number.fetch_add(1, std::memory_order_relaxed);
       }
 
+      /**
+       * @brief Atomically increments the game's internal sequence number.
+       *
+       * Increments the sequence counter used to order events and updates.
+       */
       void incrementSequenceNumber() {
         _sequence_number.fetch_add(1, std::memory_order_relaxed);
       }
 
+      /**
+       * @brief Retrieve the current sequence number used for ordering events and updates.
+       *
+       * @return std::uint32_t The current sequence number.
+       */
       std::uint32_t getSequenceNumber() {
         return _sequence_number.load(std::memory_order_acquire);
       }

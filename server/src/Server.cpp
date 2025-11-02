@@ -45,6 +45,15 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
   }
 }
 
+/**
+ * @brief Starts the server: initializes network I/O, schedules recurring maintenance and game-processing tasks, and enters the network event loop.
+ *
+ * Registers a stop callback that shuts down game rooms when the network manager stops, begins asynchronous receive handling, and schedules the following periodic tasks:
+ * - processGameEvents (every 50 ms)
+ * - handleTimeout (every 1 s)
+ * - handleUnacknowledgedPackets (every RESEND_PACKET_DELAY ms)
+ * - clearLastProcessedSeq (every 2 s)
+ */
 void server::Server::start() {
   std::cout << "[CONSOLE] Server started on port " << _port << std::endl;
 
@@ -74,11 +83,10 @@ void server::Server::start() {
 }
 
 /**
- * @brief Gracefully stops the server and shuts down its networking and game
- * subsystems.
+ * @brief Shut down the server, stopping active rooms and network I/O.
  *
- * Closes the network socket, instructs the game manager to shut down all active
- * rooms, and stops the resend background thread, waiting for it to finish.
+ * Instructs the game manager to shut down all rooms (if present) and stops the network
+ * manager so no further network I/O occurs. Logs that the server has stopped.
  */
 void server::Server::stop() {
   if (_gameManager)
@@ -88,13 +96,14 @@ void server::Server::stop() {
 }
 
 /**
- * @brief Detects and handles client inactivity timeouts.
+ * @brief Detects clients that have been inactive longer than CLIENT_TIMEOUT and disconnects them.
  *
- * Checks each connected client’s last heartbeat against CLIENT_TIMEOUT and, for
- * clients exceeding that threshold, marks them disconnected, decrements the
- * active player count, removes them from their room (if any), destroys their
- * in-room player entity, broadcasts a player-disconnect packet and a chat
- * message to the room, and clears the server slot for that client.
+ * For each timed-out client this function marks the client as disconnected,
+ * decrements the server player count, updates the player's online status in the
+ * database, and clears the client slot. If the client was in a room, it also
+ * notifies the room by broadcasting a player-disconnect packet and a chat
+ * message, destroys the corresponding in-room player entity, and removes the
+ * player from the room.
  */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
@@ -416,12 +425,11 @@ void server::Server::handlePlayerInfoPacket(const char *data,
 }
 
 /**
- * @brief Find an existing client based on the sender's endpoint.
- * Compares the remote endpoint of the incoming packet with the stored
- * endpoints of connected clients. If a match is found, updates the client's
- * last heartbeat timestamp and returns the client's index. If no match is
- * found, returns KO.
- * @return int Index of the existing client, or KO if not found.
+ * @brief Finds the connected client whose registered endpoint matches the current remote endpoint.
+ *
+ * If a matching client is found, its last-heartbeat timestamp is updated to now.
+ *
+ * @return size_t Index of the matching client, or `KO` if no match was found.
  */
 size_t server::Server::findExistingClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
@@ -485,17 +493,16 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
 }
 
 /**
- * @brief Initialize a connected client as a player inside its assigned game
- * room.
+ * @brief Initialize a connected client as an in-room player and synchronize room state.
  *
- * Validates the client's state, room assignment, and name; creates a player
- * entity in the room's game, stores the entity id on the client, sends the
- * new-player state to the client, broadcasts existing players and the new
- * player to the room, and starts the room countdown when conditions are met.
+ * Validates the client's readiness and room membership, creates the player's entity
+ * in the room game, stores the generated entity id on the client, sends the new-player
+ * state and existing-player state to the connecting client, broadcasts the new player
+ * and a join chat message to other room clients, and starts the room countdown when
+ * the room meets start conditions.
  *
- * @param client Client instance to initialize (modified in-place).
- * @return true if the player was successfully initialized in the room, false
- * otherwise.
+ * @param client Client instance to initialize; modified in-place to record entity id and queued packets.
+ * @return true if the player was successfully initialized in the room, `false` otherwise.
  */
 bool server::Server::initializePlayerInRoom(Client &client) {
   if (client._state == ClientState::CONNECTED_MENU) {
@@ -733,6 +740,12 @@ void server::Server::clearClientSlot(int player_id) {
   }
 }
 
+/**
+ * @brief Retransmits any unacknowledged packets for all currently connected clients.
+ *
+ * Iterates connected client slots and requests each client to resend its queued
+ * unacknowledged packets using the server's network manager.
+ */
 void server::Server::handleUnacknowledgedPackets() {
   std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
@@ -742,16 +755,33 @@ void server::Server::handleUnacknowledgedPackets() {
   }
 }
 
+/**
+ * @brief Atomically clears the map of last-processed sequence numbers.
+ *
+ * This resets the server's tracking of most recently processed sequence IDs for peers,
+ * allowing sequence checks to start fresh.
+ */
 void server::Server::clearLastProcessedSeq() {
   std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
   _lastProcessedSeq.clear();
 }
 
+/**
+ * Thread-safely enqueues a player identifier for deferred removal from the server.
+ *
+ * @param player_id Player's unique identifier to schedule for removal.
+ */
 void server::Server::enqueueClientRemoval(std::uint32_t player_id) {
   std::lock_guard<std::mutex> lock(_clientsToRemoveMutex);
   _clientsToRemove.push(player_id);
 }
 
+/**
+ * @brief Processes and applies queued client removals.
+ *
+ * Empties the internal removal queue by transferring pending player IDs into a local queue
+ * and then clearing each corresponding client slot (including leaving rooms) until none remain.
+ */
 void server::Server::processPendingClientRemovals() {
   std::queue<std::uint32_t> toRemove;
   {
@@ -764,6 +794,13 @@ void server::Server::processPendingClientRemovals() {
   }
 }
 
+/**
+ * @brief Processes queued game events for each active room and prunes empty rooms.
+ *
+ * Polls each active room's game event queue, dispatches every popped event to the server's
+ * event handler, and ensures pending client removals are processed before event dispatch.
+ * After processing all rooms, removes any empty rooms from the game manager.
+ */
 void server::Server::processGameEvents() {
   auto rooms = _gameManager->getAllRooms();
 

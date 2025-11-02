@@ -158,6 +158,13 @@ void game::Game::start() {
   _gameThread = std::thread(&Game::Game::gameLoop, this);
 }
 
+/**
+ * @brief Stops the game loop, joins the game thread, and clears all entities.
+ *
+ * If the game is not running or the internal thread is not joinable, this is a no-op.
+ * Otherwise it sets the running flag to false, joins the thread if joinable, and
+ * releases all game entities and related resources via clearAllEntities().
+ */
 void game::Game::stop() {
   if (!_running || !_gameThread.joinable()) {
     return;
@@ -294,6 +301,16 @@ std::vector<std::shared_ptr<game::Player>> game::Game::getAllPlayers() const {
   return playerList;
 }
 
+/**
+ * @brief Advances the enemy spawn timer and spawns a BASIC_FIGHTER when the interval elapses.
+ *
+ * Increments the internal spawn accumulator by the provided delta and, if the configured
+ * spawn interval is reached or exceeded, resets the accumulator, creates a BASIC_FIGHTER
+ * enemy, and enqueues an EnemySpawnEvent containing the new enemy's id, type, position,
+ * velocity, health, max health, and a sequence number.
+ *
+ * @param deltaTime Time elapsed since the last update in seconds.
+ */
 void game::Game::spawnEnemy(float deltaTime) {
   _enemySpawnTimer += deltaTime;
 

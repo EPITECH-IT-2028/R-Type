@@ -31,12 +31,9 @@
 
 namespace client {
   /**
-   * @brief Constructs a Client configured to connect to the given host and
-   * port.
+   * @brief Constructs a Client configured to connect to the given host and port and starts the background resend thread.
    *
-   * Initializes the network manager, sequence and packet counters, obtains the
-   * ECS manager singleton, sets the client's initial state to DISCONNECTED, and
-   * marks the running flag as false.
+   * Initializes the network manager with the provided host and port, sets the default player name to "Unknown", initializes sequence and packet counters to zero, obtains the ECS manager singleton, sets the client's initial state to DISCONNECTED, starts the resend thread, and sets the running flag to false.
    *
    * @param host Server hostname or IP address.
    * @param port Server port number.
@@ -78,13 +75,13 @@ namespace client {
   }
 
   /**
-   * @brief Register all ECS component types used by the client.
+   * @brief Register all ECS component types required by the client.
    *
    * Makes the following component types available to entities and systems:
    * PositionComponent, VelocityComponent, RenderComponent, SpriteComponent,
    * ScaleComponent, BackgroundTagComponent, PlayerTagComponent,
    * LocalPlayerTagComponent, SpriteAnimationComponent, ProjectileComponent,
-   * EnemyComponent, and ChatComponent.
+   * EnemyComponent, ChatComponent, and PlayerComponent.
    */
   void Client::registerComponent() {
     _ecsManager.registerComponent<ecs::PositionComponent>();
@@ -218,16 +215,13 @@ namespace client {
   }
 
   /**
-   * @brief Create and register a player entity from a NewPlayerPacket.
+   * @brief Create an ECS player entity from a NewPlayerPacket and register it with the client.
    *
-   * Creates an ECS entity for the player, attaches position, render, sprite,
-   * scale, player tag, and sprite animation components, records the mapping
-   * from player ID to entity and player name, and if no local player ID is set,
-   * assigns the local player ID, stores the local player name, and tags the
-   * entity as the local player.
+   * Creates a new player entity, attaches the player's components, records the mapping
+   * from player ID to entity and player name, prevents duplicate creation for the same
+   * player ID, and assigns the local player tag and local player ID when appropriate.
    *
-   * @param packet Packet containing the player's ID, null-terminated name, and
-   * initial position (x, y).
+   * @param packet Packet containing the player's ID, null-terminated name, and initial position (x, y).
    */
   void Client::createPlayerEntity(NewPlayerPacket packet) {
     std::unique_lock<std::shared_mutex> lock(_playerStateMutex);
@@ -415,13 +409,9 @@ namespace client {
   }
 
   /**
-   * @brief Send a player shoot action to the server at the specified world
-   * coordinates.
+   * @brief Send a player shoot action to the server at the specified world coordinates.
    *
-   * If the local player ID is not assigned, this function does nothing.
-   * On success, the function builds and transmits a PlayerShootPacket, records
-   * the serialized packet as unacknowledged for potential retransmission, and
-   * advances the client's outgoing sequence number.
+   * If the local player ID is not assigned, the function returns without sending.
    *
    * @param x World-space X coordinate where the player is shooting.
    * @param y World-space Y coordinate where the player is shooting.
@@ -468,12 +458,10 @@ namespace client {
   }
 
   /**
-   * @brief Remove the tracked unacknowledged packet with the given sequence
-   * number.
+   * @brief Remove the unacknowledged packet entry for a given sequence number.
    *
-   * Removes the entry for the acknowledged packet from the client's
-   * unacknowledged packet store. If no entry exists for the provided sequence
-   * number, a warning is logged and no change is made.
+   * Erases the stored unacknowledged packet identified by @p sequence_number.
+   * If no entry exists for that sequence number, the function has no effect.
    *
    * @param sequence_number Sequence number of the packet to remove.
    */
@@ -485,21 +473,14 @@ namespace client {
   }
 
   /**
-   * @brief Retries sending packets that have not been acknowledged.
+   * @brief Resends unacknowledged packets that are eligible for retransmission.
    *
-   * Scans the client's unacknowledged packet table and resends any packet whose
-   * last send time is older than the minimum resend interval. Each resend
-   * increments the packet's resend count and updates its last-sent timestamp.
-   * Packets that reach the maximum resend attempts (5) are removed and will not
-   * be retried.
+   * Scans the client's unacknowledged-packet table and resends entries whose last-sent time is older than the minimum resend interval.
+   * Each resent entry has its `resend_count` incremented and `last_sent` updated. Entries that reach `MAX_RESEND_ATTEMPTS` are removed and will not be retried.
    *
    * @details
-   * - Resend interval: 500 milliseconds.
-   * - Maximum resend attempts: 5.
-   * - Side effects:
-   *   - Sends packet data via the client's network manager.
-   *   - Updates each packet's `resend_count` and `last_sent`.
-   *   - Removes entries that exceeded the maximum resend attempts.
+   * - Resent packets are transmitted via the client's network manager.
+   * - Constants used: `MIN_RESEND_PACKET_DELAY` (minimum interval) and `MAX_RESEND_ATTEMPTS` (maximum attempts).
    */
   void Client::resendUnacknowledgedPackets() {
     const auto MIN_RESEND_INTERVAL =
@@ -563,6 +544,15 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Initiates a challenge request for the specified room and sends the corresponding packet to the server.
+   *
+   * Marks the internal challenge object as waiting for a challenge, constructs a RequestChallengePacket
+   * using the current outgoing sequence number, and sends it. If an exception occurs while building
+   * or sending the packet, the waiting flag is cleared.
+   *
+   * @param room_id ID of the room for which to request a challenge.
+   */
   void Client::sendRequestChallenge(std::uint32_t room_id) {
     try {
       _challenge.reset();
@@ -579,6 +569,18 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Sends a request to join a room on the server using the provided credentials.
+   *
+   * The provided plaintext password is hashed with SHA-256 before being sent.
+   * If a challenge for the same room has been received, the challenge string is
+   * concatenated with the password hash and re-hashed before sending.
+   *
+   * @param room_id Identifier of the room to join.
+   * @param password Plaintext room password; it will be hashed (SHA-256) and
+   *                 combined with any pending challenge for the room prior to
+   *                 packet construction.
+   */
   void Client::sendJoinRoom(std::uint32_t room_id,
                             const std::string &password) {
     try {
@@ -599,6 +601,17 @@ namespace client {
     }
   }
 
+  /**
+   * @brief Requests creation of a game room on the server.
+   *
+   * Hashes the provided plaintext password with SHA-256, builds a CreateRoom packet
+   * (max players fixed to 4) using the client's current outgoing sequence number,
+   * and sends it to the server. Exceptions during packet construction or sending
+   * are caught and logged.
+   *
+   * @param room_name Name of the room to create.
+   * @param password Plaintext password for the room; will be hashed with SHA-256 before sending.
+   */
   void Client::createRoom(const std::string &room_name,
                           const std::string &password) {
     try {
@@ -612,13 +625,11 @@ namespace client {
   }
 
   /**
-   * Sends a chat message from the local player to the server.
+   * @brief Sends a chat message from the local player to the server.
    *
-   * If the local player ID is not assigned, the function logs a warning and
-   * does nothing. On failure to build or send the packet, the function logs an
-   * error.
+   * If no local player ID is assigned, the message is not sent.
    *
-   * @param message The text of the chat message to send.
+   * @param message Text of the chat message to send.
    */
   void Client::sendChatMessage(const std::string &message) {
     if (getPlayerId() == INVALID_ID) {

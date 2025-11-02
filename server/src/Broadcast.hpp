@@ -68,19 +68,20 @@ namespace broadcast {
       }
 
       /**
-       * @brief Send current connected players' state to a newly connected
-       * client.
+       * @brief Send the state of all existing connected players to a newly connected client.
        *
-       * Sends a NewPlayer packet for each existing, connected player (excluding
-       * the client identified by newPlayerID) to that newly connected client.
+       * For each player currently in the game (excluding the provided `client`), constructs
+       * a NewPlayer packet, serializes it, stores the serialized packet in the client's
+       * unacknowledged-packet map using the current sequence number, sends the packet to
+       * the client via the network manager, and increments the game's sequence number.
        *
-       * @param networkManager Server network manager used to send packets.
-       * @param game Source of current player state.
-       * @param newPlayerID ID of the newly connected client that should receive
-       * the player data.
-       * @param roomClients List of clients in the room (provided for context;
-       * this function uses game state and does not iterate roomClients when
-       * sending).
+       * @param networkManager Server network manager used to deliver packets to clients.
+       * @param game Source of current player state and sequence number management.
+       * @param client Reference to the newly connected client that should receive the player data.
+       *               The client's `_player_id` is used to exclude it from the broadcast and
+       *               to index unacknowledged packets.
+       * @param roomClients List of clients in the room (provided for context; this function
+       *                    uses game state and does not iterate or send based on this list).
        */
       static void broadcastExistingPlayersToRoom(
           network::ServerNetworkManager &networkManager, game::Game &game,

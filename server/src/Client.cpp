@@ -30,11 +30,10 @@ void server::Client::addUnacknowledgedPacket(
 }
 
 /**
- * @brief Remove the stored unacknowledged packet with the given sequence
- * number.
+ * @brief Remove an unacknowledged packet tracked by sequence number.
  *
- * If the packet exists, it is erased from the client's unacknowledged-packet
- * map; otherwise a warning is emitted indicating the packet was not found.
+ * If an entry with the given sequence number exists it is erased; if no entry
+ * exists the call has no effect.
  *
  * @param sequence_number Sequence number of the packet to remove.
  */
@@ -47,19 +46,13 @@ void server::Client::removeAcknowledgedPacket(std::uint32_t sequence_number) {
 }
 
 /**
- * @brief Retransmits stored unacknowledged packets to the client and removes
- * packets that exceeded retry limits.
+ * @brief Retransmits unacknowledged packets to this client and drops those that exceeded retry limits.
  *
- * Iterates the client's internal unacknowledged-packet map, retransmitting each
- * packet and tracking per-sequence resend attempts. Packets whose resend
- * attempts reach the configured maximum are removed from the unacknowledged map
- * after processing.
+ * For each stored unacknowledged packet whose last send time is older than MIN_RESEND_PACKET_DELAY,
+ * increments its resend count and sends it to the client; packets whose resend count is greater than
+ * or equal to MAX_RESEND_ATTEMPTS are removed and not retransmitted.
  *
- * Notes:
- * - Resend attempts are tracked in a static map that persists across calls to
- * this function.
- * - The function uses the provided network manager to send each packet to the
- * client identified by this client's player ID.
+ * @param networkManager Server network manager used to send packets to the client.
  */
 void server::Client::resendUnacknowledgedPackets(
     network::ServerNetworkManager &networkManager) {

@@ -349,15 +349,14 @@ void ecs::CollisionSystem::handlePlayerEnemyCollision(
 /**
  * @brief Resolve a collision between a projectile and an enemy.
  *
- * Applies the projectile's damage to the enemy (no action if pointers are null
- * or projectile is of type ENEMY_BASIC), enqueues enemy hit or destroy events
- * when an event queue is present, increments the owning player's score on enemy
- * death, enqueues a projectile-destroy event when an event queue is present,
- * and always destroys the projectile in the game state.
+ * Applies the projectile's damage to the enemy and produces the resulting game effects:
+ * if the enemy's health drops to zero or below, enqueues an enemy-destroy event,
+ * destroys the enemy, and awards its score to the projectile owner; otherwise enqueues
+ * an enemy-hit event. Always destroys the projectile in the game state.
  *
- * @param projectile Projectile that collided with the enemy; ignored if null or
- * if its type is ENEMY_BASIC.
- * @param enemy Enemy hit by the projectile; ignored if null.
+ * @param projectile Projectile that collided with the enemy; ignored if `nullptr`,
+ *                   if its type is `ENEMY_BASIC`, or if it has no damage value.
+ * @param enemy Enemy hit by the projectile; ignored if `nullptr` or if it has no health value.
  */
 void ecs::CollisionSystem::handleEnemyProjectileCollision(
     std::shared_ptr<game::Projectile> projectile,
