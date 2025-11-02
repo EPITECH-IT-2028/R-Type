@@ -3,12 +3,14 @@
 [![C++](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://isocpp.org/)
 [![CMake](https://img.shields.io/badge/CMake-3.27.4%2B-green.svg)](https://cmake.org/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-lightgrey.svg)](https://github.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 📖 Overview
 
 R-Type is a modern reimplementation of the classic horizontal shoot'em up game, featuring a **networked multiplayer architecture** and a **custom game engine**. This project demonstrates advanced C++ development techniques, proper software engineering practices, and real-time networked game development.
 
 ### Key Features
+
 - 🎮 **Multiplayer Support**: Up to 4 players can fight together against the evil Bydo forces
 - 🌐 **Client-Server Architecture**: Authoritative server with multiple client support
 - 🎯 **Custom Game Engine**: Modular, extensible architecture with ECS (Entity-Component-System) design
@@ -19,6 +21,7 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **C++ Compiler**: GCC 9+ or MSVC 2019+
 - **CMake**: Version 3.27.4
 - **Package Manager**: Conan 2.0+ (recommended) or vcpkg
@@ -27,11 +30,13 @@ R-Type is a modern reimplementation of the classic horizontal shoot'em up game, 
 ### Installation
 
 1. **Repository's URL**
+
 ```bash
 https://github.com/EpitechPGE3-2025/G-CPP-500-BDX-5-1-rtype-4.git
 ```
 
 2. **Install dependencies using Conan**
+
 ```bash
 brew install conan  # macOS
 sudo apt install conan  # Ubuntu
@@ -40,23 +45,27 @@ pip install conan  # Windows (via pip)
 ```
 
 3. **Build the project**
+
 ```bash
 ./build.sh server/client # For Linux/MacOS
 ```
 
 4. **Run the server**
+
 ```bash
 ./r-type_server
 ```
 
 5. **Run the client**
+
 ```bash
-./r-type_client
+./r-type_client <name>
 ```
 
 ## 🏗️ Architecture
 
 ### Project Structure
+
 ```
 R-Type/
 ├── CMakeLists.txt                # Main CMake configuration
@@ -203,6 +212,7 @@ R-Type/
 ```
 
 ### Design Patterns
+
 - **Entity-Component-System (ECS)**: Flexible game object management
 - **Mediator Pattern**: Decoupled system communication
 - **Command Pattern**: Input handling and networking
@@ -219,6 +229,10 @@ R-Type/
 - **Lead Developer**: Nolann DUBOS
 - **Network Engineer**: Arthur Guerinault
 - **Game Designer**: Etienne LABARBE, Quentin LAPIERRE, Robin CHASSAGNE
+
+## 📚 Documentation
+
+📚 **For detailed documentation, visit our [GitHub Wiki](https://epitech-it-2028.github.io/R-Type/wiki)**
 
 ## 🙏 Acknowledgments
 

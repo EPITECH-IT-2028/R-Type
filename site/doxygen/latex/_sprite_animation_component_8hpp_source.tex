@@ -1,0 +1,30 @@
+\doxysection{Sprite\+Animation\+Component.\+hpp}
+\hypertarget{_sprite_animation_component_8hpp_source}{}\label{_sprite_animation_component_8hpp_source}\index{game\_engine/ecs/components/SpriteAnimationComponent.hpp@{game\_engine/ecs/components/SpriteAnimationComponent.hpp}}
+\mbox{\hyperlink{_sprite_animation_component_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}raylib.h"{}}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00005\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structecs_1_1_sprite_animation_component}{SpriteAnimationComponent}}\ \{}
+\DoxyCodeLine{00006\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a3d8641c12abffeab76ddaf98d60aaedf}{totalRows}}\ =\ 1;}
+\DoxyCodeLine{00007\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a0d3b5252434d74cbee9543e174892bd8}{totalColumns}}\ =\ 1;}
+\DoxyCodeLine{00008\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a05cf50d42e06c0776a9ffa3e7fe908e0}{selectedRow}}\ =\ -\/1;}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a2a7d9048d0884614d57f1ea0e9ef3ebb}{selectedColumn}}\ =\ -\/1;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a0609b9fe4ccf4747f0c6259b8616d8cd}{currentFrame}}\ =\ 0;}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a66bfa8cb45dd1156920d7a140dba9b3e}{startFrame}}\ =\ 0;}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_aecbe33a2b09ec9d09b4f74c6af69c24f}{endFrame}}\ =\ 0;}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a238a46f19a45af53824306c74f9dfa6d}{frameTime}}\ =\ 0.15f;}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a86c9887277382e874f6455dad3859297}{frameTimer}}\ =\ 0.0f;}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a52ae32095db20644fe0fa073e0deef64}{isPlaying}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a27eddc121497a023872fd05ce24359ce}{loop}}\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a7f6a4c7b1cd66ed040703e21b489166a}{neutralFrame}}\ =\ 0;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a041b322e59f8158a3b9087cdc15d63bf}{frameWidth}}\ =\ 0;}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a0378533b53697275dc265ebf2a747e76}{frameHeight}}\ =\ 0;}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structecs_1_1_sprite_animation_component_a59b12a247ac11cf849b080e70eaa555d}{isInitialized}}\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00023\ \ \ \};}
+\DoxyCodeLine{00024\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

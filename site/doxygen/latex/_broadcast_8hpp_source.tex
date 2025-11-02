@@ -1,0 +1,205 @@
+\doxysection{Broadcast.\+hpp}
+\hypertarget{_broadcast_8hpp_source}{}\label{_broadcast_8hpp_source}\index{server/src/Broadcast.hpp@{server/src/Broadcast.hpp}}
+\mbox{\hyperlink{_broadcast_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <asio.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_builder_8hpp}{PacketBuilder.hpp}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_sender_8hpp}{PacketSender.hpp}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_server_8hpp}{Server.hpp}}"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_server_network_manager_8hpp}{ServerNetworkManager.hpp}}"{}}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacebroadcast}{broadcast}}\ \{}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structbroadcast_1_1_broadcast}{Broadcast}}\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Packet,\ \textcolor{keyword}{typename}\ Pred>}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_ae0fd59426d7738a18a507120914ca856}{broadcastTo}}(}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Packet\ \&\mbox{\hyperlink{namespacepacket}{packet}},\ Pred\ pred)\ \{}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \&\mbox{\hyperlink{namespaceclient}{client}}\ :\ clients)\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{namespaceclient}{client}}\ \&\&\ \mbox{\hyperlink{namespaceclient}{client}}-\/>\_connected\ \&\&\ pred(*\mbox{\hyperlink{namespaceclient}{client}}))\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \ \ \ \ networkManager.\mbox{\hyperlink{classnetwork_1_1_server_network_manager_a28685d7d132775c6c6ca6736beb9c5b2}{sendToClient}}(\mbox{\hyperlink{namespaceclient}{client}}-\/>\_player\_id,}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}\ *\textcolor{keyword}{>}(\&\mbox{\hyperlink{namespacepacket}{packet}}),}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{namespacepacket}{packet}}));}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ Packet>}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Packet\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_ae0fd59426d7738a18a507120914ca856}{broadcastTo}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}},}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \&)\ \{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \});}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00038\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Send\ existing\ players\ to\ the\ newly\ connected\ client.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{\ \ \ \ \ \ \ *\ This\ allows\ the\ new\ client\ to\ be\ aware\ of\ all\ players\ already\ in\ the}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ \ \ \ \ \ \ *\ game.}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a993bc79554d77c2e341ddc63090288e8}{broadcastExistingPlayers}}(}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,\ \mbox{\hyperlink{classgame_1_1_game}{game::Game}}\ \&\mbox{\hyperlink{namespacegame}{game}},}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newPlayerID)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ players\ =\ \mbox{\hyperlink{namespacegame}{game}}.getAllPlayers();}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \&player\ :\ players)\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (player\ \&\&\ player-\/>isConnected()\ \&\&}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player-\/>getPlayerId()\ !=\ newPlayerID)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ std::pair<float,\ float>\ pos\ =\ player-\/>getPosition();}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ speed\ =\ player-\/>getSpeed();}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ health\ =\ player-\/>getHealth().value\_or(0);}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ existPlayerPacket\ =\ \mbox{\hyperlink{struct_packet_builder_ada2ad0174d694295c33b2d6fbe6d3a4b}{PacketBuilder::makeNewPlayer}}(}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player-\/>getPlayerId(),\ pos.first,\ pos.second,\ speed,\ health);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ networkManager.\mbox{\hyperlink{classnetwork_1_1_server_network_manager_a28685d7d132775c6c6ca6736beb9c5b2}{sendToClient}}(}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newPlayerID,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }\textcolor{keywordtype}{char}\ *\textcolor{keyword}{>}(\&existPlayerPacket),}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{sizeof}(existPlayerPacket));}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00064\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ newly\ connected\ player\ to\ all\ other\ connected}}
+\DoxyCodeLine{00065\ \textcolor{comment}{\ \ \ \ \ \ \ *\ clients.}}
+\DoxyCodeLine{00066\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a78ec0d5ec641e6850d8fb017abd71a13}{broadcastAncientPlayer}}(}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_new_player_packet}{NewPlayerPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_ae0fd59426d7738a18a507120914ca856}{broadcastTo}}(}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}},\ [\&\mbox{\hyperlink{namespacepacket}{packet}}](\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ \&\mbox{\hyperlink{namespaceclient}{client}})\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceclient}{client}}.\_player\_id\ !=\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\mbox{\hyperlink{namespacepacket}{packet}}.player\_id);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00078\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ player\ movement\ to\ all\ other\ connected\ clients.}}
+\DoxyCodeLine{00079\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_aa51b28657481042fd680f6290f304754}{broadcastPlayerMove}}(}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_move_packet}{MovePacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00088\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ player\ shoot\ to\ all\ other\ connected\ clients.}}
+\DoxyCodeLine{00089\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a96a4b90ca02cfe3a6e7206f7c16a15de}{broadcastPlayerShoot}}(}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_player_shoot_packet}{PlayerShootPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00098\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ enemy\ spawned\ to\ all\ connected\ clients.}}
+\DoxyCodeLine{00099\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_abc4ddaca4519770d7875b8d88cc94ba0}{broadcastEnemySpawn}}(}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_enemy_spawn_packet}{EnemySpawnPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00108\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ enemy\ moved\ to\ all\ connected\ clients.}}
+\DoxyCodeLine{00109\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a141733a66740fba6541eb48577554f45}{broadcastEnemyMove}}(}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_enemy_move_packet}{EnemyMovePacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_ac44618d52aa5543b8723917663b0fd78}{broadcastEnemyDeath}}(}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_enemy_death_packet}{EnemyDeathPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a2e2377c28bc7ead13e57a936b0080e17}{broadcastEnemyHit}}(}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_enemy_hit_packet}{EnemyHitPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00146\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ projectile\ spawned\ to\ all\ connected\ clients.}}
+\DoxyCodeLine{00147\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a42c37f808914c6d5d829c58421db13dd}{broadcastProjectileSpawn}}(}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_projectile_spawn_packet}{ProjectileSpawnPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00156\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ projectile\ hit\ to\ all\ connected\ clients.}}
+\DoxyCodeLine{00157\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_af276b38fc6b21cb21c8ee2df69b0d646}{broadcastProjectileHit}}(}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_projectile_hit_packet}{ProjectileHitPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00166\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ projectile\ destroyed\ to\ all\ connected\ clients.}}
+\DoxyCodeLine{00167\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a615aa85f95490a4432241c0d2083ac22}{broadcastProjectileDestroy}}(}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_projectile_destroy_packet}{ProjectileDestroyPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00176\ \textcolor{comment}{\ \ \ \ \ \ \ *\ Broadcast\ the\ game\ start\ to\ all\ connected\ clients.}}
+\DoxyCodeLine{00177\ \textcolor{comment}{\ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a0a71b4be0dcfaf9636d7635ef4d41e39}{broadcastGameStart}}(}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_game_start_packet}{GameStartPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a2220ba6be7247c72c28548947c9569ff}{broadcastGameEnd}}(}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_game_end_packet}{GameEndPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_aca7bf6d313b45ae25dd66ce457dcd634}{broadcastPlayerDeath}}(}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_player_death_packet}{PlayerDeathPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a0d4ee723b36ee1a5ec63d6a21fdff717}{broadcastPlayerHit}}(}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_player_hit_packet}{PlayerHitPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a85538c8073a41457be9c0ee461546764}{broadcastPlayerDisconnect}}(}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network::ServerNetworkManager}}\ \&networkManager,}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::shared\_ptr<server::Client>>\ \&clients,}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \mbox{\hyperlink{struct_player_disconnect_packet}{PlayerDisconnectPacket}}\ \&\mbox{\hyperlink{namespacepacket}{packet}})\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcastToAll}}(networkManager,\ clients,\ \mbox{\hyperlink{namespacepacket}{packet}});}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00241\ \ \ \};}
+\DoxyCodeLine{00242\ \}\ \ \textcolor{comment}{//\ namespace\ broadcast}}
+
+\end{DoxyCode}

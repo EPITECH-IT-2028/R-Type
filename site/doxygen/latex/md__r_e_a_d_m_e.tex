@@ -1,0 +1,155 @@
+\chapter{R-\/\+Type -\/ A Game Engine That Roars! 🚀 }
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{R-\/Type -\/ A Game Engine That Roars"! 🚀@{R-\/Type -\/ A Game Engine That Roars"! 🚀}}
+\label{md__r_e_a_d_m_e_autotoc_md108}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md108}%
+
+
+\href{https://isocpp.org/}{\texttt{}} \href{https://cmake.org/}{\texttt{}} \href{https://github.com/}{\texttt{}}\hypertarget{md__r_e_a_d_m_e_autotoc_md109}{}\doxysection{\texorpdfstring{📖 Overview}{📖 Overview}}\label{md__r_e_a_d_m_e_autotoc_md109}
+R-\/\+Type is a modern reimplementation of the classic horizontal shoot\textquotesingle{}em up game, featuring a {\bfseries{networked multiplayer architecture}} and a {\bfseries{custom game engine}}. This project demonstrates advanced C++ development techniques, proper software engineering practices, and real-\/time networked game development.\hypertarget{md__r_e_a_d_m_e_autotoc_md110}{}\doxysubsection{\texorpdfstring{Key Features}{Key Features}}\label{md__r_e_a_d_m_e_autotoc_md110}
+
+\begin{DoxyItemize}
+\item 🎮 {\bfseries{Multiplayer Support}}\+: Up to 4 players can fight together against the evil Bydo forces
+\item 🌐 {\bfseries{Client-\/\+Server Architecture}}\+: Authoritative server with multiple client support
+\item 🎯 {\bfseries{Custom Game Engine}}\+: Modular, extensible architecture with ECS (Entity-\/\+Component-\/\+System) design
+\item 🔧 {\bfseries{Cross-\/\+Platform}}\+: Runs on both Linux and Windows
+\item 📡 {\bfseries{UDP Networking}}\+: Fast, real-\/time communication with custom binary protocol
+\item 🎨 {\bfseries{Raylib Graphics}}\+: Smooth rendering with particle effects and animations
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md111}{}\doxysection{\texorpdfstring{🚀 Quick Start}{🚀 Quick Start}}\label{md__r_e_a_d_m_e_autotoc_md111}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md112}{}\doxysubsection{\texorpdfstring{Prerequisites}{Prerequisites}}\label{md__r_e_a_d_m_e_autotoc_md112}
+
+\begin{DoxyItemize}
+\item {\bfseries{C++ Compiler}}\+: GCC 9+ or MSVC 2019+
+\item {\bfseries{CMake}}\+: Version 3.\+27.\+4
+\item {\bfseries{Package Manager}}\+: Conan 2.\+0+ (recommended) or vcpkg
+\item {\bfseries{Git}}\+: For version control
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md113}{}\doxysubsection{\texorpdfstring{Installation}{Installation}}\label{md__r_e_a_d_m_e_autotoc_md113}
+
+\begin{DoxyEnumerate}
+\item {\bfseries{Repository\textquotesingle{}s URL}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{https://github.com/EpitechPGE3-\/2025/G-\/CPP-\/500-\/BDX-\/5-\/1-\/rtype-\/4.git}
+
+\end{DoxyCode}
+
+\item {\bfseries{Install dependencies using Conan}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{brew\ install\ conan\ \ \#\ macOS}
+\DoxyCodeLine{sudo\ apt\ install\ conan\ \ \#\ Ubuntu}
+\DoxyCodeLine{sudo\ dnf\ install\ conan\ \ \#\ Fedora}
+\DoxyCodeLine{pip\ install\ conan\ \ \#\ Windows\ (via\ pip)}
+
+\end{DoxyCode}
+
+\item {\bfseries{Build the project}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./build.sh\ server/client\ \#\ For\ Linux/MacOS}
+
+\end{DoxyCode}
+
+\item {\bfseries{Run the server}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./r-\/type\_server}
+
+\end{DoxyCode}
+
+\item {\bfseries{Run the client}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{./r-\/type\_client}
+
+\end{DoxyCode}
+
+\end{DoxyEnumerate}\hypertarget{md__r_e_a_d_m_e_autotoc_md114}{}\doxysection{\texorpdfstring{🏗️ Architecture}{🏗️ Architecture}}\label{md__r_e_a_d_m_e_autotoc_md114}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md115}{}\doxysubsection{\texorpdfstring{Project Structure}{Project Structure}}\label{md__r_e_a_d_m_e_autotoc_md115}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{R-\/Type/}
+\DoxyCodeLine{├──\ CMakeLists.txt\ \ \ \ \ \ \ \ \ \#\ Main\ CMake\ configuration}
+\DoxyCodeLine{├──\ CMakeUserPresets.json\ \ \#\ CMake\ presets\ for\ builds}
+\DoxyCodeLine{├──\ conanfile.txt\ \ \ \ \ \ \ \ \ \ \#\ Conan\ dependencies\ (Raylib,\ ASIO)}
+\DoxyCodeLine{├──\ build.sh\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Build\ script\ for\ server\ and\ client}
+\DoxyCodeLine{├──\ README\_BUILD.md\ \ \ \ \ \ \ \ \#\ Detailed\ build\ instructions}
+\DoxyCodeLine{├──\ compile\_commands.json\ \ \#\ Compilation\ database\ for\ IDEs}
+\DoxyCodeLine{│}
+\DoxyCodeLine{├──\ client/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Client\ implementation}
+\DoxyCodeLine{│\ \ \ ├──\ CMakeLists.txt}
+\DoxyCodeLine{│\ \ \ └──\ main.cpp\ \ \ \ \ \ \ \ \ \ \ \#\ Raylib-\/based\ client\ entry\ point}
+\DoxyCodeLine{│}
+\DoxyCodeLine{├──\ core/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Shared\ core\ modules}
+\DoxyCodeLine{│\ \ \ └──\ network/\ \ \ \ \ \ \ \ \ \ \ \#\ Network\ protocol\ definitions}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ Packet.hpp\ \ \ \ \ \#\ Packet\ types\ and\ enums}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ PacketBuilder.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ └──\ PacketSender.hpp}
+\DoxyCodeLine{│}
+\DoxyCodeLine{├──\ game\_engine/\ \ \ \ \ \ \ \ \ \ \ \#\ Custom\ ECS\ game\ engine}
+\DoxyCodeLine{│\ \ \ └──\ ecs/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Entity-\/Component-\/System}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ Component.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ ComponentManager.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ ECSManager.hpp\ \#\ Main\ ECS\ coordinator}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ EntityManager.cpp/hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ System.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ SystemManager.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ ├──\ components/\ \ \ \ \#\ Game\ components}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├──\ HealthComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├──\ PlayerComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├──\ PositionComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ ├──\ SpeedComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ │\ \ \ └──\ VelocityComponent.hpp}
+\DoxyCodeLine{│\ \ \ \ \ \ \ └──\ systems/\ \ \ \ \ \ \ \#\ Game\ systems\ (to\ be\ implemented)}
+\DoxyCodeLine{│}
+\DoxyCodeLine{└──\ server/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Server\ implementation}
+\DoxyCodeLine{\ \ \ \ ├──\ CMakeLists.txt}
+\DoxyCodeLine{\ \ \ \ ├──\ server.properties\ \ \#\ Server\ configuration\ file}
+\DoxyCodeLine{\ \ \ \ ├──\ src/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Server\ source\ code}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ main.cpp\ \ \ \ \ \ \ \#\ Server\ entry\ point\ with\ ASIO}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ Server.cpp/hpp\ \#\ Main\ server\ class}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ Parser.cpp/hpp\ \#\ Config\ file\ parser}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ Help.cpp/hpp\ \ \ \#\ Help\ system}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ Broadcast.hpp\ \ \#\ Network\ broadcasting\ utilities}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ Macros.hpp\ \ \ \ \ \#\ Common\ macros}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ errors/\ \ \ \ \ \ \ \ \#\ Error\ handling}
+\DoxyCodeLine{\ \ \ \ │\ \ \ │\ \ \ └──\ ParamsError.hpp}
+\DoxyCodeLine{\ \ \ \ │\ \ \ ├──\ game/\ \ \ \ \ \ \ \ \ \ \#\ Game\ logic}
+\DoxyCodeLine{\ \ \ \ │\ \ \ │\ \ \ ├──\ Game.cpp/hpp}
+\DoxyCodeLine{\ \ \ \ │\ \ \ │\ \ \ └──\ Player.cpp/hpp}
+\DoxyCodeLine{\ \ \ \ │\ \ \ └──\ packets/\ \ \ \ \ \ \ \#\ Network\ packet\ handling}
+\DoxyCodeLine{\ \ \ \ │\ \ \ \ \ \ \ ├──\ APacket.hpp}
+\DoxyCodeLine{\ \ \ \ │\ \ \ \ \ \ \ ├──\ IPacket.hpp}
+\DoxyCodeLine{\ \ \ \ │\ \ \ \ \ \ \ ├──\ PacketFactory.cpp/hpp}
+\DoxyCodeLine{\ \ \ \ │\ \ \ \ \ \ \ └──\ PacketHandler.cpp/hpp}
+\DoxyCodeLine{\ \ \ \ └──\ tests/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ Server\ unit\ tests}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ ├──\ test\_server.cpp}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ └──\ html/\ \ \ \ \ \ \ \ \ \ \#\ Test\ coverage\ reports}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md116}{}\doxysubsection{\texorpdfstring{Design Patterns}{Design Patterns}}\label{md__r_e_a_d_m_e_autotoc_md116}
+
+\begin{DoxyItemize}
+\item {\bfseries{Entity-\/\+Component-\/\+System (ECS)}}\+: Flexible game object management
+\item {\bfseries{Mediator Pattern}}\+: Decoupled system communication
+\item {\bfseries{Command Pattern}}\+: Input handling and networking
+\item {\bfseries{Observer Pattern}}\+: Event system
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md117}{}\doxysection{\texorpdfstring{📦 Dependencies}{📦 Dependencies}}\label{md__r_e_a_d_m_e_autotoc_md117}
+
+\begin{DoxyItemize}
+\item {\bfseries{Raylib}} (5.\+5)\+: Graphics, Audio, Window management
+\item {\bfseries{Asio}} (1.\+29.\+0)\+: Networking
+\item {\bfseries{GTest}} (1.\+17.\+0)\+: Testing framework
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md118}{}\doxysection{\texorpdfstring{👥 Team}{👥 Team}}\label{md__r_e_a_d_m_e_autotoc_md118}
+
+\begin{DoxyItemize}
+\item {\bfseries{Lead Developer}}\+: Nolann DUBOS
+\item {\bfseries{Network Engineer}}\+: Arthur Guerinault
+\item {\bfseries{Game Designer}}\+: Etienne LABARBE, Quentin LAPIERRE, Robin CHASSAGNE
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md119}{}\doxysection{\texorpdfstring{🙏 Acknowledgments}{🙏 Acknowledgments}}\label{md__r_e_a_d_m_e_autotoc_md119}
+
+\begin{DoxyItemize}
+\item Original R-\/\+Type by Irem
+\item Raylib community
+\item Modern C++ community
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+
+
+ {\bfseries{R-\/\+Type -\/ A Game Engine That Roars!}}~\newline
+ Made with ❤️ and C++  

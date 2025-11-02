@@ -1,0 +1,73 @@
+\doxysection{Position\+Packet Struct Reference}
+\hypertarget{struct_position_packet}{}\label{struct_position_packet}\index{PositionPacket@{PositionPacket}}
+
+
+Sends the client\textquotesingle{}s current position with an ordering sequence number.  
+
+
+
+
+{\ttfamily \#include $<$Packet.\+hpp$>$}
+
+
+
+Collaboration diagram for Position\+Packet\+:
+% FIG 0
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} \mbox{\hyperlink{struct_position_packet_ab5e80dbb72f4f6b35726173b69e3c807}{header}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{struct_position_packet_a4a1386bc1f399d5d355b0ecef6ecdb4c}{sequence\+\_\+number}}
+\item 
+float \mbox{\hyperlink{struct_position_packet_a0f5641b5bf7042800900f8fe0f82c836}{x}}
+\item 
+float \mbox{\hyperlink{struct_position_packet_a35a76679ab35a49d5d3a8598bed178e7}{y}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Sends the client\textquotesingle{}s current position with an ordering sequence number. 
+
+Packet used by the client to report its position to the server. From server to client.
+
+Fields\+:
+\begin{DoxyItemize}
+\item header\+: Common packet header identifying the packet type and payload size.
+\item sequence\+\_\+number\+: Client-\/side sequence number for ordering position updates.
+\item x\+: X coordinate of the player\textquotesingle{}s position.
+\item y\+: Y coordinate of the player\textquotesingle{}s position. 
+\end{DoxyItemize}
+
+\label{doc-variable-members}
+\Hypertarget{struct_position_packet_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_position_packet_ab5e80dbb72f4f6b35726173b69e3c807}\index{PositionPacket@{PositionPacket}!header@{header}}
+\index{header@{header}!PositionPacket@{PositionPacket}}
+\doxysubsubsection{\texorpdfstring{header}{header}}
+{\footnotesize\ttfamily \label{struct_position_packet_ab5e80dbb72f4f6b35726173b69e3c807} 
+\mbox{\hyperlink{struct_packet_header}{Packet\+Header}} Position\+Packet\+::header}
+
+\Hypertarget{struct_position_packet_a4a1386bc1f399d5d355b0ecef6ecdb4c}\index{PositionPacket@{PositionPacket}!sequence\_number@{sequence\_number}}
+\index{sequence\_number@{sequence\_number}!PositionPacket@{PositionPacket}}
+\doxysubsubsection{\texorpdfstring{sequence\_number}{sequence\_number}}
+{\footnotesize\ttfamily \label{struct_position_packet_a4a1386bc1f399d5d355b0ecef6ecdb4c} 
+uint32\+\_\+t Position\+Packet\+::sequence\+\_\+number}
+
+\Hypertarget{struct_position_packet_a0f5641b5bf7042800900f8fe0f82c836}\index{PositionPacket@{PositionPacket}!x@{x}}
+\index{x@{x}!PositionPacket@{PositionPacket}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{struct_position_packet_a0f5641b5bf7042800900f8fe0f82c836} 
+float Position\+Packet\+::x}
+
+\Hypertarget{struct_position_packet_a35a76679ab35a49d5d3a8598bed178e7}\index{PositionPacket@{PositionPacket}!y@{y}}
+\index{y@{y}!PositionPacket@{PositionPacket}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{struct_position_packet_a35a76679ab35a49d5d3a8598bed178e7} 
+float Position\+Packet\+::y}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/network/\mbox{\hyperlink{_packet_8hpp}{Packet.\+hpp}}\end{DoxyCompactItemize}

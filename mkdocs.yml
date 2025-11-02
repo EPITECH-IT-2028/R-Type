@@ -1,0 +1,32 @@
+site_name: R-Type Documentation
+site_url: https://epitech-it-2028.github.io/R-Type/
+repo_url: https://github.com/EPITECH-IT-2028/R-Type
+repo_name: EPITECH-IT-2028/R-Type
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting Started: docs/wiki/GettingStarted.md
+  - Game Engine & ECS: docs/wiki/GameEngineECS.md
+  - Networking: docs/wiki/Networking.md
+  - Asset Management: docs/wiki/AssetManagement.md
+  - Project Structure: docs/wiki/ProjectStructure.md
+  - Contribution Guidelines: docs/wiki/ContributionGuidelines.md
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - admonition
+  - pymdownx.details

@@ -1,0 +1,21 @@
+\doxysection{System.\+hpp}
+\hypertarget{_system_8hpp_source}{}\label{_system_8hpp_source}\index{game\_engine/ecs/System.hpp@{game\_engine/ecs/System.hpp}}
+\mbox{\hyperlink{_system_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <set>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_entity_manager_8hpp}{EntityManager.hpp}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceecs}{ecs}}\ \{}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classecs_1_1_system}{System}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ std::set<Entity>\ \mbox{\hyperlink{classecs_1_1_system_aac90f58f0dc1a58487ae1b35a84087a6}{\_entities}};}
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{classecs_1_1_system_ab0ae8f1804130e3b8cfa2bbe2b0c5e6b}{\string~System}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classecs_1_1_system_a84b6aff0b9dd3932497b4c0dca03fa35}{update}}(\textcolor{keywordtype}{float}\ deltaTime)\ =\ 0;}
+\DoxyCodeLine{00013\ \ \ \};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \}\ \ \textcolor{comment}{//\ namespace\ ecs}}
+
+\end{DoxyCode}

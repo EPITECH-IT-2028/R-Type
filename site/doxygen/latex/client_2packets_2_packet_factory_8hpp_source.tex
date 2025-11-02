@@ -1,0 +1,51 @@
+\doxysection{Packet\+Factory.\+hpp}
+\hypertarget{client_2packets_2_packet_factory_8hpp_source}{}\label{client_2packets_2_packet_factory_8hpp_source}\index{client/packets/PacketFactory.hpp@{client/packets/PacketFactory.hpp}}
+\mbox{\hyperlink{client_2packets_2_packet_factory_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{client_2packets_2_i_packet_8hpp}{IPacket.hpp}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{_packet_8hpp}{Packet.hpp}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{client_2packets_2_packet_handler_8hpp}{PacketHandler.hpp}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespacepacket}{packet}}\ \{}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{class\ }\mbox{\hyperlink{classpacket_1_1_packet_handler_factory_a6a9e7787d2abb3ab3929da0a7e633c8e}{PacketHandlerFactory}}\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory_a6a9e7787d2abb3ab3929da0a7e633c8e}{PacketHandlerFactory}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory_ac19a49c412acaa94b9ace148ccc70702}{\string~PacketHandlerFactory}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \ \ std::unique\_ptr<IPacket>\ \mbox{\hyperlink{classpacket_1_1_packet_handler_factory_a192c47973ebd1c6a10994ed6e9b58343}{createHandler}}(\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}}\ packetType);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56}{PacketType}},\ std::function<std::unique\_ptr<IPacket>()>>}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ \_handlers\ =\ \{\{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a4c2a8fe7eaf24721cc7a9f0175115bd4}{PacketType::Message}},}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<MessageHandler>();\ \}\},}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a65c14868cc18149420b814afda8c7f7b}{PacketType::EnemySpawn}},}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<EnemySpawnHandler>();\ \}\},}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a16164d21abaa91f4ff410c8ebab62f1d}{PacketType::ProjectileSpawn}},}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<ProjectileSpawnHandler>();\ \}\},}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56acbda45001b65945889cb6008e0120a70}{PacketType::ProjectileHit}},}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<ProjectileHitHandler>();\ \}\},}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56aea51190bde5a3322efb2a4c930c6ad2f}{PacketType::ProjectileDestroy}},}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<ProjectileDestroyHandler>();\ \}\},}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a31435ad802459589a67356c4eb44ee2f}{PacketType::NewPlayer}},}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<NewPlayerHandler>();\ \}\},}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56ab9fbac179f1be377fe125f9deb1a4ba9}{PacketType::PlayerDeath}},}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PlayerDeathHandler>();\ \}\},}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a78db3e53d43113e30abdd5c64a50c783}{PacketType::PlayerDisconnected}},}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PlayerDisconnectedHandler>();\ \}\},}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a6bc362dbf494c61ea117fe3c71ca48a5}{PacketType::Move}},}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<PlayerMoveHandler>();\ \}\},}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a3416d24e823fac0dd40533d0e5d605d4}{PacketType::EnemyMove}},}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<EnemyMoveHandler>();\ \}\},}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\mbox{\hyperlink{_packet_8hpp_a0628f13bcd4685c7a4b4a9f1aad83b56a7b2326581ee310ab3d18c910f260f42c}{PacketType::EnemyDeath}},}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ []()\ \{\ \textcolor{keywordflow}{return}\ std::make\_unique<EnemyDeathHandler>();\ \}\}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \};}
+\DoxyCodeLine{00045\ \}\ \ \textcolor{comment}{//\ namespace\ packet}}
+
+\end{DoxyCode}

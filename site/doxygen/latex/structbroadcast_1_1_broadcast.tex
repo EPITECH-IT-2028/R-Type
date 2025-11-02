@@ -1,0 +1,231 @@
+\doxysection{broadcast\+::Broadcast Struct Reference}
+\hypertarget{structbroadcast_1_1_broadcast}{}\label{structbroadcast_1_1_broadcast}\index{broadcast::Broadcast@{broadcast::Broadcast}}
+
+
+{\ttfamily \#include $<$Broadcast.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Packet, typename Pred$>$ }\\static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_ae0fd59426d7738a18a507120914ca856}{broadcast\+To}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const Packet \&packet, Pred pred)
+\item 
+{\footnotesize template$<$typename Packet$>$ }\\static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}{broadcast\+To\+All}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const Packet \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a993bc79554d77c2e341ddc63090288e8}{broadcast\+Existing\+Players}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, \mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \&game, int new\+Player\+ID)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a78ec0d5ec641e6850d8fb017abd71a13}{broadcast\+Ancient\+Player}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_aa51b28657481042fd680f6290f304754}{broadcast\+Player\+Move}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_move_packet}{Move\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a96a4b90ca02cfe3a6e7206f7c16a15de}{broadcast\+Player\+Shoot}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_player_shoot_packet}{Player\+Shoot\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_abc4ddaca4519770d7875b8d88cc94ba0}{broadcast\+Enemy\+Spawn}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a141733a66740fba6541eb48577554f45}{broadcast\+Enemy\+Move}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_enemy_move_packet}{Enemy\+Move\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_ac44618d52aa5543b8723917663b0fd78}{broadcast\+Enemy\+Death}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_enemy_death_packet}{Enemy\+Death\+Packet}} \&packet)
+\begin{DoxyCompactList}\small\item\em Broadcasts an \doxylink{struct_enemy_death_packet}{Enemy\+Death\+Packet} to every connected client. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a2e2377c28bc7ead13e57a936b0080e17}{broadcast\+Enemy\+Hit}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_enemy_hit_packet}{Enemy\+Hit\+Packet}} \&packet)
+\begin{DoxyCompactList}\small\item\em Notifies all connected clients that an enemy was hit. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a42c37f808914c6d5d829c58421db13dd}{broadcast\+Projectile\+Spawn}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_projectile_spawn_packet}{Projectile\+Spawn\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_af276b38fc6b21cb21c8ee2df69b0d646}{broadcast\+Projectile\+Hit}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_projectile_hit_packet}{Projectile\+Hit\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a615aa85f95490a4432241c0d2083ac22}{broadcast\+Projectile\+Destroy}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_projectile_destroy_packet}{Projectile\+Destroy\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a0a71b4be0dcfaf9636d7635ef4d41e39}{broadcast\+Game\+Start}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_game_start_packet}{Game\+Start\+Packet}} \&packet)
+\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a2220ba6be7247c72c28548947c9569ff}{broadcast\+Game\+End}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_game_end_packet}{Game\+End\+Packet}} \&packet)
+\begin{DoxyCompactList}\small\item\em Broadcasts a \doxylink{struct_game_end_packet}{Game\+End\+Packet} to all connected clients. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_aca7bf6d313b45ae25dd66ce457dcd634}{broadcast\+Player\+Death}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_player_death_packet}{Player\+Death\+Packet}} \&packet)
+\begin{DoxyCompactList}\small\item\em \doxylink{structbroadcast_1_1_broadcast}{Broadcast} a player-\/death event to all connected clients. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a0d4ee723b36ee1a5ec63d6a21fdff717}{broadcast\+Player\+Hit}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_player_hit_packet}{Player\+Hit\+Packet}} \&packet)
+\begin{DoxyCompactList}\small\item\em Broadcasts a player-\/hit event to all connected clients. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{structbroadcast_1_1_broadcast_a85538c8073a41457be9c0ee461546764}{broadcast\+Player\+Disconnect}} (\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&network\+Manager, const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&clients, const \mbox{\hyperlink{struct_player_disconnect_packet}{Player\+Disconnect\+Packet}} \&packet)
+\begin{DoxyCompactList}\small\item\em Broadcasts a player disconnect event to all connected clients. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{structbroadcast_1_1_broadcast_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structbroadcast_1_1_broadcast_a78ec0d5ec641e6850d8fb017abd71a13}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastAncientPlayer@{broadcastAncientPlayer}}
+\index{broadcastAncientPlayer@{broadcastAncientPlayer}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastAncientPlayer()}{broadcastAncientPlayer()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a78ec0d5ec641e6850d8fb017abd71a13} 
+void broadcast\+::\+Broadcast\+::broadcast\+Ancient\+Player (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_new_player_packet}{New\+Player\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_ac44618d52aa5543b8723917663b0fd78}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastEnemyDeath@{broadcastEnemyDeath}}
+\index{broadcastEnemyDeath@{broadcastEnemyDeath}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastEnemyDeath()}{broadcastEnemyDeath()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_ac44618d52aa5543b8723917663b0fd78} 
+void broadcast\+::\+Broadcast\+::broadcast\+Enemy\+Death (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_enemy_death_packet}{Enemy\+Death\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Broadcasts an \doxylink{struct_enemy_death_packet}{Enemy\+Death\+Packet} to every connected client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em socket} & UDP socket used to send the packet. \\
+\hline
+{\em clients} & Collection of client shared pointers; only clients that are connected will receive the packet. \\
+\hline
+{\em packet} & Enemy death event packet to send to clients. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structbroadcast_1_1_broadcast_a2e2377c28bc7ead13e57a936b0080e17}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastEnemyHit@{broadcastEnemyHit}}
+\index{broadcastEnemyHit@{broadcastEnemyHit}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastEnemyHit()}{broadcastEnemyHit()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a2e2377c28bc7ead13e57a936b0080e17} 
+void broadcast\+::\+Broadcast\+::broadcast\+Enemy\+Hit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_enemy_hit_packet}{Enemy\+Hit\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Notifies all connected clients that an enemy was hit. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Packet describing which enemy was hit and associated hit data. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structbroadcast_1_1_broadcast_a141733a66740fba6541eb48577554f45}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastEnemyMove@{broadcastEnemyMove}}
+\index{broadcastEnemyMove@{broadcastEnemyMove}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastEnemyMove()}{broadcastEnemyMove()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a141733a66740fba6541eb48577554f45} 
+void broadcast\+::\+Broadcast\+::broadcast\+Enemy\+Move (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_enemy_move_packet}{Enemy\+Move\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_abc4ddaca4519770d7875b8d88cc94ba0}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastEnemySpawn@{broadcastEnemySpawn}}
+\index{broadcastEnemySpawn@{broadcastEnemySpawn}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastEnemySpawn()}{broadcastEnemySpawn()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_abc4ddaca4519770d7875b8d88cc94ba0} 
+void broadcast\+::\+Broadcast\+::broadcast\+Enemy\+Spawn (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_enemy_spawn_packet}{Enemy\+Spawn\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_a993bc79554d77c2e341ddc63090288e8}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastExistingPlayers@{broadcastExistingPlayers}}
+\index{broadcastExistingPlayers@{broadcastExistingPlayers}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastExistingPlayers()}{broadcastExistingPlayers()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a993bc79554d77c2e341ddc63090288e8} 
+void broadcast\+::\+Broadcast\+::broadcast\+Existing\+Players (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{\mbox{\hyperlink{classgame_1_1_game}{game\+::\+Game}} \&}]{game}{, }\item[{int}]{new\+Player\+ID}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_a2220ba6be7247c72c28548947c9569ff}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastGameEnd@{broadcastGameEnd}}
+\index{broadcastGameEnd@{broadcastGameEnd}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastGameEnd()}{broadcastGameEnd()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a2220ba6be7247c72c28548947c9569ff} 
+void broadcast\+::\+Broadcast\+::broadcast\+Game\+End (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_game_end_packet}{Game\+End\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Broadcasts a \doxylink{struct_game_end_packet}{Game\+End\+Packet} to all connected clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em socket} & UDP socket used to send the packet. \\
+\hline
+{\em clients} & Vector of client shared pointers; only non-\/null, connected clients will receive the packet. \\
+\hline
+{\em packet} & \doxylink{struct_game_end_packet}{Game\+End\+Packet} to be sent to recipients. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structbroadcast_1_1_broadcast_a0a71b4be0dcfaf9636d7635ef4d41e39}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastGameStart@{broadcastGameStart}}
+\index{broadcastGameStart@{broadcastGameStart}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastGameStart()}{broadcastGameStart()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a0a71b4be0dcfaf9636d7635ef4d41e39} 
+void broadcast\+::\+Broadcast\+::broadcast\+Game\+Start (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_game_start_packet}{Game\+Start\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_aca7bf6d313b45ae25dd66ce457dcd634}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastPlayerDeath@{broadcastPlayerDeath}}
+\index{broadcastPlayerDeath@{broadcastPlayerDeath}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastPlayerDeath()}{broadcastPlayerDeath()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_aca7bf6d313b45ae25dd66ce457dcd634} 
+void broadcast\+::\+Broadcast\+::broadcast\+Player\+Death (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_player_death_packet}{Player\+Death\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+\doxylink{structbroadcast_1_1_broadcast}{Broadcast} a player-\/death event to all connected clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Packet describing the player\textquotesingle{}s death to send to all clients. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structbroadcast_1_1_broadcast_a85538c8073a41457be9c0ee461546764}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastPlayerDisconnect@{broadcastPlayerDisconnect}}
+\index{broadcastPlayerDisconnect@{broadcastPlayerDisconnect}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastPlayerDisconnect()}{broadcastPlayerDisconnect()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a85538c8073a41457be9c0ee461546764} 
+void broadcast\+::\+Broadcast\+::broadcast\+Player\+Disconnect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_player_disconnect_packet}{Player\+Disconnect\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Broadcasts a player disconnect event to all connected clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em socket} & UDP socket used to send the packet. \\
+\hline
+{\em clients} & Vector of client shared pointers; only connected clients will be sent the packet. \\
+\hline
+{\em packet} & Packet describing the player disconnect (including the player id). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structbroadcast_1_1_broadcast_a0d4ee723b36ee1a5ec63d6a21fdff717}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastPlayerHit@{broadcastPlayerHit}}
+\index{broadcastPlayerHit@{broadcastPlayerHit}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastPlayerHit()}{broadcastPlayerHit()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a0d4ee723b36ee1a5ec63d6a21fdff717} 
+void broadcast\+::\+Broadcast\+::broadcast\+Player\+Hit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_player_hit_packet}{Player\+Hit\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Broadcasts a player-\/hit event to all connected clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & \doxylink{struct_player_hit_packet}{Player\+Hit\+Packet} containing the hit event data to send to every connected client. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structbroadcast_1_1_broadcast_aa51b28657481042fd680f6290f304754}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastPlayerMove@{broadcastPlayerMove}}
+\index{broadcastPlayerMove@{broadcastPlayerMove}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastPlayerMove()}{broadcastPlayerMove()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_aa51b28657481042fd680f6290f304754} 
+void broadcast\+::\+Broadcast\+::broadcast\+Player\+Move (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_move_packet}{Move\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_a96a4b90ca02cfe3a6e7206f7c16a15de}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastPlayerShoot@{broadcastPlayerShoot}}
+\index{broadcastPlayerShoot@{broadcastPlayerShoot}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastPlayerShoot()}{broadcastPlayerShoot()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a96a4b90ca02cfe3a6e7206f7c16a15de} 
+void broadcast\+::\+Broadcast\+::broadcast\+Player\+Shoot (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_player_shoot_packet}{Player\+Shoot\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_a615aa85f95490a4432241c0d2083ac22}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastProjectileDestroy@{broadcastProjectileDestroy}}
+\index{broadcastProjectileDestroy@{broadcastProjectileDestroy}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastProjectileDestroy()}{broadcastProjectileDestroy()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a615aa85f95490a4432241c0d2083ac22} 
+void broadcast\+::\+Broadcast\+::broadcast\+Projectile\+Destroy (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_projectile_destroy_packet}{Projectile\+Destroy\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_af276b38fc6b21cb21c8ee2df69b0d646}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastProjectileHit@{broadcastProjectileHit}}
+\index{broadcastProjectileHit@{broadcastProjectileHit}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastProjectileHit()}{broadcastProjectileHit()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_af276b38fc6b21cb21c8ee2df69b0d646} 
+void broadcast\+::\+Broadcast\+::broadcast\+Projectile\+Hit (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_projectile_hit_packet}{Projectile\+Hit\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_a42c37f808914c6d5d829c58421db13dd}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastProjectileSpawn@{broadcastProjectileSpawn}}
+\index{broadcastProjectileSpawn@{broadcastProjectileSpawn}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastProjectileSpawn()}{broadcastProjectileSpawn()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a42c37f808914c6d5d829c58421db13dd} 
+void broadcast\+::\+Broadcast\+::broadcast\+Projectile\+Spawn (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const \mbox{\hyperlink{struct_projectile_spawn_packet}{Projectile\+Spawn\+Packet}} \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_ae0fd59426d7738a18a507120914ca856}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastTo@{broadcastTo}}
+\index{broadcastTo@{broadcastTo}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastTo()}{broadcastTo()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_ae0fd59426d7738a18a507120914ca856} 
+template$<$typename Packet, typename Pred$>$ \\
+void broadcast\+::\+Broadcast\+::broadcast\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const Packet \&}]{packet}{, }\item[{Pred}]{pred}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+\Hypertarget{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201}\index{broadcast::Broadcast@{broadcast::Broadcast}!broadcastToAll@{broadcastToAll}}
+\index{broadcastToAll@{broadcastToAll}!broadcast::Broadcast@{broadcast::Broadcast}}
+\doxysubsubsection{\texorpdfstring{broadcastToAll()}{broadcastToAll()}}
+{\footnotesize\ttfamily \label{structbroadcast_1_1_broadcast_a31347d796d9dcebf848adc417d43d201} 
+template$<$typename Packet$>$ \\
+void broadcast\+::\+Broadcast\+::broadcast\+To\+All (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classnetwork_1_1_server_network_manager}{network\+::\+Server\+Network\+Manager}} \&}]{network\+Manager}{, }\item[{const std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structserver_1_1_client}{server\+::\+Client}} $>$ $>$ \&}]{clients}{, }\item[{const Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+server/src/\mbox{\hyperlink{_broadcast_8hpp}{Broadcast.\+hpp}}\end{DoxyCompactItemize}

@@ -1,0 +1,2067 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://epitech-it-2028.github.io/R-Type/server_protocol/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>R-TYPE NETWORK PROTOCOL SPECIFICATION - R-Type Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#r-type-network-protocol-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="R-Type Documentation" class="md-header__button md-logo" aria-label="R-Type Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            R-Type Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              R-TYPE NETWORK PROTOCOL SPECIFICATION
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/EPITECH-IT-2028/R-Type" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EPITECH-IT-2028/R-Type
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/GettingStarted.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/GameEngineECS.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Game Engine & ECS
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/Networking.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Networking
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/AssetManagement.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Asset Management
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/ProjectStructure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs/wiki/ContributionGuidelines.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Contribution Guidelines
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="R-Type Documentation" class="md-nav__button md-logo" aria-label="R-Type Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    R-Type Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/EPITECH-IT-2028/R-Type" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    EPITECH-IT-2028/R-Type
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/GettingStarted.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/GameEngineECS.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Game Engine & ECS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/Networking.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Networking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/AssetManagement.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Asset Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/ProjectStructure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Project Structure
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/wiki/ContributionGuidelines.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contribution Guidelines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="r-type-network-protocol-specification">R-TYPE NETWORK PROTOCOL SPECIFICATION</h1>
+<p><em>Internet-Draft — R-Type Project</em><br />
+<em>Intended status: Experimental</em><br />
+<em>November 2025</em></p>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>This document specifies the binary <strong>UDP-based</strong> network protocol used by the <strong>R-Type</strong> game server and clients.<br />
+The protocol defines message types, structure, and sequencing rules to support real-time multiplayer synchronization, combat events, room management, and game state management.</p>
+<hr />
+<h2 id="status-of-this-memo">Status of This Memo</h2>
+<p>This Internet-Draft is submitted for experimental purposes as part of the R-Type open-source project.<br />
+It does not represent a standard of the IETF.<br />
+Distribution of this memo is unlimited.</p>
+<hr />
+<h2 id="copyright-notice">Copyright Notice</h2>
+<p>Copyright © 2025 R-Type Project Authors.<br />
+All rights reserved.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-introduction">Introduction</a>  </li>
+<li><a href="#2-terminology-and-conventions">Terminology and Conventions</a>  </li>
+<li><a href="#3-protocol-overview">Protocol Overview</a>  </li>
+<li><a href="#4-message-header">Message Header</a>  </li>
+<li><a href="#5-message-types">Message Types</a>  </li>
+<li><a href="#51-common-messages">Common Messages</a>  </li>
+<li><a href="#52-client-to-server-messages">Client-to-Server Messages</a>  </li>
+<li><a href="#53-server-to-client-messages">Server-to-Client Messages</a>  </li>
+<li><a href="#54-room-management-messages">Room Management Messages</a>  </li>
+<li><a href="#55-acknowledgment-messages">Acknowledgment Messages</a>  </li>
+<li><a href="#6-data-types">Data Types</a>  </li>
+<li><a href="#7-enumeration-types">Enumeration Types</a>  </li>
+<li><a href="#8-message-semantics">Message Semantics</a>  </li>
+<li><a href="#9-example-exchange">Example Exchange</a>  </li>
+<li><a href="#10-security-considerations">Security Considerations</a>  </li>
+<li><a href="#11-future-work">Future Work</a><br />
+Appendix A. <a href="#appendix-a-packet-layouts">Packet Layouts</a><br />
+Author's Address  </li>
+</ol>
+<hr />
+<h2 id="1-introduction">1. Introduction</h2>
+<p>The <strong>R-Type Network Protocol (RTNP)</strong> defines how clients and the game server exchange structured <strong>binary messages over UDP</strong>.<br />
+It supports synchronization of player state, enemies, projectiles, combat events, room management, and matchmaking in a real-time environment.</p>
+<p>The protocol is designed for fast-paced multiplayer gameplay, using UDP for minimal latency.<br />
+Each message is self-contained and includes its own header specifying type and size.</p>
+<hr />
+<h2 id="2-terminology-and-conventions">2. Terminology and Conventions</h2>
+<p>The key words <strong>MUST</strong>, <strong>MUST NOT</strong>, <strong>REQUIRED</strong>, <strong>SHOULD</strong>, and <strong>MAY</strong> in this document are to be interpreted as described in <a href="https://datatracker.ietf.org/doc/html/rfc2119">RFC 2119</a>.</p>
+<hr />
+<h2 id="3-protocol-overview">3. Protocol Overview</h2>
+<p>Clients communicate with the game server using UDP datagrams.<br />
+Each datagram contains exactly one packet consisting of a <strong>PacketHeader</strong> followed by a <strong>payload</strong> specific to the message type.</p>
+<p>Since UDP is unreliable, clients and servers <strong>MUST</strong> implement their own sequencing and resynchronization mechanisms using the <code>sequence_number</code> field provided in several packet types. The protocol supports selective acknowledgment through ACK packets.</p>
+<p>Typical communication flow:</p>
+<ol>
+<li>The client sends a <code>PlayerInfo</code> packet to identify itself.</li>
+<li>The client requests to create or join a room via <code>CreateRoom</code>, <code>JoinRoom</code>, or <code>MatchmakingRequest</code>.</li>
+<li>The server responds with appropriate room response packets.</li>
+<li>The server sends a <code>NewPlayer</code> packet for each player in the room.</li>
+<li>Both sides exchange movement, projectile, and event packets continuously during gameplay.</li>
+<li>A <code>Heartbeat</code> packet is exchanged periodically to maintain connection state.</li>
+<li>Critical packets are acknowledged using <code>Ack</code> packets.</li>
+</ol>
+<hr />
+<h2 id="4-message-header">4. Message Header</h2>
+<p>All messages start with the following common header:
+<div class="highlight"><pre><span></span><code>0 1 2 3 4 5 6 7 8
++-----------------------------------------------------------+
+| Type (1 byte) | Size (4 bytes)                            |
++-----------------------------------------------------------+
+</code></pre></div></p>
+<p><strong>Fields:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Type</code></td>
+<td><code>uint8_t</code></td>
+<td>Packet type identifier (see <a href="#5-message-types">Message Types</a>)</td>
+</tr>
+<tr>
+<td><code>Size</code></td>
+<td><code>uint32_t</code></td>
+<td>Total size of the packet in bytes, including the header</td>
+</tr>
+</tbody>
+</table>
+<p>All packets are <strong>8-byte aligned</strong> (<code>alignas(8)</code>).</p>
+<hr />
+<h2 id="5-message-types">5. Message Types</h2>
+<p>Each packet begins with a <code>PacketHeader</code>, followed by a type-specific payload.</p>
+<h3 id="packettype-enumeration">PacketType Enumeration</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>ChatMessage</td>
+<td>Both</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>PlayerMove</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x03</code></td>
+<td>NewPlayer</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x04</code></td>
+<td>PlayerInfo</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x05</code></td>
+<td>EnemySpawn</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x06</code></td>
+<td>EnemyMove</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x07</code></td>
+<td>EnemyDeath</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x08</code></td>
+<td>PlayerShoot</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x09</code></td>
+<td>ProjectileSpawn</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x0A</code></td>
+<td>ProjectileHit</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x0B</code></td>
+<td>ProjectileDestroy</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x0C</code></td>
+<td>GameStart</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x0D</code></td>
+<td>GameEnd</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x0E</code></td>
+<td>PlayerDisconnected</td>
+<td>Both</td>
+</tr>
+<tr>
+<td><code>0x0F</code></td>
+<td>Heartbeat</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x10</code></td>
+<td>EnemyHit</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x11</code></td>
+<td>PlayerHit</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x12</code></td>
+<td>PlayerDeath</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x13</code></td>
+<td>CreateRoom</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x14</code></td>
+<td>JoinRoom</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x15</code></td>
+<td>LeaveRoom</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x16</code></td>
+<td>ListRoom</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x17</code></td>
+<td>ListRoomResponse</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x18</code></td>
+<td>MatchmakingRequest</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x19</code></td>
+<td>MatchmakingResponse</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x1A</code></td>
+<td>JoinRoomResponse</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x1B</code></td>
+<td>PlayerInput</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x1C</code></td>
+<td>Ack</td>
+<td>Both</td>
+</tr>
+<tr>
+<td><code>0x1D</code></td>
+<td>RequestChallenge</td>
+<td>Client → Server</td>
+</tr>
+<tr>
+<td><code>0x1E</code></td>
+<td>ChallengeResponse</td>
+<td>Server → Client</td>
+</tr>
+<tr>
+<td><code>0x1F</code></td>
+<td>CreateRoomResponse</td>
+<td>Server → Client</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="51-common-messages">5.1. Common Messages</h3>
+<h4 id="chatmessage-0x01">ChatMessage (0x01)</h4>
+<p>Sends a chat message with timestamp and color information.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timestamp</code></td>
+<td><code>uint32_t</code></td>
+<td>Message timestamp</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td><code>char[512]</code></td>
+<td>UTF-8 message text (max 511 bytes)</td>
+</tr>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Sender's player ID</td>
+</tr>
+<tr>
+<td><code>r</code>, <code>g</code>, <code>b</code>, <code>a</code></td>
+<td><code>uint8_t</code></td>
+<td>RGBA color values (0-255)</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="52-client-to-server-messages">5.2. Client-to-Server Messages</h3>
+<h4 id="playerinfo-0x04">PlayerInfo (0x04)</h4>
+<p>Provides the player's display name.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>char[32]</code></td>
+<td>Null-terminated UTF-8 string (max 31 bytes)</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="playershoot-0x08">PlayerShoot (0x08)</h4>
+<p>Notifies the server that the player fired a projectile.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Projectile origin</td>
+</tr>
+<tr>
+<td><code>projectile_type</code></td>
+<td><code>uint8_t</code></td>
+<td>Projectile type (e.g. PLAYER_BASIC)</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="playerhit-0x11">PlayerHit (0x11)</h4>
+<p>Reports that the player was hit.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Player identifier</td>
+</tr>
+<tr>
+<td><code>damage</code></td>
+<td><code>uint32_t</code></td>
+<td>Damage amount</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Hit position</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Sequence number for ordering</td>
+</tr>
+</tbody>
+</table>
+<h4 id="playerdisconnect-0x0e">PlayerDisconnect (0x0E)</h4>
+<p>Sent when a client disconnects gracefully.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Identifier of the disconnecting player</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="heartbeat-0x0f">Heartbeat (0x0F)</h4>
+<p>Keep-alive packet to maintain UDP connectivity.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Player identifier</td>
+</tr>
+</tbody>
+</table>
+<h4 id="playerinput-0x1b">PlayerInput (0x1B)</h4>
+<p>Sends player movement input as a bitfield.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input</code></td>
+<td><code>uint8_t</code></td>
+<td>Bitfield of MovementInputType flags</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Client-side input sequence number</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="53-server-to-client-messages">5.3. Server-to-Client Messages</h3>
+<h4 id="newplayer-0x03">NewPlayer (0x03)</h4>
+<p>Announces a new player to connected clients.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Player ID</td>
+</tr>
+<tr>
+<td><code>player_name</code></td>
+<td><code>char[32]</code></td>
+<td>Player display name (max 31 bytes)</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Spawn position</td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td><code>float</code></td>
+<td>Movement speed</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+<tr>
+<td><code>max_health</code></td>
+<td><code>uint32_t</code></td>
+<td>Max health points</td>
+</tr>
+</tbody>
+</table>
+<h4 id="playermove-0x02">PlayerMove (0x02)</h4>
+<p>Updates a player's position.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Target player ID</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Movement order number</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>New position</td>
+</tr>
+</tbody>
+</table>
+<h4 id="enemyspawn-0x05">EnemySpawn (0x05)</h4>
+<p>Spawns a new enemy entity.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enemy_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Unique enemy ID</td>
+</tr>
+<tr>
+<td><code>enemy_type</code></td>
+<td><code>uint8_t</code></td>
+<td>Enemy type (e.g. BASIC_FIGHTER)</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Spawn position</td>
+</tr>
+<tr>
+<td><code>velocity_x</code>, <code>velocity_y</code></td>
+<td><code>float</code></td>
+<td>Movement velocity</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+<tr>
+<td><code>health</code>, <code>max_health</code></td>
+<td><code>uint32_t</code></td>
+<td>Current and max health</td>
+</tr>
+</tbody>
+</table>
+<h4 id="enemymove-0x06">EnemyMove (0x06)</h4>
+<p>Updates enemy movement and position.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enemy_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Unique identifier of the enemy</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Current enemy position</td>
+</tr>
+<tr>
+<td><code>velocity_x</code>, <code>velocity_y</code></td>
+<td><code>float</code></td>
+<td>Current enemy velocity vector</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Sequence number for ordering updates</td>
+</tr>
+</tbody>
+</table>
+<h4 id="enemydeath-0x07">EnemyDeath (0x07)</h4>
+<p>Signals that an enemy was destroyed.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enemy_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Identifier of the enemy that died</td>
+</tr>
+<tr>
+<td><code>death_x</code>, <code>death_y</code></td>
+<td><code>float</code></td>
+<td>World coordinates where the death occurred</td>
+</tr>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Player who killed the enemy</td>
+</tr>
+<tr>
+<td><code>score</code></td>
+<td><code>uint32_t</code></td>
+<td>Score awarded for the kill</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="enemyhit-0x10">EnemyHit (0x10)</h4>
+<p>Reports that an enemy took damage.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enemy_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Identifier of the enemy hit</td>
+</tr>
+<tr>
+<td><code>hit_x</code>, <code>hit_y</code></td>
+<td><code>float</code></td>
+<td>Coordinates where the hit occurred</td>
+</tr>
+<tr>
+<td><code>damage</code></td>
+<td><code>float</code></td>
+<td>Damage dealt to the enemy</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Sequence number for event ordering</td>
+</tr>
+</tbody>
+</table>
+<h4 id="projectilespawn-0x09">ProjectileSpawn (0x09)</h4>
+<p>Creates a projectile in the client world.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>projectile_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Unique identifier of the projectile</td>
+</tr>
+<tr>
+<td><code>projectile_type</code></td>
+<td><code>uint8_t</code></td>
+<td>Projectile type (PLAYER_BASIC or ENEMY_BASIC)</td>
+</tr>
+<tr>
+<td><code>owner_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Entity ID of the projectile's owner</td>
+</tr>
+<tr>
+<td><code>is_enemy_projectile</code></td>
+<td><code>uint8_t</code></td>
+<td><code>1</code> if fired by an enemy, otherwise <code>0</code></td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Initial position of the projectile</td>
+</tr>
+<tr>
+<td><code>velocity_x</code>, <code>velocity_y</code></td>
+<td><code>float</code></td>
+<td>Direction and velocity vector</td>
+</tr>
+<tr>
+<td><code>speed</code></td>
+<td><code>float</code></td>
+<td>Projectile speed scalar</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+<tr>
+<td><code>damage</code></td>
+<td><code>uint32_t</code></td>
+<td>Damage caused on impact</td>
+</tr>
+</tbody>
+</table>
+<h4 id="projectilehit-0x0a">ProjectileHit (0x0A)</h4>
+<p>Notifies that a projectile hit an entity.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>projectile_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Identifier of the projectile that hit</td>
+</tr>
+<tr>
+<td><code>target_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Entity ID of the impacted target</td>
+</tr>
+<tr>
+<td><code>target_is_player</code></td>
+<td><code>uint8_t</code></td>
+<td><code>1</code> if the target is a player, <code>0</code> if enemy</td>
+</tr>
+<tr>
+<td><code>hit_x</code>, <code>hit_y</code></td>
+<td><code>float</code></td>
+<td>Coordinates of the hit point</td>
+</tr>
+</tbody>
+</table>
+<h4 id="projectiledestroy-0x0b">ProjectileDestroy (0x0B)</h4>
+<p>Removes a projectile from the world.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>projectile_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Identifier of the projectile to remove</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Position where the projectile was destroyed</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="playerdeath-0x12">PlayerDeath (0x12)</h4>
+<p>Informs clients that a player has died.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Identifier of the deceased player</td>
+</tr>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td><code>float</code></td>
+<td>Coordinates of the death location</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="gamestart-0x0c">GameStart (0x0C)</h4>
+<p>Signals the start of the game.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+<tr>
+<td><code>game_start</code></td>
+<td><code>uint8_t</code></td>
+<td><code>1</code> if the game has started, <code>0</code> otherwise</td>
+</tr>
+</tbody>
+</table>
+<h4 id="gameend-0x0d">GameEnd (0x0D)</h4>
+<p>Signals the end of the game.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+<tr>
+<td><code>game_end</code></td>
+<td><code>uint8_t</code></td>
+<td><code>1</code> if the game has ended, <code>0</code> otherwise</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="54-room-management-messages">5.4. Room Management Messages</h3>
+<h4 id="createroom-0x13">CreateRoom (0x13)</h4>
+<p>Requests creation of a new game room.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>room_name</code></td>
+<td><code>char[32]</code></td>
+<td>Room display name (max 31 bytes)</td>
+</tr>
+<tr>
+<td><code>is_private</code></td>
+<td><code>uint8_t</code></td>
+<td><code>1</code> for private (password required), <code>0</code> for public</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td><code>char[32]</code></td>
+<td>Password for private rooms (max 31 bytes)</td>
+</tr>
+<tr>
+<td><code>max_players</code></td>
+<td><code>uint8_t</code></td>
+<td>Maximum number of players allowed</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="createroomresponse-0x1f">CreateRoomResponse (0x1F)</h4>
+<p>Server response to a CreateRoom request.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error_code</code></td>
+<td><code>uint8_t</code></td>
+<td>RoomError result code</td>
+</tr>
+<tr>
+<td><code>room_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Assigned room ID (valid when SUCCESS)</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="joinroom-0x14">JoinRoom (0x14)</h4>
+<p>Requests to join an existing room.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>room_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Target room identifier</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td><code>char[64]</code></td>
+<td>Room password or hash (max 63 bytes)</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="joinroomresponse-0x1a">JoinRoomResponse (0x1A)</h4>
+<p>Server response to a JoinRoom request.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error_code</code></td>
+<td><code>uint8_t</code></td>
+<td>RoomError result code</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="leaveroom-0x15">LeaveRoom (0x15)</h4>
+<p>Requests to leave the current room.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>room_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Room identifier to leave</td>
+</tr>
+</tbody>
+</table>
+<h4 id="listroom-0x16">ListRoom (0x16)</h4>
+<p>Requests a list of available rooms.</p>
+<p><em>No payload beyond header.</em></p>
+<h4 id="listroomresponse-0x17">ListRoomResponse (0x17)</h4>
+<p>Server response containing available rooms.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>room_count</code></td>
+<td><code>uint32_t</code></td>
+<td>Number of valid room entries</td>
+</tr>
+<tr>
+<td><code>rooms</code></td>
+<td><code>RoomInfo[MAX_ROOMS]</code></td>
+<td>Array of room information structures</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RoomInfo Structure:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>room_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Unique room identifier</td>
+</tr>
+<tr>
+<td><code>room_name</code></td>
+<td><code>char[32]</code></td>
+<td>Room display name</td>
+</tr>
+<tr>
+<td><code>player_count</code></td>
+<td><code>uint8_t</code></td>
+<td>Current number of players</td>
+</tr>
+<tr>
+<td><code>max_players</code></td>
+<td><code>uint8_t</code></td>
+<td>Maximum allowed players</td>
+</tr>
+</tbody>
+</table>
+<h4 id="matchmakingrequest-0x18">MatchmakingRequest (0x18)</h4>
+<p>Requests automatic matchmaking into a suitable room.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="matchmakingresponse-0x19">MatchmakingResponse (0x19)</h4>
+<p>Server response to matchmaking request.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>error_code</code></td>
+<td><code>uint8_t</code></td>
+<td>RoomError result code</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="55-acknowledgment-messages">5.5. Acknowledgment Messages</h3>
+<h4 id="ack-0x1c">Ack (0x1C)</h4>
+<p>Acknowledges receipt of a sequenced packet.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Sequence number being acknowledged</td>
+</tr>
+<tr>
+<td><code>player_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Player ID associated with the acknowledgment</td>
+</tr>
+</tbody>
+</table>
+<h4 id="requestchallenge-0x1d">RequestChallenge (0x1D)</h4>
+<p>Requests a challenge string for password verification.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>room_id</code></td>
+<td><code>uint32_t</code></td>
+<td>Room for which challenge is requested</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<h4 id="challengeresponse-0x1e">ChallengeResponse (0x1E)</h4>
+<p>Server provides a challenge string and timestamp.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>challenge</code></td>
+<td><code>char[128]</code></td>
+<td>Challenge string for hashing (max 127 bytes)</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td><code>uint32_t</code></td>
+<td>Challenge creation timestamp (epoch seconds)</td>
+</tr>
+<tr>
+<td><code>sequence_number</code></td>
+<td><code>uint32_t</code></td>
+<td>Packet sequence number</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-data-types">6. Data Types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uint8_t</code>, <code>uint32_t</code></td>
+<td>Unsigned integers, little-endian</td>
+</tr>
+<tr>
+<td><code>float</code></td>
+<td>IEEE 754 single-precision, little-endian</td>
+</tr>
+<tr>
+<td><code>char[]</code></td>
+<td>UTF-8 encoded string, null-terminated</td>
+</tr>
+<tr>
+<td>Alignment</td>
+<td>All packets are 8-byte aligned (<code>alignas(8)</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>String Serialization Limits:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field Size</th>
+<th>Constant</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>32 bytes</td>
+<td><code>SERIALIZE_32_BYTES</code></td>
+<td>Short strings (names, etc.)</td>
+</tr>
+<tr>
+<td>64 bytes</td>
+<td><code>SERIALIZE_64_BYTES</code></td>
+<td>Passwords and hashes</td>
+</tr>
+<tr>
+<td>128 bytes</td>
+<td><code>SERIALIZE_128_BYTES</code></td>
+<td>Challenge strings</td>
+</tr>
+<tr>
+<td>512 bytes</td>
+<td><code>SERIALIZE_512_BYTES</code></td>
+<td>Chat messages</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-enumeration-types">7. Enumeration Types</h2>
+<h3 id="enemytype">EnemyType</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>BASIC_FIGHTER</td>
+<td>Standard enemy type</td>
+</tr>
+</tbody>
+</table>
+<h3 id="projectiletype">ProjectileType</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x01</code></td>
+<td>PLAYER_BASIC</td>
+<td>Standard player projectile</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>ENEMY_BASIC</td>
+<td>Standard enemy projectile</td>
+</tr>
+</tbody>
+</table>
+<h3 id="roomerror">RoomError</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x00</code></td>
+<td>SUCCESS</td>
+<td>Operation succeeded</td>
+</tr>
+<tr>
+<td><code>0x01</code></td>
+<td>ROOM_NOT_FOUND</td>
+<td>Requested room does not exist</td>
+</tr>
+<tr>
+<td><code>0x02</code></td>
+<td>ROOM_FULL</td>
+<td>Room has reached maximum capacity</td>
+</tr>
+<tr>
+<td><code>0x03</code></td>
+<td>WRONG_PASSWORD</td>
+<td>Invalid password provided</td>
+</tr>
+<tr>
+<td><code>0x04</code></td>
+<td>ALREADY_IN_ROOM</td>
+<td>Player is already in a room</td>
+</tr>
+<tr>
+<td><code>0x05</code></td>
+<td>PLAYER_BANNED</td>
+<td>Player is banned from the room</td>
+</tr>
+<tr>
+<td><code>0x06</code></td>
+<td>UNKNOWN_ERROR</td>
+<td>Unspecified error occurred</td>
+</tr>
+</tbody>
+</table>
+<h3 id="movementinputtype-bitfield">MovementInputType (Bitfield)</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1 &lt;&lt; 0</code></td>
+<td>UP</td>
+<td>Move up</td>
+</tr>
+<tr>
+<td><code>1 &lt;&lt; 1</code></td>
+<td>DOWN</td>
+<td>Move down</td>
+</tr>
+<tr>
+<td><code>1 &lt;&lt; 2</code></td>
+<td>LEFT</td>
+<td>Move left</td>
+</tr>
+<tr>
+<td><code>1 &lt;&lt; 3</code></td>
+<td>RIGHT</td>
+<td>Move right</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-message-semantics">8. Message Semantics</h2>
+<h3 id="general-rules">General Rules</h3>
+<ul>
+<li>The server <strong>MUST</strong> validate the <code>size</code> field of all packets.  </li>
+<li>Clients <strong>MUST NOT</strong> send unknown or malformed packet types.  </li>
+<li>Sequence numbers <strong>SHOULD</strong> be used to detect dropped or out-of-order UDP packets.  </li>
+<li>The server <strong>MAY</strong> ignore packets received out of sequence.  </li>
+<li>The client <strong>MUST</strong> periodically send a <code>Heartbeat</code> packet to prevent timeout.</li>
+</ul>
+<h3 id="acknowledgment-system">Acknowledgment System</h3>
+<p>Critical packets requiring acknowledgment include:
+- ChatMessage
+- NewPlayer
+- PlayerDisconnect
+- EnemySpawn
+- EnemyDeath
+- ProjectileSpawn
+- ProjectileDestroy
+- GameStart
+- PlayerShoot
+- JoinRoomResponse
+- MatchmakingResponse
+- ChallengeResponse
+- CreateRoomResponse</p>
+<p>When a packet requires acknowledgment:
+1. The sender stores the packet with its sequence number
+2. The receiver sends an Ack packet upon successful processing
+3. The sender removes the packet from unacknowledged storage upon receiving the Ack
+4. Unacknowledged packets <strong>MAY</strong> be retransmitted after a timeout</p>
+<h3 id="room-password-security">Room Password Security</h3>
+<p>For password-protected rooms:
+1. Client requests challenge via <code>RequestChallenge</code>
+2. Server responds with <code>ChallengeResponse</code> containing a random challenge string
+3. Client hashes the password with the challenge: <code>hash(password + challenge + timestamp)</code>
+4. Client sends the hash in the <code>JoinRoom</code> password field
+5. Server validates by computing the same hash</p>
+<hr />
+<h2 id="9-example-exchange">9. Example Exchange</h2>
+<h3 id="initial-connection-and-room-join">Initial Connection and Room Join</h3>
+<p><strong>Client → Server:</strong>
+<div class="highlight"><pre><span></span><code>PlayerInfo (name=&quot;Alice&quot;, seq=1)
+</code></pre></div></p>
+<p><strong>Server → Client:</strong>
+<div class="highlight"><pre><span></span><code>Ack (seq=1, player_id=1)
+</code></pre></div></p>
+<p><strong>Client → Server:</strong>
+<div class="highlight"><pre><span></span><code>MatchmakingRequest (seq=2)
+</code></pre></div></p>
+<p><strong>Server → Client:</strong>
+<div class="highlight"><pre><span></span><code>Ack (seq=2, player_id=1)
+MatchmakingResponse (error_code=SUCCESS, seq=100)
+NewPlayer (id=1, name=&quot;Alice&quot;, x=100, y=200, seq=101)
+</code></pre></div></p>
+<p><strong>Client → Server:</strong>
+<div class="highlight"><pre><span></span><code>Ack (seq=100, player_id=1)
+Ack (seq=101, player_id=1)
+</code></pre></div></p>
+<h3 id="gameplay">Gameplay</h3>
+<p><strong>Client → Server:</strong>
+<div class="highlight"><pre><span></span><code>PlayerInput (input=UP|RIGHT, seq=3)
+PlayerShoot (x=100, y=200, type=PLAYER_BASIC, seq=4)
+Heartbeat (player_id=1)
+</code></pre></div></p>
+<p><strong>Server → Client:</strong>
+<div class="highlight"><pre><span></span><code>PlayerMove (id=1, x=105, y=195, seq=102)
+ProjectileSpawn (id=99, owner=1, type=PLAYER_BASIC, seq=103)
+EnemySpawn (id=42, type=BASIC_FIGHTER, x=500, y=100, seq=104)
+</code></pre></div></p>
+<p><strong>Client → Server:</strong>
+<div class="highlight"><pre><span></span><code>Ack (seq=103, player_id=1)
+Ack (seq=104, player_id=1)
+</code></pre></div></p>
+<hr />
+<h2 id="10-security-considerations">10. Security Considerations</h2>
+<p>The R-Type protocol provides <strong>basic authentication through challenge-response</strong> for room passwords but <strong>no encryption</strong>.  </p>
+<p><strong>Known Vulnerabilities:</strong>
+- Packets can be intercepted and read in plaintext
+- No protection against replay attacks beyond challenge timeout
+- No integrity checks or packet signing
+- Denial-of-service attacks possible via packet flooding</p>
+<p>The protocol <strong>SHOULD</strong> be used only in controlled or local environments.<br />
+Future revisions <strong>MAY</strong> introduce:
+- TLS/DTLS for encryption
+- HMAC for message authentication
+- Rate limiting and flood protection
+- Session tokens and player authentication</p>
+<hr />
+<h2 id="11-future-work">11. Future Work</h2>
+<ul>
+<li>Add optional reliable UDP transport layer.  </li>
+<li>Support encryption for secure communication (DTLS).  </li>
+<li>Expand enemy and projectile type definitions.  </li>
+<li>Introduce session tokens and centralized player authentication.</li>
+<li>Add spectator mode support.</li>
+<li>Implement voice chat capability.</li>
+<li>Add replay recording and playback support.</li>
+</ul>
+<hr />
+<h2 id="appendix-a-packet-layouts">Appendix A. Packet Layouts</h2>
+<p>See <code>Packet.hpp</code> for complete C++ structure definitions.<br />
+All packets are defined with <code>alignas(8)</code> to ensure consistent binary layout across architectures.</p>
+<h3 id="serialization">Serialization</h3>
+<p>Packets are serialized using the Bitsery library with the following conventions:
+- 1-byte values: <code>s.value1b(field)</code>
+- 4-byte values: <code>s.value4b(field)</code>
+- Floats: <code>s.template value&lt;sizeof(float)&gt;(field)</code>
+- Strings: <code>s.text1b(field, SIZE_CONSTANT)</code></p>
+<p>All integer types use little-endian byte order.</p>
+<hr />
+<h2 id="authors">Authors</h2>
+<p><strong>Arthur GUERINAULT, Nolann DUBOS, Quentin LAPIERRE, Etienne LABARBE, Robin CHASSAGNE</strong><br />
+R-Type Project<br />
+November 2025</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,129 @@
+\doxysection{render\+Manager\+::Renderer Class Reference}
+\hypertarget{classrender_manager_1_1_renderer}{}\label{classrender_manager_1_1_renderer}\index{renderManager::Renderer@{renderManager::Renderer}}
+
+
+{\ttfamily \#include $<$Render\+Manager.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}{Renderer}} (int width, int height, const char \texorpdfstring{$\ast$}{*}title)
+\item 
+\mbox{\hyperlink{classrender_manager_1_1_renderer_a29a3109536c4914e5952edf794808ce3}{Renderer}} (const \mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&)=delete
+\item 
+\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \& \mbox{\hyperlink{classrender_manager_1_1_renderer_a1fca5a03d5e3ba9ac49a5143f7b65a74}{operator=}} (const \mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&)=delete
+\item 
+\mbox{\hyperlink{classrender_manager_1_1_renderer_a75ce81ce7545666b16a967a27f51a44f}{Renderer}} (\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&\&) noexcept=default
+\item 
+\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \& \mbox{\hyperlink{classrender_manager_1_1_renderer_ad1f5db8f1349a9a6ddfbad56e092f3a6}{operator=}} (\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&\&) noexcept=default
+\item 
+\mbox{\hyperlink{classrender_manager_1_1_renderer_a16c10fec16ef15683ec7f5bd15fffee9}{\texorpdfstring{$\sim$}{\string~}\+Renderer}} ()
+\item 
+bool \mbox{\hyperlink{classrender_manager_1_1_renderer_aee06d7b9e97416bfd8eeb721a5360b3c}{Init\+Succeeded}} () const
+\item 
+bool \mbox{\hyperlink{classrender_manager_1_1_renderer_a384ca568af694990442a0b6494560393}{should\+Close}} () const
+\item 
+void \mbox{\hyperlink{classrender_manager_1_1_renderer_a63be5987a6c5028d99d602b341a8bc26}{begin\+Drawing}} () const
+\item 
+void \mbox{\hyperlink{classrender_manager_1_1_renderer_a22aae92209ad75e6e43563158cff6f5d}{clear\+Background}} (Color color) const
+\item 
+void \mbox{\hyperlink{classrender_manager_1_1_renderer_af9a452c63de764a93c30f59fbaa3666f}{draw\+Text}} (const char \texorpdfstring{$\ast$}{*}text, int posX, int posY, int font\+Size, Color color) const
+\item 
+void \mbox{\hyperlink{classrender_manager_1_1_renderer_a57b03d4577ed2428ea0d411c82363ff2}{end\+Drawing}} () const
+\item 
+void \mbox{\hyperlink{classrender_manager_1_1_renderer_ab5fa78081980389da0051a658c53c944}{resize\+Window}} ()
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{classrender_manager_1_1_renderer_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77}\index{renderManager::Renderer@{renderManager::Renderer}!Renderer@{Renderer}}
+\index{Renderer@{Renderer}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{Renderer()}{Renderer()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_ac74b2ec99b79f05ea323f1e4e0668d77} 
+render\+Manager\+::\+Renderer\+::\+Renderer (\begin{DoxyParamCaption}\item[{int}]{width}{, }\item[{int}]{height}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{title}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classrender_manager_1_1_renderer_a29a3109536c4914e5952edf794808ce3}\index{renderManager::Renderer@{renderManager::Renderer}!Renderer@{Renderer}}
+\index{Renderer@{Renderer}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{Renderer()}{Renderer()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a29a3109536c4914e5952edf794808ce3} 
+render\+Manager\+::\+Renderer\+::\+Renderer (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classrender_manager_1_1_renderer_a75ce81ce7545666b16a967a27f51a44f}\index{renderManager::Renderer@{renderManager::Renderer}!Renderer@{Renderer}}
+\index{Renderer@{Renderer}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{Renderer()}{Renderer()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a75ce81ce7545666b16a967a27f51a44f} 
+render\+Manager\+::\+Renderer\+::\+Renderer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{classrender_manager_1_1_renderer_a16c10fec16ef15683ec7f5bd15fffee9}\index{renderManager::Renderer@{renderManager::Renderer}!````~Renderer@{\texorpdfstring{$\sim$}{\string~}Renderer}}
+\index{````~Renderer@{\texorpdfstring{$\sim$}{\string~}Renderer}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Renderer()}{\string~Renderer()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a16c10fec16ef15683ec7f5bd15fffee9} 
+render\+Manager\+::\+Renderer\+::\texorpdfstring{$\sim$}{\string~}\+Renderer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+\label{doc-func-members}
+\Hypertarget{classrender_manager_1_1_renderer_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classrender_manager_1_1_renderer_a63be5987a6c5028d99d602b341a8bc26}\index{renderManager::Renderer@{renderManager::Renderer}!beginDrawing@{beginDrawing}}
+\index{beginDrawing@{beginDrawing}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{beginDrawing()}{beginDrawing()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a63be5987a6c5028d99d602b341a8bc26} 
+void render\+Manager\+::\+Renderer\+::begin\+Drawing (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classrender_manager_1_1_renderer_a22aae92209ad75e6e43563158cff6f5d}\index{renderManager::Renderer@{renderManager::Renderer}!clearBackground@{clearBackground}}
+\index{clearBackground@{clearBackground}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{clearBackground()}{clearBackground()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a22aae92209ad75e6e43563158cff6f5d} 
+void render\+Manager\+::\+Renderer\+::clear\+Background (\begin{DoxyParamCaption}\item[{Color}]{color}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classrender_manager_1_1_renderer_af9a452c63de764a93c30f59fbaa3666f}\index{renderManager::Renderer@{renderManager::Renderer}!drawText@{drawText}}
+\index{drawText@{drawText}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{drawText()}{drawText()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_af9a452c63de764a93c30f59fbaa3666f} 
+void render\+Manager\+::\+Renderer\+::draw\+Text (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{text}{, }\item[{int}]{posX}{, }\item[{int}]{posY}{, }\item[{int}]{font\+Size}{, }\item[{Color}]{color}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classrender_manager_1_1_renderer_a57b03d4577ed2428ea0d411c82363ff2}\index{renderManager::Renderer@{renderManager::Renderer}!endDrawing@{endDrawing}}
+\index{endDrawing@{endDrawing}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{endDrawing()}{endDrawing()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a57b03d4577ed2428ea0d411c82363ff2} 
+void render\+Manager\+::\+Renderer\+::end\+Drawing (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{classrender_manager_1_1_renderer_aee06d7b9e97416bfd8eeb721a5360b3c}\index{renderManager::Renderer@{renderManager::Renderer}!InitSucceeded@{InitSucceeded}}
+\index{InitSucceeded@{InitSucceeded}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{InitSucceeded()}{InitSucceeded()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_aee06d7b9e97416bfd8eeb721a5360b3c} 
+bool render\+Manager\+::\+Renderer\+::\+Init\+Succeeded (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{classrender_manager_1_1_renderer_a1fca5a03d5e3ba9ac49a5143f7b65a74}\index{renderManager::Renderer@{renderManager::Renderer}!operator=@{operator=}}
+\index{operator=@{operator=}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a1fca5a03d5e3ba9ac49a5143f7b65a74} 
+\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \& render\+Manager\+::\+Renderer\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{classrender_manager_1_1_renderer_ad1f5db8f1349a9a6ddfbad56e092f3a6}\index{renderManager::Renderer@{renderManager::Renderer}!operator=@{operator=}}
+\index{operator=@{operator=}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_ad1f5db8f1349a9a6ddfbad56e092f3a6} 
+\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \& render\+Manager\+::\+Renderer\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classrender_manager_1_1_renderer}{Renderer}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{classrender_manager_1_1_renderer_ab5fa78081980389da0051a658c53c944}\index{renderManager::Renderer@{renderManager::Renderer}!resizeWindow@{resizeWindow}}
+\index{resizeWindow@{resizeWindow}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{resizeWindow()}{resizeWindow()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_ab5fa78081980389da0051a658c53c944} 
+void render\+Manager\+::\+Renderer\+::resize\+Window (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{classrender_manager_1_1_renderer_a384ca568af694990442a0b6494560393}\index{renderManager::Renderer@{renderManager::Renderer}!shouldClose@{shouldClose}}
+\index{shouldClose@{shouldClose}!renderManager::Renderer@{renderManager::Renderer}}
+\doxysubsubsection{\texorpdfstring{shouldClose()}{shouldClose()}}
+{\footnotesize\ttfamily \label{classrender_manager_1_1_renderer_a384ca568af694990442a0b6494560393} 
+bool render\+Manager\+::\+Renderer\+::should\+Close (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+client/\mbox{\hyperlink{_render_manager_8hpp}{Render\+Manager.\+hpp}}\item 
+client/\mbox{\hyperlink{_render_manager_8cpp}{Render\+Manager.\+cpp}}\end{DoxyCompactItemize}

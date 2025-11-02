@@ -1,0 +1,22 @@
+digraph "game_engine/ecs/systems"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  compound=true
+  subgraph clusterdir_d7ece8a3954bce909d566f501e1e6e74 {
+    graph [ bgcolor="#dfdfdf", pencolor="grey50", label="ecs", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_d7ece8a3954bce909d566f501e1e6e74.html",tooltip=""]
+  dir_3d4207bcbb75cb03840630c080f5474e [label="tags", fillcolor="#767676", color="grey25", style="filled", URL="dir_3d4207bcbb75cb03840630c080f5474e.html",tooltip=""];
+  dir_aff4475ef442df297e64660ce8c4efef [label="components", fillcolor="#767676", color="grey25", style="filled", URL="dir_aff4475ef442df297e64660ce8c4efef.html",tooltip=""];
+  dir_3c094ceaaac7e4a87ec71ea5a1fb286b [label="systems", fillcolor="#dfdfdf", color="grey25", style="filled,bold", URL="dir_3c094ceaaac7e4a87ec71ea5a1fb286b.html",tooltip=""];
+  }
+  dir_41e1742e44e2de38b3bc91f993fed282 [label="server", fillcolor="#dfdfdf", color="red", style="filled", URL="dir_41e1742e44e2de38b3bc91f993fed282.html",tooltip=""];
+  dir_4270bfced15e0e73154b13468c7c9ad9 [label="core", fillcolor="#dfdfdf", color="red", style="filled", URL="dir_4270bfced15e0e73154b13468c7c9ad9.html",tooltip=""];
+  dir_db3a54907829b36871118d03417739cd [label="client", fillcolor="#dfdfdf", color="red", style="filled", URL="dir_db3a54907829b36871118d03417739cd.html",tooltip=""];
+  dir_3c094ceaaac7e4a87ec71ea5a1fb286b->dir_3d4207bcbb75cb03840630c080f5474e [headlabel="2", labeldistance=1.5 headhref="dir_000017_000018.html" href="dir_000017_000018.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_3c094ceaaac7e4a87ec71ea5a1fb286b->dir_41e1742e44e2de38b3bc91f993fed282 [headlabel="4", labeldistance=1.5 headhref="dir_000017_000015.html" href="dir_000017_000015.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_3c094ceaaac7e4a87ec71ea5a1fb286b->dir_4270bfced15e0e73154b13468c7c9ad9 [headlabel="3", labeldistance=1.5 headhref="dir_000017_000002.html" href="dir_000017_000002.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_3c094ceaaac7e4a87ec71ea5a1fb286b->dir_aff4475ef442df297e64660ce8c4efef [headlabel="33", labeldistance=1.5 headhref="dir_000017_000001.html" href="dir_000017_000001.html" color="steelblue1" fontcolor="steelblue1"];
+  dir_3c094ceaaac7e4a87ec71ea5a1fb286b->dir_db3a54907829b36871118d03417739cd [headlabel="5", labeldistance=1.5 headhref="dir_000017_000000.html" href="dir_000017_000000.html" color="steelblue1" fontcolor="steelblue1"];
+}

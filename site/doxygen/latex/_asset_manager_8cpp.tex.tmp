@@ -1,0 +1,12 @@
+\doxysection{client/\+Asset\+Manager.cpp File Reference}
+\hypertarget{_asset_manager_8cpp}{}\label{_asset_manager_8cpp}\index{client/AssetManager.cpp@{client/AssetManager.cpp}}
+{\ttfamily \#include "{}Asset\+Manager.\+hpp"{}}\newline
+{\ttfamily \#include $<$raylib.\+h$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+Include dependency graph for Asset\+Manager.\+cpp\+:
+% FIG 0
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceasset}{asset}}
+\end{DoxyCompactItemize}
