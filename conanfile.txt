@@ -2,6 +2,8 @@
 raylib/5.5
 asio/1.36.0
 bitsery/5.2.4
+picosha2/1.0.0
+sqlite3/3.50.4
 
 [generators]
 CMakeDeps

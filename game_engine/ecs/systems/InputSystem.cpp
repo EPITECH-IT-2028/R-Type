@@ -1,6 +1,5 @@
 #include "InputSystem.hpp"
 #include <cmath>
-#include <optional>
 #include "ChatComponent.hpp"
 #include "Client.hpp"
 #include "Macro.hpp"

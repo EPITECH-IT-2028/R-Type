@@ -40,7 +40,14 @@ namespace packet {
               {PacketType::MatchmakingRequest,
                []() { return std::make_unique<MatchmakingRequestHandler>(); }},
               {PacketType::PlayerInput,
-               []() { return std::make_unique<PlayerInputHandler>(); }}};
+               []() { return std::make_unique<PlayerInputHandler>(); }},
+              {PacketType::Ack,
+               []() { return std::make_unique<AckPacketHandler>(); }},
+              {PacketType::RequestChallenge,
+               []() { return std::make_unique<RequestChallengeHandler>(); }},
+              {PacketType::ScoreboardRequest,
+               []() { return std::make_unique<ScoreboardRequestHandler>(); }},
+      };
   };
 
 }  // namespace packet

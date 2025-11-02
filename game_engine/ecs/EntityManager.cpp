@@ -43,3 +43,9 @@ std::vector<Entity> ecs::EntityManager::getAllEntities() const {
   }
   return entities;
 }
+
+bool ecs::EntityManager::isEntityValid(Entity entityId) const {
+  if (entityId >= MAX_ENTITIES)
+    return false;
+  return _signatures[entityId].any();
+}

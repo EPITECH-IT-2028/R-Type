@@ -58,13 +58,23 @@ namespace game {
         return _room_id;
       }
 
+      /**
+       * @brief Gets the room's name.
+       *
+       * @return The current room name.
+       */
       std::string getRoomName() const {
         std::shared_lock<std::shared_mutex> lock(_mutex);
         return _room_name;
       }
 
+      /**
+       * @brief Set the room's display name.
+       *
+       * @param name New display name for the room.
+       */
       void setRoomName(const std::string &name) {
-        std::unique_lock<std::shared_mutex> lock(_mutex);
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         _room_name = name;
       }
 
@@ -120,7 +130,7 @@ namespace game {
        * `false` otherwise.
        */
       bool addClient(std::shared_ptr<server::Client> client) {
-        std::unique_lock<std::shared_mutex> lock(_mutex);
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         if (!client || client->_connected == false) {
           return false;
         }
@@ -132,8 +142,17 @@ namespace game {
         return true;
       }
 
+      /**
+       * @brief Remove the first connected client with the given player ID from the room.
+       *
+       * Acquires the room mutex, finds the first client whose `_player_id` equals `player_id`,
+       * sets that client's `_room_id` to `NO_ROOM`, and removes the client from the room's
+       * client list. If no matching client is found, the function returns without changes.
+       *
+       * @param player_id The player identifier of the client to remove.
+       */
       void removeClient(int player_id) {
-        std::unique_lock<std::shared_mutex> lock(_mutex);
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         for (auto it = _clients.begin(); it != _clients.end(); ++it) {
           if ((*it)->_player_id == player_id) {
             (*it)->_room_id = NO_ROOM;
@@ -184,7 +203,7 @@ namespace game {
           return;
         }
         {
-          std::unique_lock<std::shared_mutex> lock(_mutex);
+          std::lock_guard<std::shared_mutex> lock(_mutex);
           if (_countdown_timer) {
             _countdown_timer->cancel();
             _countdown_timer.reset();
@@ -216,7 +235,7 @@ namespace game {
        * password.
        */
       void setPassword(const std::string &password) {
-        std::unique_lock<std::shared_mutex> lock(_mutex);
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         _password = password;
       }
 
@@ -279,7 +298,7 @@ namespace game {
        * otherwise.
        */
       bool setPrivate(bool is_private) {
-        std::unique_lock<std::shared_mutex> lock(_mutex);
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         _is_private = is_private;
         return _is_private;
       }
@@ -312,10 +331,10 @@ namespace game {
        */
       void startCountdown(int seconds,
                           std::shared_ptr<asio::steady_timer> timer) {
+        std::lock_guard<std::shared_mutex> lock(_mutex);
         RoomStatus expected = RoomStatus::WAITING;
         if (_state.compare_exchange_strong(expected, RoomStatus::STARTING)) {
           _countdown = seconds;
-          std::unique_lock<std::shared_mutex> lock(_mutex);
           _countdown_timer = timer;
         }
       }

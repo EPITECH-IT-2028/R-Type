@@ -15,6 +15,7 @@ namespace queue {
       float vy;
       int health;
       int max_health;
+      std::uint32_t sequence_number;
   };
 
   struct EnemyDestroyEvent {
@@ -23,6 +24,7 @@ namespace queue {
       float y;
       std::uint32_t player_id;
       std::uint32_t score;
+      std::uint32_t sequence_number;
   };
 
   struct EnemyHitEvent {
@@ -30,7 +32,7 @@ namespace queue {
       float x;
       float y;
       int damage;
-      int sequence_number;
+      std::uint32_t sequence_number;
   };
 
   struct EnemyMoveEvent {
@@ -39,7 +41,7 @@ namespace queue {
       float y;
       float vx;
       float vy;
-      int sequence_number;
+      std::uint32_t sequence_number;
   };
 
   struct ProjectileSpawnEvent {
@@ -52,6 +54,7 @@ namespace queue {
       float speed;
       bool is_enemy_projectile;
       std::uint32_t damage;
+      std::uint32_t sequence_number;
       ProjectileType type;
   };
 
@@ -65,6 +68,7 @@ namespace queue {
 
   struct PlayerDestroyEvent {
       int player_id;
+      std::uint32_t sequence_number;
       float x;
       float y;
   };
@@ -72,6 +76,7 @@ namespace queue {
   struct PlayerDiedEvent {
       int player_id;
       std::string player_name;
+      std::uint32_t sequence_number;
   };
 
   struct PositionEvent {
@@ -83,18 +88,25 @@ namespace queue {
 
   struct ProjectileDestroyEvent {
       std::uint32_t projectile_id;
+      std::uint32_t sequence_number;
       float x;
       float y;
   };
 
   struct GameStartEvent {
       bool game_started;
+      std::uint32_t sequence_number;
+  };
+
+  struct GameEndEvent {
+      bool game_ended;
+      std::uint32_t sequence_number;
   };
 
   using GameEvent =
       std::variant<EnemySpawnEvent, EnemyDestroyEvent, EnemyMoveEvent,
                    ProjectileSpawnEvent, PlayerHitEvent, EnemyHitEvent,
                    ProjectileDestroyEvent, PlayerDestroyEvent, GameStartEvent,
-                   PositionEvent, PlayerDiedEvent>;
+                   PositionEvent, PlayerDiedEvent, GameEndEvent>;
 
 }  // namespace queue

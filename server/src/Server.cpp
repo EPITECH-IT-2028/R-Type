@@ -5,6 +5,8 @@
 #include <cstring>
 #include <iostream>
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 #include "Broadcast.hpp"
 #include "Events.hpp"
 #include "GameManager.hpp"
@@ -13,12 +15,11 @@
 #include "Packet.hpp"
 
 /**
- * @brief Constructs a Server configured with the listening port and client
- * limits.
+ * @brief Initialize a Server bound to the given UDP port with client limits.
  *
- * Initializes internal counters, creates the GameManager with the specified
- * per-room client limit, and resizes internal client storage to accommodate
- * the maximum number of clients.
+ * Sets up network manager, counters, and game manager for per-room limits,
+ * resizes internal client storage, and starts a background resend thread
+ * responsible for periodically resending unacknowledged packets.
  *
  * @param port UDP port the server will bind to for network communication.
  * @param max_clients Maximum total concurrent clients the server will accept.
@@ -36,8 +37,26 @@ server::Server::Server(std::uint16_t port, std::uint8_t max_clients,
       _projectile_count(0) {
   _gameManager = std::make_shared<game::GameManager>(_max_clients_per_room);
   _clients.resize(_max_clients);
+  _databaseManager = std::make_shared<database::DatabaseManager>();
+  if (!_databaseManager->initialize()) {
+    std::cerr << "[ERROR] Failed to initialize database manager." << std::endl;
+    throw std::runtime_error(
+        "Database initialization failed - cannot start server");
+  }
 }
 
+/**
+ * @brief Starts the server: initializes network I/O, schedules recurring
+ * maintenance and game-processing tasks, and enters the network event loop.
+ *
+ * Registers a stop callback that shuts down game rooms when the network manager
+ * stops, begins asynchronous receive handling, and schedules the following
+ * periodic tasks:
+ * - processGameEvents (every 50 ms)
+ * - handleTimeout (every 1 s)
+ * - handleUnacknowledgedPackets (every RESEND_PACKET_DELAY ms)
+ * - clearLastProcessedSeq (every 2 s)
+ */
 void server::Server::start() {
   std::cout << "[CONSOLE] Server started on port " << _port << std::endl;
 
@@ -57,46 +76,44 @@ void server::Server::start() {
                                           [this]() { processGameEvents(); });
   _networkManager.scheduleTimeout(std::chrono::seconds(1),
                                   [this]() { handleTimeout(); });
+  _networkManager.scheduleUnacknowledgedPacketsCheck(
+      std::chrono::milliseconds(RESEND_PACKET_DELAY),
+      [this]() { handleUnacknowledgedPackets(); });
 
+  _networkManager.scheduleClearLastProcessedSeq(
+      std::chrono::seconds(2), [this]() { this->clearLastProcessedSeq(); });
   _networkManager.run();
 }
 
-void server::Server::processGameEvents() {
-  auto rooms = _gameManager->getAllRooms();
-
-  for (auto &room : rooms) {
-    if (!room || !room->isActive()) {
-      continue;
-    }
-
-    queue::GameEvent event;
-
-    while (room->getGame().getEventQueue().popRequest(event)) {
-      handleGameEvent(event, room->getRoomId());
-    }
-  }
-
-  _gameManager->removeEmptyRooms();
-}
-
+/**
+ * @brief Shut down the server, stopping active rooms and network I/O.
+ *
+ * Instructs the game manager to shut down all rooms (if present) and stops the
+ * network manager so no further network I/O occurs. Logs that the server has
+ * stopped.
+ */
 void server::Server::stop() {
+  if (_gameManager)
+    _gameManager->shutdownRooms();
+  _networkManager.stop();
   std::cout << "[CONSOLE] Server stopped..." << std::endl;
-  _networkManager.closeSocket();
-  _gameManager->shutdownRooms();
 }
 
 /**
- * @brief Detects and handles client inactivity timeouts.
+ * @brief Detects clients that have been inactive longer than CLIENT_TIMEOUT and
+ * disconnects them.
  *
- * Checks each connected client’s last heartbeat against CLIENT_TIMEOUT and, for
- * clients exceeding that threshold, marks them disconnected, decrements the
- * active player count, removes them from their room (if any), destroys their
- * in-room player entity, broadcasts a player-disconnect packet and a chat
- * message to the room, and clears the server slot for that client.
+ * For each timed-out client this function marks the client as disconnected,
+ * decrements the server player count, updates the player's online status in the
+ * database, and clears the client slot. If the client was in a room, it also
+ * notifies the room by broadcasting a player-disconnect packet and a chat
+ * message, destroys the corresponding in-room player entity, and removes the
+ * player from the room.
  */
 void server::Server::handleTimeout() {
   auto now = std::chrono::steady_clock::now();
 
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   if (_clients.empty()) {
     return;
   }
@@ -116,21 +133,44 @@ void server::Server::handleTimeout() {
       if (_player_count > 0)
         --_player_count;
 
+      if (!getDatabaseManager().updatePlayerStatus(client->_player_name,
+                                                   false)) {
+        std::cerr << "[ERROR] Failed to update online status for player "
+                  << client->_player_id << std::endl;
+      }
+
       if (roomId != NO_ROOM) {
         auto room = _gameManager->getRoom(roomId);
         if (room) {
           auto roomClients = room->getClients();
 
-          auto disconnectPacket = PacketBuilder::makePlayerDisconnect(pid);
+          auto &game = room->getGame();
+          auto disconnectPacket = PacketBuilder::makePlayerDisconnect(
+              pid, game.fetchAndIncrementSequenceNumber());
+          auto disconnectBuffer = std::make_shared<std::vector<std::uint8_t>>(
+              serialization::BitserySerializer::serialize(disconnectPacket));
           broadcast::Broadcast::broadcastPlayerDisconnectToRoom(
               _networkManager, roomClients, disconnectPacket);
-
+          for (const auto &roomClient : roomClients) {
+            if (roomClient && roomClient->_player_id != pid) {
+              roomClient->addUnacknowledgedPacket(
+                  disconnectPacket.sequence_number, disconnectBuffer);
+            }
+          }
           std::string msg = client->_player_name + " has timed out.";
           auto chatMessagePacket = PacketBuilder::makeChatMessage(
-              msg, SERVER_SENDER_ID, 255, 0, 0, 255);
+              msg, SERVER_SENDER_ID, 255, 0, 0, 255,
+              game.fetchAndIncrementSequenceNumber());
+          auto chatMessageBuffer = std::make_shared<std::vector<std::uint8_t>>(
+              serialization::BitserySerializer::serialize(chatMessagePacket));
           broadcast::Broadcast::broadcastMessageToRoom(
               _networkManager, roomClients, chatMessagePacket);
-
+          for (const auto &roomClient : roomClients) {
+            if (roomClient && roomClient->_player_id != pid) {
+              roomClient->addUnacknowledgedPacket(
+                  chatMessagePacket.sequence_number, chatMessageBuffer);
+            }
+          }
           room->getGame().destroyPlayer(pid);
           _gameManager->leaveRoom(client);
         }
@@ -142,13 +182,15 @@ void server::Server::handleTimeout() {
 }
 
 /**
- * @brief Convert a game event into its network packet and broadcast it to a
- * room.
+ * @brief Translate a queued game event into a network packet and broadcast it
+ * to all clients in the specified room.
  *
- * Converts the provided `queue::GameEvent` into the corresponding network
- * packet and broadcasts that packet to every client currently in the specified
- * room. If `roomId` equals `NO_ROOM` or the room is not found/active, the
- * function does nothing.
+ * Converts the provided queue::GameEvent into the corresponding network packet,
+ * broadcasts that packet to every client currently in the target room, and
+ * enqueues the serialized packet for reliable delivery when applicable.
+ *
+ * If @p roomId is NO_ROOM or the room cannot be found, the function performs no
+ * action.
  *
  * @param event Variant holding the specific game event to translate and send.
  * @param roomId Identifier of the target room whose clients will receive the
@@ -167,28 +209,45 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
   auto clients = room->getClients();
 
   std::visit(
-      [this, &clients](const auto &specificEvent) {
+      [this, &clients, &room](const auto &specificEvent) {
         using T = std::decay_t<decltype(specificEvent)>;
 
         if constexpr (std::is_same_v<T, queue::EnemySpawnEvent>) {
           auto enemySpawnPacket = PacketBuilder::makeEnemySpawn(
               specificEvent.enemy_id, EnemyType::BASIC_FIGHTER, specificEvent.x,
               specificEvent.y, specificEvent.vx, specificEvent.vy,
-              specificEvent.health, specificEvent.max_health);
+              specificEvent.health, specificEvent.max_health,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemySpawnToRoom(
               _networkManager, clients, enemySpawnPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(enemySpawnPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::EnemyDestroyEvent>) {
           auto enemyDeathPacket = PacketBuilder::makeEnemyDeath(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
-              specificEvent.player_id, specificEvent.score);
+              specificEvent.player_id, specificEvent.score,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemyDeathToRoom(
               _networkManager, clients, enemyDeathPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(enemyDeathPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::EnemyHitEvent>) {
           auto enemyHitPacket = PacketBuilder::makeEnemyHit(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
               specificEvent.damage, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastEnemyHitToRoom(
               _networkManager, clients, enemyHitPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(enemyHitPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::EnemyMoveEvent>) {
           auto enemyMovePacket = PacketBuilder::makeEnemyMove(
               specificEvent.enemy_id, specificEvent.x, specificEvent.y,
@@ -201,42 +260,103 @@ void server::Server::handleGameEvent(const queue::GameEvent &event,
               specificEvent.projectile_id, specificEvent.type, specificEvent.x,
               specificEvent.y, specificEvent.vx, specificEvent.vy,
               specificEvent.is_enemy_projectile, specificEvent.damage,
-              specificEvent.owner_id);
+              specificEvent.owner_id, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastProjectileSpawnToRoom(
               _networkManager, clients, projectileSpawnPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(
+                  projectileSpawnPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::PlayerHitEvent>) {
           auto playerHitPacket = PacketBuilder::makePlayerHit(
               specificEvent.player_id, specificEvent.damage, specificEvent.x,
               specificEvent.y, specificEvent.sequence_number);
           broadcast::Broadcast::broadcastPlayerHitToRoom(
               _networkManager, clients, playerHitPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(playerHitPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::ProjectileDestroyEvent>) {
           auto projectileDestroyPacket = PacketBuilder::makeProjectileDestroy(
-              specificEvent.projectile_id, specificEvent.x, specificEvent.y);
+              specificEvent.projectile_id, specificEvent.x, specificEvent.y,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastProjectileDestroyToRoom(
               _networkManager, clients, projectileDestroyPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(
+                  projectileDestroyPacket));
+          for (const auto &client : clients)
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
         } else if constexpr (std::is_same_v<T, queue::PlayerDestroyEvent>) {
           auto playerDestroyPacket = PacketBuilder::makePlayerDeath(
-              specificEvent.player_id, specificEvent.x, specificEvent.y);
+              specificEvent.player_id, specificEvent.x, specificEvent.y,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastPlayerDeathToRoom(
               _networkManager, clients, playerDestroyPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(playerDestroyPacket));
+          for (const auto &client : clients) {
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
+          }
         } else if constexpr (std::is_same_v<T, queue::PlayerDiedEvent>) {
           std::string msg = specificEvent.player_name + " has died.";
           auto chatMessagePacket = PacketBuilder::makeChatMessage(
-              msg, SERVER_SENDER_ID, 255, 0, 0, 255);
+              msg, SERVER_SENDER_ID, 255, 0, 0, 255,
+              specificEvent.sequence_number);
           broadcast::Broadcast::broadcastMessageToRoom(_networkManager, clients,
                                                        chatMessagePacket);
-        } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
-          auto gameStartPacket =
-              PacketBuilder::makeGameStart(specificEvent.game_started);
-          broadcast::Broadcast::broadcastGameStartToRoom(
-              _networkManager, clients, gameStartPacket);
         } else if constexpr (std::is_same_v<T, queue::PositionEvent>) {
           auto positionPacket = PacketBuilder::makePlayerMove(
-              specificEvent.player_id, specificEvent.x, specificEvent.y,
-              specificEvent.sequence_number);
+              specificEvent.player_id, specificEvent.sequence_number,
+              specificEvent.x, specificEvent.y);
           broadcast::Broadcast::broadcastPlayerMoveToRoom(
               _networkManager, clients, positionPacket);
+        } else if constexpr (std::is_same_v<T, queue::GameStartEvent>) {
+          GameStartPacket gameStartPacket = PacketBuilder::makeGameStart(
+              specificEvent.game_started, specificEvent.sequence_number);
+          broadcast::Broadcast::broadcastGameStartToRoom(
+              _networkManager, clients, gameStartPacket);
+          auto buffer = std::make_shared<std::vector<uint8_t>>(
+              serialization::BitserySerializer::serialize(gameStartPacket));
+          for (const auto &client : clients) {
+            client->addUnacknowledgedPacket(specificEvent.sequence_number,
+                                            buffer);
+          }
+        } else if constexpr (std::is_same_v<T, queue::GameEndEvent>) {
+          auto gameEndPacket = PacketBuilder::makeGameEnd(
+              specificEvent.game_ended, specificEvent.sequence_number);
+          broadcast::Broadcast::broadcastGameEndToRoom(_networkManager, clients,
+                                                       gameEndPacket);
+          for (auto &client : clients) {
+            if (client) {
+              client->_state = ClientState::CONNECTED_MENU;
+            }
+          }
+          auto playersScore = room->getGame().getPlayerScores();
+
+          for (const auto &scorePair : playersScore) {
+            int gamePlayerId = scorePair.first;
+            int score = scorePair.second;
+
+            auto client = getClientById(gamePlayerId);
+            if (client) {
+              if (client->_database_player_id != INVALID_ID) {
+                bool success = _databaseManager->addScore(
+                    client->_database_player_id, score);
+                if (!success) {
+                  std::cerr << "[ERROR] Failed to add score for player "
+                            << client->_player_id << std::endl;
+                }
+              }
+            }
+          }
+          room->getGame().stop();
         } else {
           std::cerr << "[WARNING] Unhandled game event type." << std::endl;
         }
@@ -308,30 +428,43 @@ void server::Server::handleReceive(const char *data,
 void server::Server::handlePlayerInfoPacket(const char *data,
                                             std::size_t size) {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
+  std::shared_ptr<Client> newClient;
 
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected &&
-        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
-            current_endpoint) {
+  {
+    std::lock_guard<std::shared_mutex> lock(_clientsMutex);
+    for (size_t i = 0; i < _clients.size(); ++i) {
+      if (_clients[i] && _clients[i]->_connected &&
+          _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
+              current_endpoint) {
+        return;
+      }
+    }
+
+    if (_databaseManager &&
+        _databaseManager->isIpBanned(current_endpoint.address().to_string())) {
+      std::cerr << "[WARNING] Refused connection from banned IP "
+                << current_endpoint.address().to_string() << std::endl;
       return;
     }
-  }
 
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (!_clients[i]) {
-      int id = _next_player_id++;
-      _clients[i] = std::make_shared<Client>(id);
-      _clients[i]->_connected = true;
-      _player_count++;
-      _networkManager.registerClient(id, current_endpoint);
+    for (size_t i = 0; i < _clients.size(); ++i) {
+      if (!_clients[i]) {
+        int id = _next_player_id++;
+        _clients[i] = std::make_shared<Client>(id);
+        _clients[i]->_connected = true;
+        _clients[i]->_ip_address = current_endpoint.address().to_string();
+        _player_count++;
+        _networkManager.registerClient(id, current_endpoint);
 
-      std::cout << "[WORLD] New player connecting with ID " << id << std::endl;
+        std::cout << "[WORLD] New player connecting with ID " << id
+                  << std::endl;
 
-      auto handler = _factory.createHandler(PacketType::PlayerInfo);
-      if (handler) {
-        handler->handlePacket(*this, *_clients[i], data, size);
+        auto handler = _factory.createHandler(PacketType::PlayerInfo);
+        if (handler) {
+          handler->handlePacket(*this, *_clients[i], data, size);
+        }
+        return;
       }
-      return;
     }
   }
 
@@ -340,22 +473,26 @@ void server::Server::handlePlayerInfoPacket(const char *data,
 }
 
 /**
- * @brief Find an existing client based on the sender's endpoint.
- * Compares the remote endpoint of the incoming packet with the stored
- * endpoints of connected clients. If a match is found, updates the client's
- * last heartbeat timestamp and returns the client's index. If no match is
- * found, returns KO.
- * @return int Index of the existing client, or KO if not found.
+ * @brief Finds the connected client whose registered endpoint matches the
+ * current remote endpoint.
+ *
+ * If a matching client is found, its last-heartbeat timestamp is updated to
+ * now.
+ *
+ * @return size_t Index of the matching client, or `KO` if no match was found.
  */
 size_t server::Server::findExistingClient() {
   auto current_endpoint = _networkManager.getRemoteEndpoint();
 
-  for (size_t i = 0; i < _clients.size(); ++i) {
-    if (_clients[i] && _clients[i]->_connected &&
-        _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
-            current_endpoint) {
-      _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
-      return static_cast<int>(i);
+  {
+    std::lock_guard<std::shared_mutex> lock(_clientsMutex);
+    for (size_t i = 0; i < _clients.size(); ++i) {
+      if (_clients[i] && _clients[i]->_connected &&
+          _networkManager.getClientEndpoint(_clients[i]->_player_id) ==
+              current_endpoint) {
+        _clients[i]->_last_heartbeat = std::chrono::steady_clock::now();
+        return static_cast<int>(i);
+      }
     }
   }
   return KO;
@@ -375,6 +512,7 @@ size_t server::Server::findExistingClient() {
  */
 void server::Server::handleClientData(std::size_t client_idx, const char *data,
                                       std::size_t size) {
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   if (client_idx < 0 || client_idx >= static_cast<size_t>(_clients.size()) ||
       !_clients[client_idx]) {
     return;
@@ -405,16 +543,18 @@ void server::Server::handleClientData(std::size_t client_idx, const char *data,
 }
 
 /**
- * @brief Initialize a connected client as a player inside its assigned game
- * room.
+ * @brief Initialize a connected client as an in-room player and synchronize
+ * room state.
  *
- * Validates the client's state, room assignment, and name; creates a player
- * entity in the room's game, stores the entity id on the client, sends the
- * new-player state to the client, broadcasts existing players and the new
- * player to the room, and starts the room countdown when conditions are met.
+ * Validates the client's readiness and room membership, creates the player's
+ * entity in the room game, stores the generated entity id on the client, sends
+ * the new-player state and existing-player state to the connecting client,
+ * broadcasts the new player and a join chat message to other room clients, and
+ * starts the room countdown when the room meets start conditions.
  *
- * @param client Client instance to initialize (modified in-place).
- * @return true if the player was successfully initialized in the room, false
+ * @param client Client instance to initialize; modified in-place to record
+ * entity id and queued packets.
+ * @return true if the player was successfully initialized in the room, `false`
  * otherwise.
  */
 bool server::Server::initializePlayerInRoom(Client &client) {
@@ -457,36 +597,51 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   std::pair<float, float> pos = player->getPosition();
   float speed = player->getSpeed();
   int max_health = player->getMaxHealth().value_or(100);
+  auto &game = room->getGame();
 
-  auto ownPlayerPacket =
-      PacketBuilder::makeNewPlayer(client._player_id, client._player_name,
-                                   pos.first, pos.second, speed, max_health);
-  auto serializedBuffer =
-      serialization::BitserySerializer::serialize(ownPlayerPacket);
-  if (serializedBuffer.empty()) {
-    std::cerr << "[ERROR] Failed to serialize ownPlayerPacket for client "
-              << client._player_id << std::endl;
-    return false;
-  }
-  _networkManager.sendToClient(
-      client._player_id,
-      reinterpret_cast<const char *>(serializedBuffer.data()),
-      serializedBuffer.size());
+  // Send packets to client that just connected
+  auto ownPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, client._player_name, pos.first, pos.second, speed,
+      game.getSequenceNumber(), max_health);
+
+  auto serializedBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(ownPlayerPacket));
+
+  client.addUnacknowledgedPacket(game.getSequenceNumber(), serializedBuffer);
+
+  _networkManager.sendToClient(client._player_id, serializedBuffer);
 
   auto roomClients = room->getClients();
 
-  broadcast::Broadcast::broadcastExistingPlayersToRoom(
-      _networkManager, room->getGame(), client._player_id, roomClients);
+  game.incrementSequenceNumber();
 
-  auto newPlayerPacket =
-      PacketBuilder::makeNewPlayer(client._player_id, client._player_name,
-                                   pos.first, pos.second, speed, max_health);
+  broadcast::Broadcast::broadcastExistingPlayersToRoom(
+      _networkManager, room->getGame(), client, roomClients);
+
+  // Send packets to the room
+  uint32_t newPlayerSeq = game.getSequenceNumber();
+  auto newPlayerPacket = PacketBuilder::makeNewPlayer(
+      client._player_id, client._player_name, pos.first, pos.second, speed,
+      newPlayerSeq, max_health);
+
+  auto newPlayerBuffer = std::make_shared<std::vector<uint8_t>>(
+      serialization::BitserySerializer::serialize(newPlayerPacket));
+
   broadcast::Broadcast::broadcastAncientPlayerToRoom(
       _networkManager, roomClients, newPlayerPacket);
 
+  for (const auto &roomClient : roomClients) {
+    if (roomClient && roomClient->_player_id != client._player_id) {
+      roomClient->addUnacknowledgedPacket(newPlayerSeq, newPlayerBuffer);
+    }
+  }
+
+  game.incrementSequenceNumber();
+
   std::string msg = client._player_name + " has joined the game.";
   auto chatMessagePacket =
-      PacketBuilder::makeChatMessage(msg, SERVER_SENDER_ID, 255, 255, 0, 255);
+      PacketBuilder::makeChatMessage(msg, SERVER_SENDER_ID, 255, 255, 0, 255,
+                                     game.fetchAndIncrementSequenceNumber());
   broadcast::Broadcast::broadcastMessageToRoomExcept(
       _networkManager, roomClients, chatMessagePacket, client._player_id);
 
@@ -502,7 +657,6 @@ bool server::Server::initializePlayerInRoom(Client &client) {
   std::cout << "[WORLD] Player " << client._player_id << " ("
             << client._player_name << ") initialized in room "
             << client._room_id << std::endl;
-
   return true;
 }
 
@@ -536,9 +690,19 @@ void server::Server::handleCountdown(
   auto roomClients = room->getClients();
 
   if (countdown <= 0) {
-    auto startPacket = PacketBuilder::makeGameStart(true);
+    auto startPacket =
+        PacketBuilder::makeGameStart(true, room->getGame().getSequenceNumber());
+
     broadcast::Broadcast::broadcastGameStartToRoom(_networkManager, roomClients,
                                                    startPacket);
+
+    auto buffer = std::make_shared<std::vector<uint8_t>>(
+        serialization::BitserySerializer::serialize(startPacket));
+    for (const auto &client : roomClients) {
+      client->addUnacknowledgedPacket(room->getGame().getSequenceNumber(),
+                                      buffer);
+    }
+    room->getGame().incrementSequenceNumber();
     room->start();
     for (auto &roomClient : roomClients) {
       if (roomClient) {
@@ -581,6 +745,7 @@ void server::Server::handleCountdown(
  */
 std::shared_ptr<server::Client> server::Server::getClient(
     std::size_t idx) const {
+  std::shared_lock<std::shared_mutex> lock(_clientsMutex);
   if (idx >= static_cast<std::size_t>(_clients.size())) {
     return nullptr;
   }
@@ -616,12 +781,101 @@ std::shared_ptr<server::Client> server::Server::getClientById(
  * cleared.
  */
 void server::Server::clearClientSlot(int player_id) {
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
   for (auto &client : _clients) {
     if (client && client->_player_id == player_id) {
-      if (client->_room_id != NO_ROOM)
+      if (client->_room_id != NO_ROOM) {
         _gameManager->leaveRoom(client);
+      }
+      client->_connected = false;
       client.reset();
       return;
     }
   }
+}
+
+/**
+ * @brief Retransmits any unacknowledged packets for all currently connected
+ * clients.
+ *
+ * Iterates connected client slots and requests each client to resend its queued
+ * unacknowledged packets using the server's network manager.
+ */
+void server::Server::handleUnacknowledgedPackets() {
+  std::lock_guard<std::shared_mutex> lock(_clientsMutex);
+  for (auto &client : _clients) {
+    if (client && client->_connected) {
+      client->resendUnacknowledgedPackets(_networkManager);
+    }
+  }
+}
+
+/**
+ * @brief Atomically clears the map of last-processed sequence numbers.
+ *
+ * This resets the server's tracking of most recently processed sequence IDs for
+ * peers, allowing sequence checks to start fresh.
+ */
+void server::Server::clearLastProcessedSeq() {
+  std::lock_guard<std::mutex> lock(_lastProcessedSeqMutex);
+  _lastProcessedSeq.clear();
+}
+
+/**
+ * Thread-safely enqueues a player identifier for deferred removal from the
+ * server.
+ *
+ * @param player_id Player's unique identifier to schedule for removal.
+ */
+void server::Server::enqueueClientRemoval(std::uint32_t player_id) {
+  std::lock_guard<std::mutex> lock(_clientsToRemoveMutex);
+  _clientsToRemove.push(player_id);
+}
+
+/**
+ * @brief Processes and applies queued client removals.
+ *
+ * Empties the internal removal queue by transferring pending player IDs into a
+ * local queue and then clearing each corresponding client slot (including
+ * leaving rooms) until none remain.
+ */
+void server::Server::processPendingClientRemovals() {
+  std::queue<std::uint32_t> toRemove;
+  {
+    std::lock_guard<std::mutex> lock(_clientsToRemoveMutex);
+    std::swap(toRemove, _clientsToRemove);
+  }
+  while (!toRemove.empty()) {
+    clearClientSlot(toRemove.front());
+    toRemove.pop();
+  }
+}
+
+/**
+ * @brief Processes queued game events for each active room and prunes empty
+ * rooms.
+ *
+ * Polls each active room's game event queue, dispatches every popped event to
+ * the server's event handler, and ensures pending client removals are processed
+ * before event dispatch. After processing all rooms, removes any empty rooms
+ * from the game manager.
+ */
+void server::Server::processGameEvents() {
+  auto rooms = _gameManager->getAllRooms();
+
+  for (auto &room : rooms) {
+    if (!room || !room->isActive()) {
+      continue;
+    }
+
+    queue::GameEvent event;
+
+    processPendingClientRemovals();
+
+    while (room->getGame().getEventQueue().popRequest(event)) {
+      handleGameEvent(event, room->getRoomId());
+    }
+  }
+
+  _gameManager->removeEmptyRooms();
 }
