@@ -25,5 +25,6 @@ namespace ecs {
    */
   struct StateHistoryComponent {
     std::deque<EntityState> states;
+    mutable std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
   };
 }  // namespace ecs
