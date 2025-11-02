@@ -93,12 +93,9 @@ int packet::NewPlayerHandler::handlePacket(client::Client &client,
 
   const NewPlayerPacket &packet = packetOpt.value();
 
+  sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
+
   client.createPlayerEntity(packet);
-
-  if (packet.player_id == client.getPlayerId()) {
-    sendAckIfNeeded(client, packet.header.type, packet.sequence_number);
-  }
-
   return packet::OK;
 }
 

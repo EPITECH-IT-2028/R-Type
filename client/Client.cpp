@@ -604,7 +604,7 @@ namespace client {
     try {
       auto pwd_hash = crypto::Crypto::sha256(password);
       CreateRoomPacket packet =
-          PacketBuilder::makeCreateRoom(room_name, 4, _sequence_number.load(),pwd_hash);
+          PacketBuilder::makeCreateRoom(room_name, 4, _sequence_number.load(), pwd_hash);
       send(packet);
     } catch (const std::exception &e) {
       TraceLog(LOG_ERROR, "[CREATE ROOM] Exception: %s", e.what());
