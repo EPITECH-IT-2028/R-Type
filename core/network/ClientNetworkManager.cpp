@@ -43,17 +43,17 @@ void ClientNetworkManager::send(const char *data, std::size_t size) {
 
 void ClientNetworkManager::send(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
-  std::shared_ptr<std::vector<std::uint8_t>> dataToSend = buffer;
+  std::shared_ptr<std::vector<std::uint8_t>> data = buffer;
   if (buffer->size() > COMPRESSION_THRESHOLD) {
     auto compressed = compression::LZ4Compressor::compress(*buffer);
     if (compression::LZ4Compressor::isCompressed(compressed)) {
-      dataToSend = std::make_shared<std::vector<std::uint8_t>>(compressed);
+      data = std::make_shared<std::vector<std::uint8_t>>(compressed);
     }
   }
 
   _socket.async_send_to(
-      asio::buffer(*dataToSend), _server_endpoint,
-      [dataToSend](const asio::error_code &ec, std::size_t) {
+      asio::buffer(*data), _server_endpoint,
+      [data](const asio::error_code &ec, std::size_t) {
         if (ec) {
           std::cerr << "[WARNING] Send failed: " << ec.message() << std::endl;
         }

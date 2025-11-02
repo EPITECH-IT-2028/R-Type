@@ -83,22 +83,21 @@ void ServerNetworkManager::sendToAll(const char *data, std::size_t size) {
 
 void ServerNetworkManager::sendToAll(
     std::shared_ptr<std::vector<std::uint8_t>> buffer) {
-  std::shared_ptr<std::vector<std::uint8_t>> dataToSend = buffer;
+  std::shared_ptr<std::vector<std::uint8_t>> data = buffer;
   if (buffer->size() > COMPRESSION_THRESHOLD) {
     auto compressed = compression::LZ4Compressor::compress(*buffer);
     if (compression::LZ4Compressor::isCompressed(compressed)) {
-      dataToSend = std::make_shared<std::vector<std::uint8_t>>(compressed);
+      data = std::make_shared<std::vector<std::uint8_t>>(compressed);
     }
   }
 
   for (const auto &[id, endpoint] : _clientEndpoints) {
-    _socket.async_send_to(
-        asio::buffer(*dataToSend), endpoint,
-        [dataToSend](const asio::error_code &error, std::size_t) {
-          if (error)
-            std::cerr << "[ERROR] Broadcast failed: " << error.message()
-                      << std::endl;
-        });
+    _socket.async_send_to(asio::buffer(*data), endpoint,
+                          [data](const asio::error_code &error, std::size_t) {
+                            if (error)
+                              std::cerr << "[ERROR] Broadcast failed: "
+                                        << error.message() << std::endl;
+                          });
   }
 }
 
